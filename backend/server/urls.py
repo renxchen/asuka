@@ -20,13 +20,23 @@ from backend.apolo.apolomgr import views
 from rest_framework import routers
 from backend.apolo.apolomgr.views import UserViewSet, EntryViewSet
 
-
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
-router.register(r'entries', EntryViewSet)
+# router.register(r'users', UserViewSet)
+# router.register(r'entries', EntryViewSet)
+# router.register(r'users', UserViewSet, base_name='user')
+user_list = UserViewSet.as_view({
+    # select
+    'get': 'list',
+    # create
+    'post': 'create',
+    # update or create
+    'put': 'retrieve',
+    # delete
+    'delete': 'destroy',
+})
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^index/$', views.index),
-    url(r'^api/', include(router.urls)),
+    # url(r'^api/', include(router.urls)),
+    url(r'^users/$', user_list, name='user-list'),
 ]
