@@ -16,7 +16,6 @@ import os
 # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
@@ -27,7 +26,6 @@ SECRET_KEY = '$x=wa!v!@^lm48y9lol)#91-c42-x&ths!z*s7agl3^mt0=5%y'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -43,15 +41,27 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE_CLASSES = [
-    'django.middleware.security.SecurityMiddleware',
+    # 'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         # 'rest_framework.permissions.IsAuthenticated',
+#         'rest_framework.permissions.AllowAny',
+#     ),
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+#         # 'rest_framework.authentication.TokenAuthentication',
+#     )
+# }
+
 
 ROOT_URLCONF = 'server.urls'
 
@@ -59,6 +69,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
+        # 'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,8 +82,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'server.wsgi.application'
+# TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
 
+WSGI_APPLICATION = 'server.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
@@ -89,7 +101,6 @@ DATABASES = {
         "PASSWORD": ""
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -109,12 +120,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
+# TIME_ZONE = 'Asia/Shanghai'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
@@ -123,8 +133,70 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+# STATICFILES_DIRS = ('static', os.path.join(BASE_DIR, 'static'))
+
+# import datetime
+#
+# from django.conf import settings
+# from rest_framework.settings import APISettings
+#
+#
+# USER_SETTINGS = getattr(settings, 'JWT_AUTH', None)
+#
+# JWT_AUTH = {
+#     'JWT_ENCODE_HANDLER':
+#     'rest_framework_jwt.utils.jwt_encode_handler',
+#
+#     'JWT_DECODE_HANDLER':
+#     'rest_framework_jwt.utils.jwt_decode_handler',
+#
+#     'JWT_PAYLOAD_HANDLER':
+#     'rest_framework_jwt.utils.jwt_payload_handler',
+#
+#     'JWT_PAYLOAD_GET_USER_ID_HANDLER':
+#     'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
+#
+#     'JWT_PRIVATE_KEY':
+#     None,
+#
+#     'JWT_PUBLIC_KEY':
+#     None,
+#
+#     'JWT_PAYLOAD_GET_USERNAME_HANDLER':
+#     'rest_framework_jwt.utils.jwt_get_username_from_payload_handler',
+#
+#     'JWT_RESPONSE_PAYLOAD_HANDLER':
+#     'rest_framework_jwt.utils.jwt_response_payload_handler',
+#
+#     'JWT_SECRET_KEY': settings.SECRET_KEY,
+#     'JWT_GET_USER_SECRET_KEY': None,
+#     'JWT_ALGORITHM': 'HS256',
+#     'JWT_VERIFY': True,
+#     'JWT_VERIFY_EXPIRATION': True,
+#     'JWT_LEEWAY': 0,
+#     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+#     'JWT_AUDIENCE': None,
+#     'JWT_ISSUER': None,
+#
+#     'JWT_ALLOW_REFRESH': True,
+#     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+#
+#     'JWT_AUTH_HEADER_PREFIX': 'JWT',
+#     'JWT_AUTH_COOKIE': None,
+# }
+# # List of settings that may be in string import notation.
+# IMPORT_STRINGS = (
+#     'JWT_ENCODE_HANDLER',
+#     'JWT_DECODE_HANDLER',
+#     'JWT_PAYLOAD_HANDLER',
+#     'JWT_PAYLOAD_GET_USER_ID_HANDLER',
+#     'JWT_PAYLOAD_GET_USERNAME_HANDLER',
+#     'JWT_RESPONSE_PAYLOAD_HANDLER',
+#     'JWT_GET_USER_SECRET_KEY',
+# )
+#
+# api_settings = APISettings(USER_SETTINGS, JWT_AUTH, IMPORT_STRINGS)
