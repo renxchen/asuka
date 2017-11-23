@@ -15,10 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from backend.apolo.apolomgr import views
+from backend.apolo.apolomgr.resource import views
 
 from rest_framework import routers
-from backend.apolo.apolomgr.views import UserViewSet, EntryViewSet
+from backend.apolo.apolomgr.resource.views import UserViewSet, EntryViewSet
 
 router = routers.DefaultRouter()
 # router.register(r'users', UserViewSet)
