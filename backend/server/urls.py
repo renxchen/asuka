@@ -15,28 +15,28 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from backend.apolo.apolomgr.resource import views
-
 from rest_framework import routers
-from backend.apolo.apolomgr.resource.views import UserViewSet, EntryViewSet
+from backend.apolo.apolomgr.resource.user_views import UserViewSet
+from backend.apolo.apolomgr.resource.login_views import login_api
+from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import refresh_jwt_token
+from rest_framework_jwt.views import verify_jwt_token
 
 router = routers.DefaultRouter()
 # router.register(r'users', UserViewSet)
 # router.register(r'entries', EntryViewSet)
 # router.register(r'users', UserViewSet, base_name='user')
-user_list = UserViewSet.as_view({
-    # select
-    'get': 'list',
-    # create
-    'post': 'create',
-    # update or create
-    'put': 'retrieve',
-    # delete
-    'delete': 'destroy',
-})
+user_list = UserViewSet.as_view({'get': 'get', 'post': 'post', 'put': 'put', 'delete': 'delete'})
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    # url(r'^api/', include(router.urls)),
+    url(r'^login_auth/', login_api),
     url(r'^users/$', user_list, name='user-list'),
+]
+
+# django jwt authentication
+urlpatterns += [
+    url(r'^api-token-auth/', obtain_jwt_token),
+    url(r'^api-token-refresh/', refresh_jwt_token),
+    url(r'^api-token-verify/', verify_jwt_token),
 ]

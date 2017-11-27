@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -21,6 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '$x=wa!v!@^lm48y9lol)#91-c42-x&ths!z*s7agl3^mt0=5%y'
+# SECRET_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwidXNlcl9pZCI6MSwiZW1haWwiOiJraW1saUBjaXNjby5jb20iLCJleHAiOjE1MTE1MDY5NTh9.3a3It7YVQn4mCJjd7cljCbaLHWy8TmbFq9qKmEbP85Q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -52,16 +54,28 @@ MIDDLEWARE_CLASSES = [
 ]
 
 # REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         # 'rest_framework.permissions.IsAuthenticated',
-#         'rest_framework.permissions.AllowAny',
-#     ),
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-#         # 'rest_framework.authentication.TokenAuthentication',
-#     )
+#     # Use Django's standard <code>django.contrib.auth</code> permissions,
+#     # or allow read-only access for unauthenticated users.
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+#     ],
+#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+#     'PAGE_SIZE':2,
+#      'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
 # }
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+    ),
+}
 
 ROOT_URLCONF = 'server.urls'
 
@@ -141,56 +155,46 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # STATICFILES_DIRS = ('static', os.path.join(BASE_DIR, 'static'))
 
-# import datetime
-#
 # from django.conf import settings
 # from rest_framework.settings import APISettings
 #
-#
 # USER_SETTINGS = getattr(settings, 'JWT_AUTH', None)
-#
-# JWT_AUTH = {
-#     'JWT_ENCODE_HANDLER':
-#     'rest_framework_jwt.utils.jwt_encode_handler',
-#
-#     'JWT_DECODE_HANDLER':
-#     'rest_framework_jwt.utils.jwt_decode_handler',
-#
-#     'JWT_PAYLOAD_HANDLER':
-#     'rest_framework_jwt.utils.jwt_payload_handler',
-#
-#     'JWT_PAYLOAD_GET_USER_ID_HANDLER':
-#     'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
-#
-#     'JWT_PRIVATE_KEY':
-#     None,
-#
-#     'JWT_PUBLIC_KEY':
-#     None,
-#
-#     'JWT_PAYLOAD_GET_USERNAME_HANDLER':
-#     'rest_framework_jwt.utils.jwt_get_username_from_payload_handler',
-#
-#     'JWT_RESPONSE_PAYLOAD_HANDLER':
-#     'rest_framework_jwt.utils.jwt_response_payload_handler',
-#
-#     'JWT_SECRET_KEY': settings.SECRET_KEY,
-#     'JWT_GET_USER_SECRET_KEY': None,
-#     'JWT_ALGORITHM': 'HS256',
-#     'JWT_VERIFY': True,
-#     'JWT_VERIFY_EXPIRATION': True,
-#     'JWT_LEEWAY': 0,
-#     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
-#     'JWT_AUDIENCE': None,
-#     'JWT_ISSUER': None,
-#
-#     'JWT_ALLOW_REFRESH': True,
-#     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
-#
-#     'JWT_AUTH_HEADER_PREFIX': 'JWT',
-#     'JWT_AUTH_COOKIE': None,
-# }
-# # List of settings that may be in string import notation.
+
+JWT_AUTH = {
+    'JWT_ENCODE_HANDLER':
+        'rest_framework_jwt.utils.jwt_encode_handler',
+
+    'JWT_DECODE_HANDLER':
+        'rest_framework_jwt.utils.jwt_decode_handler',
+
+    'JWT_PAYLOAD_HANDLER':
+        'rest_framework_jwt.utils.jwt_payload_handler',
+
+    'JWT_PAYLOAD_GET_USER_ID_HANDLER':
+        'rest_framework_jwt.utils.jwt_get_user_id_from_payload_handler',
+
+    'JWT_RESPONSE_PAYLOAD_HANDLER':
+        'rest_framework_jwt.utils.jwt_response_payload_handler',
+
+    'JWT_SECRET_KEY': SECRET_KEY,
+    'JWT_GET_USER_SECRET_KEY': None,
+    'JWT_PUBLIC_KEY': None,
+    'JWT_PRIVATE_KEY': None,
+    'JWT_ALGORITHM': 'HS256',
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LEEWAY': 0,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=10000),
+    'JWT_AUDIENCE': None,
+    'JWT_ISSUER': None,
+
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+    'JWT_AUTH_COOKIE': None,
+}
+
 # IMPORT_STRINGS = (
 #     'JWT_ENCODE_HANDLER',
 #     'JWT_DECODE_HANDLER',

@@ -1,52 +1,15 @@
 # Create your views here.
 from django.http import HttpResponse
 import simplejson as json
-from backend.apolo.db_utils.serializer import *
-import django_filters
-from rest_framework import viewsets, filters, status
-from backend.apolo.db_utils.serializer import UserSerializer, EntrySerializer
-from backend.apolo.models import User, Entry
-from rest_framework.decorators import api_view, permission_classes
+from backend.apolo.db_utils.serializer import UserSerializer
+from backend.apolo.models import User
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import detail_route, list_route
-from django.shortcuts import get_object_or_404
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
+from rest_framework import viewsets
+from authentication import IsAuthenticated
+from rest_framework.decorators import permission_classes, api_view
 
 
-# Create your views here.
-# @api_view(['GET', 'POST'])
-# def index(request):
-#     print '-----:, ', request.data
-#     pk = request.GET('value')
-#
-#     try:
-#         queryset = User.objects.get(name=pk)
-#         print queryset
-#     except User.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-#
-#     if request.method == 'GET':
-#         serializer = UserSerializer(queryset, many=True)
-#         return Response(serializer.data)
-#     elif request.method == 'POST':
-#         serializer = UserSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#     elif request.method == 'PUT':
-#         serializer = UserSerializer(queryset, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#     elif request.method == 'DELETE':
-#         queryset.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
+@permission_classes((IsAuthenticated,))
 class UserViewSet(viewsets.ViewSet):
     def get_user(self, **kwars):
         try:
@@ -54,7 +17,8 @@ class UserViewSet(viewsets.ViewSet):
         except User.DoesNotExist:
             raise
 
-    def list(self, request):
+    def get(self, request):
+
         try:
             queryset = User.objects.all()
             if 'name' in request.GET.keys():
@@ -66,7 +30,7 @@ class UserViewSet(viewsets.ViewSet):
         except User.DoesNotExist:
             return HttpResponse(status=404)
 
-    def create(self, request):
+    def post(self, request):
         name = ''
         mail = ''
         if 'name' in request.GET.keys():
@@ -82,7 +46,7 @@ class UserViewSet(viewsets.ViewSet):
         else:
             return HttpResponse(json.dumps(serializer.errors))
 
-    def retrieve(self, request):
+    def put(self, request):
         id = ''
         if 'id' in request.GET.keys():
             id = request.GET['id']
@@ -101,7 +65,7 @@ class UserViewSet(viewsets.ViewSet):
         else:
             return HttpResponse(json.dumps(serializer.errors))
 
-    def destroy(self, request, pk=None):
+    def delete(self, request, pk=None):
         id = None
         if 'id' in request.GET.keys():
             id = request.GET['id']
@@ -110,8 +74,3 @@ class UserViewSet(viewsets.ViewSet):
         queryset = self.get_user(**kwargs)
         queryset.delete()
         return HttpResponse('Delete Successful')
-
-
-class EntryViewSet(viewsets.ModelViewSet):
-    queryset = Entry.objects.all()
-    serializer_class = EntrySerializer
