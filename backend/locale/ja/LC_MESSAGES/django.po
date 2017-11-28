@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-28 15:01+0800\n"
+"POT-Creation-Date: 2017-11-28 16:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,10 +21,14 @@ msgstr ""
 msgid "Welcome to my site."
 msgstr "ようこそ"
 
-#: .\server\settings.py:142
+#: .\apolo\apolomgr\resource\user_views.py:77
+msgid "Delete Successful"
+msgstr "ようこそ111"
+
+#: .\server\settings.py:147
 msgid "German"
 msgstr ""
 
-#: .\server\settings.py:143
+#: .\server\settings.py:148
 msgid "English"
 msgstr ""

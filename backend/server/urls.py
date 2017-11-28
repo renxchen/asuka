@@ -16,8 +16,8 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
-from backend.apolo.apolomgr.resource.user_views import UserViewSet
-from backend.apolo.apolomgr.resource.login_views import login_api
+# from backend.apolo.apolomgr.resource.user_views import UserViewSet
+from backend.apolo.apolomgr.resource import resource_api
 from backend.apolo.apolomgr.resource.helloworld import my_view
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_jwt.views import refresh_jwt_token
@@ -27,13 +27,14 @@ router = routers.DefaultRouter()
 # router.register(r'users', UserViewSet)
 # router.register(r'entries', EntryViewSet)
 # router.register(r'users', UserViewSet, base_name='user')
-user_list = UserViewSet.as_view({'get': 'get', 'post': 'post', 'put': 'put', 'delete': 'delete'})
+# user_list = UserViewSet.as_view({'get': 'get', 'post': 'post', 'put': 'put', 'delete': 'delete'})
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^login_auth/', login_api),
+    url(r'^login/', resource_api.login),
     url(r'^my_view/', my_view),
-    url(r'^users/$', user_list, name='user-list'),
+    url(r'^api_users/', resource_api.api_users)
+    # url(r'^users/$', user_list, name='user-list'),
     # url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
 

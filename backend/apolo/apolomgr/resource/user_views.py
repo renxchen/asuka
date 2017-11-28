@@ -5,38 +5,43 @@ from backend.apolo.db_utils.serializer import UserSerializer
 from backend.apolo.models import User
 from rest_framework.response import Response
 from rest_framework import viewsets
-from authentication import IsAuthenticated
-from rest_framework.decorators import permission_classes, api_view
+from django.utils.translation import gettext
+from django.http import HttpResponse
+from rest_framework.response import Response
 
-
-@permission_classes((IsAuthenticated,))
 class UserViewSet(viewsets.ViewSet):
+    def __init__(self, request, **kwargs):
+        super(UserViewSet, self).__init__(**kwargs)
+        self.request = request
+
     def get_user(self, **kwars):
         try:
             return User.objects.get(**kwars)
         except User.DoesNotExist:
             raise
 
-    def get(self, request):
-
+    def get(self):
         try:
+            print 'get'
             queryset = User.objects.all()
-            if 'name' in request.GET.keys():
-                name = request.GET['name']
+            if 'name' in self.request.GET.keys():
+                name = self.request.GET['name']
                 if name:
                     queryset = User.objects.filter(name=name)
             serializer = UserSerializer(queryset, many=True)
+            # return Response(serializer.data)
             return Response(serializer.data)
         except User.DoesNotExist:
-            return HttpResponse(status=404)
+            return Response(status=404)
 
-    def post(self, request):
+    def post(self):
+        print 'post'
         name = ''
         mail = ''
-        if 'name' in request.GET.keys():
-            name = request.GET['name']
-        if 'mail' in request.GET.keys():
-            mail = request.GET['mail']
+        if 'name' in self.request.GET.keys():
+            name = self.request.GET['name']
+        if 'mail' in self.request.GET.keys():
+            mail = self.request.GET['mail']
         # data = [{'name': name, 'mail': mail}]
         data = {'name': name, 'mail': mail}
         serializer = UserSerializer(data=data)
@@ -46,14 +51,15 @@ class UserViewSet(viewsets.ViewSet):
         else:
             return HttpResponse(json.dumps(serializer.errors))
 
-    def put(self, request):
+    def put(self):
+        print 'put'
         id = ''
-        if 'id' in request.GET.keys():
-            id = request.GET['id']
+        if 'id' in self.request.GET.keys():
+            id = self.request.GET['id']
         kwargs = {'id': id}
         queryset = self.get_user(**kwargs)
-        name = request.GET['name']
-        mail = request.GET['mail']
+        name = self.request.GET['name']
+        mail = self.request.GET['mail']
         # data = JSONParser().parse(request.GET.values())
         # queryset = User.objects.filter(pk=id)
         # data = json.loads(request.GET.values())
@@ -65,12 +71,13 @@ class UserViewSet(viewsets.ViewSet):
         else:
             return HttpResponse(json.dumps(serializer.errors))
 
-    def delete(self, request, pk=None):
+    def delete(self):
+        print 'delete'
         id = None
-        if 'id' in request.GET.keys():
-            id = request.GET['id']
+        if 'id' in self.request.GET.keys():
+            id = self.request.GET['id']
         # queryset = User.objects.filter(pk=id)
         kwargs = {'id': id}
         queryset = self.get_user(**kwargs)
         queryset.delete()
-        return HttpResponse('Delete Successful')
+        return HttpResponse(gettext('Delete Successful'))
