@@ -12,11 +12,11 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 import datetime
+from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
@@ -51,6 +51,7 @@ MIDDLEWARE_CLASSES = [
     # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 # REST_FRAMEWORK = {
@@ -82,12 +83,14 @@ ROOT_URLCONF = 'server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        # 'DIRS': ['templates'],
+        'DIRS': [
+            os.path.join(BASE_DIR, "templates"),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
+                'django.core.context_processors.i18n',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -137,7 +140,29 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+
+LANGUAGE_CODE = 'en'
+# ugettext = lambda s: s
+LANGUAGES = [
+    ('de', _('German')),
+    ('en', _('English')),
+    ('ja', 'Japanese'),
+]
+
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+    # os.path.join(BASE_DIR, "locale"),
+)
+
+# TEMPLATE_CONTEXT_PROCESSORS = (
+#     # 'django.contrib.auth.context_processors.auth',
+#     # 'django.core.context_processors.debug',
+#     'django.core.context_processors.i18n',
+#     # 'django.core.context_processors.request',
+#     # 'django.core.context_processors.static',
+#     # 'django.contrib.messages.context_processors.messages',
+# )
+
 # TIME_ZONE = 'Asia/Shanghai'
 TIME_ZONE = 'UTC'
 

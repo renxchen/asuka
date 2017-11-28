@@ -18,6 +18,7 @@ from django.contrib import admin
 from rest_framework import routers
 from backend.apolo.apolomgr.resource.user_views import UserViewSet
 from backend.apolo.apolomgr.resource.login_views import login_api
+from backend.apolo.apolomgr.resource.helloworld import my_view
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_jwt.views import refresh_jwt_token
 from rest_framework_jwt.views import verify_jwt_token
@@ -31,7 +32,9 @@ user_list = UserViewSet.as_view({'get': 'get', 'post': 'post', 'put': 'put', 'de
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^login_auth/', login_api),
+    url(r'^my_view/', my_view),
     url(r'^users/$', user_list, name='user-list'),
+    # url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
 
 # django jwt authentication
