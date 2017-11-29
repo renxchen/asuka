@@ -92,15 +92,16 @@ class token_mgr(object):
 
 
 class Auth(object):
-    def __init__(self, request, username, password):
-        self.username = username
-        self.password = password
+    def __init__(self, request):
         self.request = request
 
     def post(self):
-        if not self.username or not self.password:
+        body = self.request.body
+        username = eval(body)['username']
+        password = eval(body)['password']
+        if not username or not password:
             return HttpResponse({'message': constants.NO_USERNAME_OR_PASSWORD})
-        user_obj = auth.authenticate(username=self.username, password=self.password)
+        user_obj = auth.authenticate(username=username, password=password)
         if not user_obj:
             data = {'message': constants.USER_AND_PASSWD_INCORRECT}
             return HttpResponse(json.dumps(data))
@@ -117,7 +118,7 @@ class Auth(object):
                 role = 'staff'
             token = encoder(payloader(user_obj))
             data = {
-                "username": self.username,
+                "username": username,
                 "role": role,
                 "token": token
             }
