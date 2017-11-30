@@ -1,10 +1,13 @@
 import requests
-from django.http import HttpResponse
+from django.http import HttpResponse, response
 import simplejson as json
 from django.contrib import auth
+from django.utils.translation import gettext
 from rest_framework_jwt.settings import api_settings
 from backend.apolo.tools import constants
 from rest_framework import permissions
+from datetime import datetime, timedelta
+from calendar import timegm
 
 payloader = api_settings.JWT_PAYLOAD_HANDLER
 encoder = api_settings.JWT_ENCODE_HANDLER
@@ -123,3 +126,63 @@ class Auth(object):
                 "token": token
             }
             return HttpResponse(json.dumps(data))
+
+
+class TokenRefresh(object):
+    def __init__(self, token):
+        self.token = token
+        self.time_diff = timedelta(seconds=120)
+
+    def refresh_token(self):
+        payload = decoder(self.token)
+        orig_iat = payload.get('orig_iat')
+        if orig_iat:
+            refresh_limit = api_settings.JWT_REFRESH_EXPIRATION_DELTA
+            if isinstance(refresh_limit, timedelta):
+                refresh_limit = (refresh_limit.days * 24 * 3600 + refresh_limit.seconds)
+            refresh_timestamp = orig_iat + float(refresh_limit)
+            now_timestamp = timegm(datetime.utcnow().utctimetuple())
+            if now_timestamp > refresh_timestamp:
+                data = {
+                    'msg': gettext('Refresh has expired.')
+                }
+            else:
+                new_orig_iat = now_timestamp
+                exp_limit = api_settings.JWT_EXPIRATION_DELTA
+                if isinstance(exp_limit, timedelta):
+                    exp_limit = (exp_limit.days * 24 * 3600 + exp_limit.seconds)
+                expiration_timestamp = orig_iat + int(exp_limit)
+                if expiration_timestamp - new_orig_iat <= self.time_diff.seconds:
+                    new_exp = new_orig_iat + int(exp_limit)
+                    payload['orig_iat'] = new_orig_iat
+                    payload['exp'] = new_exp
+                    new_token = encoder(payload)
+                    data = {
+                        "token": new_token,
+                        "status": 101
+                    }
+                    print "new token:{}".format(new_token)
+                else:
+                    data = {
+                        "token": self.token,
+                        "status": 100
+                    }
+        else:
+            data = {
+                'msg': gettext('orig_iat field is required.')
+            }
+        return eval(json.dumps(data))
+
+
+def auth_if_refresh_required(view):
+    def decorator(request, *args, **kwargs):
+        token = request.META.get("HTTP_AUTHORIZATION").split()[1]
+        refresh_token = TokenRefresh(token).refresh_token()
+        try:
+            if refresh_token:
+                request.META["NEW_TOKEN"] = refresh_token
+                return view(request, *args, **kwargs)
+        except ValueError:
+            pass
+
+    return decorator

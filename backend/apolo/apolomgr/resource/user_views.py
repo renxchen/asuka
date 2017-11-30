@@ -9,6 +9,7 @@ from django.utils.translation import gettext
 from django.http import HttpResponse
 from rest_framework.response import Response
 
+
 class UserViewSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):
         super(UserViewSet, self).__init__(**kwargs)
@@ -23,6 +24,7 @@ class UserViewSet(viewsets.ViewSet):
     def get(self):
         try:
             print 'get'
+            new_token = self.request.META.get("NEW_TOKEN")
             queryset = User.objects.all()
             if 'name' in self.request.GET.keys():
                 name = self.request.GET['name']
@@ -30,7 +32,8 @@ class UserViewSet(viewsets.ViewSet):
                     queryset = User.objects.filter(name=name)
             serializer = UserSerializer(queryset, many=True)
             # return Response(serializer.data)
-            return Response(serializer.data)
+            # return Response(serializer.data)
+            return Response({'data': serializer.data, 'new_token': new_token})
         except User.DoesNotExist:
             return Response(status=404)
 
@@ -38,6 +41,10 @@ class UserViewSet(viewsets.ViewSet):
         print 'post'
         name = ''
         mail = ''
+        # token = self.request.META.get("HTTP_AUTHORIZATION").split()[1]
+        # r = Token(token)
+        # new_token = r.refresh_token()
+        # print new_token
         if 'name' in self.request.GET.keys():
             name = self.request.GET['name']
         if 'mail' in self.request.GET.keys():

@@ -17,7 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
 # from backend.apolo.apolomgr.resource.user_views import UserViewSet
-from backend.apolo.apolomgr.resource import resource_api
+from backend.apolo.apolomgr import resource_api
 from backend.apolo.apolomgr.resource.helloworld import my_view
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_jwt.views import refresh_jwt_token
