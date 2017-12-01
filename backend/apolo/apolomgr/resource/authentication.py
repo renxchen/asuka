@@ -8,6 +8,22 @@ from backend.apolo.tools import constants
 from rest_framework import permissions
 from datetime import datetime, timedelta
 from calendar import timegm
+from backend.apolo.tools.common import api_return
+from backend.apolo.tools.exception import exception_handler
+
+import logging
+from logging import Formatter
+from logging.handlers import TimedRotatingFileHandler
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+formatter = Formatter(
+    fmt='%(asctime)s - %(name)s - %(levelname)s - %(thread)d - %(filename)s - %(threadName)s - %(funcName)s - %(message)s',
+    datefmt='%Y/%m/%d %p %I:%M:%S')
+file_handler = TimedRotatingFileHandler(constants.LOG_PATH, when="D", interval=1, backupCount=5)
+file_handler.level = logging.INFO
+file_handler.formatter = formatter
+logger.addHandler(file_handler)
 
 payloader = api_settings.JWT_PAYLOAD_HANDLER
 encoder = api_settings.JWT_ENCODE_HANDLER
@@ -21,10 +37,6 @@ class IsAuthenticated(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated()
-
-
-class ResponseError(Exception):
-    pass
 
 
 class token_mgr(object):
@@ -99,39 +111,47 @@ class Auth(object):
         self.request = request
 
     def post(self):
-        body = self.request.body
-        username = eval(body)['username']
-        password = eval(body)['password']
-        if not username or not password:
-            return HttpResponse({'message': constants.NO_USERNAME_OR_PASSWORD})
-        user_obj = auth.authenticate(username=username, password=password)
-        if not user_obj:
-            data = {'message': constants.USER_AND_PASSWD_INCORRECT}
-            return HttpResponse(json.dumps(data))
-        elif not user_obj.is_active:
-            data = {'message': constants.USER_DISABLED}
-            return HttpResponse(json.dumps(data))
-        else:
-            auth.login(self.request, user_obj)
-            if user_obj.is_superuser:
-                role = 'superuser'
-            elif user_obj.is_staff:
-                role = 'admin'
+        try:
+            body = self.request.body
+            username = eval(body)[constants.USERNAME]
+            password = eval(body)[constants.PASSWORD]
+            if not username or not password:
+                logger.info(constants.NO_USERNAME_OR_PASSWORD_FONUD_ERROR % (username, password))  ###Logger###
+                data = {constants.MESSAGE: constants.NO_USERNAME_OR_PASSWORD}
+                return api_return(message=eval(json.dumps(data)))
+            user_obj = auth.authenticate(username=username, password=password)
+            if not user_obj:
+                logger.info(constants.LOGIN_FAILED_ERROR % (username, password))  ###Logger###
+                data = {constants.MESSAGE: constants.USER_AND_PASSWD_INCORRECT}
+                return api_return(message=eval(json.dumps(data)))
+            elif not user_obj.is_active:
+                logger.info(constants.USERNAME_INACTIVE_ERROR % username)  ###Logger###
+                data = {constants.MESSAGE: constants.USER_DISABLED}
+                return api_return(message=eval(json.dumps(data)))
             else:
-                role = 'staff'
-            token = encoder(payloader(user_obj))
-            data = {
-                "username": username,
-                "role": role,
-                "token": token
-            }
-            return HttpResponse(json.dumps(data))
+                logger.info(constants.LOGIN_SUCCESSFUL % (username, password))  ###Logger###
+                auth.login(self.request, user_obj)
+                if user_obj.is_superuser:
+                    role = constants.SUPERUSER
+                elif user_obj.is_staff:
+                    role = constants.ADMIN
+                else:
+                    role = constants.STAFF
+                token = encoder(payloader(user_obj))
+                data = {
+                    constants.USERNAME: username,
+                    constants.ROLE: role,
+                    constants.TOKEN: token
+                }
+                return api_return(data=eval(json.dumps(data)))
+        except Exception, e:
+            return exception_handler(e)
 
 
 class TokenRefresh(object):
     def __init__(self, token):
         self.token = token
-        self.time_diff = timedelta(seconds=120)
+        self.time_diff = timedelta(seconds=constants.TIMEDELTA)
 
     def refresh_token(self):
         payload = decoder(self.token)
@@ -144,8 +164,9 @@ class TokenRefresh(object):
             now_timestamp = timegm(datetime.utcnow().utctimetuple())
             if now_timestamp > refresh_timestamp:
                 data = {
-                    'msg': gettext('Refresh has expired.')
+                    constants.MESSAGE: constants.REFRESH_EXPIRED
                 }
+                logger.info(constants.REFRESH_EXPIRED)
             else:
                 new_orig_iat = now_timestamp
                 exp_limit = api_settings.JWT_EXPIRATION_DELTA
@@ -158,19 +179,20 @@ class TokenRefresh(object):
                     payload['exp'] = new_exp
                     new_token = encoder(payload)
                     data = {
-                        "token": new_token,
-                        "status": 101
+                        constants.TOKEN: new_token,
+                        constants.STATUS: constants.REFRESH_CODE
                     }
                     print "new token:{}".format(new_token)
                 else:
                     data = {
-                        "token": self.token,
-                        "status": 100
+                        constants.TOKEN: self.token,
+                        constants.STATUS: constants.NO_REFRESH_CODE
                     }
         else:
             data = {
-                'msg': gettext('orig_iat field is required.')
+                constants.MESSAGE: gettext(constants.ORIG_IAT_REQUIRED)
             }
+            logger.info(constants.ORIG_IAT_REQUIRED)
         return eval(json.dumps(data))
 
 
@@ -180,7 +202,7 @@ def auth_if_refresh_required(view):
         refresh_token = TokenRefresh(token).refresh_token()
         try:
             if refresh_token:
-                request.META["NEW_TOKEN"] = refresh_token
+                request.META[constants.NEW_TOKEN] = refresh_token
                 return view(request, *args, **kwargs)
         except ValueError:
             pass
