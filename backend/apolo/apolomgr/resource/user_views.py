@@ -45,7 +45,8 @@ class UserViewSet(viewsets.ViewSet):
             # contacts.start_index()  # The 1-based index of the first item on this page
             # contacts.end_index()
             return Response({'data': contacts.object_list, 'new_token': new_token, 'num_page': paginator.num_pages,
-                             'page_range': list(paginator.page_range), 'page_has_next': contacts.has_next()})
+                             'page_range': list(paginator.page_range), 'page_has_next': contacts.has_next(),
+                             'current_page_num': contacts.number})
         except Exception, e:
             # return Response(status=404)
             return exception_handler(e)
