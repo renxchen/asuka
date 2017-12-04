@@ -5,6 +5,9 @@ from backend.apolo.tools import constants
 import logging
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
+from django.core.paginator import EmptyPage, PageNotAnInteger
+import traceback
+
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -18,7 +21,15 @@ logger.addHandler(file_handler)
 
 
 def exception_handler(e):
-    if isinstance(KeyError, type(type(e))):
+    if 'KeyError' in repr(e):
         logger.info("Failed, KeyError occurred")  ###Logger###
         data = {'message': constants.KEY_ERROR % e}
+        return api_return(data=eval(json.dumps(data)))
+    if 'PageNotAnInteger' in repr(e):
+        logger.info("That page number is not an integer")  ###Logger###
+        data = {'message': constants.PAGE_NOT_INTEGER}
+        return api_return(data=eval(json.dumps(data)))
+    if 'EmptyPage' in repr(e):
+        logger.info("That page number is less than 1")  ###Logger###
+        data = {'message': constants.EMPTY_PAGE}
         return api_return(data=eval(json.dumps(data)))

@@ -8,6 +8,8 @@ from rest_framework import viewsets
 from django.utils.translation import gettext
 from django.http import HttpResponse
 from rest_framework.response import Response
+from django.core.paginator import Paginator
+from backend.apolo.tools.exception import exception_handler
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -25,17 +27,28 @@ class UserViewSet(viewsets.ViewSet):
         try:
             print 'get'
             new_token = self.request.META.get("NEW_TOKEN")
+            page = self.request.GET.get('page')
+            max_size = self.request.GET.get('max_size')
             queryset = User.objects.all()
             if 'name' in self.request.GET.keys():
                 name = self.request.GET['name']
                 if name:
                     queryset = User.objects.filter(name=name)
             serializer = UserSerializer(queryset, many=True)
-            # return Response(serializer.data)
-            # return Response(serializer.data)
-            return Response({'data': serializer.data, 'new_token': new_token})
-        except User.DoesNotExist:
-            return Response(status=404)
+            paginator = Paginator(serializer.data, max_size)
+            contacts = paginator.page(page)
+            # contacts.has_next()
+            # contacts.has_previous()
+            # contacts.has_other_pages()
+            # contacts.next_page_number()
+            # contacts.previous_page_number()
+            # contacts.start_index()  # The 1-based index of the first item on this page
+            # contacts.end_index()
+            return Response({'data': contacts.object_list, 'new_token': new_token, 'num_page': paginator.num_pages,
+                             'page_range': list(paginator.page_range), 'page_has_next': contacts.has_next()})
+        except Exception, e:
+            # return Response(status=404)
+            return exception_handler(e)
 
     def post(self):
         print 'post'
