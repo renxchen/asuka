@@ -117,17 +117,17 @@ class Auth(object):
             password = eval(body)[constants.PASSWORD]
             if not username or not password:
                 logger.info(constants.NO_USERNAME_OR_PASSWORD_FONUD_ERROR % (username, password))  ###Logger###
-                data = {constants.MESSAGE: constants.NO_USERNAME_OR_PASSWORD}
-                return api_return(message=eval(json.dumps(data)))
+                return api_return(
+                    message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.NO_USERNAME_OR_PASSWORD})
             user_obj = auth.authenticate(username=username, password=password)
             if not user_obj:
                 logger.info(constants.LOGIN_FAILED_ERROR % (username, password))  ###Logger###
-                data = {constants.MESSAGE: constants.USER_AND_PASSWD_INCORRECT}
-                return api_return(message=eval(json.dumps(data)))
+                return api_return(
+                    message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.USER_AND_PASSWD_INCORRECT})
             elif not user_obj.is_active:
                 logger.info(constants.USERNAME_INACTIVE_ERROR % username)  ###Logger###
-                data = {constants.MESSAGE: constants.USER_DISABLED}
-                return api_return(message=eval(json.dumps(data)))
+                return api_return(
+                    message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.USER_DISABLED})
             else:
                 logger.info(constants.LOGIN_SUCCESSFUL % (username, password))  ###Logger###
                 auth.login(self.request, user_obj)
@@ -143,7 +143,8 @@ class Auth(object):
                     constants.ROLE: role,
                     constants.TOKEN: token
                 }
-                return api_return(data=eval(json.dumps(data)))
+                return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
+                                  data=eval(json.dumps(data)))
         except Exception, e:
             return exception_handler(e)
 

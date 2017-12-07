@@ -13,7 +13,9 @@ LOG_PATH = 'apolo/logs/logger_authentication.log'
 STATUS = 'status'
 REFRESH_CODE = 101
 NO_REFRESH_CODE = 100
-SUCCESS = 'SUCCESS'
+SUCCESS = 'Success'
+TRUE = 'True'
+FALSE = 'False'
 #########################################
 # API parameters define
 #########################################
@@ -31,10 +33,10 @@ TIMEDELTA = 120
 #########################################
 # API information define
 #########################################
-NO_USERNAME_OR_PASSWORD = "NO_USERNAME_OR_PASSWORD"
-USER_AND_PASSWD_INCORRECT = "USER_AND_PASSWD_INCORRECT"
-USER_DISABLED = "USER_DISABLED"
-USER_LOGOUT_SUCCESSFUL = "USER_LOGOUT_SUCCESSFUL"
+NO_USERNAME_OR_PASSWORD = "No user or password found."
+USER_AND_PASSWD_INCORRECT = "User or password is incorrect."
+USER_DISABLED = "User is disabled."
+USER_LOGOUT_SUCCESSFUL = "User logout successful."
 #########################################
 # API log or exception define
 #########################################
@@ -47,3 +49,8 @@ NO_USERNAME_OR_PASSWORD_FONUD_ERROR = "No username or password found, username i
 LOGIN_FAILED_ERROR = "Login failed with incorrect username %s or password %s."
 USERNAME_INACTIVE_ERROR = "Username %s is inactive."
 LOGIN_SUCCESSFUL = "Login successful with username %s and password %s."
+#########################################
+# API Collection policy
+#########################################
+SPLIT_RULE_SPACE = 'space'
+SPACE_INSTEAD = '@@'
