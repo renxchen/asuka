@@ -1,8 +1,7 @@
+from rest_framework.permissions import IsAuthenticated
 from backend.apolo.apolomgr.resource import authentication
 from backend.apolo.apolomgr.resource import user_views
-import json
 from django.http import HttpResponse
-from backend.apolo.apolomgr.resource.authentication import IsAuthenticated
 from rest_framework.decorators import permission_classes, api_view
 import traceback
 from backend.apolo.apolomgr.resource.authentication import auth_if_refresh_required
@@ -29,7 +28,7 @@ def run_request_method(resource_object):
 @api_view(["POST"])
 def login(request):
     resource_object = authentication.Auth(request=request)
-    return run_request_method(resource_object)
+    return HttpResponse(run_request_method(resource_object))
 
 
 @api_view(['POST', "GET", "DELETE", "PUT"])
@@ -37,4 +36,4 @@ def login(request):
 @auth_if_refresh_required
 def api_users(request):
     resource_object = user_views.UserViewSet(request=request)
-    return run_request_method(resource_object)
+    return HttpResponse(run_request_method(resource_object))

@@ -10,6 +10,8 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from django.core.paginator import Paginator
 from backend.apolo.tools.exception import exception_handler
+from backend.apolo.tools.common import api_return
+from backend.apolo.tools import constants
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -44,10 +46,14 @@ class UserViewSet(viewsets.ViewSet):
             # contacts.previous_page_number()
             # contacts.start_index()  # The 1-based index of the first item on this page
             # contacts.end_index()
-            return Response({'data': contacts.object_list, 'new_token': new_token, 'num_page': paginator.num_pages,
-                             'page_range': list(paginator.page_range), 'page_has_next': contacts.has_next(),
-                             'current_page_num': contacts.number})
+            data = {'data': contacts.object_list, 'new_token': new_token, 'num_page': paginator.num_pages,
+                    'page_range': list(paginator.page_range), 'page_has_next': contacts.has_next(),
+                    'current_page_num': contacts.number}
+            return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
+                              data=data)
         except Exception, e:
+            import traceback
+            print traceback.format_exc(e)
             # return Response(status=404)
             return exception_handler(e)
 
@@ -68,7 +74,7 @@ class UserViewSet(viewsets.ViewSet):
         serializer = UserSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return HttpResponse(json.dumps(serializer.data))
         else:
             return HttpResponse(json.dumps(serializer.errors))
 
@@ -88,7 +94,7 @@ class UserViewSet(viewsets.ViewSet):
         serializer = UserSerializer(queryset, data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return HttpResponse(json.dumps(serializer.data))
         else:
             return HttpResponse(json.dumps(serializer.errors))
 

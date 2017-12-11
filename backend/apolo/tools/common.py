@@ -1,5 +1,6 @@
 from rest_framework.response import Response
-
+from django.http import HttpResponse, response
+import simplejson as json
 
 def api_return(status=200, message='', data=''):
     response = \
@@ -7,5 +8,4 @@ def api_return(status=200, message='', data=''):
             'meta': message,
             'data': {} if not data else data
         }
-
-    return Response(data=response, status=status)
+    return json.dumps(response)

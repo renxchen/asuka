@@ -1,11 +1,9 @@
 import requests
-from django.http import HttpResponse, response
 import simplejson as json
 from django.contrib import auth
 from django.utils.translation import gettext
 from rest_framework_jwt.settings import api_settings
 from backend.apolo.tools import constants
-from rest_framework import permissions
 from datetime import datetime, timedelta
 from calendar import timegm
 from backend.apolo.tools.common import api_return
@@ -28,15 +26,6 @@ logger.addHandler(file_handler)
 payloader = api_settings.JWT_PAYLOAD_HANDLER
 encoder = api_settings.JWT_ENCODE_HANDLER
 decoder = api_settings.JWT_DECODE_HANDLER
-
-
-class IsAuthenticated(permissions.BasePermission):
-    """
-    Allows access only to authenticated users.
-    """
-
-    def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated()
 
 
 class token_mgr(object):
