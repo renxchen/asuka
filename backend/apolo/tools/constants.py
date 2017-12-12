@@ -53,4 +53,8 @@ LOGIN_SUCCESSFUL = "Login successful with username %s and password %s."
 # API Collection policy
 #########################################
 SPLIT_RULE_SPACE = 'space'
-SPACE_INSTEAD = '@@'
+SPLIT_RULE_COMMA = 'comma'
+SPLIT_RULE_SLASH = 'slash'
+SPLIT_RULE_OTHER = 'other'
+INSTEAD = '@@'
+NO_MATCH_EXTRACT_DATA_REGEXP = 'Can not match the provided regular Expression.'
