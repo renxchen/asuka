@@ -21,7 +21,7 @@ class Render(object):
         self.colors3 = ["#F5B7B1", "#AED6F1", "#D7BDE2", "#F9E79F", "#E5E7E9"]
 
     def render(self):
-        print self.kwargs
+        return self.kwargs
         # return HttpResponse(self.kwargs)
 
 
@@ -59,6 +59,8 @@ class DataExtractPolicy(object):
         }
 
     def x_offset_space_extract(self):
+        basic_character = ''
+        extract_data = []
         # if find the basic character, False is not find, True is find.
         basic_c_find_flag = False
         # calculate if match the offset
@@ -75,6 +77,7 @@ class DataExtractPolicy(object):
             pattern = re.compile(self.render_b_c)
             m = re.search(pattern, new_list[i])
             if m is not None:
+                basic_character = m.group()
                 # find the basic character
                 basic_c_find_flag = True
                 # record the index(position) of the basic character
@@ -89,6 +92,11 @@ class DataExtractPolicy(object):
                 pattern = re.compile(self.extract_regexp)
                 m = re.search(pattern, new_list[i])
                 if m is not None:
+                    if m.groups():
+                        for per_val in m.groups():
+                            extract_data.append(per_val)
+                    else:
+                        extract_data = m.group()
                     # record the index(position) of the extract data
                     result.append(i)
                 else:
@@ -98,9 +106,11 @@ class DataExtractPolicy(object):
             result = [len(new_list) - 1 - result[0],
                       result[-1] if isinstance(result[-1], str) else len(new_list) - 1 - result[-1]]
         self.res['basic_character_index'] = result[0]
-        self.res['basic_character'] = ''.join(self.raw_data_list).split()[result[0]].replace(constants.INSTEAD, ' ')
+        # self.res['basic_character'] = ''.join(self.raw_data_list).split()[result[0]].replace(constants.INSTEAD, ' ')
+        self.res['basic_character'] = basic_character.replace(constants.INSTEAD, ' ')
         self.res['extract_data_index'] = result[-1]
-        self.res['extract_data'] = ''.join(self.raw_data_list).split()[result[-1]]
+        # self.res['extract_data'] = ''.join(self.raw_data_list).split()[result[-1]]
+        self.res['extract_data'] = extract_data
         return self.res
 
     def x_offset_comma_extract(self):
@@ -239,7 +249,7 @@ def test():
                 SBC Service "global"
                 Max Term per Context   = 68
                 Available Bandwidth    = Unlimited
-                Available Flows        = 60786
+                Available Flows        = 60786Unlimited66666
                 Available Packet Rate  = Unlimited
                 Active Media Flows     = 26
                 Peak Media Flows       = 66
@@ -278,7 +288,7 @@ def test():
         'x_offset': -1,
         'y_offset': -3,
         'expect_line_number': 6,
-        'extract_regexp': '\d+',
+        'extract_regexp': '(\d+)[A-Z][a-z]+(\d+)',
         'start_line': 1,
         'end_line': 6,
         'deep': None,
