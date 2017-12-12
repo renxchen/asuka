@@ -1,6 +1,28 @@
 import re
 from backend.apolo.tools import constants
+from django.http import HttpResponse
 import simplejson as json
+
+
+class Render(object):
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+        self.data = kwargs['data']
+        self.start_line = kwargs['start_line']
+        self.end_line = kwargs['end_line']
+        self.block_start_characters = kwargs['block_start_characters']
+        self.block_end_characters = kwargs['block_end_characters']
+        self.basic_character_index = kwargs['basic_character_index']
+        self.basic_character = kwargs['basic_character']
+        self.extract_data_index = kwargs['extract_data_index']
+        self.extract_data = kwargs['extract_data']
+        self.colors1 = ["#FDEDEC", "#EBF5FB", "#F5EEF8", "#FEF9E7", "#F8F9F9"]
+        self.colors2 = ["#FADBD8", "#D6EAF8", "#EBDEF0", "#FCF3CF", "#F2F3F4"]
+        self.colors3 = ["#F5B7B1", "#AED6F1", "#D7BDE2", "#F9E79F", "#E5E7E9"]
+
+    def render(self):
+        print self.kwargs
+        # return HttpResponse(self.kwargs)
 
 
 class DataExtractPolicy(object):
@@ -8,23 +30,32 @@ class DataExtractPolicy(object):
         # raw data
         self.data = data
         self.extract_policy = extract_policy
+        self.rule_type = extract_policy['rule_type']
         self.start = extract_policy['start_line']
         self.end = extract_policy['end_line']
         self.x_offset = extract_policy['x_offset']
         self.y_offset = extract_policy['y_offset']
+        self.split_characters = self.extract_policy['split_characters']
         self.expect_line_number = extract_policy['expect_line_number']
+        self.block_start_characters = extract_policy['block_start_characters']
+        self.block_end_characters = extract_policy['block_end_characters']
         self.basic_c = extract_policy['basic_characters']
         self.extract_regexp = extract_policy['extract_regexp']
-        # target block
+        # raw data of target block
         self.raw_data_list = self.data.split('\n')[self.start:self.end + 1]
         self.instead = constants.INSTEAD
         self.render_b_c = self.instead.join(self.basic_c.split())
-        # result dict
+        # return dic
         self.res = {
-            'start_line': self.start,
-            'end_line': self.end,
-            'basic_character_index': None,
-            'extract_data_index': None
+            'data': self.data,
+            'start_line': self.start,  # the starting position of a line
+            'end_line': self.end,  # the ending position of a line
+            'block_start_characters': self.block_start_characters,  # the starting character of blcok
+            'block_end_characters': self.block_end_characters,  # the ending character of blcok
+            'basic_character_index': None,  # the basic character position
+            'basic_character': None,  # the basic character
+            'extract_data_index': None,  # the extract data position
+            'extract_data': None  # the extract data
         }
 
     def x_offset_space_extract(self):
@@ -38,8 +69,6 @@ class DataExtractPolicy(object):
             if self.basic_c in self.raw_data_list[i]:
                 self.raw_data_list[i] = self.raw_data_list[i].replace(self.basic_c, self.render_b_c)
         new_list = ''.join(self.raw_data_list).split()
-        # print 'basic character: ', new_list[109]
-        # print 'extract data: ', new_list[93]
         if self.x_offset < 0:
             new_list.reverse()
         for i in range(len(new_list)):
@@ -69,8 +98,9 @@ class DataExtractPolicy(object):
             result = [len(new_list) - 1 - result[0],
                       result[-1] if isinstance(result[-1], str) else len(new_list) - 1 - result[-1]]
         self.res['basic_character_index'] = result[0]
+        self.res['basic_character'] = ''.join(self.raw_data_list).split()[result[0]].replace(constants.INSTEAD, ' ')
         self.res['extract_data_index'] = result[-1]
-        print self.res
+        self.res['extract_data'] = ''.join(self.raw_data_list).split()[result[-1]]
         return self.res
 
     def x_offset_comma_extract(self):
@@ -112,8 +142,6 @@ class DataExtractPolicy(object):
                     new_list = ''.join(self.raw_data_list[:basic_c_line_num + 1]).split()
                     new_start_c_list = ''.join(self.raw_data_list[:target_line_num + 1]).split()
 
-        print ''.join(self.raw_data_list).split()[22], 111
-        print ''.join(self.raw_data_list).split()[13], 222
         for i in range(len(new_list)):
             pattern = re.compile(self.render_b_c)
             m = re.search(pattern, new_list[i])
@@ -142,8 +170,9 @@ class DataExtractPolicy(object):
                     result.append(constants.NO_MATCH_EXTRACT_DATA_REGEXP)
                 break
         self.res['basic_character_index'] = result[0]
+        self.res['basic_character'] = ''.join(self.raw_data_list).split()[result[0]].replace(constants.INSTEAD, ' ')
         self.res['extract_data_index'] = result[-1]
-        print self.res
+        self.res['extract_data'] = ''.join(self.raw_data_list).split()[result[-1]]
         return self.res
 
     def y_offset_comma_extract(self):
@@ -171,14 +200,11 @@ class DataExtractPolicy(object):
             else:
                 pass
         self.res['extract_data_index'] = extract_data_index
-        print self.res
         return self.res
 
     def expect_line_or_all_extract(self):
         extract_data_index = []
         new_list = ''.join(self.raw_data_list).split()
-        print new_list[0]
-        print new_list[14]
         for i in range(len(new_list)):
             if new_list[i].isspace():
                 continue
@@ -187,21 +213,18 @@ class DataExtractPolicy(object):
             if i == len(new_list) - 1:
                 extract_data_index.append(i)
         self.res['extract_data_index'] = extract_data_index
-        print self.res
         return self.res
 
-    def comma(self):
-        s_rule = None
-        split_c = self.extract_policy['split_characters']
-
-        if split_c is constants.SPLIT_RULE_SPACE:
-            s_rule = None
-        if split_c is constants.SPLIT_RULE_COMMA:
-            s_rule = ','
-        if split_c is constants.SPLIT_RULE_SLASH:
-            s_rule = '/'
-        if split_c is constants.SPLIT_RULE_OTHER:
-            instead = constants.OTHER_INSTEAD
+    def dispatch(self):
+        # 1: x_offset_space_extract, 2:y_offset_space_extract, 3:regexp_extract,4:expect_line_or_all_extract
+        if self.rule_type == 1:
+            return self.x_offset_space_extract()
+        if self.rule_type == 2:
+            return self.y_offset_space_extract()
+        if self.rule_type == 3:
+            return self.regexp_extract()
+        if self.rule_type == 4:
+            return self.expect_line_or_all_extract()
 
 
 def test():
@@ -212,17 +235,17 @@ def test():
     #                  Available Flows     = 70495509
     #                  Received 0 broadcasts (0 IP multicasts)
     # '''
-    # data = '''ROUTER#show sbc global dbe media-stats
-    #             SBC Service "global"
-    #             Max Term per Context   = 68
-    #             Available Bandwidth    = Unlimited
-    #             Available Flows        = 60786
-    #             Available Packet Rate  = Unlimited
-    #             Active Media Flows     = 26
-    #             Peak Media Flows       = 66
-    #             Total Media Flows      = 108112
-    #             Active Signaling Flows = 4692
-    # '''
+    data = '''ROUTER#show sbc global dbe media-stats
+                SBC Service "global"
+                Max Term per Context   = 68
+                Available Bandwidth    = Unlimited
+                Available Flows        = 60786
+                Available Packet Rate  = Unlimited
+                Active Media Flows     = 26
+                Peak Media Flows       = 66
+                Total Media Flows      = 108112
+                Active Signaling Flows = 4692
+    '''
     # data = '''ROUTER#dir harddisk:
     #             278536  -rw-     3832112   Aug 5 2016 14:34:58 +09:00  asr1000-rommon.154-2r.S.pkg
     #             278537  -rw-     1255728   Aug 8 2016 22:29:22 +09:00  asr1000-rommon.122-33r.XND1.pkg
@@ -238,37 +261,58 @@ def test():
     #         FF3E::9800:0                            Port-channel1.1325 1d22h     not used
     #         FF3E::9800:0                            Port-channel1.1339 10:11:51  not used
     # '''
-    data = '''ROUTER#show run
-                Building configuration...
-
-                Current configuration : 4174 bytes
-                !
-                version 12.2
-                service timestamps debug datetime msec1
-                service timestamps log datetime msec
-                platform shell
-    '''
+    # data = '''ROUTER#show run
+    #             Building configuration...
+    #
+    #             Current configuration : 4174 bytes
+    #             !
+    #             version 12.2
+    #             service timestamps debug datetime msec1
+    #             service timestamps log datetime msec
+    #             platform shell
+    # '''
     extract_policy = {
+        'rule_type': 1,
         'basic_characters': 'Available Packet Rate',
         'split_characters': 'space',
         'x_offset': -1,
         'y_offset': -3,
         'expect_line_number': 6,
-        'extract_regexp': '\w+',
+        'extract_regexp': '\d+',
         'start_line': 1,
-        'end_line': 6
+        'end_line': 6,
+        'deep': None,
+        'block_start_characters': None,
+        'block_end_characters': None,
+        'is_include_end_characters': False,
+        'block_start_offset': None,
+        'block_end_offset': None,
+        'is_serial': False
+
     }
+    # input dict
     # extract_policy = {
-    #     'basic_characters': 'Available Flows',
-    #     'split_characters': 'comma',
-    #     'x_offset': 2,
-    #     'y_offset': 2,
-    #     'extract_regexp': '\d+',
-    #     'start_line': 0,
-    #     'end_line': 5,
+    #     'rule_type': 1,
+    #     'basic_characters': None,
+    #     'split_characters': None,
+    #     'x_offset': None,
+    #     'y_offset': None,
+    #     'expect_line_number': None,
+    #     'extract_regexp': None,
+    #     'start_line': None,
+    #     'end_line': None,
+    #     'deep': 0,
+    #     'block_start_characters': None,
+    #     'block_end_characters': None,
+    #     'is_include_end_characters': False,
+    #     'block_start_offset': None,
+    #     'block_end_offset': None,
+    #     'is_serial': False
     # }
     d = DataExtractPolicy(data, **extract_policy)
-    d.expect_line_or_all_extract()
+    r = d.dispatch()
+    render = Render(**r)
+    print render.render()
 
 
-test()
+# test()
