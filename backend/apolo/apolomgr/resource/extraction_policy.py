@@ -1,3 +1,15 @@
+#!/usr/bin/env python
+
+'''
+
+@author: kimli
+@contact: kimli@cisco.com
+@file: extraction_policy.py
+@time: 2017/12/14 14:07
+@desc:
+
+'''
+
 import re
 from backend.apolo.tools import constants
 from django.http import HttpResponse
