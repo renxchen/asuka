@@ -1,5 +1,4 @@
 Django==1.11
-django-filter==1.1.0
 djangorestframework==3.7.3
 djangorestframework-jwt==1.11.0
 MySQL-python==1.2.5
