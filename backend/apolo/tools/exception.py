@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 formatter = Formatter(
     fmt='%(asctime)s - %(name)s - %(levelname)s - %(thread)d - %(filename)s - %(threadName)s - %(funcName)s - %(message)s',
     datefmt='%Y/%m/%d %p %I:%M:%S')
-file_handler = TimedRotatingFileHandler('apolo/logs/logger_authentication.log', when="D", interval=1, backupCount=5)
+file_handler = TimedRotatingFileHandler(constants.LOG_PATH, when="D", interval=1, backupCount=5)
 file_handler.level = logging.INFO
 file_handler.formatter = formatter
 logger.addHandler(file_handler)
@@ -32,4 +32,8 @@ def exception_handler(e):
     if 'EmptyPage' in repr(e):
         logger.info("That page number is less than 1")  ###Logger###
         data = {'message': constants.EMPTY_PAGE}
+        return api_return(data=eval(json.dumps(data)))
+    if 'IndexError' in repr(e):
+        logger.info("List index out of range")  ###Logger###
+        data = {'message': "List index out of range"}
         return api_return(data=eval(json.dumps(data)))

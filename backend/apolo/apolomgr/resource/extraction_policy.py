@@ -44,7 +44,7 @@ class DataExtractPolicy(object):
         # raw data of target block
         self.raw_data_list = self.data.split('\n')[self.start:self.end + 1]
         self.instead = constants.INSTEAD
-        self.render_b_c = self.instead.join(self.basic_c.split())
+        self.render_b_c = ''
         # return dic
         self.res = {
             'data': self.data,
@@ -59,19 +59,29 @@ class DataExtractPolicy(object):
         }
 
     def x_offset_space_extract(self):
+        # the value of basic character
         basic_character = ''
+        # the value of extract data
         extract_data = []
         # if find the basic character, False is not find, True is find.
         basic_c_find_flag = False
         # calculate if match the offset
         count = 0
+        # record the index(position)
         result = []
-        # find the basic character and replace the basic character as the reconstructed character
+        # find the basic character and replace the basic character as the <@@> reconstructed character
         for i in range(len(self.raw_data_list)):
-            if self.basic_c in self.raw_data_list[i]:
-                self.raw_data_list[i] = self.raw_data_list[i].replace(self.basic_c, self.render_b_c)
-        new_list = ''.join(self.raw_data_list).split()
+            pattern = re.compile(self.basic_c)
+            m = re.search(pattern, self.raw_data_list[i])
+            if m is not None:
+                basic_character = m.group()
+                # replace the space in basic character to @@
+                self.render_b_c = self.instead.join(basic_character.split())
+                self.raw_data_list[i] = self.raw_data_list[i].replace(basic_character, self.render_b_c)
+        # split the raw data that combine by ''
+        new_list = ''.join(self.raw_data_list).split(' ')
         if self.x_offset < 0:
+            # reverse the list
             new_list.reverse()
         for i in range(len(new_list)):
             pattern = re.compile(self.render_b_c)
@@ -83,7 +93,7 @@ class DataExtractPolicy(object):
                 # record the index(position) of the basic character
                 result.append(i)
                 continue
-            if new_list[i].isspace():
+            if new_list[i].isspace() or new_list[i] == '':
                 continue
             if basic_c_find_flag and new_list[i] is not '':
                 count += 1
@@ -105,12 +115,16 @@ class DataExtractPolicy(object):
         if self.x_offset < 0:
             result = [len(new_list) - 1 - result[0],
                       result[-1] if isinstance(result[-1], str) else len(new_list) - 1 - result[-1]]
+        # the position of basic character
         self.res['basic_character_index'] = result[0]
-        # self.res['basic_character'] = ''.join(self.raw_data_list).split()[result[0]].replace(constants.INSTEAD, ' ')
+        # the value of basic character
         self.res['basic_character'] = basic_character.replace(constants.INSTEAD, ' ')
+        # the position of extract data
         self.res['extract_data_index'] = result[-1]
-        # self.res['extract_data'] = ''.join(self.raw_data_list).split()[result[-1]]
+        # the value of extract data
         self.res['extract_data'] = extract_data
+        # print ''.join(self.raw_data_list).split(' ')[38]
+        # print ''.join(self.raw_data_list).split(' ')[22]
         return self.res
 
     def x_offset_comma_extract(self):
@@ -121,68 +135,92 @@ class DataExtractPolicy(object):
 
     def y_offset_space_extract(self):
         # if find the basic character, False is not find, True is find.
-        basic_c_find_flag = False
+        basic_character_line_find_flag = False
         # calculate if match the offset
         count = 0
-        basic_c_line_num = 0
-        basic_c_len = 0
-        start_characters = ''
+        basic_character_find_flag = False
+        # value of basic character
+        basic_character = ''
+        # value of extract data
+        extract_data = []
+        # the line number of the basic character belong
+        basic_character_line_num = 0
+        start_characters_line = ''
         result = []
         new_list = []
         # destination line num in the raw data
         target_line_num = 0
-        new_start_c_list = []
+        new_start_character_list = []
+        # new_list = ''.join(self.raw_data_list).split(' ')
         # find the basic character and replace the basic character to the reconstructed character
         for i in range(len(self.raw_data_list)):
-            if self.basic_c in self.raw_data_list[i]:
-                basic_c_find_flag = True
-                # find the line number that basic character is belong to
-                basic_c_line_num = i
-                self.raw_data_list[i] = self.raw_data_list[i].replace(self.basic_c, self.render_b_c)
+            pattern = re.compile(self.basic_c)
+            m = re.search(pattern, self.raw_data_list[i])
+            if m is not None:
+                basic_character = m.group()
+                # find the line that basic character
+                basic_character_line_find_flag = True
+                # find the line number for the basic character
+                basic_character_line_num = i
+                self.render_b_c = self.instead.join(basic_character.split())
+                # replace the space in basic character to @@
+                self.raw_data_list[i] = self.raw_data_list[i].replace(basic_character, self.render_b_c)
                 # destination line num
-                target_line_num = basic_c_line_num + self.y_offset
+                target_line_num = basic_character_line_num + self.y_offset
             # find the basic character in destination line.
-            if i == target_line_num and basic_c_find_flag and self.y_offset > 0:
-                start_characters = self.raw_data_list[i]
-                new_list = ''.join(self.raw_data_list[:i]).split()
+            if self.y_offset > 0:
+                if basic_character_line_find_flag:
+                    if i == target_line_num:
+                        start_characters_line = self.raw_data_list[i]
+                        new_list = ''.join(self.raw_data_list[:target_line_num]).split(' ')
         if self.y_offset < 0:
             for i in range(len(self.raw_data_list)):
                 if i == target_line_num:
-                    start_characters = self.raw_data_list[i]
-                    new_list = ''.join(self.raw_data_list[:basic_c_line_num + 1]).split()
-                    new_start_c_list = ''.join(self.raw_data_list[:target_line_num + 1]).split()
-
+                    start_characters_line = self.raw_data_list[i]
+                    new_list = ''.join(self.raw_data_list[:basic_character_line_num + 1]).split(' ')
+                    new_start_character_list = ''.join(self.raw_data_list[:target_line_num + 1]).split(' ')
+        # find the basic character
         for i in range(len(new_list)):
             pattern = re.compile(self.render_b_c)
             m = re.search(pattern, new_list[i])
             if m is not None:
+                basic_character = m.group()
+                # find the basic character
+                basic_character_find_flag = True
                 # record the index(position) of the basic character
                 result.append(i)
-                continue
-        start_characters_list = start_characters.split()
+                break
+        start_characters_list = start_characters_line.split(' ')
         for i in range(len(start_characters_list)):
-            if start_characters_list[i].isspace():
+            if start_characters_list[i].isspace() or start_characters_list[i] == '':
                 continue
-            else:
-                count += 1
+            count += 1
             # match the offset and should find the extract data
             if count - 1 == int(str(self.x_offset).replace('-', '')):
                 pattern = re.compile(self.extract_regexp)
                 m = re.search(pattern, start_characters_list[i])
                 if m is not None:
+                    if m.groups():
+                        for per_val in m.groups():
+                            extract_data.append(per_val)
+                    else:
+                        extract_data = m.group()
                     # record the index(position) of the extract data
                     if self.y_offset > 0:
-                        result.append(len(new_list) + i)
+                        result.append(len(new_list) - 1 + i)
                     else:
-                        result.append(len(new_start_c_list) -
-                                      (len(start_characters_list) - int(str(self.x_offset).replace('-', ''))))
+                        result.append(len(new_start_character_list) - len(start_characters_list) + i)
                 else:
                     result.append(constants.NO_MATCH_EXTRACT_DATA_REGEXP)
                 break
         self.res['basic_character_index'] = result[0]
-        self.res['basic_character'] = ''.join(self.raw_data_list).split()[result[0]].replace(constants.INSTEAD, ' ')
         self.res['extract_data_index'] = result[-1]
-        self.res['extract_data'] = ''.join(self.raw_data_list).split()[result[-1]]
+        self.res['basic_character'] = basic_character.replace(constants.INSTEAD, ' ')
+        self.res['extract_data'] = extract_data
+        # print ''.join(self.raw_data_list).split(' ')[83]
+        # print ''.join(self.raw_data_list).split(' ')[67]
+        # for j in range(len(''.join(self.raw_data_list).split(' '))):
+        #     print j, ' ==== ', ''.join(self.raw_data_list).split(' ')[j]
         return self.res
 
     def y_offset_comma_extract(self):
@@ -194,35 +232,65 @@ class DataExtractPolicy(object):
     def regexp_extract(self):
         extract_data_index = []
         exp_result = []
+        # value of extract data
+        extract_data = []
         for line in self.raw_data_list:
             pattern = re.compile(self.extract_regexp)
             m = re.search(pattern, line)
             if m is not None:
+                extract_data.append(line)
                 exp_result.append(m.group())
-        new_list = ''.join(self.raw_data_list).split()
+        new_list = ''.join(self.raw_data_list).split(' ')
         for i in range(len(new_list)):
-            if new_list[i].isspace():
+            if new_list[i].isspace() or new_list[i] == '':
                 continue
             if len(exp_result) > 0:
                 for per_result in exp_result:
                     if per_result.lower() == new_list[i].lower():
                         extract_data_index.append(i)
             else:
-                pass
+                extract_data_index.append(constants.NO_MATCH_EXTRACT_DATA_REGEXP)
         self.res['extract_data_index'] = extract_data_index
+        self.res['extract_data'] = extract_data
         return self.res
 
-    def expect_line_or_all_extract(self):
+    def expect_line_extract(self):
         extract_data_index = []
-        new_list = ''.join(self.raw_data_list).split()
+        new_list = ''.join(self.raw_data_list).split(' ')
         for i in range(len(new_list)):
-            if new_list[i].isspace():
+            if new_list[i].isspace() or new_list[i] == '':
                 continue
             if i == 0:
                 extract_data_index.append(i)
             if i == len(new_list) - 1:
                 extract_data_index.append(i)
         self.res['extract_data_index'] = extract_data_index
+        return self.res
+
+    def all_extract(self):
+        extract_data_index = []
+        new_list = ''.join(self.raw_data_list).split(' ')
+        for i in range(len(new_list)):
+            if new_list[i].isspace() or new_list[i] == '':
+                continue
+            else:
+                first_character_flag = True
+                first_character_index = i
+            if first_character_flag:
+                extract_data_index.append(first_character_index)
+                break
+        for i in range(len(new_list)):
+            if new_list[len(new_list) - 1 - i].isspace() or new_list[len(new_list) - 1 - i] == '':
+                continue
+            else:
+                last_character_flag = True
+                last_character_index = len(new_list) - 1 - i
+            if last_character_flag:
+                extract_data_index.append(last_character_index)
+                break
+        self.res['extract_data_index'] = extract_data_index
+        print new_list[0]
+        print new_list[209]
         return self.res
 
     def dispatch(self):
@@ -234,7 +302,9 @@ class DataExtractPolicy(object):
         if self.rule_type == 3:
             return self.regexp_extract()
         if self.rule_type == 4:
-            return self.expect_line_or_all_extract()
+            return self.expect_line_extract()
+        if self.rule_type == 5:
+            return self.all_extract()
 
 
 def test():
@@ -245,17 +315,6 @@ def test():
     #                  Available Flows     = 70495509
     #                  Received 0 broadcasts (0 IP multicasts)
     # '''
-    data = '''ROUTER#show sbc global dbe media-stats
-                SBC Service "global"
-                Max Term per Context   = 68
-                Available Bandwidth    = Unlimited
-                Available Flows        = 60786Unlimited66666
-                Available Packet Rate  = Unlimited
-                Active Media Flows     = 26
-                Peak Media Flows       = 66
-                Total Media Flows      = 108112
-                Active Signaling Flows = 4692
-    '''
     # data = '''ROUTER#dir harddisk:
     #             278536  -rw-     3832112   Aug 5 2016 14:34:58 +09:00  asr1000-rommon.154-2r.S.pkg
     #             278537  -rw-     1255728   Aug 8 2016 22:29:22 +09:00  asr1000-rommon.122-33r.XND1.pkg
@@ -281,16 +340,28 @@ def test():
     #             service timestamps log datetime msec
     #             platform shell
     # '''
+    data = '''ROUTER#show sbc global dbe media-stats
+                SBC Service "global"
+                Max Term per Context   = 682
+                Available Bandwidth    = Unlimited
+                Available Flows        = 60786Unlimited66666
+                Available Packet Rate  = Unlimited
+                Active Media Flows     = 261
+                Peak Media Flows       = 66
+                Total Media Flows      = 1081121111
+                Active Signaling Flows = 4692
+    '''
     extract_policy = {
-        'rule_type': 1,
-        'basic_characters': 'Available Packet Rate',
+        'rule_type': 5,
+        'basic_characters': 'Available Flows',
         'split_characters': 'space',
-        'x_offset': -1,
-        'y_offset': -3,
-        'expect_line_number': 6,
-        'extract_regexp': '(\d+)[A-Z][a-z]+(\d+)',
-        'start_line': 1,
-        'end_line': 6,
+        'x_offset': 3,
+        'y_offset': -100,
+        'expect_line_number': 3,
+        'extract_regexp': 'asr.*pkg',
+        # 'extract_regexp': '\d+',
+        'start_line': 0,
+        'end_line': 100,
         'deep': None,
         'block_start_characters': None,
         'block_end_characters': None,
@@ -300,29 +371,10 @@ def test():
         'is_serial': False
 
     }
-    # input dict
-    # extract_policy = {
-    #     'rule_type': 1,
-    #     'basic_characters': None,
-    #     'split_characters': None,
-    #     'x_offset': None,
-    #     'y_offset': None,
-    #     'expect_line_number': None,
-    #     'extract_regexp': None,
-    #     'start_line': None,
-    #     'end_line': None,
-    #     'deep': 0,
-    #     'block_start_characters': None,
-    #     'block_end_characters': None,
-    #     'is_include_end_characters': False,
-    #     'block_start_offset': None,
-    #     'block_end_offset': None,
-    #     'is_serial': False
-    # }
     d = DataExtractPolicy(data, **extract_policy)
     r = d.dispatch()
     render = Render(**r)
     print render.render()
 
 
-# test()
+test()
