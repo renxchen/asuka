@@ -156,7 +156,7 @@ class DevicesGroups(models.Model):
 
 
 class Event(models.Model):
-    event_id = models.CharField(primary_key=True, max_length=45)
+    event_id = models.IntegerField(primary_key=True)
     clock = models.IntegerField(blank=True, null=True)
     log_content = models.TextField(blank=True, null=True)
     device = models.ForeignKey(Devices, models.DO_NOTHING)
@@ -291,14 +291,28 @@ class Items(models.Model):
     priority = models.IntegerField(blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
     cli_command = models.CharField(max_length=256, blank=True, null=True)
+    last_exec_time = models.IntegerField(blank=True, null=True)
     schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
     device = models.ForeignKey(Devices, models.DO_NOTHING)
-    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING, db_column='coll_policy_rule_tree_treeid')
+    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
+                                                     db_column='coll_policy_rule_tree_treeid')
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
 
     class Meta:
         # managed = False
         db_table = 'items'
+
+
+class Mapping(models.Model):
+    mapping_id = models.AutoField(primary_key=True)
+    descr = models.CharField(max_length=2000, blank=True, null=True)
+    source = models.CharField(max_length=255, blank=True, null=True)
+    code = models.IntegerField(blank=True, null=True)
+    code_meaning = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        # managed = False
+        db_table = 'mapping'
 
 
 class Ostype(models.Model):
@@ -352,6 +366,7 @@ class TriggerDetail(models.Model):
     descr = models.CharField(max_length=2000, blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
     trigger = models.ForeignKey('Triggers', models.DO_NOTHING)
+    expression_view = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         # managed = False
@@ -360,6 +375,7 @@ class TriggerDetail(models.Model):
 
 class Triggers(models.Model):
     trigger_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=256, blank=True, null=True)
     descr = models.CharField(max_length=2000, blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
     value = models.CharField(max_length=255, blank=True, null=True)
