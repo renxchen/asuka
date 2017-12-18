@@ -14,6 +14,7 @@ STATUS = 'status'
 REFRESH_CODE = 101
 NO_REFRESH_CODE = 100
 SUCCESS = 'Success'
+FAILED = 'Failed'
 TRUE = 'True'
 FALSE = 'False'
 #########################################

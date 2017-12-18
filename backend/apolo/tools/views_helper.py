@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''
+"""
 
 @author: kimli
 @contact: kimli@cisco.com
@@ -8,7 +8,7 @@
 @time: 2017/12/15 13:37
 @desc:
 
-'''
+"""
 from django.db.models import Q
 import traceback
 from backend.apolo.tools.exception import exception_handler
@@ -51,9 +51,9 @@ def get_request_value(request, key, method_type):
         if method_type.strip().upper() == 'GET':
             value = get_request_get(request, key)
         if method_type.strip().upper() == 'POST':
-            value = request.META.get(key)
+            value = get_request_post(request, key)
         if method_type.strip().upper() == 'META':
-            value = request.POST[key]
+            value = get_request_header(request, key)
         return value
     except Exception, e:
         print traceback.format_exc(e)

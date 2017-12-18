@@ -36,9 +36,9 @@ class CollPolicyViewSet(viewsets.ViewSet):
         self.snmp_oid = views_helper.get_request_value(self.request, 'snmp_oid', 'GET')
 
     @staticmethod
-    def get_cp(**kwars):
+    def get_cp(**kwargs):
         try:
-            return CollPolicy.objects.get(**kwars)
+            return CollPolicy.objects.get(**kwargs)
         except CollPolicy.DoesNotExist:
             return False
 

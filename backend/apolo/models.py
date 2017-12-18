@@ -85,6 +85,7 @@ class CollPolicyGroups(models.Model):
     policy_group_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256, blank=True, null=True)
     desc = models.CharField(max_length=2000, blank=True, null=True)
+    ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
 
     class Meta:
         # managed = False
