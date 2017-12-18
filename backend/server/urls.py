@@ -29,9 +29,10 @@ router = routers.DefaultRouter()
 # user_list = UserViewSet.as_view({'get': 'get', 'post': 'post', 'put': 'put', 'delete': 'delete'})
 
 urlpatterns = [
-    url(r'^admin/$', admin.site.urls),
-    url(r'^v1/login/$', resource_api.login),
-    url(r'^v1/api_users/$', resource_api.api_users),
+    url(r'^admin/', admin.site.urls),
+    url(r'^v1/login/', resource_api.login),
+    url(r'^v1/api_users/', resource_api.api_users),
+    url(r'^v1/api_collection_policy/', resource_api.api_collection_policy),
     # url(r'^users/$', user_list, name='user-list'),
     # url(r'^i18n/', include('django.conf.urls.i18n')),
 ]

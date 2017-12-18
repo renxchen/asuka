@@ -1,6 +1,7 @@
 import requests
 import simplejson as json
 from django.contrib import auth
+from django.http import HttpResponse
 from django.utils.translation import gettext
 from rest_framework_jwt.settings import api_settings
 from backend.apolo.tools import constants
