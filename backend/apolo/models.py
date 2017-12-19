@@ -85,7 +85,7 @@ class CollPolicyGroups(models.Model):
     policy_group_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256, blank=True, null=True)
     desc = models.CharField(max_length=2000, blank=True, null=True)
-    ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
+    ostypeid = models.ForeignKey('Ostype', models.DO_NOTHING, db_column='ostypeid')
 
     class Meta:
         # managed = False
@@ -291,13 +291,13 @@ class Items(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     priority = models.IntegerField(blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
-    cli_command = models.CharField(max_length=256, blank=True, null=True)
     last_exec_time = models.IntegerField(blank=True, null=True)
-    schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
-    device = models.ForeignKey(Devices, models.DO_NOTHING)
-    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
-                                                     db_column='coll_policy_rule_tree_treeid')
+    exec_interval = models.IntegerField(blank=True, null=True)
+    history = models.CharField(max_length=255, blank=True, null=True)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
+    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING, db_column='coll_policy_rule_tree_treeid')
+    device = models.ForeignKey(Devices, models.DO_NOTHING)
+    schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
 
     class Meta:
         # managed = False
@@ -335,9 +335,11 @@ class Ostype(models.Model):
 
 class PolicysGroups(models.Model):
     policys_groups_id = models.AutoField(primary_key=True)
-    policy_group = models.ForeignKey(CollPolicyGroups, models.DO_NOTHING)
-    policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
     exec_interval = models.IntegerField(blank=True, null=True)
+    status = models.IntegerField(blank=True, null=True)
+    history = models.CharField(max_length=255, blank=True, null=True)
+    policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
+    policy_group = models.ForeignKey(CollPolicyGroups, models.DO_NOTHING)
 
     class Meta:
         # managed = False
