@@ -1,5 +1,5 @@
 from rest_framework.permissions import IsAuthenticated
-from backend.apolo.apolomgr.resource import authentication
+from backend.apolo.apolomgr.resource import authentication, policytree_view
 from backend.apolo.apolomgr.resource import user_views
 from backend.apolo.apolomgr.resource import collection_policy_views
 from backend.apolo.apolomgr.resource import collection_policy_group_views
@@ -63,4 +63,12 @@ def api_collection_policy_group(request):
 @auth_if_refresh_required
 def api_get_ostype(request):
     resource_object = os_type_views.OsTypeViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(['POST', "GET", "DELETE", "PUT"])
+@permission_classes((IsAuthenticated,))
+@auth_if_refresh_required
+def api_policy_tree(request):
+    resource_object = policytree_view.PolicyTreeViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
