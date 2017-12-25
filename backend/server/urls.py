@@ -31,6 +31,7 @@ router = routers.DefaultRouter()
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^v1/login/', resource_api.login),
+    url(r'^v1/logout/', resource_api.logout),
     url(r'^v1/api_users/', resource_api.api_users),
     url(r'^v1/api_collection_policy/', resource_api.api_collection_policy),
     url(r'^v1/api_collection_policy_group/', resource_api.api_collection_policy_group),
