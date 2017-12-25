@@ -13,58 +13,188 @@ from rest_framework import viewsets
 import json
 
 from backend.apolo.apolomgr.resource.render import Render
+from backend.apolo.models import CollPolicy, CollPolicyCliRule,CollPolicyRuleTree
+from backend.apolo.tools import views_helper, constants
 from backend.apolo.tools.common import api_return
+from policy_tree import Policy_tree, Policy_tree_node
+from backend.apolo.serializer.policytree_serializer import CollPolicyRuleTreeSerializer
+from backend.apolo.serializer.collection_policy_serializer import CollPolicySerializer
 
 
-class PolicyTreeViewSet(viewsets.Viewset):
 
+
+class PolicyTreeViewSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):
         super(PolicyTreeViewSet, self).__init__(**kwargs)
+        #self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         self.request = request
+        self.raw_data = ''
+        self.tree_id = ''
+        self.tree= ''
+        self.coll_policy_id = ''
 
+    # init policy tree edit page
+    # input coll_policy_id
+    # init context include:
+    # 1 get cli_command_result from coll_policy table
+    # 2 get policy tree
+    # 3 get policy tree rules
+    # notice : get 2 and 3 step 's data by table(coll_policy_rule_tree and coll_policy_cli_rule) connection
     def get(self):
-        raw_data=''
-        tree_json ={}
-        tree_id=''
-
-        if 'raw_data' in self.request.GET.keys():
-            raw_data = self.request.GET['raw_data']
-        if 'tree_json' in self.request.GET.keys():
-            tree_json = json.loads(self.request.GET['tree_json'])
-        if 'tree_id' in self.request.GET('tree_id'):
-            tree_id = self.request.GET('tree_id')
-
-        request_dict = {
-            'data': raw_data,
-            'tree': tree_json,
-            'tree_id': tree_id
+        # v1/api_policy_tree/?coll_policy_id=xxx
+        self.coll_policy_id = views_helper.get_request_get(self.request, 'coll_policy_id')
+        cp = CollPolicy.objects.get(coll_policy_id=self.coll_policy_id)
+        cli_command_result = cp.cli_command_result
+        policy_name = cp.name
+        policy_tree_query_set = CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id)
+        node_array = []
+        for item in policy_tree_query_set:
+            rule =item.rule
+            policy_tree_node = Policy_tree_node()
+            policy_tree_node.rule_id = rule.ruleid
+            policy_tree_node.rule_name = rule.name
+            policy_tree_node.rule_type = rule.rule_type
+            policy_tree_node.coll_policy_id = self.coll_policy_id
+            policy_tree_node.tree_id = item.treeid
+            if not item.parent_tree_id:
+                policy_tree_node.parent_tree_id = 0
+            else:
+                policy_tree_node.parent_tree_id = item.parent_tree_id
+            if item.is_leaf ==1:
+                policy_tree_node.is_leaf = True
+            policy_tree_node.level = item.level
+            node_array.append(policy_tree_node)
+        policy_tree = Policy_tree(self.coll_policy_id)
+        # create policy tree
+        policy_tree_json = policy_tree.create_policy_tree(policy_name=policy_name, node_list=node_array)
+        print policy_tree_json
+        rule_tree_tuple = policy_tree.create_rule_tree(node_list=node_array)
+        block_rule_tree_json = rule_tree_tuple[0]
+        data_rule_tree_json = rule_tree_tuple[1]
+        data ={
+            "coll_policy_name": policy_name,
+            "cli_command_result": cli_command_result,
+            "policy_tree_json": policy_tree_json,
+            "block_rule_tree_jso": block_rule_tree_json,
+            "data_rule_tree_json": data_rule_tree_json
         }
 
-        render = Render(**request_dict)
-        html_data = render.render()
-        return api_return(data=html_data)
+        return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
+                          data=data)
 
 
+
+    # save policy tree/update policy tree(update coding)
+    # which things are saved into db
+    # 1 update cli_command_result into coll_policy table
+    # 2 if the tree is a new tree ,save tree into coll_policy_rule_tree
+    # 3 else update the tree
+    # notice: rule(data ,block) name must diff in the same policy tree(check in front?)
+    # input: tree and coll_policy_id and raw_data
+    # output : message and data that include tree and updated coll_policy context
     def post(self):
-        policy_id=''
-        tree_json = {}
-        if 'tree_json' in self.request.GET.keys():
-            tree_json = json.loads(self.request.GET['tree_json'])
-        if 'policy_id' in self.request.GET('policy_id'):
-            policy_id = self.request.GET('policy_id')
+        self.tree = """{
+                                   "id": "j1-2",
+                                   "text": "b1",
+                                   "icon": "icon1",
+                                   "rule_id":0,
+                                   "children": [
+                                       {
+                                           "id": "j3-2",
+                                           "text": "b2",
+                                           "icon": "icon2",
+                                           "rule_id": 1,
+                                           "children": [
+                                               {
+                                                   "id": "j3-3",
+                                                   "text": "d1",
+                                                   "icon": "icon3",
+                                                   "rule_id":2,
+                                                   "children": []
+                                               },
+                                               {
+                                                   "id": "j3-4",
+                                                   "text": "d2",
+                                                   "icon": "icon4",
+                                                   "rule_id": 4,
+                                                   "children": []
+                                               },
+                                               {
+                                                   "id": "j3-5",
+                                                   "text": "d3",
+                                                   "icon": "icon5",
+                                                   "rule_id": 4,
+                                                   "children": []
+                                               }
+                                           ]
+                                       }
+                                   ]
+                               }"""
+        self.coll_policy_id = 1
+        self.raw_data = 'test raw data'
+        #self.coll_policy_id =views_helper.get_request_body(self.request, 'coll_policy_id')
+        #self.tree = views_helper.get_request_body(self.request, 'tree')
 
+        # update cli_command_result into coll_policy table
+        coll_policy = CollPolicy.objects.get(pk=self.coll_policy_id)
+        if self.raw_data:
+            coll_policy.cli_command_result=self.raw_data
+            coll_policy.save()
+        return_data={'tree': self.tree,
+                     'coll_policy_id': coll_policy.coll_policy_id,
+                     'name': coll_policy.name,
+                     'cli_command': coll_policy.cli_command,
+                     'desc': coll_policy.desc
+                     }
+        # judge  whether the coll_policy_id is in coll_policy_rule_tree
+        query_result = CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id)
+        if query_result.count() ==0:
+            # the tree is a new tree
+            # insert policy tree into coll_policy_rule_tree
+            policy_tree = Policy_tree(self.coll_policy_id)
+            policy_tree.get_all_nodes(json.loads(self.tree))
+            obj = policy_tree.all_nodes
+            add_result={}
+            for k, v in obj.items():
+                # not root node
+                if v.rule_id:
+                    if v.is_leaf:
+                        isLeaf = 1
+                    else:
+                        isLeaf = 0
+                    data={
+                        'parent_tree_id': None,
+                        'is_leaf': isLeaf,
+                        'level': v.level,
+                        'rule_id_path': v.rule_id_path,
+                        'coll_policy': self.coll_policy_id,
+                        'rule': v.rule_id
+                    }
+                    if add_result[v.parent_tree_id] is not 'root':
+                        data['parent_tree_id'] = add_result[v.parent_tree_id]
 
+                    serializer = CollPolicyRuleTreeSerializer(data=data)
+                    if serializer.is_valid():
+                        serializer.save()
+                        tree_id =serializer.data['treeid']
+                        add_result.update({k: tree_id})
+                    else:
+                        data = {'data': serializer.errors}
+                        return api_return(message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.FAILED},
+                                          data=data)
+                else:
+                    # root node
+                    add_result.update({k: 'root'})
+        else:
+            # the tree is exists in db. it need to update
 
-        print policy_id
-        print tree_json
+            pass
+        return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS}, data=return_data)
 
-        pass
-
+    # edit policy tree
     def put(self):
         pass
 
+    # delete policy tree
     def delete(self):
         pass
-
-
-
