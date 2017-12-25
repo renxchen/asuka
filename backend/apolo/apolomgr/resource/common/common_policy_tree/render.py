@@ -10,8 +10,8 @@
 @desc:
 
 '''
-import sys
 import os
+import sys
 
 script_dir = os.path.split(os.path.realpath(__file__))[0]
 prj_dir = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
@@ -22,7 +22,7 @@ import django
 django.setup()
 
 from backend.apolo.models import CollPolicyCliRule
-from dispatch import Dispatch
+from backend.apolo.apolomgr.resource.common.common_policy_tree.dispatch import Dispatch
 
 class Render(object):
     def __init__(self, **kwargs):
