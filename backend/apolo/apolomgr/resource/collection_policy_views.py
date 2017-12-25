@@ -44,6 +44,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
 
     def get(self):
         # http://127.0.0.1:1111/v1/api_collection_policy/?id=1
+        # http://127.0.0.1:1111/v1/api_collection_policy/?just_name_need=True
         try:
             field_relation_ships = {
                 'id': 'id',
@@ -67,10 +68,8 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 queryset = CollPolicy.objects.filter(**search_conditions).order_by(*sorts)
             else:
                 queryset = CollPolicy.objects.all()
-            # if 'id' in self.request.GET.keys():
-            #     id = self.request.GET.get("id")
-            #     if id:
-            #         queryset = CollPolicy.objects.filter(coll_policy_id=id)
+                if self.id is not '':
+                    queryset = CollPolicy.objects.filter(coll_policy_id=self.id)
             serializer = CollPolicySerializer(queryset, many=True)
             paginator = Paginator(serializer.data, self.max_size_per_page)
             contacts = paginator.page(self.page_from)
@@ -84,8 +83,8 @@ class CollPolicyViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def post(self):
-        # http://127.0.0.1:1111/v1/api_collection_policy/?name=IOS-XE show interface&desc=Cisco IOS XE&os_type=1&cli_command=show interface
-        # http://127.0.0.1:1111/v1/api_collection_policy/?name=IOS-XE show interface&desc=Cisco IOS XE&os_type=1&snmp_oid=1.3.6.1.2.1.1
+        # http://127.0.0.1:1111/v1/api_collection_policy/?name=IOS-XE show interface&desc=Cisco IOS XE&ostype=1&cli_command=show interface
+        # http://127.0.0.1:1111/v1/api_collection_policy/?name=IOS-XE show interface&desc=Cisco IOS XE&ostype=1&snmp_oid=1.3.6.1.2.1.1
 
         try:
             data = {
@@ -110,8 +109,8 @@ class CollPolicyViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def put(self):
-        # http://127.0.0.1:1111/v1/api_collection_policy/?id=2&name=MIYAZAKI-morning-shot-update&desc=&os_type=1&cli_command=show interface
-        # http://127.0.0.1:1111/v1/api_collection_policy/?id=2&name=MIYAZAKI-morning-shot-update&desc=&os_type=1&snmp_oid=1.3.6.1.2.1.1
+        # http://127.0.0.1:1111/v1/api_collection_policy/?id=2&name=MIYAZAKI-morning-shot-update&desc=&ostype=1&cli_command=show interface
+        # http://127.0.0.1:1111/v1/api_collection_policy/?id=2&name=MIYAZAKI-morning-shot-update&desc=&ostype=1&snmp_oid=1.3.6.1.2.1.1
         try:
             kwargs = {'coll_policy_id': self.id}
             queryset = self.get_cp(**kwargs)
