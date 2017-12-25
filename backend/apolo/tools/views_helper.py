@@ -54,6 +54,8 @@ def get_request_value(request, key, method_type):
             value = get_request_post(request, key)
         if method_type.strip().upper() == 'META':
             value = get_request_header(request, key)
+        if method_type.strip().upper() == 'BODY':
+            value = get_request_body(request, key)
         return value
     except Exception, e:
         print traceback.format_exc(e)
@@ -76,6 +78,7 @@ def get_request_post(request, key):
     if key in request.POST:
         return request.POST[key]
     return ''
+
 
 def get_request_body(request, key):
     body = eval(request.body)

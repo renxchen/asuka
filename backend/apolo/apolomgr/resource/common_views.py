@@ -3,13 +3,14 @@
 
 @author: kimli
 @contact: kimli@cisco.com
-@file: os_type_views.py
-@time: 2017/12/18 18:35
+@file: common_views.py
+@time: 2017/12/19 14:19
 @desc:
 
 """
-from backend.apolo.serializer.collection_policy_serializer import OstypeSerializer
-from backend.apolo.models import Ostype
+
+from backend.apolo.serializer.collection_policy_serializer import OstypeSerializer, CollPolicyNameSerializer
+from backend.apolo.models import Ostype, CollPolicy
 from backend.apolo.tools import constants
 from rest_framework import viewsets
 from backend.apolo.tools.common import api_return
@@ -37,6 +38,39 @@ class OsTypeViewSet(viewsets.ViewSet):
         except Exception, e:
             print traceback.format_exc(e)
             return exception_handler(e)
+
+    def post(self):
+        pass
+
+    def put(self):
+        pass
+
+    def delete(self):
+        pass
+
+
+class CollPolicyViewSet(viewsets.ViewSet):
+    def __init__(self, request, **kwargs):
+        super(CollPolicyViewSet, self).__init__(**kwargs)
+        self.request = request
+        self.id = views_helper.get_request_value(self.request, 'id', 'GET')
+
+    def get(self):
+        try:
+            queryset = CollPolicy.objects.all()
+            serializer = CollPolicyNameSerializer(queryset, many=True)
+            for per in serializer.data:
+                if per['policy_type'] == 1:
+                    # SNMP
+                    per['name'] = '[SNMP]' + per['name']
+                else:
+                    # CLI
+                    per['name'] = '[CLI]' + per['name']
+            return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
+                              data=serializer.data)
+        except Exception, e:
+            print traceback.format_exc(e)
+            # return exception_handler(e)
 
     def post(self):
         pass
