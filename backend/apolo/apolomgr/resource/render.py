@@ -62,7 +62,9 @@ class Render(object):
             for d in buffer_dict["children"]:
                 if self.get_path_of_leaf(d):
                     # save the parent node of the leaf
-                    self.leaf_path.append((buffer_dict['id'], buffer_dict['rule_id']))
+                    # if buffer_dict['rule_id'] != 0:
+                    if buffer_dict['rule_id']:
+                        self.leaf_path.append((buffer_dict['id'], buffer_dict['rule_id']))
                     return True
 
     # get the dispatch executed result
@@ -101,7 +103,6 @@ class Render(object):
         while deep >= 0:
             color_index = 0
             # leaf node area
-            #if deep == len(self.leaf_path) - 1:
             node = self.dispatch_result[deep]
             for item in node:
                 # mark the extracted data
@@ -133,8 +134,8 @@ class Render(object):
                 else:
                     # the node is not leaf
                     # the node is block area
-                    #node = self.dispatch_result[deep]
-                    #for item in node:
+                    # node = self.dispatch_result[deep]
+                    # for item in node:
                     start_line = item['start_line']
                     end_line = item['end_line']
                     for i in range(len(all_data)):
@@ -144,19 +145,6 @@ class Render(object):
                             color_index += 1
                         if i == end_line:
                             all_data[i] = all_data[i] + '</div>'
-            # else:
-            #     # block node area
-            #     node = self.dispatch_result[deep]
-            #     for item in node:
-            #         start_line = item['start_line']
-            #         end_line = item['end_line']
-            #         for i in range(len(all_data)):
-            #             if i == start_line:
-            #                 all_data[i] = '<div style="background-color:{};display: inline-block;">{}'.format(
-            #                     self.colors[deep][color_index], all_data[i])
-            #                 color_index += 1
-            #             if i == end_line:
-            #                 all_data[i] = all_data[i] + '</div>'
             deep = deep - 1
         html_data = '<pre>{}</pre>'.format("\n".join(all_data))
         return html_data
