@@ -9,12 +9,13 @@
 @desc:
 
 '''
-from rest_framework import viewsets
 import json
 
-from backend.apolo.apolomgr.resource.render import Render
+from rest_framework import viewsets
+
+from backend.apolo.apolomgr.resource.common.common_policy_tree.render import Render
 from backend.apolo.tools import views_helper
-from backend.apolo.tools.common import api_return
+
 
 class PolicyTreeHighLightViewSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):

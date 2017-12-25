@@ -9,18 +9,15 @@
 @desc:
 
 '''
-from rest_framework import viewsets
 import json
 
-from backend.apolo.apolomgr.resource.render import Render
-from backend.apolo.models import CollPolicy, CollPolicyCliRule,CollPolicyRuleTree
+from rest_framework import viewsets
+
+from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree, Policy_tree_node
+from backend.apolo.models import CollPolicy, CollPolicyRuleTree
+from backend.apolo.serializer.policytree_serializer import CollPolicyRuleTreeSerializer
 from backend.apolo.tools import views_helper, constants
 from backend.apolo.tools.common import api_return
-from policy_tree import Policy_tree, Policy_tree_node
-from backend.apolo.serializer.policytree_serializer import CollPolicyRuleTreeSerializer
-from backend.apolo.serializer.collection_policy_serializer import CollPolicySerializer
-
-
 
 
 class PolicyTreeViewSet(viewsets.ViewSet):
