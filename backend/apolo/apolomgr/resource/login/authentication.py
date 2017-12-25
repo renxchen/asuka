@@ -154,10 +154,8 @@ class TokenRefresh(object):
     def refresh_token(self):
         try:
             payload = decoder(self.token)
-            print payload, 2222
-        except Exception,e:
+        except Exception, e:
             print e.message
-            print 3333333
             return False
         orig_iat = payload.get('orig_iat')
         if orig_iat:
@@ -204,18 +202,14 @@ def auth_if_refresh_required(view):
     def decorator(request, *args, **kwargs):
         # this token is from header
         new_token = views_helper.get_request_value(request, "HTTP_AUTHORIZATION", 'META')
-        print new_token, 33333
         # this token is from session, for jqgrid
         token = request.session.get('TOKEN_IN_SESSION')
-        print token, 555555
         if new_token is not '':
             token = request.META.get("HTTP_AUTHORIZATION").split()[1]
-            print token, 6666666666
         refresh_token = TokenRefresh(token).refresh_token()
         if refresh_token is False:
             return HttpResponse(
                 json.dumps({'detail': 'Signature has expired.', 'code': constants.TOKEN_ALREADY_EXPIRED_CODE}))
-        print refresh_token[constants.STATUS], refresh_token
         if refresh_token[constants.STATUS] == constants.REFRESH_CODE:
             request.session['TOKEN_IN_SESSION'] = refresh_token[constants.TOKEN]
         try:
