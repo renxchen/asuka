@@ -76,3 +76,9 @@ def get_request_post(request, key):
     if key in request.POST:
         return request.POST[key]
     return ''
+
+def get_request_body(request, key):
+    body = eval(request.body)
+    if key in body:
+        return body.get(key)
+    return ''
