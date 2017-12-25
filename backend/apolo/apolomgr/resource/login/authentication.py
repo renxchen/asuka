@@ -13,6 +13,7 @@ from backend.apolo.tools.exception import exception_handler
 import logging
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
+from backend.apolo.tools import views_helper
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -133,10 +134,16 @@ class Auth(object):
                     constants.ROLE: role,
                     constants.TOKEN: token
                 }
+                self.request.session['TOKEN_IN_SESSION'] = token
                 return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
                                   data=eval(json.dumps(data)))
         except Exception, e:
             return exception_handler(e)
+
+    def delete(self):
+        self.request.session.clear()
+        # print self.request.session.keys()
+        # print self.request.session.get('TOKEN_IN_SESSION')
 
 
 class TokenRefresh(object):
@@ -145,7 +152,13 @@ class TokenRefresh(object):
         self.time_diff = timedelta(seconds=constants.TIMEDELTA)
 
     def refresh_token(self):
-        payload = decoder(self.token)
+        try:
+            payload = decoder(self.token)
+            print payload, 2222
+        except Exception,e:
+            print e.message
+            print 3333333
+            return False
         orig_iat = payload.get('orig_iat')
         if orig_iat:
             refresh_limit = api_settings.JWT_REFRESH_EXPIRATION_DELTA
@@ -189,13 +202,27 @@ class TokenRefresh(object):
 
 def auth_if_refresh_required(view):
     def decorator(request, *args, **kwargs):
-        token = request.META.get("HTTP_AUTHORIZATION").split()[1]
+        # this token is from header
+        new_token = views_helper.get_request_value(request, "HTTP_AUTHORIZATION", 'META')
+        print new_token, 33333
+        # this token is from session, for jqgrid
+        token = request.session.get('TOKEN_IN_SESSION')
+        print token, 555555
+        if new_token is not '':
+            token = request.META.get("HTTP_AUTHORIZATION").split()[1]
+            print token, 6666666666
         refresh_token = TokenRefresh(token).refresh_token()
+        if refresh_token is False:
+            return HttpResponse(
+                json.dumps({'detail': 'Signature has expired.', 'code': constants.TOKEN_ALREADY_EXPIRED_CODE}))
+        print refresh_token[constants.STATUS], refresh_token
+        if refresh_token[constants.STATUS] == constants.REFRESH_CODE:
+            request.session['TOKEN_IN_SESSION'] = refresh_token[constants.TOKEN]
         try:
             if refresh_token:
                 request.META[constants.NEW_TOKEN] = refresh_token
                 return view(request, *args, **kwargs)
-        except ValueError:
+        except ValueError, ExpiredSignatureError:
             pass
 
     return decorator

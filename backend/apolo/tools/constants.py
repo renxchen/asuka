@@ -13,6 +13,7 @@ LOG_PATH = 'apolo/logs/logger_authentication.log'
 STATUS = 'status'
 REFRESH_CODE = 101
 NO_REFRESH_CODE = 100
+TOKEN_ALREADY_EXPIRED_CODE = 102
 SUCCESS = 'Success'
 FAILED = 'Failed'
 TRUE = 'True'
