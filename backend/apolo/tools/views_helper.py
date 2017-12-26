@@ -85,7 +85,7 @@ def get_request_post(request, key):
 def get_request_body(request, key):
     body = request.body
     if key in body:
-        return body.get(key)
+        return eval(body).get(key)
     return ''
 
 

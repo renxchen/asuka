@@ -14,13 +14,16 @@ LOG_PATH = 'apolo/logs/logger_authentication.log'
 REFRESH_CODE = 101
 NO_REFRESH_CODE = 100
 TOKEN_ALREADY_EXPIRED_CODE = 102
+TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE = 103
 TOKEN = 'token'
 NEW_TOKEN = "NEW_TOKEN"
 TOKEN_EXPIRED_MSG = 'Signature has expired.'
+TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = 'There was no token found for current user.'
 #########################################
 # API response status define
 #########################################
 STATUS = 'status'
+CODE = 'code'
 SUCCESS = 'Success'
 FAILED = 'Failed'
 TRUE = 'True'
