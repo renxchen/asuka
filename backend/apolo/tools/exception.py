@@ -1,12 +1,10 @@
-from backend.apolo.tools.common import api_return
+from backend.apolo.tools.views_helper import api_return
 import simplejson as json
 from backend.apolo.tools import constants
 
 import logging
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
-from django.core.paginator import EmptyPage, PageNotAnInteger
-import traceback
 
 
 logging.basicConfig(level=logging.DEBUG)

@@ -75,6 +75,7 @@ class CollPolicyCliRule(models.Model):
     is_serial = models.IntegerField(blank=True, null=True)
     is_include = models.IntegerField(blank=True, null=True)
     command = models.CharField(max_length=256, blank=True, null=True)
+    coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
 
     class Meta:
         # managed = False
@@ -90,6 +91,14 @@ class CollPolicyGroups(models.Model):
     class Meta:
         # managed = False
         db_table = 'coll_policy_groups'
+
+    @property
+    def ostype_name(self):
+        return self.ostype.name
+
+    @property
+    def ostype_ostypeid(self):
+        return self.ostype.ostypeid
 
 
 class CollPolicyRuleTree(models.Model):

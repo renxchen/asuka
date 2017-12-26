@@ -11,7 +11,8 @@
 """
 from django.db.models import Q
 import traceback
-from backend.apolo.tools.exception import exception_handler
+import exception
+import simplejson as json
 
 
 def get_query_condition(request, query_data, method_type):
@@ -20,12 +21,14 @@ def get_query_condition(request, query_data, method_type):
 
 
 def get_search_conditions(request, field_relation_ships, query_data):
-    sort_by = get_request_value(request, 'sort_by', 'GET')
-    order = get_request_value(request, 'order', 'GET')
+    sort_by = get_request_value(request, 'sidx', 'GET')
+    order = get_request_value(request, 'sord', 'GET')
     search_fields = get_request_value(request, 'search_fields', 'GET')
     search_conditions = {}
     if search_fields:
         for i, value in enumerate(search_fields.split(',')):
+            print value
+            print field_relation_ships
             if value in field_relation_ships:
                 field = field_relation_ships[value]
                 if query_data[field] == '':
@@ -59,7 +62,7 @@ def get_request_value(request, key, method_type):
         return value
     except Exception, e:
         print traceback.format_exc(e)
-        return exception_handler(e)
+        return exception.exception_handler(e)
 
 
 def get_request_get(request, key):
@@ -81,7 +84,12 @@ def get_request_post(request, key):
 
 
 def get_request_body(request, key):
-    body = eval(request.body)
+    body = request.body
     if key in body:
         return body.get(key)
     return ''
+
+
+def api_return(status=200, data=''):
+
+    return json.dumps(data)

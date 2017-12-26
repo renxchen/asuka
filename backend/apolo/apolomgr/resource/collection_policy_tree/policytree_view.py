@@ -17,7 +17,7 @@ from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree impor
 from backend.apolo.models import CollPolicy, CollPolicyRuleTree
 from backend.apolo.serializer.policytree_serializer import CollPolicyRuleTreeSerializer
 from backend.apolo.tools import views_helper, constants
-from backend.apolo.tools.common import api_return
+from backend.apolo.tools.views_helper import api_return
 
 
 class PolicyTreeViewSet(viewsets.ViewSet):
@@ -73,11 +73,12 @@ class PolicyTreeViewSet(viewsets.ViewSet):
             "cli_command_result": cli_command_result,
             "policy_tree_json": policy_tree_json,
             "block_rule_tree_jso": block_rule_tree_json,
-            "data_rule_tree_json": data_rule_tree_json
+            "data_rule_tree_json": data_rule_tree_json,
+            constants.STATUS: constants.TRUE,
+            constants.MESSAGE: constants.SUCCESS
         }
 
-        return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
-                          data=data)
+        return api_return(data=data)
 
 
 
@@ -137,12 +138,15 @@ class PolicyTreeViewSet(viewsets.ViewSet):
         if self.raw_data:
             coll_policy.cli_command_result=self.raw_data
             coll_policy.save()
-        return_data={'tree': self.tree,
+        return_data = {
+            'tree': self.tree,
                      'coll_policy_id': coll_policy.coll_policy_id,
                      'name': coll_policy.name,
                      'cli_command': coll_policy.cli_command,
-                     'desc': coll_policy.desc
-                     }
+                     'desc': coll_policy.desc,
+                     constants.STATUS: constants.TRUE,
+                     constants.MESSAGE: constants.SUCCESS
+        }
         # judge  whether the coll_policy_id is in coll_policy_rule_tree
         query_result = CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id)
         if query_result.count() ==0:
@@ -176,9 +180,12 @@ class PolicyTreeViewSet(viewsets.ViewSet):
                         tree_id =serializer.data['treeid']
                         add_result.update({k: tree_id})
                     else:
-                        data = {'data': serializer.errors}
-                        return api_return(message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.FAILED},
-                                          data=data)
+                        data = {
+                            'data': serializer.errors,
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.FAILED
+                        }
+                        return api_return(data=data)
                 else:
                     # root node
                     add_result.update({k: 'root'})
@@ -186,7 +193,7 @@ class PolicyTreeViewSet(viewsets.ViewSet):
             # the tree is exists in db. it need to update
 
             pass
-        return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS}, data=return_data)
+        return api_return(data=return_data)
 
     # edit policy tree
     def put(self):
