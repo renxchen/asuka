@@ -7,13 +7,20 @@
 # PATHS
 #########################################
 LOG_PATH = 'apolo/logs/logger_authentication.log'
+
+#########################################
+# API token related define
+#########################################
+REFRESH_CODE = 101
+NO_REFRESH_CODE = 100
+TOKEN_ALREADY_EXPIRED_CODE = 102
+TOKEN = 'token'
+NEW_TOKEN = "NEW_TOKEN"
+TOKEN_EXPIRED_MSG = 'Signature has expired.'
 #########################################
 # API response status define
 #########################################
 STATUS = 'status'
-REFRESH_CODE = 101
-NO_REFRESH_CODE = 100
-TOKEN_ALREADY_EXPIRED_CODE = 102
 SUCCESS = 'Success'
 FAILED = 'Failed'
 TRUE = 'True'
@@ -24,13 +31,11 @@ FALSE = 'False'
 USERNAME = 'username'
 PASSWORD = 'password'
 MESSAGE = 'message'
-TOKEN = 'token'
 SUPERUSER = 'superuser'
 ADMIN = 'admin'
 STAFF = 'staff'
 ROLE = 'role'
 ORIG_IAT = 'orig_iat'
-NEW_TOKEN = "NEW_TOKEN"
 TIMEDELTA = 120
 #########################################
 # API information define
@@ -65,15 +70,13 @@ NO_MATCH_EXTRACT_DATA_REGEXP = 'Can not match the provided regular Expression.'
 # Policy Tree Node's information
 # Rule Tree Node's information
 #########################################
-BLOCK_RULE_TREE_KIND_ONE_NAME ='b1'    # インデントによって絞る
-BLOCK_RULE_TREE_KIND_TWO_NAME = 'b2'   #  行数によって絞る
-BLOCK_RULE_TREE_KIND_THREE_NAME ='b3'  #  指定文字列の間
-DATA_RULE_TREE_KIND_ONE_NAME = 'd1'    #  特定文字からの距離
-DATA_RULE_TREE_KIND_TWO_NAME = 'd2'    #  行数指定
-DATA_RULE_TREE_KIND_THREE_NAME ='d3'   #  正規表現
+BLOCK_RULE_TREE_KIND_ONE_NAME = 'b1'  # インデントによって絞る
+BLOCK_RULE_TREE_KIND_TWO_NAME = 'b2'  # 行数によって絞る
+BLOCK_RULE_TREE_KIND_THREE_NAME = 'b3'  # 指定文字列の間
+DATA_RULE_TREE_KIND_ONE_NAME = 'd1'  # 特定文字からの距離
+DATA_RULE_TREE_KIND_TWO_NAME = 'd2'  # 行数指定
+DATA_RULE_TREE_KIND_THREE_NAME = 'd3'  # 正規表現
 POLICY_TREE_ROOT_ICON = 'pcy_root_icon.jpg'
 BLOCK_NODE_ICON = 'rule_block_node_icon.jpg'
 DATA_NODE_ICON = 'rule_data_node_icon.jpg'
 RULE_NODE_ICON = 'rule_tree_node_icon.jpg'
-
-

@@ -211,7 +211,7 @@ def auth_if_refresh_required(view):
         refresh_token = TokenRefresh(token).refresh_token()
         if refresh_token is False:
             return HttpResponse(
-                json.dumps({'detail': 'Signature has expired.', 'code': constants.TOKEN_ALREADY_EXPIRED_CODE}))
+                json.dumps({'detail': constants.TOKEN_EXPIRED_MSG, 'code': constants.TOKEN_ALREADY_EXPIRED_CODE}))
         if refresh_token[constants.STATUS] == constants.REFRESH_CODE:
             request.session['TOKEN_IN_SESSION'] = refresh_token[constants.TOKEN]
         try:
