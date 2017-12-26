@@ -7,7 +7,7 @@ from rest_framework_jwt.settings import api_settings
 from backend.apolo.tools import constants
 from datetime import datetime, timedelta
 from calendar import timegm
-from backend.apolo.tools.common import api_return
+from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools.exception import exception_handler
 
 import logging
@@ -109,16 +109,16 @@ class Auth(object):
             if not username or not password:
                 logger.info(constants.NO_USERNAME_OR_PASSWORD_FONUD_ERROR % (username, password))  ###Logger###
                 return api_return(
-                    message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.NO_USERNAME_OR_PASSWORD})
+                    data={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.NO_USERNAME_OR_PASSWORD})
             user_obj = auth.authenticate(username=username, password=password)
             if not user_obj:
                 logger.info(constants.LOGIN_FAILED_ERROR % (username, password))  ###Logger###
                 return api_return(
-                    message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.USER_AND_PASSWD_INCORRECT})
+                    data={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.USER_AND_PASSWD_INCORRECT})
             elif not user_obj.is_active:
                 logger.info(constants.USERNAME_INACTIVE_ERROR % username)  ###Logger###
                 return api_return(
-                    message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.USER_DISABLED})
+                    data={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.USER_DISABLED})
             else:
                 logger.info(constants.LOGIN_SUCCESSFUL % (username, password))  ###Logger###
                 auth.login(self.request, user_obj)
@@ -132,11 +132,13 @@ class Auth(object):
                 data = {
                     constants.USERNAME: username,
                     constants.ROLE: role,
-                    constants.TOKEN: token
+                    constants.TOKEN: token,
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.SUCCESS
                 }
                 self.request.session['TOKEN_IN_SESSION'] = token
-                return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
-                                  data=eval(json.dumps(data)))
+                # return api_return(data=eval(json.dumps(data)))
+                return api_return(data=data)
         except Exception, e:
             return exception_handler(e)
 
@@ -216,7 +218,7 @@ def auth_if_refresh_required(view):
             if refresh_token:
                 request.META[constants.NEW_TOKEN] = refresh_token
                 return view(request, *args, **kwargs)
-        except ValueError, ExpiredSignatureError:
+        except ValueError:
             pass
 
     return decorator

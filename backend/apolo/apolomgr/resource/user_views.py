@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from django.core.paginator import Paginator
 from backend.apolo.tools.exception import exception_handler
-from backend.apolo.tools.common import api_return
+from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import constants
 
 

@@ -16,13 +16,11 @@ from rest_framework import viewsets
 from django.utils.translation import gettext
 from django.core.paginator import Paginator
 from backend.apolo.tools.exception import exception_handler
-from backend.apolo.tools.common import api_return
+from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import constants
 from backend.apolo.tools import views_helper
 import traceback
 import time
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
 
 
 class CollPolicyGroupViewSet(viewsets.ViewSet):
@@ -32,10 +30,10 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         self.page_from = views_helper.get_request_value(self.request, 'HTTP_FROM', 'META')
         self.max_size_per_page = views_helper.get_request_value(self.request, 'HTTP_MAX', 'META')
-        self.id = views_helper.get_request_value(self.request, 'group_id', 'BODY')
-        self.name = views_helper.get_request_value(self.request, 'group_name', 'BODY')
-        self.desc = views_helper.get_request_value(self.request, 'group_desc', 'BODY')
-        self.ostype = views_helper.get_request_value(self.request, 'ostype', 'BODY')
+        self.id = views_helper.get_request_value(self.request, 'group_id', 'GET')
+        self.name = views_helper.get_request_value(self.request, 'group_name', 'GET')
+        self.desc = views_helper.get_request_value(self.request, 'group_desc', 'GET')
+        self.ostype = views_helper.get_request_value(self.request, 'ostype', 'GET')
 
     @staticmethod
     def get_cp_group(**kwargs):
@@ -75,6 +73,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             }
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                           query_data)
+            total_num = len(CollPolicyGroups.objects.all())
             if search_conditions:
                 queryset = CollPolicyGroups.objects.filter(**search_conditions).order_by(*sorts)
             else:
@@ -84,11 +83,18 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             serializer = CollPolicyGroupSerializer(queryset, many=True)
             paginator = Paginator(serializer.data, self.max_size_per_page)
             contacts = paginator.page(self.page_from)
-            data = {'data': contacts.object_list, 'new_token': self.new_token, 'num_page': paginator.num_pages,
-                    'page_range': list(paginator.page_range), 'page_has_next': contacts.has_next(),
-                    'current_page_num': contacts.number}
-            return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
-                              data=data)
+            data = {
+                'data': contacts.object_list,
+                'new_token': self.new_token,
+                'num_page': paginator.num_pages,
+                'page_range': list(paginator.page_range),
+                'page_has_next': contacts.has_next(),
+                'total_num': total_num,
+                'current_page_num': contacts.number,
+                constants.STATUS: constants.TRUE,
+                constants.MESSAGE: constants.SUCCESS
+            }
+            return api_return(data=data)
         except Exception, e:
             print traceback.format_exc(e)
             return exception_handler(e)
@@ -192,14 +198,20 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             queryset = self.get_cp_group(**kwargs)
             if queryset is False:
                 message = 'There is no result for current query.'
-                data = {'data': message, 'new_token': self.new_token}
-                return api_return(
-                    message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.FAILED},
-                    data=data)
+                data = {
+                    'data': message,
+                    'new_token': self.new_token,
+                    constants.STATUS: constants.FALSE,
+                    constants.MESSAGE: constants.FAILED
+                }
+                return api_return(data=data)
             queryset.delete()
-            data = {'new_token': self.new_token}
-            return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
-                              data=data)
+            data = {
+                'new_token': self.new_token,
+                constants.STATUS: constants.TRUE,
+                constants.MESSAGE: constants.SUCCESS
+            }
+            return api_return(data=data)
         except Exception, e:
             print traceback.format_exc(e)
             return exception_handler(e)

@@ -13,7 +13,7 @@ from backend.apolo.serializer.collection_policy_serializer import OstypeSerializ
 from backend.apolo.models import Ostype, CollPolicy
 from backend.apolo.tools import constants
 from rest_framework import viewsets
-from backend.apolo.tools.common import api_return
+from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import views_helper
 import traceback
 from backend.apolo.tools.exception import exception_handler
@@ -33,8 +33,12 @@ class OsTypeViewSet(viewsets.ViewSet):
                 query_conditions = {'ostypeid': self.id}
                 queryset = Ostype.objects.filter(**query_conditions)
             serializer = OstypeSerializer(queryset, many=True)
-            return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
-                              data=serializer.data)
+            data = {
+                'data': serializer.data,
+                constants.STATUS: constants.TRUE,
+                constants.MESSAGE: constants.SUCCESS
+            }
+            return api_return(data=data)
         except Exception, e:
             print traceback.format_exc(e)
             return exception_handler(e)
@@ -66,8 +70,12 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 else:
                     # CLI
                     per['name'] = '[CLI]' + per['name']
-            return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS},
-                              data=serializer.data)
+            data = {
+                'data': serializer.data,
+                constants.STATUS: constants.TRUE,
+                constants.MESSAGE: constants.SUCCESS
+            }
+            return api_return(data=data)
         except Exception, e:
             print traceback.format_exc(e)
             # return exception_handler(e)
