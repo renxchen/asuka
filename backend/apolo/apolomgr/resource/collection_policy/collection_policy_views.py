@@ -19,7 +19,6 @@ from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import constants
 from backend.apolo.tools import views_helper
 import traceback
-from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree
 
 
 class CollPolicyViewSet(viewsets.ViewSet):
@@ -103,7 +102,6 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     constants.STATUS: constants.TRUE,
                     constants.MESSAGE: constants.SUCCESS
                 },
-
             }
             return api_return(data=data)
         except Exception, e:
@@ -129,16 +127,20 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 data = {
                     'data': serializer.data,
                     'new_token': self.new_token,
-                    constants.STATUS: constants.TRUE,
-                    constants.MESSAGE: constants.SUCCESS
+                    constants.STATUS: {
+                        constants.STATUS: constants.TRUE,
+                        constants.MESSAGE: constants.SUCCESS
+                    }
                 }
                 return api_return(data=data)
             else:
                 data = {
                     'data': serializer.errors,
                     'new_token': self.new_token,
-                    constants.STATUS: constants.FALSE,
-                    constants.MESSAGE: constants.FAILED
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.FAILED
+                    }
                 }
                 return api_return(data=data)
         except Exception, e:

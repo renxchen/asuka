@@ -100,27 +100,42 @@ class token_mgr(object):
 class Auth(object):
     def __init__(self, request):
         self.request = request
+        self.username = views_helper.get_request_value(self.request, constants.USERNAME, 'BODY')
+        self.password = views_helper.get_request_value(self.request, constants.PASSWORD, 'BODY')
 
     def post(self):
         try:
-            body = self.request.body
-            username = eval(body)[constants.USERNAME]
-            password = eval(body)[constants.PASSWORD]
-            if not username or not password:
-                logger.info(constants.NO_USERNAME_OR_PASSWORD_FONUD_ERROR % (username, password))  ###Logger###
-                return api_return(
-                    data={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.NO_USERNAME_OR_PASSWORD})
-            user_obj = auth.authenticate(username=username, password=password)
+            if not self.username or not self.password:
+                logger.info(
+                    constants.NO_USERNAME_OR_PASSWORD_FONUD_ERROR % (self.username, self.password))  ###Logger###
+                data = {
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.NO_USERNAME_OR_PASSWORD
+                    }
+                }
+                return api_return(data=data)
+            user_obj = auth.authenticate(username=self.username, password=self.password)
             if not user_obj:
-                logger.info(constants.LOGIN_FAILED_ERROR % (username, password))  ###Logger###
-                return api_return(
-                    data={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.USER_AND_PASSWD_INCORRECT})
+                logger.info(constants.LOGIN_FAILED_ERROR % (self.username, self.password))  ###Logger###
+                data = {
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.USER_AND_PASSWD_INCORRECT
+                    }
+                }
+                return api_return(data=data)
             elif not user_obj.is_active:
-                logger.info(constants.USERNAME_INACTIVE_ERROR % username)  ###Logger###
-                return api_return(
-                    data={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.USER_DISABLED})
+                logger.info(constants.USERNAME_INACTIVE_ERROR % self.username)  ###Logger###
+                data = {
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.USER_DISABLED
+                    }
+                }
+                return api_return(data=data)
             else:
-                logger.info(constants.LOGIN_SUCCESSFUL % (username, password))  ###Logger###
+                logger.info(constants.LOGIN_SUCCESSFUL % (self.username, self.password))  ###Logger###
                 auth.login(self.request, user_obj)
                 if user_obj.is_superuser:
                     role = constants.SUPERUSER
@@ -130,20 +145,51 @@ class Auth(object):
                     role = constants.STAFF
                 token = encoder(payloader(user_obj))
                 data = {
-                    constants.USERNAME: username,
+                    constants.USERNAME: self.username,
                     constants.ROLE: role,
                     constants.TOKEN: token,
-                    constants.STATUS: constants.TRUE,
-                    constants.MESSAGE: constants.SUCCESS
+                    constants.STATUS: {
+                        constants.STATUS: constants.TRUE,
+                        constants.MESSAGE: constants.SUCCESS
+                    }
                 }
-                self.request.session['TOKEN_IN_SESSION'] = token
+                # self.request.session['TOKEN_IN_SESSION'] = token
+                self.request.session['_username'] = self.username
+                self.request.session[self.username + '_token'] = token
                 # return api_return(data=eval(json.dumps(data)))
                 return api_return(data=data)
         except Exception, e:
             return exception_handler(e)
 
     def delete(self):
+        # self.request.session[self.username] = None
+        # if self.request.session[self.username] is None:
+        #     data = {
+        #         constants.STATUS: {
+        #             'status': 'True',
+        #             'message': 'Logout Success.',
+        #             'username': self.username
+        #         }
+        #     }
+        #     return api_return(data=data)
+        # else:
+        #     data = {
+        #         constants.STATUS: {
+        #             'status': 'False',
+        #             'message': 'Logout Success.',
+        #             'username': self.username
+        #         }
+        #     }
+        #     return api_return(data=data)
         self.request.session.clear()
+        data = {
+            constants.STATUS: {
+                'status': 'True',
+                'message': 'Logout Success.',
+                'username': self.username
+            }
+        }
+        return api_return(data=data)
         # print self.request.session.keys()
         # print self.request.session.get('TOKEN_IN_SESSION')
 
@@ -184,13 +230,13 @@ class TokenRefresh(object):
                     new_token = encoder(payload)
                     data = {
                         constants.TOKEN: new_token,
-                        constants.STATUS: constants.REFRESH_CODE
+                        constants.CODE: constants.REFRESH_CODE
                     }
                     print "new token:{}".format(new_token)
                 else:
                     data = {
                         constants.TOKEN: self.token,
-                        constants.STATUS: constants.NO_REFRESH_CODE
+                        constants.CODE: constants.NO_REFRESH_CODE
                     }
         else:
             data = {
@@ -202,18 +248,42 @@ class TokenRefresh(object):
 
 def auth_if_refresh_required(view):
     def decorator(request, *args, **kwargs):
+        # username = views_helper.get_request_value(request, 'username', 'GET')
+        username = request.session.get('_username')
+        if username is None:
+            data = {
+                'new_token': {
+                    'detail': constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE,
+                    constants.CODE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG
+                }
+            }
+            return HttpResponse(json.dumps(data))
+        # token = request.session[username + '_token']
         # this token is from header
         new_token = views_helper.get_request_value(request, "HTTP_AUTHORIZATION", 'META')
         # this token is from session, for jqgrid
-        token = request.session.get('TOKEN_IN_SESSION')
+        token = request.session.get(username + '_token')
+        if token is None:
+            data = {
+                'new_token': {
+                    'detail': constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE,
+                    constants.CODE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG
+                }
+            }
+            return HttpResponse(json.dumps(data))
         if new_token is not '':
             token = request.META.get("HTTP_AUTHORIZATION").split()[1]
         refresh_token = TokenRefresh(token).refresh_token()
         if refresh_token is False:
-            return HttpResponse(
-                json.dumps({'detail': constants.TOKEN_EXPIRED_MSG, 'code': constants.TOKEN_ALREADY_EXPIRED_CODE}))
-        if refresh_token[constants.STATUS] == constants.REFRESH_CODE:
-            request.session['TOKEN_IN_SESSION'] = refresh_token[constants.TOKEN]
+            data = {
+                'new_token': {
+                    'detail': constants.TOKEN_EXPIRED_MSG,
+                    constants.CODE: constants.TOKEN_ALREADY_EXPIRED_CODE
+                }
+            }
+            return HttpResponse(json.dumps(data))
+        if refresh_token[constants.CODE] == constants.REFRESH_CODE:
+            request.session[username] = refresh_token[constants.TOKEN]
         try:
             if refresh_token:
                 request.META[constants.NEW_TOKEN] = refresh_token
