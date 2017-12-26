@@ -75,6 +75,7 @@ class CollPolicyCliRule(models.Model):
     is_serial = models.IntegerField(blank=True, null=True)
     is_include = models.IntegerField(blank=True, null=True)
     command = models.CharField(max_length=256, blank=True, null=True)
+    coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
 
     class Meta:
         # managed = False
@@ -85,7 +86,7 @@ class CollPolicyGroups(models.Model):
     policy_group_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256, blank=True, null=True)
     desc = models.CharField(max_length=2000, blank=True, null=True)
-    ostype = models.ForeignKey('Ostype', models.DO_NOTHING, db_column='ostype')
+    ostypeid = models.ForeignKey('Ostype', models.DO_NOTHING, db_column='ostypeid')
 
     class Meta:
         # managed = False
