@@ -26,7 +26,6 @@ class PolicyTreeHighLightViewSet(viewsets.ViewSet):
         self.tree = views_helper.get_request_body(self.request, 'tree')
 
     def post(self):
-
         # self.raw_data =views_helper.get_request_body(self.request, 'raw_data')
         # self.tree_id = views_helper.get_request_body(self.request, 'tree_id')
         # self.tree = views_helper.get_request_body(self.request, 'tree')
@@ -144,4 +143,3 @@ class PolicyTreeHighLightViewSet(viewsets.ViewSet):
         # f.write(html_data)
         # f.close()
         return html_data
-
