@@ -71,7 +71,7 @@ class PolicyGroupSerializer(serializers.ModelSerializer):
 class OstypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ostype
-        fields = ('name',)
+        fields = ('ostypeid', 'name',)
 
         # def create(self, validated_data):
         #     return Ostype.objects.create(**validated_data)

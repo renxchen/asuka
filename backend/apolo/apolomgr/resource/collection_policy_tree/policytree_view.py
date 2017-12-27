@@ -23,11 +23,11 @@ from backend.apolo.tools.views_helper import api_return
 class PolicyTreeViewSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):
         super(PolicyTreeViewSet, self).__init__(**kwargs)
-        #self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
+        # self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         self.request = request
         self.raw_data = ''
         self.tree_id = ''
-        self.tree= ''
+        self.tree = ''
         self.coll_policy_id = ''
 
     # init policy tree edit page
@@ -50,7 +50,7 @@ class PolicyTreeViewSet(viewsets.ViewSet):
         rule_tree_tuple = policy_tree.get_rules_tree()
         block_rule_tree_dict = rule_tree_tuple[0]
         data_rule_tree_dict = rule_tree_tuple[1]
-        data ={
+        data = {
             "coll_policy_name": policy_name,
             "cli_command_result": cli_command_result,
             "policy_tree_json": policy_tree_dict,
@@ -61,8 +61,6 @@ class PolicyTreeViewSet(viewsets.ViewSet):
         }
 
         return api_return(data=data)
-
-
 
     # save policy tree/update policy tree(update coding)
     # which things are saved into db
@@ -112,32 +110,32 @@ class PolicyTreeViewSet(viewsets.ViewSet):
                                }"""
         self.coll_policy_id = 1
         self.raw_data = 'test raw data'
-        #self.coll_policy_id =views_helper.get_request_body(self.request, 'coll_policy_id')
-        #self.tree = views_helper.get_request_body(self.request, 'tree')
+        # self.coll_policy_id =views_helper.get_request_body(self.request, 'coll_policy_id')
+        # self.tree = views_helper.get_request_body(self.request, 'tree')
 
         # update cli_command_result into coll_policy table
         coll_policy = CollPolicy.objects.get(pk=self.coll_policy_id)
         if self.raw_data:
-            coll_policy.cli_command_result=self.raw_data
+            coll_policy.cli_command_result = self.raw_data
             coll_policy.save()
         return_data = {
             'tree': self.tree,
-                     'coll_policy_id': coll_policy.coll_policy_id,
-                     'name': coll_policy.name,
-                     'cli_command': coll_policy.cli_command,
-                     'desc': coll_policy.desc,
-                     constants.STATUS: constants.TRUE,
-                     constants.MESSAGE: constants.SUCCESS
+            'coll_policy_id': coll_policy.coll_policy_id,
+            'name': coll_policy.name,
+            'cli_command': coll_policy.cli_command,
+            'desc': coll_policy.desc,
+            constants.STATUS: constants.TRUE,
+            constants.MESSAGE: constants.SUCCESS
         }
         # judge  whether the coll_policy_id is in coll_policy_rule_tree
         query_result = CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id)
-        if query_result.count() ==0:
+        if query_result.count() == 0:
             # the tree is a new tree
             # insert policy tree into coll_policy_rule_tree
             policy_tree = Policy_tree(self.coll_policy_id)
             policy_tree.get_all_nodes(json.loads(self.tree))
             obj = policy_tree.all_nodes
-            add_result={}
+            add_result = {}
             for k, v in obj.items():
                 # not root node
                 if v.rule_id:
@@ -145,7 +143,7 @@ class PolicyTreeViewSet(viewsets.ViewSet):
                         isLeaf = 1
                     else:
                         isLeaf = 0
-                    data={
+                    data = {
                         'parent_tree_id': None,
                         'is_leaf': isLeaf,
                         'level': v.level,
@@ -159,7 +157,7 @@ class PolicyTreeViewSet(viewsets.ViewSet):
                     serializer = CollPolicyRuleTreeSerializer(data=data)
                     if serializer.is_valid():
                         serializer.save()
-                        tree_id =serializer.data['treeid']
+                        tree_id = serializer.data['treeid']
                         add_result.update({k: tree_id})
                     else:
                         data = {

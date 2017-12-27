@@ -59,20 +59,33 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
     def get(self):
         # http://127.0.0.1:1111/v1/api_collection_policy_group/
         try:
+            if self.id is not '':
+                queryset = CollPolicyGroups.objects.filter(**{'policy_group_id': self.id})
+                serializer = CollPolicyGroupSerializer(queryset, many=True)
+                data = {
+                    'data': serializer.data,
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.TRUE,
+                        constants.MESSAGE: constants.SUCCESS
+                    },
+                }
+                return api_return(data=data)
             field_relation_ships = {
                 'id': 'policy_group_id',
                 'name': 'name',
                 'desc': 'desc',
                 'ostype': 'ostype__name',
             }
-            # http://127.0.0.1:1111/v1/api_collection_policy_group/?sort_by=name&order=asc&name=test&ostype=CISCO&desc=&search_fields=name,ostype,desc
+            # http://127.0.0.1:1111/v1/api_collection_policy_group/?sort_by=name&order=asc&name=test&ostype=CISCO&desc=
             query_data = {
                 'name': self.name,
                 'desc': self.desc,
                 'ostype__name': self.ostype,
             }
+            search_fields = ['name', 'ostype', 'desc']
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
-                                                                          query_data)
+                                                                          query_data, search_fields)
             total_num = len(CollPolicyGroups.objects.all())
             if search_conditions:
                 queryset = CollPolicyGroups.objects.filter(**search_conditions).order_by(*sorts)
@@ -91,8 +104,10 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 'page_has_next': contacts.has_next(),
                 'total_num': total_num,
                 'current_page_num': contacts.number,
-                constants.STATUS: constants.TRUE,
-                constants.MESSAGE: constants.SUCCESS
+                constants.STATUS: {
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.SUCCESS
+                },
             }
             return api_return(data=data)
         except Exception, e:

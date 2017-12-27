@@ -45,6 +45,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
     # 3 save the rule into db
     # 4 get all rules of tree ,and return the information to front
     def post(self):
+        data = {}
         insert_info = views_helper.get_request_value(self.request, key='rule_info', method_type='BODY')
         policy_tree_id = views_helper.get_request_value(self.request, key='policy_tree_id', method_type='BODY')
         name = insert_info['name']
@@ -70,7 +71,6 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
         return api_return(data=data)
 
-
     # 1 check the rule name is existing in the rules of the tree when updating the rule
     # 2 if the name is different,do update,else raise error
     # 3 get all rules of tree ,and return the information to front
@@ -80,6 +80,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         name = insert_info['name']
         rule_id = insert_info['rule_id']
         query_set = []
+        data = {}
         # judge what is the name chanced in the rule_info
         if name != CollPolicyCliRule.objects.get(ruleid=rule_id).name:
             query_set = CollPolicyCliRule.objects.filter(name=name, coll_policy=policy_tree_id)

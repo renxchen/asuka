@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 
-from backend.apolo.apolomgr.resource import user_views
 from backend.apolo.apolomgr.resource.collection_policy import collection_policy_views
 from backend.apolo.apolomgr.resource.collection_policy_group import collection_policy_group_views
 from backend.apolo.apolomgr.resource.collection_policy_tree import policy_tree_highlight_view, policytree_view, \
@@ -45,14 +44,6 @@ def logout(request):
 
 
 @api_view(['POST', "GET", "DELETE", "PUT"])
-@auth_if_refresh_required
-@permission_classes((IsAuthenticated,))
-def api_users(request):
-    resource_object = user_views.UserViewSet(request=request)
-    return HttpResponse(run_request_method(resource_object))
-
-
-@api_view(['POST', "GET", "DELETE", "PUT"])
 # @authentication_classes((SessionAuthentication, BasicAuthentication))
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))
@@ -72,7 +63,7 @@ def api_collection_policy_group(request):
 @api_view(["GET"])
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))
-def api_get_ostype(request):
+def api_ostype(request):
     resource_object = common_views.OsTypeViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
 
@@ -85,7 +76,7 @@ def api_policy_tree(request):
     return HttpResponse(run_request_method(resource_object))
 
 
-@api_view(['POST', "GET", "DELETE", "PUT"])
+@api_view(["GET"])
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))
 def api_policy_tree_high_light(request):
@@ -99,6 +90,7 @@ def api_policy_tree_high_light(request):
 def api_get_collection_policy_name(request):
     resource_object = common_views.CollPolicyViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
+
 
 @api_view(['POST', "GET", "DELETE", "PUT"])
 @auth_if_refresh_required

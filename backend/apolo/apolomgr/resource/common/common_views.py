@@ -35,8 +35,10 @@ class OsTypeViewSet(viewsets.ViewSet):
             serializer = OstypeSerializer(queryset, many=True)
             data = {
                 'data': serializer.data,
-                constants.STATUS: constants.TRUE,
-                constants.MESSAGE: constants.SUCCESS
+                constants.STATUS: {
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.SUCCESS
+                }
             }
             return api_return(data=data)
         except Exception, e:

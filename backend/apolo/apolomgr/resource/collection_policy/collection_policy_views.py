@@ -19,6 +19,7 @@ from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import constants
 from backend.apolo.tools import views_helper
 import traceback
+from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree
 
 
 class CollPolicyViewSet(viewsets.ViewSet):
@@ -29,12 +30,12 @@ class CollPolicyViewSet(viewsets.ViewSet):
         self.page_from = views_helper.get_request_value(self.request, 'page', 'GET')
         self.max_size_per_page = views_helper.get_request_value(self.request, 'rows', 'GET')
         self.id = views_helper.get_request_value(self.request, 'id', 'GET')
-        self.name = views_helper.get_request_value(self.request, 'name', 'GET')
-        self.ostype = views_helper.get_request_value(self.request, 'ostype', 'GET')
-        self.cli_command = views_helper.get_request_value(self.request, 'cli_command', 'GET')
-        self.desc = views_helper.get_request_value(self.request, 'desc', 'GET')
-        self.snmp_oid = views_helper.get_request_value(self.request, 'snmp_oid', 'GET')
         self.policy_type = views_helper.get_request_value(self.request, 'policy_type', 'GET')
+        self.name = views_helper.get_request_value(self.request, 'name', 'BODY')
+        self.ostype = views_helper.get_request_value(self.request, 'ostype', 'BODY')
+        self.cli_command = views_helper.get_request_value(self.request, 'cli_command', 'BODY')
+        self.desc = views_helper.get_request_value(self.request, 'desc', 'BODY')
+        self.snmp_oid = views_helper.get_request_value(self.request, 'snmp_oid', 'BODY')
 
     @staticmethod
     def get_cp(**kwargs):
@@ -49,15 +50,23 @@ class CollPolicyViewSet(viewsets.ViewSet):
             if self.id is not '':
                 queryset = CollPolicy.objects.filter(**{'coll_policy_id': self.id})
                 serializer = CollPolicySerializer(queryset, many=True)
+                # get tree information
+                pt_data = {}
+                pt = Policy_tree(self.id)
+                try:
+                    pt_data = pt.get_policy_tree()
+                except Exception, e:
+                    print traceback.format_exc()
+                    exception_handler(e)
                 data = {
                     'data': serializer.data,
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.TRUE,
                         constants.MESSAGE: constants.SUCCESS
-                    }
+                    },
+                    'policy_tree': pt_data
                 }
-                # get tree information
                 return api_return(data=data)
             field_relation_ships = {
                 'id': 'id',

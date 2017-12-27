@@ -6,7 +6,7 @@
 #########################################
 # PATHS
 #########################################
-LOG_PATH = 'apolo/logs/logger_authentication.log'
+LOG_PATH = 'logs/logger_authentication.log'
 
 #########################################
 # API token related define
