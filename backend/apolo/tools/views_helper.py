@@ -43,7 +43,8 @@ def get_search_conditions(request, field_relation_ships, query_data, search_fiel
                 field_sort = '-' + field_sort
 
             sorts.append(field_sort)
-    search_conditions['policy_type'] = query_data['policy_type']
+    if 'policy_type' in query_data.keys():
+        search_conditions['policy_type'] = query_data['policy_type']
     return sorts, search_conditions
 
 
@@ -90,5 +91,4 @@ def get_request_body(request, key):
 
 
 def api_return(status=200, data=''):
-
     return json.dumps(data)

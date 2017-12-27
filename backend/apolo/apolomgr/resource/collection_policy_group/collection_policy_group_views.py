@@ -28,11 +28,11 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         super(CollPolicyGroupViewSet, self).__init__(**kwargs)
         self.request = request
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
-        self.page_from = views_helper.get_request_value(self.request, 'HTTP_FROM', 'META')
-        self.max_size_per_page = views_helper.get_request_value(self.request, 'HTTP_MAX', 'META')
-        self.id = views_helper.get_request_value(self.request, 'group_id', 'GET')
-        self.name = views_helper.get_request_value(self.request, 'group_name', 'GET')
-        self.desc = views_helper.get_request_value(self.request, 'group_desc', 'GET')
+        self.page_from = views_helper.get_request_value(self.request, 'page', 'GET')
+        self.max_size_per_page = views_helper.get_request_value(self.request, 'rows', 'GET')
+        self.id = views_helper.get_request_value(self.request, 'id', 'GET')
+        self.name = views_helper.get_request_value(self.request, 'name', 'GET')
+        self.desc = views_helper.get_request_value(self.request, 'desc', 'GET')
         self.ostype = views_helper.get_request_value(self.request, 'ostype', 'GET')
 
     @staticmethod
@@ -57,17 +57,28 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             return False
 
     def get(self):
-        # http://127.0.0.1:1111/v1/api_collection_policy_group/
+        # http://127.0.0.1:1111/v1/api_collection_policy_group/?id=13&page=1&rows=5
         try:
             if self.id is not '':
                 queryset = CollPolicyGroups.objects.filter(**{'policy_group_id': self.id})
+                queryset_related = PolicysGroups.objects.filter(**{'policy_group_id': self.id})
                 serializer = CollPolicyGroupSerializer(queryset, many=True)
+                serializer_related = PolicyGroupSerializer(queryset_related, many=True)
+                paginator = Paginator(serializer_related.data, self.max_size_per_page)
+                contacts = paginator.page(self.page_from)
+                total_related_num = len(PolicysGroups.objects.all())
                 data = {
-                    'data': serializer.data,
+                    'table_data': contacts.object_list,
+                    'num_page': paginator.num_pages,
+                    'page_range': list(paginator.page_range),
+                    'page_has_next': contacts.has_next(),
+                    'total_num': total_related_num,
+                    'current_page_num': contacts.number,
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.TRUE,
-                        constants.MESSAGE: constants.SUCCESS
+                        constants.MESSAGE: constants.SUCCESS,
+                        'data': serializer.data,
                     },
                 }
                 return api_return(data=data)
@@ -144,15 +155,32 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                     if serializer_related.is_valid():
                         serializer_related.save()
                     else:
-                        data = {'data': serializer_related.errors, 'new_token': self.new_token}
-                        return api_return(
-                            message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.FAILED},
-                            data=data)
-                return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS})
+                        data = {
+                            'data': serializer_related.errors,
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.FAILED
+                            }
+                        }
+                        return api_return(data=data)
+                data = {
+                    constants.STATUS: {
+                        constants.STATUS: constants.TRUE,
+                        constants.MESSAGE: constants.SUCCESS
+                    }
+                }
+                return api_return(data=data)
             else:
-                data = {'data': serializer.errors, 'new_token': self.new_token}
-                return api_return(message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.FAILED},
-                                  data=data)
+                data = {
+                    'data': serializer.errors,
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.FAILED
+                    }
+                }
+                return api_return(data=data)
         except Exception, e:
             print traceback.format_exc(e)
             return exception_handler(e)
@@ -179,15 +207,27 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             }
             if queryset is False:
                 message = 'There is no result for current query.'
-                data = {'data': message, 'new_token': self.new_token}
-                return api_return(message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.FAILED},
-                                  data=data)
+                data = {
+                    constants.MESSAGE: message,
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.FAILED
+                    }
+                }
+                return api_return(data=data)
             queryset_related = self.get_policy_group(**kwargs)
             if queryset_related is False:
                 message = 'There is no result for current query.'
-                data = {'data': message, 'new_token': self.new_token}
-                return api_return(message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.FAILED},
-                                  data=data)
+                data = {
+                    constants.MESSAGE: message,
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.FAILED
+                    }
+                }
+                return api_return(data=data)
             self.del_policy_group(**kwargs)
             for per_cp in cps:
                 per_cp['policy_group'] = int(self.id)
@@ -197,11 +237,22 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 if serializer_related.is_valid():
                     serializer_related.save()
                 else:
-                    data = {'data': serializer_related.errors, 'new_token': self.new_token}
-                    return api_return(
-                        message={constants.STATUS: constants.FALSE, constants.MESSAGE: constants.FAILED},
-                        data=data)
-            return api_return(message={constants.STATUS: constants.TRUE, constants.MESSAGE: constants.SUCCESS})
+                    data = {
+                        constants.MESSAGE: serializer_related.errors,
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.FAILED
+                        }
+                    }
+                    return api_return(data=data)
+            data = {
+                constants.STATUS: {
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.SUCCESS
+                },
+            }
+            return api_return(data=data)
         except Exception, e:
             print traceback.format_exc(e)
             return exception_handler(e)
