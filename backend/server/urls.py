@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^v1/api_policy_tree/', resource_api.api_policy_tree),
     url(r'^v1/api_policy_tree_highlight/', resource_api.api_policy_tree),
     url(r'^v1/api_get_collection_policy_name/', resource_api.api_get_collection_policy_name),
+    url(r'^v1/api_policy_tree_rule/', resource_api.api_policy_tree_rule)
     # url(r'^users/$', user_list, name='user-list'),
     # url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
