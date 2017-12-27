@@ -83,3 +83,9 @@ POLICY_TREE_ROOT_ICON = 'pcy_root_icon.jpg'
 BLOCK_NODE_ICON = 'rule_block_node_icon.jpg'
 DATA_NODE_ICON = 'rule_data_node_icon.jpg'
 RULE_NODE_ICON = 'rule_tree_node_icon.jpg'
+
+#########################################
+# Policy Tree Message
+#########################################
+NODE_IS_EXISTENCE = 'the node exist in the tree'            # ツリー内に定義されているため、編集できません。
+RULE_NAME_IS_EXISTENCE = 'the same name rule is existence'  # 既に同じ表示名のルールが登録されています。

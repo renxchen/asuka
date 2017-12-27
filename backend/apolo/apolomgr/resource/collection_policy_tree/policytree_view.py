@@ -14,7 +14,7 @@ import json
 from rest_framework import viewsets
 
 from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree, Policy_tree_node
-from backend.apolo.models import CollPolicy, CollPolicyRuleTree
+from backend.apolo.models import CollPolicy, CollPolicyRuleTree, CollPolicyCliRule
 from backend.apolo.serializer.policytree_serializer import CollPolicyRuleTreeSerializer
 from backend.apolo.tools import views_helper, constants
 from backend.apolo.tools.views_helper import api_return
@@ -43,37 +43,19 @@ class PolicyTreeViewSet(viewsets.ViewSet):
         cp = CollPolicy.objects.get(coll_policy_id=self.coll_policy_id)
         cli_command_result = cp.cli_command_result
         policy_name = cp.name
-        policy_tree_query_set = CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id)
-        node_array = []
-        for item in policy_tree_query_set:
-            rule =item.rule
-            policy_tree_node = Policy_tree_node()
-            policy_tree_node.rule_id = rule.ruleid
-            policy_tree_node.rule_name = rule.name
-            policy_tree_node.rule_type = rule.rule_type
-            policy_tree_node.coll_policy_id = self.coll_policy_id
-            policy_tree_node.tree_id = item.treeid
-            if not item.parent_tree_id:
-                policy_tree_node.parent_tree_id = 0
-            else:
-                policy_tree_node.parent_tree_id = item.parent_tree_id
-            if item.is_leaf ==1:
-                policy_tree_node.is_leaf = True
-            policy_tree_node.level = item.level
-            node_array.append(policy_tree_node)
         policy_tree = Policy_tree(self.coll_policy_id)
-        # create policy tree
-        policy_tree_json = policy_tree.create_policy_tree(policy_name=policy_name, node_list=node_array)
-        print policy_tree_json
-        rule_tree_tuple = policy_tree.create_rule_tree(node_list=node_array)
-        block_rule_tree_json = rule_tree_tuple[0]
-        data_rule_tree_json = rule_tree_tuple[1]
+        # get policy tree
+        policy_tree_dict = policy_tree.get_policy_tree()
+        # get rules of the policy tree
+        rule_tree_tuple = policy_tree.get_rules_tree()
+        block_rule_tree_dict = rule_tree_tuple[0]
+        data_rule_tree_dict = rule_tree_tuple[1]
         data ={
             "coll_policy_name": policy_name,
             "cli_command_result": cli_command_result,
-            "policy_tree_json": policy_tree_json,
-            "block_rule_tree_jso": block_rule_tree_json,
-            "data_rule_tree_json": data_rule_tree_json,
+            "policy_tree_json": policy_tree_dict,
+            "block_rule_tree_json": block_rule_tree_dict,
+            "data_rule_tree_json": data_rule_tree_dict,
             constants.STATUS: constants.TRUE,
             constants.MESSAGE: constants.SUCCESS
         }
