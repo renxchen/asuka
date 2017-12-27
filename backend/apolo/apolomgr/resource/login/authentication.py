@@ -253,8 +253,8 @@ def auth_if_refresh_required(view):
         if username is None:
             data = {
                 'new_token': {
-                    'detail': constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE,
-                    constants.CODE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG
+                    constants.MESSAGE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG,
+                    constants.CODE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE
                 }
             }
             return HttpResponse(json.dumps(data))
@@ -266,8 +266,8 @@ def auth_if_refresh_required(view):
         if token is None:
             data = {
                 'new_token': {
-                    'detail': constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE,
-                    constants.CODE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG
+                    constants.MESSAGE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG,
+                    constants.CODE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE
                 }
             }
             return HttpResponse(json.dumps(data))
@@ -277,7 +277,7 @@ def auth_if_refresh_required(view):
         if refresh_token is False:
             data = {
                 'new_token': {
-                    'detail': constants.TOKEN_EXPIRED_MSG,
+                    constants.MESSAGE: constants.TOKEN_EXPIRED_MSG,
                     constants.CODE: constants.TOKEN_ALREADY_EXPIRED_CODE
                 }
             }

@@ -61,6 +61,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):
         super(CollPolicyViewSet, self).__init__(**kwargs)
         self.request = request
+        self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         self.id = views_helper.get_request_value(self.request, 'id', 'GET')
 
     def get(self):
@@ -76,8 +77,11 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     per['name'] = '[CLI]' + per['name']
             data = {
                 'data': serializer.data,
-                constants.STATUS: constants.TRUE,
-                constants.MESSAGE: constants.SUCCESS
+                'new_token': self.new_token,
+                constants.STATUS: {
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.SUCCESS
+                }
             }
             return api_return(data=data)
         except Exception, e:

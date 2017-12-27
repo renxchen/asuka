@@ -27,7 +27,7 @@ class CollPolicySerializer(serializers.ModelSerializer):
 class CollPolicyNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollPolicy
-        fields = ('name', 'policy_type',)
+        fields = ('coll_policy_id', 'name', 'policy_type',)
 
 
 class CollPolicyGroupSerializer(serializers.ModelSerializer):
