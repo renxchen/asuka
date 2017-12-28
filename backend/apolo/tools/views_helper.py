@@ -11,7 +11,8 @@
 """
 from django.db.models import Q
 import traceback
-from backend.apolo.tools.exception import exception_handler
+import exception
+import simplejson as json
 
 
 def get_query_condition(request, query_data, method_type):
@@ -19,13 +20,13 @@ def get_query_condition(request, query_data, method_type):
     return kwargs
 
 
-def get_search_conditions(request, field_relation_ships, query_data):
-    sort_by = get_request_value(request, 'sort_by', 'GET')
-    order = get_request_value(request, 'order', 'GET')
-    search_fields = get_request_value(request, 'search_fields', 'GET')
+def get_search_conditions(request, field_relation_ships, query_data, search_fields):
+    sort_by = get_request_value(request, 'sidx', 'GET')
+    order = get_request_value(request, 'sord', 'GET')
     search_conditions = {}
     if search_fields:
-        for i, value in enumerate(search_fields.split(',')):
+        # for i, value in enumerate(search_fields.split(',')):
+        for value in search_fields:
             if value in field_relation_ships:
                 field = field_relation_ships[value]
                 if query_data[field] == '':
@@ -33,7 +34,7 @@ def get_search_conditions(request, field_relation_ships, query_data):
                 # Q(Name__contains=sqlstr) , Q(MUser__username__contains=sqlstr)
                 # each_q = Q(value + '__icontains' + '=' + query_data[value])
                 # search_conditions.append(each_q)
-                search_conditions[field_relation_ships[value] + '__icontains'] = query_data[field]
+                search_conditions[field_relation_ships[value] + '__contains'] = query_data[field]
     sorts = []
     if sort_by:
         if sort_by in field_relation_ships:
@@ -42,6 +43,8 @@ def get_search_conditions(request, field_relation_ships, query_data):
                 field_sort = '-' + field_sort
 
             sorts.append(field_sort)
+    if 'policy_type' in query_data.keys():
+        search_conditions['policy_type'] = query_data['policy_type']
     return sorts, search_conditions
 
 
@@ -54,10 +57,12 @@ def get_request_value(request, key, method_type):
             value = get_request_post(request, key)
         if method_type.strip().upper() == 'META':
             value = get_request_header(request, key)
+        if method_type.strip().upper() == 'BODY':
+            value = get_request_body(request, key)
         return value
     except Exception, e:
         print traceback.format_exc(e)
-        return exception_handler(e)
+        return exception.exception_handler(e)
 
 
 def get_request_get(request, key):
@@ -76,3 +81,14 @@ def get_request_post(request, key):
     if key in request.POST:
         return request.POST[key]
     return ''
+
+
+def get_request_body(request, key):
+    body = request.body
+    if key in body:
+        return eval(body).get(key)
+    return ''
+
+
+def api_return(status=200, data=''):
+    return json.dumps(data)

@@ -1,13 +1,16 @@
-from rest_framework.permissions import IsAuthenticated
-from backend.apolo.apolomgr.resource import authentication
-from backend.apolo.apolomgr.resource import user_views
-from backend.apolo.apolomgr.resource import collection_policy_views
-from backend.apolo.apolomgr.resource import collection_policy_group_views
-from backend.apolo.apolomgr.resource import os_type_views
+import traceback
+
 from django.http import HttpResponse
 from rest_framework.decorators import permission_classes, api_view
-import traceback
-from backend.apolo.apolomgr.resource.authentication import auth_if_refresh_required
+from rest_framework.permissions import IsAuthenticated
+
+from backend.apolo.apolomgr.resource.collection_policy import collection_policy_views
+from backend.apolo.apolomgr.resource.collection_policy_group import collection_policy_group_views
+from backend.apolo.apolomgr.resource.collection_policy_tree import policy_tree_highlight_view, policytree_view, \
+    policy_tree_rule_view
+from backend.apolo.apolomgr.resource.common import common_views
+from backend.apolo.apolomgr.resource.login import authentication
+from backend.apolo.apolomgr.resource.login.authentication import auth_if_refresh_required
 
 
 def run_request_method(resource_object):
@@ -34,33 +37,64 @@ def login(request):
     return HttpResponse(run_request_method(resource_object))
 
 
-@api_view(['POST', "GET", "DELETE", "PUT"])
-@permission_classes((IsAuthenticated,))
-@auth_if_refresh_required
-def api_users(request):
-    resource_object = user_views.UserViewSet(request=request)
+@api_view(["DELETE"])
+def logout(request):
+    resource_object = authentication.Auth(request=request)
     return HttpResponse(run_request_method(resource_object))
 
 
 @api_view(['POST', "GET", "DELETE", "PUT"])
-@permission_classes((IsAuthenticated,))
+# @authentication_classes((SessionAuthentication, BasicAuthentication))
 @auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
 def api_collection_policy(request):
     resource_object = collection_policy_views.CollPolicyViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
 
 
 @api_view(['POST', "GET", "DELETE", "PUT"])
-@permission_classes((IsAuthenticated,))
 @auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
 def api_collection_policy_group(request):
     resource_object = collection_policy_group_views.CollPolicyGroupViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
 
 
-@api_view(['POST', "GET", "DELETE", "PUT"])
-@permission_classes((IsAuthenticated,))
+@api_view(["GET"])
 @auth_if_refresh_required
-def api_get_ostype(request):
-    resource_object = os_type_views.OsTypeViewSet(request=request)
+@permission_classes((IsAuthenticated,))
+def api_ostype(request):
+    resource_object = common_views.OsTypeViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(['POST', "GET", "DELETE", "PUT"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_policy_tree(request):
+    resource_object = policytree_view.PolicyTreeViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(["GET"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_policy_tree_high_light(request):
+    resource_object = policy_tree_highlight_view.PolicyTreeHighLightViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(["GET"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_get_collection_policy_name(request):
+    resource_object = common_views.CollPolicyViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(['POST', "GET", "DELETE", "PUT"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_policy_tree_rule(request):
+    resource_object = policy_tree_rule_view.PolicyTreeRuleViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
