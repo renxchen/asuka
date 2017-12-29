@@ -1,0 +1,50 @@
+<!-- <div class="ibox-title">
+    <h5>コレクションポリシー一覧 </h5>
+</div> -->
+<div class="ibox-content text-center p-md" style="min-height:610px;">
+    <div class="btn-groups" data-toggle="buttons">
+        <label for = "type_cli" class="btn btn-sm btn-default" 
+        [ngClass]="{'active':(cPType)=='0'}"
+        style="border-top-right-radius:0px;border-bottom-right-radius:0px">
+            <input 
+            id = "type_cli"
+            name="cp_type" 
+            value="0"
+            autocomplete="off" 
+            btn-radio="" 
+            type="radio"
+            class="ng-pristine ng-untouched ng-valid ng-not-empty"
+            (click)="changeCPType($event)"
+            >CLIコレクションポリシー
+        </label>
+        <label for="type_snmp" class="btn btn-sm btn-default active" 
+        [ngClass]="{'active':(cPType)=='1'}"
+        style="border-top-left-radius:0px;border-bottom-left-radius:0px">
+            <input 
+                id="type_snmp"
+                name="cp_type" 
+                value="1"
+                autocomplete="off" 
+                btn-radio="" 
+                type="radio"
+                class="ng-pristine ng-untouched ng-valid ng-not-empty" 
+                (click)="changeCPType($event)"
+                >SNMPコレクションポリシー
+        </label>
+    </div>
+    <div class='cp-grid'>
+        <table id='cpTable'></table>
+        <div id='cpPager'></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+        <!-- "add" button -->
+            <div class="text-right footer_wrap">
+                <a id="add_btn" class="btn btn-primary" (click)="cpLogin()">
+                <i class="fa fa-plus-square"></i>
+                コレクションポリシー新規登録
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
