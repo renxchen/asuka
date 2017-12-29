@@ -1,0 +1,63 @@
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row"><div class="col-lg-12">
+        <div class="ibox float-e-margins" id="page_root">
+            <div class="ibox-title">
+                <h3>SNMPコレクションポリシー：新規登録</h3>
+            </div>
+            <div class="ibox-content">
+                <form class="form-horizontal" id="form" novalidate="novalidate">
+                    <div class="form-group">
+                        <label for="name" class="col-sm-4 control-label">
+                            <i class="fa fa-asterisk text-danger" aria-hidden="true" title="必須項目"></i>
+                            コレクションポリシー名：
+                        </label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="name"  name="name" 
+                            [(ngModel)]="name" placeholder="英数字のみ" maxlength="256"
+                             required="" aria-required="true" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="desc" class="col-sm-4 control-label">概要：</label>
+                        <div class="col-sm-4">
+                            <textarea class="form-control" id="desc" name="desc" [(ngModel)]="desc" maxlength="2000"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="snmpOid" class="control-label col-sm-4">
+                            <i class="fa fa-asterisk text-danger" aria-hidden="true" title="必須項目"></i>
+                            OID値：
+                        </label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="snmpOid" name="snmpOid" 
+                            [(ngModel)]="snmpOid" pattern="\d+?(\.\d+?)+" maxlength="256" placeholder="数字とドットのみ" 
+                            required="" aria-required="true">
+                        </div>
+                    </div>
+                    <div class="form-group unuse_east">
+                        <label for="osType" class="col-sm-4 control-label">OS Type：</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" [(ngModel)]="selectedOsType" id="osType" name="osType">
+                                <option *ngFor="let item of osType" [attr.selected]="selectedOsType==null ? true : false"
+                                value="{{item.ostypeid}}">{{item.name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- message alert -->
+                    <div class="form-group" [ngClass]="{'hidden':msgFlg}">
+                       
+                    </div>
+                    <div class="form-group">
+                    <div class="col-sm-12 text-right">
+                        <button  class="btn btn-primary" id="add" (click)="cPLogin()">
+                            <i class="fa fa-check-square-o"></i>
+                            保存する
+                        </button>
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
