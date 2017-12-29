@@ -51,20 +51,19 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
 
     def del_policy_group(self, **kwargs):
         try:
-            queryset_related = self.get_policy_group(**kwargs)
-            return queryset_related.delete()
+            pg = self.get_policy_group(**kwargs)
+            return pg.delete()
         except PolicysGroups.DoesNotExist:
             return False
 
     def get(self):
-        # http://127.0.0.1:1111/v1/api_collection_policy_group/?id=13&page=1&rows=5
         try:
             if self.id is not '':
                 queryset = CollPolicyGroups.objects.filter(**{'policy_group_id': self.id})
-                queryset_related = PolicysGroups.objects.filter(**{'policy_group_id': self.id})
+                queryset_pg = PolicysGroups.objects.filter(**{'policy_group_id': self.id})
                 serializer = CollPolicyGroupSerializer(queryset, many=True)
-                serializer_related = PolicyGroupSerializer(queryset_related, many=True)
-                paginator = Paginator(serializer_related.data, self.max_size_per_page)
+                serializer_pg = PolicyGroupSerializer(queryset_pg, many=True)
+                paginator = Paginator(serializer_pg.data, self.max_size_per_page)
                 contacts = paginator.page(self.page_from)
                 total_related_num = len(PolicysGroups.objects.all())
                 data = {
@@ -88,7 +87,6 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 'desc': 'desc',
                 'ostype': 'ostype__name',
             }
-            # http://127.0.0.1:1111/v1/api_collection_policy_group/?sort_by=name&order=asc&name=test&ostype=CISCO&desc=
             query_data = {
                 'name': self.name,
                 'desc': self.desc,
@@ -101,9 +99,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             if search_conditions:
                 queryset = CollPolicyGroups.objects.filter(**search_conditions).order_by(*sorts)
             else:
-                queryset = CollPolicyGroups.objects.all()
-                if self.id is not '':
-                    queryset = CollPolicyGroups.objects.filter(policy_group_id=self.id)
+                queryset = CollPolicyGroups.objects.all().order_by(*sorts)
             serializer = CollPolicyGroupSerializer(queryset, many=True)
             paginator = Paginator(serializer.data, self.max_size_per_page)
             contacts = paginator.page(self.page_from)
@@ -126,16 +122,6 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def post(self):
-        # http://127.0.0.1:1111/v1/api_collection_policy_group/
-        # {
-        #     "group_id": 1,
-        #     "group_name": "test",
-        #     "group_desc": "test",
-        #     "ostype": 1,
-        #     "cps": [{"status": 1, "collection_policy_id": 1, "exec_interval": 1, "expired_duration": 1},
-        #             {"status": 1, "collection_policy_id": 3, "exec_interval": 1, "expired_duration": 1}]
-        #
-        # }
         try:
             data = {
                 'name': self.name,
@@ -156,7 +142,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                         serializer_related.save()
                     else:
                         data = {
-                            'data': serializer_related.errors,
+                            constants.MESSAGE: serializer_related.errors,
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
@@ -186,25 +172,11 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def put(self):
-        # http://127.0.0.1:1111/v1/api_collection_policy_group/
-        # {
-        #     "group_id": 1,
-        #     "group_name": "test",
-        #     "group_desc": "test",
-        #     "ostype": 1,
-        #     "cps": [{"status": 1, "collection_policy_id": 6, "exec_interval": 1, "expired_duration": 1},
-        #             {"status": 1, "collection_policy_id": 7, "exec_interval": 1, "expired_duration": 1}]
-        #
-        # }
         try:
             cps = views_helper.get_request_value(self.request, 'cps', 'BODY')
             kwargs = {'policy_group_id': self.id}
             queryset = self.get_cp_group(**kwargs)
-            data = {
-                'name': self.name,
-                'desc': self.desc,
-                'ostype': self.ostype,
-            }
+            queryset_pg = self.get_policy_group(**kwargs)
             if queryset is False:
                 message = 'There is no result for current query.'
                 data = {
@@ -216,9 +188,8 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                     }
                 }
                 return api_return(data=data)
-            queryset_related = self.get_policy_group(**kwargs)
-            if queryset_related is False:
-                message = 'There is no result for current query.'
+            if queryset_pg is False:
+                message = 'There is no result found in current policy group.'
                 data = {
                     constants.MESSAGE: message,
                     'new_token': self.new_token,
@@ -229,30 +200,49 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 }
                 return api_return(data=data)
             self.del_policy_group(**kwargs)
-            for per_cp in cps:
-                per_cp['policy_group'] = int(self.id)
-                per_cp['history'] = time.time()
-                per_cp['policy'] = per_cp['collection_policy_id']
-                serializer_related = PolicyGroupSerializer(data=per_cp)
-                if serializer_related.is_valid():
-                    serializer_related.save()
-                else:
-                    data = {
-                        constants.MESSAGE: serializer_related.errors,
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.FAILED
-                        }
-                    }
-                    return api_return(data=data)
             data = {
-                constants.STATUS: {
-                    constants.STATUS: constants.TRUE,
-                    constants.MESSAGE: constants.SUCCESS
-                },
+                'name': self.name,
+                'desc': self.desc,
+                'ostype': self.ostype,
             }
-            return api_return(data=data)
+            serializer = CollPolicyGroupSerializer(queryset, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                for per_cp in cps:
+                    per_cp['policy_group'] = int(serializer.data.get('policy_group_id'))
+                    per_cp['history'] = time.time()
+                    per_cp['policy'] = per_cp['collection_policy_id']
+                    # data = JSONParser().parse(self.request)
+                    serializer_related = PolicyGroupSerializer(data=per_cp)
+                    if serializer_related.is_valid():
+                        serializer_related.save()
+                    else:
+                        data = {
+                            constants.MESSAGE: serializer_related.errors,
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.FAILED
+                            }
+                        }
+                        return api_return(data=data)
+                data = {
+                    constants.STATUS: {
+                        constants.STATUS: constants.TRUE,
+                        constants.MESSAGE: constants.SUCCESS
+                    }
+                }
+                return api_return(data=data)
+            else:
+                data = {
+                    'data': serializer.errors,
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.FAILED
+                    }
+                }
+                return api_return(data=data)
         except Exception, e:
             print traceback.format_exc(e)
             return exception_handler(e)
