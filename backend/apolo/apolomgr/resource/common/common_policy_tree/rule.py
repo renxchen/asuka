@@ -488,8 +488,49 @@ class Policy(object):
 
     def extract_block_by_regular(self):
         self.__set_input__()
-        pass
+        basic_pattern = '.*({}).*'.format(self.basic_c)
+        block_start_line_num = 0
+        lineNum_list = []
+        line_count = 0
+        block_start_mark = False
+        result = []
+        for one_line in self.data_list:
+            basic_pattern_match = re.match(basic_pattern, one_line)
+            if basic_pattern_match:
+                match_string = basic_pattern_match.group(1)
+                line_num = self.start_line + line_count
+                lineNum_list.append((line_num, match_string))
+                block_start_mark = True
+                if block_start_line_num == 0:
+                    block_start_line_num = self.start_line + line_count
+            else:
+                if block_start_mark:
+                    block_end_line_num = self.start_line + line_count-1
+                    res_dict = {
+                        'start_line': block_start_line_num,
+                        'end_line': block_end_line_num,
+                        'block_start_characters': self.basic_c,
+                        'deep': self.deep,
+                        'reg_match_context': lineNum_list
+                        #'extract_data': '\n'.join(self.data_list[block_start_line_num:block_end_line_num + 1])
+                    }
+                    result.append(res_dict)
+                    # clear buffer
+                    block_start_mark = False
+                    lineNum_list = []
+                    block_start_line_num = 0
+            line_count += 1
+        if block_start_mark:
+            #block_end_line_num = self.end_line
+            res_dict = {
+                'start_line': block_start_line_num,
+                'end_line': self.end_line,
+                'block_start_characters': self.basic_c,
+                'deep': self.deep,
+                'reg_match_context': lineNum_list
+                #'extract_data': '\n'.join(self.data_list[block_start_line_num:])
+            }
+            result.append(res_dict)
 
-
-
+        return result
 
