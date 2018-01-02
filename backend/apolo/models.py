@@ -92,6 +92,14 @@ class CollPolicyGroups(models.Model):
         # managed = False
         db_table = 'coll_policy_groups'
 
+    @property
+    def ostype_name(self):
+        return self.ostype.name
+
+    @property
+    def ostype_ostypeid(self):
+        return self.ostype.ostypeid
+
 
 class CollPolicyRuleTree(models.Model):
     treeid = models.AutoField(primary_key=True)

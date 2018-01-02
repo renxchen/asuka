@@ -1,12 +1,10 @@
-from backend.apolo.tools.common import api_return
+from backend.apolo.tools.views_helper import api_return
 import simplejson as json
 from backend.apolo.tools import constants
 
 import logging
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
-from django.core.paginator import EmptyPage, PageNotAnInteger
-import traceback
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -25,15 +23,23 @@ def exception_handler(e):
         logger.info("Failed, KeyError occurred")  ###Logger###
         data = {'message': constants.KEY_ERROR % e}
         return api_return(data=eval(json.dumps(data)))
-    if 'PageNotAnInteger' in repr(e):
+    elif 'PageNotAnInteger' in repr(e):
         logger.info("That page number is not an integer")  ###Logger###
         data = {'message': constants.PAGE_NOT_INTEGER}
         return api_return(data=eval(json.dumps(data)))
-    if 'EmptyPage' in repr(e):
+    elif 'EmptyPage' in repr(e):
         logger.info("That page number is less than 1")  ###Logger###
         data = {'message': constants.EMPTY_PAGE}
         return api_return(data=eval(json.dumps(data)))
-    if 'IndexError' in repr(e):
+    elif 'IndexError' in repr(e):
         logger.info("List index out of range")  ###Logger###
         data = {'message': "List index out of range"}
+        return api_return(data=eval(json.dumps(data)))
+    elif 'ValueError' in repr(e):
+        logger.info("Parameter type error.")  ###Logger###
+        data = {'message': "Parameter type error."}
+        return api_return(data=eval(json.dumps(data)))
+    else:
+        logger.info("Error or exception occurred.")  ###Logger###
+        data = {'message': "Error or exception occurred."}
         return api_return(data=eval(json.dumps(data)))
