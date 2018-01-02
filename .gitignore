@@ -5,8 +5,9 @@
 /backend/server/settings.py
 *logs
 /*.log
-.idea
+.idea/*
 .vscode/
 frontend/APP/node_modules/*
 frontend/APP/dist/*
 frontend/APP/typings/*
+frontend/APP/*.log

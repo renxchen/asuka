@@ -11,6 +11,7 @@ import { HttpClientComponent } from '../components/utils/httpClient';
 import { LoginComponentModule } from './login/login.module';
 import { IndexComponentModule } from './index/index.module';
 import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.module';
+import { DataCollectionViewComponentModule } from './dataCollection/dataCollection.module';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.modul
     LoginComponentModule,
     IndexComponentModule,
     CPViewComponentModule,
+    DataCollectionViewComponentModule,
     BreadCrumbModule
   ],
   providers: [],
