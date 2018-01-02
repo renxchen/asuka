@@ -5,6 +5,7 @@ import { CPViewComponent } from './collectionPolicy/cPView.component';
 import { CPGViewComponent } from './collectionPolicy/cPGView.component';
 import { CLICPLoginComponent } from './collectionPolicy/cliCPLogin.component';
 import { SNMPCPLoginComponent } from './collectionPolicy/snmpCPLogin.component';
+import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
 const routes: Routes = [
     {
         path: '',
@@ -57,6 +58,13 @@ const routes: Routes = [
             data: {
               parentTitle: 'コレクションポリシー',
               title: 'SNMPコレクションポリシー登録'
+            }
+          },
+          {
+            path: 'dataCollectionView',
+            component: DataCollectionViewComponent,
+            data: {
+              title: 'データ取得一覧'
             }
           }
         ]
