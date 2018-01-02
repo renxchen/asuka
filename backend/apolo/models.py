@@ -96,11 +96,11 @@ class CollPolicyGroups(models.Model):
 
     @property
     def ostype_name(self):
-        return self.ostype.name
+        return self.ostypeid.name
 
     @property
     def ostype_ostypeid(self):
-        return self.ostype.ostypeid
+        return self.ostypeid.ostypeid
 
 
 class CollPolicyRuleTree(models.Model):
