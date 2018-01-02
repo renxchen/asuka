@@ -50,6 +50,7 @@ class CollPolicy(models.Model):
     policy_type = models.IntegerField(blank=True, null=True)
     snmp_oid = models.CharField(max_length=256, blank=True, null=True)
     history = models.CharField(max_length=255, blank=True, null=True)
+    value_type = models.IntegerField(blank=True, null=True)
     ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
 
     class Meta:
@@ -75,6 +76,7 @@ class CollPolicyCliRule(models.Model):
     is_serial = models.IntegerField(blank=True, null=True)
     is_include = models.IntegerField(blank=True, null=True)
     command = models.CharField(max_length=256, blank=True, null=True)
+    value_type = models.IntegerField(blank=True, null=True)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
 
     class Meta:
@@ -168,9 +170,10 @@ class DevicesGroups(models.Model):
 class Event(models.Model):
     event_id = models.IntegerField(primary_key=True)
     clock = models.IntegerField(blank=True, null=True)
-    log_content = models.TextField(blank=True, null=True)
-    device = models.ForeignKey(Devices, models.DO_NOTHING)
-    action = models.ForeignKey(Actions, models.DO_NOTHING)
+    number = models.IntegerField(blank=True, null=True)
+    source = models.IntegerField(blank=True, null=True)
+    value = models.IntegerField(blank=True, null=True)
+    objectid = models.IntegerField(blank=True, null=True)
 
     class Meta:
         # managed = False
@@ -297,12 +300,8 @@ class Items(models.Model):
     value_type = models.IntegerField(blank=True, null=True)
     item_type = models.IntegerField(blank=True, null=True)
     key_str = models.CharField(max_length=30, blank=True, null=True)
-    name = models.CharField(max_length=255, blank=True, null=True)
-    priority = models.IntegerField(blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
     last_exec_time = models.IntegerField(blank=True, null=True)
-    exec_interval = models.IntegerField(blank=True, null=True)
-    history = models.CharField(max_length=255, blank=True, null=True)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
     coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING, db_column='coll_policy_rule_tree_treeid')
     device = models.ForeignKey(Devices, models.DO_NOTHING)

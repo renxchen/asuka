@@ -41,8 +41,8 @@ class Actions(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'actions'
         app_label = "db_units"
+        db_table = 'actions'
 
 
 class CollPolicy(models.Model):
@@ -54,12 +54,13 @@ class CollPolicy(models.Model):
     policy_type = models.IntegerField(blank=True, null=True)
     snmp_oid = models.CharField(max_length=256, blank=True, null=True)
     history = models.CharField(max_length=255, blank=True, null=True)
+    value_type = models.IntegerField(blank=True, null=True)
     ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
 
     class Meta:
         # managed = False
-        db_table = 'coll_policy'
         app_label = "db_units"
+        db_table = 'coll_policy'
 
 
 class CollPolicyCliRule(models.Model):
@@ -80,11 +81,13 @@ class CollPolicyCliRule(models.Model):
     is_serial = models.IntegerField(blank=True, null=True)
     is_include = models.IntegerField(blank=True, null=True)
     command = models.CharField(max_length=256, blank=True, null=True)
+    value_type = models.IntegerField(blank=True, null=True)
+    coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
 
     class Meta:
         # managed = False
-        db_table = 'coll_policy_cli_rule'
         app_label = "db_units"
+        db_table = 'coll_policy_cli_rule'
 
 
 class CollPolicyGroups(models.Model):
@@ -95,8 +98,16 @@ class CollPolicyGroups(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'coll_policy_groups'
         app_label = "db_units"
+        db_table = 'coll_policy_groups'
+
+    @property
+    def ostype_name(self):
+        return self.ostype.name
+
+    @property
+    def ostype_ostypeid(self):
+        return self.ostype.ostypeid
 
 
 class CollPolicyRuleTree(models.Model):
@@ -110,8 +121,8 @@ class CollPolicyRuleTree(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'coll_policy_rule_tree'
         app_label = "db_units"
+        db_table = 'coll_policy_rule_tree'
 
 
 class DataTable(models.Model):
@@ -121,8 +132,8 @@ class DataTable(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'data_table'
         app_label = "db_units"
+        db_table = 'data_table'
 
 
 class DataTableItems(models.Model):
@@ -132,8 +143,8 @@ class DataTableItems(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'data_table_items'
         app_label = "db_units"
+        db_table = 'data_table_items'
 
 
 class Devices(models.Model):
@@ -153,8 +164,8 @@ class Devices(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'devices'
         app_label = "db_units"
+        db_table = 'devices'
 
 
 class DevicesGroups(models.Model):
@@ -164,22 +175,22 @@ class DevicesGroups(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'devices_groups'
         app_label = "db_units"
+        db_table = 'devices_groups'
 
 
 class Event(models.Model):
     event_id = models.IntegerField(primary_key=True)
     clock = models.IntegerField(blank=True, null=True)
-    objectid = models.IntegerField(blank=True, null=True)
-    value = models.IntegerField(blank=True, null=True)
-    source = models.IntegerField(blank=True, null=True)
     number = models.IntegerField(blank=True, null=True)
+    source = models.IntegerField(blank=True, null=True)
+    value = models.IntegerField(blank=True, null=True)
+    objectid = models.IntegerField(blank=True, null=True)
 
     class Meta:
         # managed = False
-        db_table = 'event'
         app_label = "db_units"
+        db_table = 'event'
 
 
 class Functions(models.Model):
@@ -191,8 +202,8 @@ class Functions(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'functions'
         app_label = "db_units"
+        db_table = 'functions'
 
 
 class Groups(models.Model):
@@ -203,8 +214,8 @@ class Groups(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'groups'
         app_label = "db_units"
+        db_table = 'groups'
 
 
 class HistoryCliFloat(models.Model):
@@ -216,8 +227,8 @@ class HistoryCliFloat(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'history_cli_float'
         app_label = "db_units"
+        db_table = 'history_cli_float'
 
 
 class HistoryCliInt(models.Model):
@@ -229,8 +240,8 @@ class HistoryCliInt(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'history_cli_int'
         app_label = "db_units"
+        db_table = 'history_cli_int'
 
 
 class HistoryCliStr(models.Model):
@@ -242,8 +253,8 @@ class HistoryCliStr(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'history_cli_str'
         app_label = "db_units"
+        db_table = 'history_cli_str'
 
 
 class HistoryCliText(models.Model):
@@ -255,8 +266,8 @@ class HistoryCliText(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'history_cli_text'
         app_label = "db_units"
+        db_table = 'history_cli_text'
 
 
 class HistorySnmpFloat(models.Model):
@@ -267,8 +278,8 @@ class HistorySnmpFloat(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'history_snmp_float'
         app_label = "db_units"
+        db_table = 'history_snmp_float'
 
 
 class HistorySnmpInt(models.Model):
@@ -279,8 +290,8 @@ class HistorySnmpInt(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'history_snmp_int'
         app_label = "db_units"
+        db_table = 'history_snmp_int'
 
 
 class HistorySnmpStr(models.Model):
@@ -291,8 +302,8 @@ class HistorySnmpStr(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'history_snmp_str'
         app_label = "db_units"
+        db_table = 'history_snmp_str'
 
 
 class HistorySnmpText(models.Model):
@@ -303,8 +314,8 @@ class HistorySnmpText(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'history_snmp_text'
         app_label = "db_units"
+        db_table = 'history_snmp_text'
 
 
 class Items(models.Model):
@@ -312,12 +323,8 @@ class Items(models.Model):
     value_type = models.IntegerField(blank=True, null=True)
     item_type = models.IntegerField(blank=True, null=True)
     key_str = models.CharField(max_length=30, blank=True, null=True)
-    name = models.CharField(max_length=255, blank=True, null=True)
-    # priority = models.IntegerField(blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
     last_exec_time = models.IntegerField(blank=True, null=True)
-    exec_interval = models.IntegerField(blank=True, null=True)
-    history = models.CharField(max_length=255, blank=True, null=True)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
     coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING, db_column='coll_policy_rule_tree_treeid')
     device = models.ForeignKey(Devices, models.DO_NOTHING)
@@ -325,8 +332,8 @@ class Items(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'items'
         app_label = "db_units"
+        db_table = 'items'
 
 
 class Mapping(models.Model):
@@ -338,8 +345,8 @@ class Mapping(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'mapping'
         app_label = "db_units"
+        db_table = 'mapping'
 
 
 class Ostype(models.Model):
@@ -356,8 +363,8 @@ class Ostype(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'ostype'
         app_label = "db_units"
+        db_table = 'ostype'
 
 
 class PolicysGroups(models.Model):
@@ -370,8 +377,8 @@ class PolicysGroups(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'policys_groups'
         app_label = "db_units"
+        db_table = 'policys_groups'
 
 
 class Schedules(models.Model):
@@ -388,8 +395,8 @@ class Schedules(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'schedules'
         app_label = "db_units"
+        db_table = 'schedules'
 
 
 class TriggerDetail(models.Model):
@@ -402,8 +409,8 @@ class TriggerDetail(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'trigger_detail'
         app_label = "db_units"
+        db_table = 'trigger_detail'
 
 
 class Triggers(models.Model):
@@ -419,5 +426,5 @@ class Triggers(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'triggers'
         app_label = "db_units"
+        db_table = 'triggers'
