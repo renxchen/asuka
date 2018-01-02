@@ -1,5 +1,12 @@
 # Created by .ignore support plugin (hsz.mobi)
-.pyc
+*.pyc
 .bzrignore
 *migrations
+/backend/server/settings.py
 *logs
+/*.log
+.idea
+.vscode/
+frontend/APP/node_modules/*
+frontend/APP/dist/*
+frontend/APP/typings/*

@@ -1,0 +1,8 @@
+{
+    "/v1": 
+    {
+    "target" : "http://10.75.44.222:9000",
+    "secure": false,
+    "changeOrigin": true
+  }
+}
