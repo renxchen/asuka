@@ -4,7 +4,9 @@ import { IndexComponent } from './index/index.component';
 import { CPViewComponent } from './collectionPolicy/cPView.component';
 import { CPGViewComponent } from './collectionPolicy/cPGView.component';
 import { CLICPLoginComponent } from './collectionPolicy/cliCPLogin.component';
+import { CLICPEditComponent } from './collectionPolicy/cliCPEdit.component';
 import { SNMPCPLoginComponent } from './collectionPolicy/snmpCPLogin.component';
+import { SNMPCPEditComponent } from './collectionPolicy/snmpCPEdit.component';
 const routes: Routes = [
     {
         path: '',
@@ -52,11 +54,27 @@ const routes: Routes = [
             }
           },
           {
+            path: 'cliCPEdit',
+            component: CLICPEditComponent,
+            data: {
+              parentTitle: 'コレクションポリシー',
+              title: 'CLIコレクションポリシー：ツリー構成'
+            }
+          },
+          {
             path: 'snmpCPLogin',
             component: SNMPCPLoginComponent,
             data: {
               parentTitle: 'コレクションポリシー',
               title: 'SNMPコレクションポリシー登録'
+            }
+          },
+          {
+            path: 'snmpCPEdit',
+            component: SNMPCPLoginComponent,
+            data: {
+              parentTitle: 'コレクションポリシー',
+              title: 'SNMPコレクションポリシー：編集'
             }
           }
         ]
