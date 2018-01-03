@@ -11,10 +11,8 @@
 '''
 import os, sys
 
-from backend.apolo.models import CollPolicyRuleTree, CollPolicy, CollPolicyCliRule
-
 script_dir = os.path.split(os.path.realpath(__file__))[0]
-prj_dir = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
+prj_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))))
 sys.path.append(prj_dir)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
 
@@ -25,7 +23,7 @@ django.setup()
 import json
 from collections import OrderedDict
 from backend.apolo.tools import constants
-
+from backend.apolo.models import CollPolicyRuleTree, CollPolicy, CollPolicyCliRule
 
 class Policy_tree_node(object):
     def __init__(self):
