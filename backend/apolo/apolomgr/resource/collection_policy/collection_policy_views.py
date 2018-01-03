@@ -36,6 +36,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
         self.cli_command = views_helper.get_request_value(self.request, 'cli_command', 'BODY')
         self.desc = views_helper.get_request_value(self.request, 'desc', 'BODY')
         self.snmp_oid = views_helper.get_request_value(self.request, 'snmp_oid', 'BODY')
+        self.value_type = views_helper.get_request_value(self.request, 'value_type', 'BODY')
 
     @staticmethod
     def get_cp(**kwargs):
@@ -137,7 +138,8 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 'cli_command': self.cli_command,
                 'ostype': self.ostype,
                 'snmp_oid': self.snmp_oid,
-                'policy_type': self.policy_type
+                'policy_type': self.policy_type,
+                'value_type': self.value_type,
             }
             serializer = CollPolicySerializer(data=data)
             if serializer.is_valid():
@@ -173,7 +175,8 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 'name': self.name,
                 'desc': self.desc,
                 'ostype': self.ostype,
-                'snmp_oid': self.snmp_oid
+                'snmp_oid': self.snmp_oid,
+                'value_type': self.value_type,
             }
             if queryset is False:
                 message = 'There is no result for current query.'

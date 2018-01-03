@@ -85,7 +85,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 'id': 'policy_group_id',
                 'name': 'name',
                 'desc': 'desc',
-                'ostype': 'ostype__name',
+                'ostypeid': 'ostype__name',
             }
             query_data = {
                 'name': self.name,
@@ -126,7 +126,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             data = {
                 'name': self.name,
                 'desc': self.desc,
-                'ostype': self.ostype,
+                'ostypeid': self.ostype,
             }
             cps = views_helper.get_request_value(self.request, 'cps', 'BODY')
             serializer = CollPolicyGroupSerializer(data=data)
