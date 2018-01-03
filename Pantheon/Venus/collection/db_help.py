@@ -1,8 +1,8 @@
 import os
 import django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Venus.db_units.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Pantheon.Venus.db_units.settings")
 django.setup()
-from Venus.db_units.models import Items, PolicysGroups
+from ..db_units.models import Items, PolicysGroups
 
 
 def get_items_schedule(item_type):
@@ -12,7 +12,6 @@ def get_items_schedule(item_type):
         "schedule__valid_period_time",
         "schedule__data_schedule_type",
         "schedule__data_schedule_time",
-        "exec_interval",
         "last_exec_time",
 
         "device__device_id",
@@ -31,8 +30,11 @@ def get_items_schedule(item_type):
 
         "coll_policy__cli_command",
         "coll_policy__snmp_oid",
+        # "exec_interval",
 
         "schedule__priority",
+        "policys_groups__exec_interval",
+        "policys_groups__history",
         "coll_policy_id",
         "item_type")
     return items
@@ -46,4 +48,4 @@ def get_policy_interval(policy_group_id):
 
 if __name__ == "__main__":
     # get_items_schedule()
-    print get_policy_interval(1)
+    print get_items_schedule(0)

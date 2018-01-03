@@ -64,7 +64,6 @@ def __get_cli_data(param):
         output = res.text
     else:
         raise CollectionException("Collection Error:%s" % str(res.text))
-    print output
     return output
 
 
@@ -77,7 +76,6 @@ def __get_snmp_data(param):
         output = res.text
     else:
         raise CollectionException("Collection Error:%s" % str(res.text))
-
     return output
 
 
@@ -90,5 +88,15 @@ def cli_main():
     pool.join()
 
 
+def snmp_main():
+    now_time = int(time.time())
+    devices = get_devices(now_time, SNMP_TYPE_CODE)
+    pool = ThreadPool(15)
+    pool.map(__get_snmp_data, devices)
+    pool.close()
+    pool.join()
+
+
 if __name__ == "__main__":
-    cli_main()
+    # cli_main()
+    snmp_main()

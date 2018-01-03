@@ -1,35 +1,64 @@
 import time
-from Venus.collection.db_help import get_items_schedule
-from Venus.constants import OPEN_VALID_PERIOD_TYPE, \
+from Pantheon.Venus.collection.db_help import get_items_schedule
+from Pantheon.Venus.constants import OPEN_VALID_PERIOD_TYPE, \
     VALID_PERIOD_SPLIT, \
     VALID_DATE_FORMAT,\
-    SCHEDULE_SPECIALLY, SCHEDULE_CLOSED, SCHEDULE_GET_NORMALLY, SCHEDULE_WEEKS_SPLIT, SCHEDULE_DATE_SPLIT, SCHEDULE_SPLIT
+    SCHEDULE_SPECIALLY, SCHEDULE_CLOSED, SCHEDULE_GET_NORMALLY, SCHEDULE_WEEKS_SPLIT, SCHEDULE_DATE_SPLIT, \
+    SCHEDULE_SPLIT, CLI_COLLECTION_DEFAULT_METHOD, SNMP_COLLECTION_DEFAULT_METHOD
 
 
 def get_items(now_time, item_type):
     items = get_items_schedule(item_type)
-    return merge_device(get_task_information(now_time, items))
+    tmp_result = merge_device(get_task_information(now_time, items))
+    if item_type == 0:
+        devices = map(__merge_cli, tmp_result.values())
+    else:
+        devices = map(__merge_snmp, tmp_result.values())
+    return devices
+
+
+def __merge_snmp(items):
+    result = dict()
+    if len(items) == 0:
+        return []
+    result['ip'] = items[0]['device__ip']
+    result['community'] = items[0]['device__snmp_community']
+    result['timeout'] = items[0]['device__ostype__snmp_timeout']
+    result['commands'] = dict(
+        operate="",
+        oids=[]
+    )
+    for item in items:
+        result["commands"]['operate'] = "bulk_get"
+        result["commands"]['oids'].append(item['coll_policy__snmp_oid'])
+    return result
+
+
+def __merge_cli(items):
+    result = dict()
+    if len(items) == 0:
+        return []
+    result['ip'] = items[0]['device__ip']
+    result['expect'] = items[0]['device__login_expect']
+    result['default_commands'] = items[0]['device__ostype__start_default_commands']
+    result['timeout'] = items[0]['device__ostype__telnet_timeout']
+    result['commands'] = []
+    result['method'] = CLI_COLLECTION_DEFAULT_METHOD
+    result['platform'] = 'ios'
+    for item in items:
+        result["commands"].append(item['coll_policy__cli_command'])
+    return result
 
 
 def merge_device(items):
     tmp_devices = {}
     for item in items:
         if item['device__device_id'] in tmp_devices:
-            tmp_devices[item['device__device_id']]['commands'].append(item['coll_policy__cli_command'])
-            tmp_devices[item['device__device_id']]['oids'].append(item['coll_policy__snmp_oid'])
+            tmp_devices[item['device__device_id']].append(item)
         else:
             tmp_devices[item['device__device_id']] = []
-            tmp_devices[item['device__device_id']] = dict(
-                    ip=item['device__ip'],
-                    expect=item['device__login_expect'],
-                    commands=[item['coll_policy__cli_command']],
-                    oids=[item['coll_policy__snmp_oid']],
-                    snmp_port=item['device__snmp_port'],
-                    default_commands=item["device__ostype__start_default_commands"],
-                    snmp_timeout=item['device__ostype__snmp_timeout'],
-                    telnet_timeout=item['device__ostype__telnet_timeout']
-                )
-    return tmp_devices.values()
+            tmp_devices[item['device__device_id']].append(item)
+    return tmp_devices
 
 
 def get_task_information(now_time, items):
@@ -91,7 +120,7 @@ def check_device_priority(items):
 def check_item_interval(param):
     item = param[0]
     now_time = param[1]
-    exec_interval = item["exec_interval"]
+    exec_interval = item["policys_groups__exec_interval"]
     last_exec_time = item['last_exec_time']
     if now_time / exec_interval == last_exec_time / exec_interval:
         return False
@@ -207,9 +236,9 @@ if __name__ == "__main__":
     # "2017/12/13 12:12:12 2"
     # "2017/12/15 11:19:44"
     # 1513484916, 1513312116
-    start_time = time.time()
-    print get_items(1513312116, 0)
-    end_time = time.time()
+    # start_time = time.time()
+    print get_items(1513312116, 1)
+    # end_time = time.time()
     # a = 2
     # b = 1 + 1
     # print id(a), id(b)
