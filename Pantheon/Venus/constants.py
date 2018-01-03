@@ -28,6 +28,9 @@ SCHEDULE_WEEKS_SPLIT = ";"
 SCHEDULE_DATE_SPLIT = "@"
 SCHEDULE_SPLIT = "-"
 
+CLI_COLLECTION_DEFAULT_METHOD = 'telnet'
+SNMP_COLLECTION_DEFAULT_METHOD = "bulk_get"
+
 """
 ############Trigger###########
 """
