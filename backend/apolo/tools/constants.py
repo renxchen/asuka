@@ -76,9 +76,11 @@ NO_MATCH_EXTRACT_DATA_REGEXP = 'Can not match the provided regular Expression.'
 BLOCK_RULE_TREE_KIND_ONE_NAME = 'b1'  # インデントによって絞る
 BLOCK_RULE_TREE_KIND_TWO_NAME = 'b2'  # 行数によって絞る
 BLOCK_RULE_TREE_KIND_THREE_NAME = 'b3'  # 指定文字列の間
+BLOCK_RULE_TREE_KIND_FOUR_NAME = 'b4'  # 正規表現による絞る
 DATA_RULE_TREE_KIND_ONE_NAME = 'd1'  # 特定文字からの距離
 DATA_RULE_TREE_KIND_TWO_NAME = 'd2'  # 行数指定
 DATA_RULE_TREE_KIND_THREE_NAME = 'd3'  # 正規表現
+DATA_RULE_TREE_KIND_FOUR_NAME = 'd4'  # データ行数を取得
 POLICY_TREE_ROOT_ICON = 'pcy_root_icon.jpg'
 BLOCK_NODE_ICON = 'rule_block_node_icon.jpg'
 DATA_NODE_ICON = 'rule_data_node_icon.jpg'
@@ -87,5 +89,9 @@ RULE_NODE_ICON = 'rule_tree_node_icon.jpg'
 #########################################
 # Policy Tree Message
 #########################################
-NODE_IS_EXISTENCE = 'the node exist in the tree'            # ツリー内に定義されているため、編集できません。
+NODE_IS_EXISTENCE = 'the node exist in the tree'  # ツリー内に定義されているため、編集できません。
 RULE_NAME_IS_EXISTENCE = 'the same name rule is existence'  # 既に同じ表示名のルールが登録されています。
+POLICY_IS_APPLIED = 'the policy is being applied by schedule function'  # このコレクションポリシーがスケジュールに利用されています。
+POLICY_DATA_VALID_ERROR = 'data valid error when insert policy tree rules'  # コレクションポリシーツリーに追加されたデータが適切ではないです。
+RULE_DATA_VALID_ERROR = 'data valid error in saving the rule'  # ルールを追加する時に、データが適切ではないです
+LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定義されていないです
