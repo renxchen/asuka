@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { appRouting,  } from './app.router';
 import { HttpModule, Http } from '@angular/http';
+import { ModalModule } from 'ngx-bootstrap';
 
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '../components/utils/httpClient.module';
@@ -23,6 +24,7 @@ import { DataCollectionViewComponentModule } from './dataCollection/dataCollecti
     appRouting,
     HttpClientModule,
     HttpModule,
+    ModalModule.forRoot(),
     LoginComponentModule,
     IndexComponentModule,
     CPViewComponentModule,
