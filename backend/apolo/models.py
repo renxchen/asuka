@@ -57,6 +57,10 @@ class CollPolicy(models.Model):
         # managed = False
         db_table = 'coll_policy'
 
+    @property
+    def ostype_name(self):
+        return self.ostype.name
+
 
 class CollPolicyCliRule(models.Model):
     ruleid = models.AutoField(primary_key=True)
@@ -303,7 +307,8 @@ class Items(models.Model):
     status = models.IntegerField(blank=True, null=True)
     last_exec_time = models.IntegerField(blank=True, null=True)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
-    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING, db_column='coll_policy_rule_tree_treeid')
+    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
+                                                     db_column='coll_policy_rule_tree_treeid')
     device = models.ForeignKey(Devices, models.DO_NOTHING)
     schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
 
