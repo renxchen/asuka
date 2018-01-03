@@ -11,5 +11,5 @@ frontend/APP/node_modules/*
 frontend/APP/dist/*
 frontend/APP/typings/*
 frontend/APP/*.log
-.gitignore
 .idea
+.gitignore
