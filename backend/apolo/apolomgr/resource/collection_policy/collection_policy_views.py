@@ -107,8 +107,6 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 queryset = CollPolicy.objects.filter(**search_conditions).order_by(*sorts)
             else:
                 queryset = CollPolicy.objects.filter(**{'policy_type': self.policy_type}).order_by(*sorts)
-                if self.id is not '':
-                    queryset = CollPolicy.objects.filter(coll_policy_id=self.id)
             serializer = CollPolicySerializer(queryset, many=True)
             paginator = Paginator(serializer.data, int(self.max_size_per_page))
             contacts = paginator.page(int(self.page_from))
