@@ -329,6 +329,7 @@ class Items(models.Model):
     coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING, db_column='coll_policy_rule_tree_treeid')
     device = models.ForeignKey(Devices, models.DO_NOTHING)
     schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
+    policys_groups = models.ForeignKey('PolicysGroups', models.DO_NOTHING)
 
     class Meta:
         # managed = False
@@ -373,7 +374,7 @@ class PolicysGroups(models.Model):
     status = models.IntegerField(blank=True, null=True)
     history = models.CharField(max_length=255, blank=True, null=True)
     policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
-    policy_group = models.ForeignKey(CollPolicyGroups, models.DO_NOTHING)
+    policy_group = models.ForeignKey(CollPolicyGroups, models.DO_NOTHING, related_name="FAN")
 
     class Meta:
         # managed = False
