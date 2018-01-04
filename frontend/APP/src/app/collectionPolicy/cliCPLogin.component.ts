@@ -18,15 +18,17 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
     selectedOsType: any;
     regExp: string;
     msgFlg: Boolean = true;
-    nameFlg;
-    cmdFlg;
+    nameFlg: boolean;
+    cmdFlg: boolean;
     nameNotNull;
     cmdNotNull;
+    osTypeFlg: boolean;
     constructor(
         private router: Router,
         private activedRoute: ActivatedRoute,
         private httpClient: HttpClientComponent) { }
     ngOnInit() {
+        this.selectedOsType = 'null';
         let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cPType'];
         if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
             this.cPType = cPTypeTmp;
@@ -40,9 +42,8 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
         let cPInfo: any = {};
         this.apiPrefix = '/v1';
         let cPLoginUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
-        let cPViewUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
-        if (this.regExpCheck() === true) {
-            console.log('cpLogin');
+        let cPEditUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
+        if (this.doCheck() === true) {
             this.msgFlg = true;
             cPInfo['name'] = this.name;
             cPInfo['cli_command'] = this.cliCommand;
@@ -54,7 +55,15 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
                 .subscribe(res => {
                     if (res['status']['status'].toString().toLowerCase() === 'true') {
-                        console.log('res', res);
+                        if (res['data']) {
+                            let id = res['data']['coll_policy_id'];
+                            this.router.navigate(['/index/cliCPEdit'],
+                            { queryParams: {'id' : id }});
+                        }
+                    } else {
+                        if (['status']['message']) {
+                            alert(res['status']['message']);
+                        }
                     }
                 });
         } else {
@@ -69,6 +78,7 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data']) {
+                        console.log(res['data']);
                         this.osType = res['data'];
                     }
                 } else {
@@ -78,8 +88,8 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                 }
             });
     }
-    public regExpCheck() {
-        this.regExp = '^[A-Za-z0-9]+$';
+    public doCheck() {
+        this.regExp = '[- 0-9a-zA-Z_]';
         let reg = new RegExp(this.regExp);
         if (this.name && this.name.trim()) {
             this.nameNotNull = true;
@@ -103,10 +113,16 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
             this.cmdNotNull = false;
             this.cmdFlg = true;
         }
+        if (this.selectedOsType !== 'null') {
+            this.osTypeFlg = true;
+        } else {
+            this.osTypeFlg = false;
+        }
         if (this.nameFlg === true
             && this.nameNotNull === true
             && this.cmdFlg === true
             && this.cmdNotNull === true
+            && this.selectedOsType !== 'null'
             ) {
             return true;
         } else {
