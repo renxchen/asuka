@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { SharedModule } from '../sharedModule/shared.module';
 import { CPViewComponent } from './cPView.component';
 import { CPGViewComponent } from './cPGView.component';
 import { CLICPLoginComponent } from './cliCPLogin.component';
@@ -12,7 +13,7 @@ import { SNMPCPEditComponent } from './snmpCPEdit.component';
     declarations: [CPViewComponent, CPGViewComponent,
                     CLICPLoginComponent, CLICPEditComponent,
                     SNMPCPLoginComponent, SNMPCPEditComponent],
-    imports: [FormsModule, CommonModule ],
+    imports: [FormsModule, CommonModule, SharedModule],
     exports: [],
     providers: [],
 })

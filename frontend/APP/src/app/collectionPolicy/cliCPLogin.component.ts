@@ -44,7 +44,6 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
         let cPLoginUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
         let cPEditUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
         if (this.doCheck() === true) {
-            console.log('cpLogin');
             this.msgFlg = true;
             cPInfo['name'] = this.name;
             cPInfo['cli_command'] = this.cliCommand;
@@ -61,7 +60,6 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                             this.router.navigate(['/index/cliCPEdit'],
                             { queryParams: {'id' : id }});
                         }
-                        console.log('res', res);
                     } else {
                         if (['status']['message']) {
                             alert(res['status']['message']);

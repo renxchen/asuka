@@ -71,7 +71,7 @@ const routes: Routes = [
           },
           {
             path: 'snmpCPEdit',
-            component: SNMPCPLoginComponent,
+            component: SNMPCPEditComponent,
             data: {
               parentTitle: 'コレクションポリシー',
               title: 'SNMPコレクションポリシー：編集'

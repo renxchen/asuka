@@ -1,33 +1,48 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { appRouting,  } from './app.router';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpModule, Http } from '@angular/http';
-
+import { FormsModule } from '@angular/forms';
+import { appRouting } from './app.router';
+import { TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { SharedModule } from './sharedModule/shared.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '../components/utils/httpClient.module';
+import { HClientModule } from '../components/utils/httpClient.module';
 import { BreadCrumbModule } from '../components/breadCrumb/bread-crumb.module';
-import { HttpClientComponent } from '../components/utils/httpClient';
 import { LoginComponentModule } from './login/login.module';
 import { IndexComponentModule } from './index/index.module';
 import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.module';
 
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
     BrowserModule,
-    FormsModule,
-    appRouting,
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: (HttpLoaderFactory),
+          deps: [HttpClient]
+      }
+  }),
     HttpClientModule,
     HttpModule,
+    FormsModule,
+    appRouting,
+    SharedModule,
+    HClientModule,
+    BreadCrumbModule,
     LoginComponentModule,
     IndexComponentModule,
     CPViewComponentModule,
-    BreadCrumbModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

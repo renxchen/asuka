@@ -53,7 +53,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
             this.msgFlg = true;
             cPInfo['name'] = this.name;
             cPInfo['snmp_oid'] = this.snmpOid;
-            // cPInfo['return_type'] = this.selectedRtnType;
+            cPInfo['value_type'] = this.selectedRtnType;
             cPInfo['desc'] = this.desc;
             cPInfo['ostype'] = this.selectedOsType;
             console.log(cPInfo);
@@ -64,7 +64,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                     if (res['status']['status'].toString().toLowerCase() === 'true') {
                         if (res['data']) {
                             let id = res['data']['coll_policy_id'];
-                            this.router.navigate(['/index/snmpCPEdit/'],
+                            this.router.navigate(['/index/snmpCPEdit'],
                             { queryParams: {'id' : id }});
                         }
                         console.log('res', res);
