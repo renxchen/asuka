@@ -371,6 +371,18 @@ class Schedules(models.Model):
         # managed = False
         db_table = 'schedules'
 
+    @property
+    def policy_group_name(self):
+        return self.policy_group.name
+
+    @property
+    def device_group_name(self):
+        return self.device_group.name
+
+    @property
+    def ostype_name(self):
+        return self.ostype.name
+
 
 class TriggerDetail(models.Model):
     trigger_detail_id = models.AutoField(primary_key=True)
