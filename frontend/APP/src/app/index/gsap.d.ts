@@ -3,4 +3,6 @@ declare module 'gsap' {
     export var TweenLite: any;
     export var TimelineLite: any;
     export var Linear: any;
+    export var Elastic: any;
+    export var Power3: any;
 }

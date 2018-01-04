@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { IndexService } from './index.service';
 import { BreadCrumbComponent } from '../../components/breadCrumb/bread-crumb';
 import { TweenLite } from 'gsap';
+import { TranslateService } from '@ngx-translate/core';
 declare var $: any;
 @Component({
     selector: 'index',
@@ -16,8 +17,10 @@ export class IndexComponent implements OnInit, AfterViewInit {
     constructor(
         private elementRef: ElementRef,
         private service: IndexService,
-        private activatedRoute: ActivatedRoute
-    ) {}
+        private activatedRoute: ActivatedRoute,
+        private translate: TranslateService) {
+        this. translate.setDefaultLang('en');
+    }
     ngOnInit() {
         localStorage.setItem('requestFailed', '');
     }

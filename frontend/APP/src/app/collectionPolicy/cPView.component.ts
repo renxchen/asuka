@@ -59,7 +59,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             colModel: [
                 { label: 'No', hidden: true, name: 'coll_policy_id', index: 'coll_policy_id', search: false },
                 { label: 'コレクションポリシー名', name: 'name', index: 'name', width: 50, align: 'center', search: true },
-                { label: 'OS Type', name: 'ostype', index: 'ostype', width: 50, align: 'center', search: true },
+                { label: 'OS Type', name: 'ostype_name', index: 'ostype', width: 50, align: 'center', search: true },
                 { label: thirdCol, name: thirdName, index: thirdName, width: 50, align: 'center', search: true },
                 { label: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true },
                 {
@@ -73,6 +73,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.editBtn();
                 _t.deleteBtn();
             },
+            beforeSelectRow: function(rowid, e) { return false; },
             pager: '#cpPager',
             postData: { 'policy_type': cPType },
             rowNum: 5,
