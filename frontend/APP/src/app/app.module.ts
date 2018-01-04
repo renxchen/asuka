@@ -7,12 +7,15 @@ import { appRouting } from './app.router';
 import { TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { SharedModule } from './sharedModule/shared.module';
+import { ModalModule } from 'ngx-bootstrap';
+
 import { AppComponent } from './app.component';
 import { HClientModule } from '../components/utils/httpClient.module';
 import { BreadCrumbModule } from '../components/breadCrumb/bread-crumb.module';
 import { LoginComponentModule } from './login/login.module';
 import { IndexComponentModule } from './index/index.module';
 import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.module';
+import { DataCollectionViewComponentModule } from './dataCollection/dataCollection.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -23,14 +26,15 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
+    ModalModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
           provide: TranslateLoader,
           useFactory: (HttpLoaderFactory),
           deps: [HttpClient]
       }
-  }),
-    HttpClientModule,
+    }),
     HttpModule,
     FormsModule,
     appRouting,
@@ -40,6 +44,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     LoginComponentModule,
     IndexComponentModule,
     CPViewComponentModule,
+    LoginComponentModule,
+    IndexComponentModule,
+    CPViewComponentModule,
+    DataCollectionViewComponentModule,
+    BreadCrumbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

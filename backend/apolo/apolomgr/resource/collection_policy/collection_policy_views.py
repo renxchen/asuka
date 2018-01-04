@@ -31,11 +31,17 @@ class CollPolicyViewSet(viewsets.ViewSet):
         self.max_size_per_page = views_helper.get_request_value(self.request, 'rows', 'GET')
         self.id = views_helper.get_request_value(self.request, 'id', 'GET')
         self.policy_type = views_helper.get_request_value(self.request, 'policy_type', 'GET')
-        self.name = views_helper.get_request_value(self.request, 'name', 'BODY')
-        self.ostype = views_helper.get_request_value(self.request, 'ostype', 'BODY')
-        self.cli_command = views_helper.get_request_value(self.request, 'cli_command', 'BODY')
-        self.desc = views_helper.get_request_value(self.request, 'desc', 'BODY')
-        self.snmp_oid = views_helper.get_request_value(self.request, 'snmp_oid', 'BODY')
+        method = 'GET'
+        if request.method.lower() == 'get':
+            method = 'GET'
+        if request.method.lower() == 'post':
+            method = 'BODY'
+        self.name = views_helper.get_request_value(self.request, 'name', method)
+        self.ostype = views_helper.get_request_value(self.request, 'ostype', method)
+        self.cli_command = views_helper.get_request_value(self.request, 'cli_command', method)
+        self.desc = views_helper.get_request_value(self.request, 'desc', method)
+        self.snmp_oid = views_helper.get_request_value(self.request, 'snmp_oid', method)
+        self.value_type = views_helper.get_request_value(self.request, 'value_type', method)
 
     @staticmethod
     def get_cp(**kwargs):
@@ -106,8 +112,6 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 queryset = CollPolicy.objects.filter(**search_conditions).order_by(*sorts)
             else:
                 queryset = CollPolicy.objects.filter(**{'policy_type': self.policy_type}).order_by(*sorts)
-                if self.id is not '':
-                    queryset = CollPolicy.objects.filter(coll_policy_id=self.id)
             serializer = CollPolicySerializer(queryset, many=True)
             paginator = Paginator(serializer.data, int(self.max_size_per_page))
             contacts = paginator.page(int(self.page_from))
@@ -137,8 +141,10 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 'cli_command': self.cli_command,
                 'ostype': self.ostype,
                 'snmp_oid': self.snmp_oid,
-                'policy_type': self.policy_type
+                'policy_type': self.policy_type,
             }
+            if int(self.policy_type) == 1:
+                data['value_type'] = self.value_type
             serializer = CollPolicySerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
@@ -173,7 +179,8 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 'name': self.name,
                 'desc': self.desc,
                 'ostype': self.ostype,
-                'snmp_oid': self.snmp_oid
+                'snmp_oid': self.snmp_oid,
+                'value_type': self.value_type,
             }
             if queryset is False:
                 message = 'There is no result for current query.'

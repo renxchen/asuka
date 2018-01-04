@@ -9,33 +9,31 @@
 @desc:
 
 '''
-import os,sys
-
-from backend.apolo.models import CollPolicyRuleTree, CollPolicy, CollPolicyCliRule
+import os, sys
 
 script_dir = os.path.split(os.path.realpath(__file__))[0]
-prj_dir = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
+prj_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))))
 sys.path.append(prj_dir)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
 
 import django
+
 django.setup()
 
 import json
 from collections import OrderedDict
 from backend.apolo.tools import constants
-
+from backend.apolo.models import CollPolicyRuleTree, CollPolicy, CollPolicyCliRule
 
 class Policy_tree_node(object):
-
     def __init__(self):
-        self.tree_id =''
+        self.tree_id = ''
         self.parent_tree_id = ''
         self.is_leaf = False
         self.level = 0
         self.rule_id_path = ''
-        self.coll_policy_id =''
-        self.rule_id =''
+        self.coll_policy_id = ''
+        self.rule_id = ''
         self.rule_name = ''
         self.rule_type = None
 
@@ -50,13 +48,15 @@ class Policy_tree_node(object):
                'rule_id:{}'.format(self.tree_id, self.parent_tree_id, self.is_leaf,
                                    self.level, self.rule_id_path, self.coll_policy_id,
                                    self.rule_id)
-class Rule_Tree(object):
 
+
+class Rule_Tree(object):
     def __init__(self):
         self.block_rule_type_one = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.BLOCK_RULE_TREE_KIND_ONE_NAME,
-            'rule_id': 0,'children': []
+            'rule_id': 0,
+            'children': []
         }
         self.block_rule_type_two = {
             'icon': constants.RULE_NODE_ICON,
@@ -64,9 +64,15 @@ class Rule_Tree(object):
             'rule_id': 0,
             'children': []
         }
-        self.block_rule_type_three ={
+        self.block_rule_type_three = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.BLOCK_RULE_TREE_KIND_THREE_NAME,
+            'rule_id': 0,
+            'children': []
+        }
+        self.block_rule_type_four = {
+            'icon': constants.RULE_NODE_ICON,
+            'text': constants.BLOCK_RULE_TREE_KIND_FOUR_NAME,
             'rule_id': 0,
             'children': []
         }
@@ -88,14 +94,20 @@ class Rule_Tree(object):
             'rule_id': 0,
             'children': []
         }
+        self.data_rule_type_four = {
+            'icon': constants.RULE_NODE_ICON,
+            'text': constants.DATA_RULE_TREE_KIND_FOUR_NAME,
+            'rule_id': 0,
+            'children': []
+        }
 
-    def toJosn(self):
-        block_rule_list=[self.block_rule_type_one, self.block_rule_type_two, self.block_rule_type_three]
+    def toReturn(self):
+        block_rule_list = [self.block_rule_type_one, self.block_rule_type_two, self.block_rule_type_three]
         data_rule_list = [self.data_rule_type_one, self.data_rule_type_two, self.data_rule_type_three]
-        return block_rule_list,data_rule_list
+        return block_rule_list, data_rule_list
+
 
 class Policy_tree(object):
-
     def __init__(self, coll_policy_id):
         # the type is dict
         self.all_nodes = OrderedDict()
@@ -141,43 +153,66 @@ class Policy_tree(object):
 
     # get all the rules of the coll_policy
     def __get_rule_list__(self):
-        rules_query_set = CollPolicyCliRule.objects.filter(coll_policy=self.coll_policy_id)
+
+        rules_query_set = None
+        try:
+            rules_query_set = CollPolicyCliRule.objects.filter(coll_policy=self.coll_policy_id)
+        except Exception as e:
+            print e.message
         return rules_query_set
 
     def get_rules_tree(self):
 
         rule_list = self.__get_rule_list__()
         rule_tree = Rule_Tree()
+        err_having = False
         for rule in rule_list:
-            print type(rule)
-            r ={
+            r = {
                 'icon': '',
                 'text': rule.name,
                 'rule_id': rule.ruleid,
+                'rule_type': '',
                 'children': []
             }
-            if rule.rule_type ==1:
+            if rule.rule_type == 1:
                 r['icon'] = constants.DATA_NODE_ICON
+                r['rule_type'] = 'D'
                 rule_tree.data_rule_type_one['children'].append(r)
-            elif rule.rule_type ==2:
+            elif rule.rule_type == 2:
                 r['icon'] = constants.DATA_NODE_ICON
+                r['rule_type'] = 'D'
                 rule_tree.data_rule_type_two['children'].append(r)
             elif rule.rule_type == 3:
                 r['icon'] = constants.DATA_NODE_ICON
+                r['rule_type'] = 'D'
                 rule_tree.data_rule_type_three['children'].append(r)
+            elif rule.rule_type == 4:
+                r['icon'] = constants.DATA_NODE_ICON
+                r['rule_type'] = 'D'
+                rule_tree.data_rule_type_four['children'].append(r)
             elif rule.rule_type == 5:
                 r['icon'] = constants.BLOCK_NODE_ICON
+                r['rule_type'] = 'B'
                 rule_tree.block_rule_type_one['children'].append(r)
             elif rule.rule_type == 6:
                 r['icon'] = constants.BLOCK_NODE_ICON
+                r['rule_type'] = 'B'
                 rule_tree.block_rule_type_two['children'].append(r)
             elif rule.rule_type == 7:
                 r['icon'] = constants.BLOCK_NODE_ICON
+                r['rule_type'] = 'B'
                 rule_tree.block_rule_type_three['children'].append(r)
+            elif rule.rule_type == 8:
+                r['icon'] = constants.BLOCK_NODE_ICON
+                r['rule_type'] = 'B'
+                rule_tree.block_rule_type_four['children'].append(r)
             else:
-                print 'Error:rule type is not defined'
-
-        return rule_tree.toJosn()
+                err_having = True
+                break
+        if err_having:
+            return 'Error', constants.LOAD_RULE_TYPE_ERROR
+        else:
+            return rule_tree.toReturn()
 
     # build policy tree
     # input:
@@ -232,10 +267,10 @@ class Policy_tree(object):
             ptn.is_leaf = False
             ptn.level = deep
             ptn.parent_tree_id = parent_tree_id
-            ptn.coll_policy_id =self.coll_policy_id
+            ptn.coll_policy_id = self.coll_policy_id
             # if tree_dict['rule_id']:
             self.all_nodes.update({ptn.tree_id: ptn})
-            deep +=1
+            deep += 1
             for item in tree_dict['children']:
                 self.get_all_nodes(item, deep, parent_tree_id=ptn.tree_id, rules=rules)
         else:
@@ -268,7 +303,7 @@ class Policy_tree(object):
 
 
 # test code
-if __name__=='__main__':
+if __name__ == '__main__':
     test_tree = """{
                        "id": "j1-2",
                        "text": "b1",
@@ -322,12 +357,12 @@ if __name__=='__main__':
     dict = json.loads(test_tree)
     ptn = Policy_tree(1)
     k = ptn.find_node(dict, 2)
-    if k :
+    if k:
         print k
     else:
         print False
-    # print ptn.create_policy_tree('test', nodes)
+        # print ptn.create_policy_tree('test', nodes)
 
-    # tp = ptn.create_rule_tree(nodes)
-    # print tp[0]
-    # print tp[1]
+        # tp = ptn.create_rule_tree(nodes)
+        # print tp[0]
+        # print tp[1]

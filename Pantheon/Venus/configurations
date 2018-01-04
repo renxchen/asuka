@@ -1,0 +1,6 @@
+{"baseDirectory": "/home/apolo/project/output",
+  "baseFilenameFormat": "%s_%s_%s.txt",
+  "zmqPublish": 6000,
+  "zmqDispatch": 6001,
+  "zmqResult": 6002
+}
