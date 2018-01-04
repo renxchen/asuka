@@ -4,7 +4,7 @@ import time
 from multiprocessing.dummy import Pool as ThreadPool
 BASE_CLI_METHOD = "telnet"
 BASE_CLI_PLATFORM = 'ios'
-BASE_SNMP_METHOD = "get"
+BASE_SNMP_METHOD = "bulk_get"
 CLI_TYPE_CODE = 0
 SNMP_TYPE_CODE = 1
 
@@ -29,8 +29,7 @@ def __add_param(device={}):
     device.update(
         {
             "method": BASE_CLI_METHOD,
-            "platform": BASE_CLI_PLATFORM,
-            "operate": BASE_SNMP_METHOD
+            "platform": BASE_CLI_PLATFORM
         }
     )
     return device
@@ -50,20 +49,21 @@ def get_devices(time_stamp, policy_type):
         raise DeviceExceptions(str(res.text))
     if devices['status'] != "success":
         raise DeviceExceptions("Get Devices information Error:%s" % devices['message'])
-    return map(__add_param, devices['output'])
+    return map(__add_param, devices['devices'])
 
 
 def __get_cli_data(param):
     __base_url = 'http://10.71.244.134:8080/api/v1/sync/%s'
-    output = []
     __url = __base_url % 'cli'
     res = requests.post(__url, data=json.dumps(param))
     status_code = res.status_code
     # print res.text
     if status_code == 200:
-        output = res.text
+        output = json.loads(res.text)
     else:
         raise CollectionException("Collection Error:%s" % str(res.text))
+
+    send_handler_request_cli(param, output)
     return output
 
 
@@ -73,10 +73,36 @@ def __get_snmp_data(param):
     res = requests.post(__url, data=json.dumps(param))
     status_code = res.status_code
     if status_code == 200:
-        output = res.text
+        output = json.loads(res.text)
     else:
         raise CollectionException("Collection Error:%s" % str(res.text))
+    send_handler_request_snmp(param, output)
     return output
+
+
+def send_handler_request_cli(param, output):
+    if output['status'] != "success":
+        raise CollectionException("Collection Error:%s" % "Response status is fail")
+    param['start_time'] = output['start_time']
+    param['end_time'] = output['end_time']
+    tmp_dict = {}
+    for output in output['output']:
+        tmp_dict[str(output['command']).strip()] = output['output']
+    for item in param['items']:
+        item['output'] = tmp_dict[str(item['command']).strip()]
+
+
+def send_handler_request_snmp(param, output):
+    if output['status'] != "success":
+        raise CollectionException("Collection Error:%s" % "Response status is fail")
+    param['start_time'] = output['start_time']
+    param['end_time'] = output['end_time']
+    tmp_dict = {}
+    for output in output['output']:
+        tmp_dict[str(output['oid']).strip()] = output['output']
+    for item in param['items']:
+        item['output'] = tmp_dict[str(item['oid']).strip()]
+    print json.dumps(param, indent=2)
 
 
 def cli_main():
