@@ -7,17 +7,18 @@ from Pantheon.Venus.constants import OPEN_VALID_PERIOD_TYPE, \
     SCHEDULE_SPLIT, CLI_COLLECTION_DEFAULT_METHOD, SNMP_COLLECTION_DEFAULT_METHOD
 
 
-def get_items(now_time, item_type):
+def get_items(now_time, item_type, other_param=[]):
     items = get_items_schedule(item_type)
     tmp_result = merge_device(get_task_information(now_time, items))
     if item_type == 0:
-        devices = map(__merge_cli, tmp_result.values())
+        func = __merge_cli
     else:
-        devices = map(__merge_snmp, tmp_result.values())
+        func = __merge_snmp
+    devices = [func(item, other_param) for item in tmp_result.values()]
     return devices
 
 
-def __merge_snmp(items):
+def __merge_snmp(items, param_keys):
     result = dict()
     if len(items) == 0:
         return []
@@ -28,13 +29,15 @@ def __merge_snmp(items):
         operate="",
         oids=[]
     )
+    result.update(__add_param(items[0], param_keys))
     for item in items:
         result["commands"]['operate'] = "bulk_get"
         result["commands"]['oids'].append(item['coll_policy__snmp_oid'])
     return result
 
 
-def __merge_cli(items):
+def __merge_cli(items, param_keys):
+
     result = dict()
     if len(items) == 0:
         return []
@@ -45,8 +48,28 @@ def __merge_cli(items):
     result['commands'] = []
     result['method'] = CLI_COLLECTION_DEFAULT_METHOD
     result['platform'] = 'ios'
+    result['items'] = []
+    result.update(__add_param(items[0], param_keys))
     for item in items:
         result["commands"].append(item['coll_policy__cli_command'])
+        result['items'].append(
+            dict(
+                item_id=item['item_id'],
+                policy_id=item['coll_policy_id'],
+                tree_id=item['coll_policy_rule_tree_treeid'],
+                tree_path=item['coll_policy_rule_tree_treeid__rule_id_path'],
+                command=item['coll_policy__cli_command']
+            )
+
+        )
+    return result
+
+
+def __add_param(items, param_keys):
+    result = {}
+    for key in param_keys:
+        if key in items:
+            result[key] = items[key]
     return result
 
 
@@ -90,7 +113,6 @@ def get_task_information(now_time, items):
     filter device's priority, hard coding
     """
     items = check_device_priority(items)
-
     """
     filter stop collection
     """
@@ -237,7 +259,7 @@ if __name__ == "__main__":
     # "2017/12/15 11:19:44"
     # 1513484916, 1513312116
     # start_time = time.time()
-    print get_items(1513312116, 1)
+    print get_items(1513312116, 0, ['coll_policy_rule_tree_treeid', 'coll_policy_rule_tree_treeid__rule_id_path', 'item_id'])
     # end_time = time.time()
     # a = 2
     # b = 1 + 1
