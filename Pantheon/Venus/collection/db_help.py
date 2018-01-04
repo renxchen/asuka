@@ -31,12 +31,14 @@ def get_items_schedule(item_type):
         "coll_policy__cli_command",
         "coll_policy__snmp_oid",
         # "exec_interval",
-
+        "coll_policy_rule_tree_treeid",
+        "coll_policy_rule_tree_treeid__rule_id_path",
         "schedule__priority",
         "policys_groups__exec_interval",
         "policys_groups__history",
         "coll_policy_id",
-        "item_type")
+        "item_type",
+        "coll_policy_id")
     return items
 
 

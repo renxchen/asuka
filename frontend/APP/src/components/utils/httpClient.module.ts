@@ -8,4 +8,4 @@ import { HttpClientComponent } from './httpClient';
     declarations: [],
     providers: [HttpClientComponent],
 })
-export class HttpClientModule {}
+export class HClientModule {}

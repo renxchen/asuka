@@ -41,3 +41,8 @@ TRIGGER_OPEN = 0
 TRIGGER_CLOSE = 1
 TRIGGER_VALUE = 1
 NORMAL_VALUE = 0
+
+"""
+##########Parser###########
+"""
+TREE_PATH_SPLIT = "/"
