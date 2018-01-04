@@ -50,20 +50,20 @@ def get_devices(time_stamp, policy_type):
         raise DeviceExceptions(str(res.text))
     if devices['status'] != "success":
         raise DeviceExceptions("Get Devices information Error:%s" % devices['message'])
-    return map(__add_param, devices['output'])
+    return map(__add_param, devices['devices'])
 
 
 def __get_cli_data(param):
     __base_url = 'http://10.71.244.134:8080/api/v1/sync/%s'
-    output = []
     __url = __base_url % 'cli'
     res = requests.post(__url, data=json.dumps(param))
     status_code = res.status_code
     # print res.text
     if status_code == 200:
-        output = res.text
+        output = json.loads(res.text)
     else:
         raise CollectionException("Collection Error:%s" % str(res.text))
+    send_handler_request(param, output)
     return output
 
 
@@ -73,10 +73,15 @@ def __get_snmp_data(param):
     res = requests.post(__url, data=json.dumps(param))
     status_code = res.status_code
     if status_code == 200:
-        output = res.text
+        output = json.loads(res.text)
     else:
         raise CollectionException("Collection Error:%s" % str(res.text))
     return output
+
+
+def send_handler_request(param, output):
+    param.update(output)
+    print param
 
 
 def cli_main():
@@ -98,5 +103,5 @@ def snmp_main():
 
 
 if __name__ == "__main__":
-    # cli_main()
-    snmp_main()
+    cli_main()
+    # snmp_main()

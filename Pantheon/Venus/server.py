@@ -68,17 +68,18 @@ class CollectionApiHandle(web.RequestHandler):
             param = json.loads(self.request.body)
             now_time = param["now_time"]
             item_type = param["item_type"]
-            devices_info = get_items(now_time, item_type)
+            other_param = param["other_param"] if "other_param" in param else []
+            devices_info = get_items(now_time, item_type, other_param)
 
             result = dict(
                 status="success",
-                output=devices_info,
+                devices=devices_info,
                 message=""
             )
         except Exception, e:
             result = dict(
                 status="success",
-                output=[],
+                devices=[],
                 message=str(e)
             )
 

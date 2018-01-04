@@ -57,10 +57,6 @@ class CollPolicy(models.Model):
         # managed = False
         db_table = 'coll_policy'
 
-    @property
-    def ostype_name(self):
-        return self.ostype.name
-
 
 class CollPolicyCliRule(models.Model):
     ruleid = models.AutoField(primary_key=True)
@@ -100,11 +96,11 @@ class CollPolicyGroups(models.Model):
 
     @property
     def ostype_name(self):
-        return self.ostypeid.name
+        return self.ostype.name
 
     @property
     def ostype_ostypeid(self):
-        return self.ostypeid.ostypeid
+        return self.ostype.ostypeid
 
 
 class CollPolicyRuleTree(models.Model):
@@ -307,8 +303,7 @@ class Items(models.Model):
     status = models.IntegerField(blank=True, null=True)
     last_exec_time = models.IntegerField(blank=True, null=True)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
-    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
-                                                     db_column='coll_policy_rule_tree_treeid')
+    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING, db_column='coll_policy_rule_tree_treeid')
     device = models.ForeignKey(Devices, models.DO_NOTHING)
     schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
 
@@ -363,7 +358,8 @@ class Schedules(models.Model):
     schedule_id = models.AutoField(primary_key=True)
     valid_period_type = models.IntegerField(blank=True, null=True)
     data_schedule_type = models.IntegerField(blank=True, null=True)
-    valid_period_time = models.CharField(max_length=255, blank=True, null=True)
+    start_period_time = models.CharField(max_length=255, blank=True, null=True)
+    end_period_time = models.CharField(max_length=255, blank=True, null=True)
     data_schedule_time = models.CharField(max_length=255, blank=True, null=True)
     priority = models.IntegerField(blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
