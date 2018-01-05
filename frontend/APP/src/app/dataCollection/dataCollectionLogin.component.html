@@ -1,17 +1,3 @@
-
-
-<!--<div class="modal-content">-->
-    <!--<div class="modal-title">-->
-        <!--<h4 class="modal-title pull-left">データ取得編集</h4>-->
-        <!--<button type="button" class="close pull-right" (click)="close()">-->
-          <!--<span>&times;</span>-->
-        <!--</button>-->
-    <!--</div>-->
-    <!--<div class="modal-body">-->
-        <!--This is a modal.-->
-    <!--</div>-->
-<!--</div>-->
-
 <div class="modal-content">
     <div class="modal-header">
         <h4 class="modal-title pull-left">{{title}}</h4>
@@ -19,33 +5,134 @@
           <span>&times;</span>
         </button>
     </div>
-    <div class="modal-body">
-        ID is {{id}}.
-        <!--<form>-->
-            <div>
-                OS TYPE:
-                <select>
-                    <option>dddddd</option>
-                </select>
+    <div class="modal-body" style="padding-bottom: 20px">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">
+                    <!--<span style="color:red">※</span>-->
+                    OS TYPE:
+                </label>
+                <div class="col-sm-6" >
+                    <select class="form-control"
+                            id="osType" name="selectedOsType" (change)="changeOsType()">
+                        <option *ngFor="let item of osType" value="{{item.id}}">
+                            {{item.name}}
+                        </option>
+                    </select>
+                </div>
             </div>
-            <div>
-                優先度
+            <div class="form-group">
+                <label class="col-sm-3 control-label">
+                    <!--<span style="color:red">※</span>-->
+                    優先度:
+                </label>
+                <div class="col-sm-6" >
+                    <select class="form-control"
+                            id="priority" name="priority">
+                        <option *ngFor="let item of priorities" value="{{item.id}}">
+                            {{item.value}}
+                        </option>
+                    </select>
+                </div>
             </div>
-            <div>
-                デバイスグループ
+            <div class="form-group">
+                <label class="col-sm-3 control-label">
+                    <!--<span style="color:red">※</span>-->
+                    デバイスグループ:
+                </label>
+                <div class="col-sm-6" >
+                    <select class="form-control"
+                            id="deviceGroup" name="deviceGroup">
+                        <option *ngFor="let item of deviceGroups" value="{{item.id}}">
+                            {{item.name}}
+                        </option>
+                    </select>
+                </div>
             </div>
-            <div>
-                コレクションポリシーグループ名
+            <div class="form-group">
+                <label class="col-sm-3 control-label">
+                    <!--<span style="color:red">※</span>-->
+                    コレクション<br>ポリシーグループ:
+                </label>
+                <div class="col-sm-6" >
+                    <select class="form-control"
+                            id="policyGroup" name="policyGroup">
+                        <option *ngFor="let item of policyGroups" value="{{item.id}}">
+                            {{item.name}}
+                        </option>
+                    </select>
+                </div>
             </div>
-            <div>
-                有効期間
+            <div class="form-group">
+                <label class="col-sm-3 control-label">
+                    <!--<span style="color:red">※</span>-->
+                    有効期間:
+                </label>
+                <div class="col-sm-3" *ngFor="let item of validPeriodTypes">
+                    <input  type="radio" name="validPeriodType" value="{{item.id}}"
+                    (click)="changeValidPeriodType(item.id)">
+                    {{item.value}}
+                </div>
+                <div id="validPeriod" class="col-sm-12">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-9">
+                        <div style="margin-bottom: 10px">
+                            取得開始日時:&nbsp;<input type="datetime-local">
+                        </div>
+                        <div>
+                            取得終了日時:&nbsp;<input type="datetime-local">
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <div>
-                データ取得期間
+            <div class="form-group">
+                <label class="col-sm-3 control-label">
+                    <!--<span style="color:red">※</span>-->
+                    データ取得期間:
+                </label>
+                <div class="col-sm-3" *ngFor="let item of dataScheduleTypes">
+                    <input  type="radio" (click)="changeDataScheduleType(item.id)"
+                           name="dataScheduleType" value="{{item.id}}">
+                    {{item.value}}
+                </div>
+                <div id="dataSchedule" class="col-sm-12">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-9">
+                        <div class="col-sm-2">
+                            曜日
+                        </div>
+
+                        <div *ngFor="let item of weekdays" style="float: left">
+                            <input name="weekday" type="checkbox"
+                                   value="{{item.id}}" checked="{{item.ifCheck}}">
+                            {{item.value}}&nbsp;&nbsp;&nbsp;&nbsp;
+                        </div>
+
+                        <div class="col-sm-9">
+                            <div style="margin-bottom: 10px">
+                                開始時間:&nbsp;<input type="time">
+                            </div>
+                            <div>
+                                終了時間:&nbsp;<input type="time">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
-            <div>
-                <button (click)="bsModalRef.hide()">cancel</button><button>save</button>
+            <div class="form-group" style="margin-bottom: 0px">
+                <button class="btn btn-primary btn-sm pull-right" style="margin-right: 5px"
+                        type="submit" (click)="save()">
+                    <i class="fa fa-check-square" ></i> 保存
+                </button>
+                <button class="btn btn-warning btn-sm pull-right" style="margin-right: 5px"
+                        type="button" (click)="bsModalRef.hide()">
+                    <i class="fa fa-window-close" ></i> キャンセル
+                </button>
             </div>
-        <!--</form>-->
+        </form>
     </div>
 </div>
