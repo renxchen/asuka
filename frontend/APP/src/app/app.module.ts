@@ -15,7 +15,9 @@ import { BreadCrumbModule } from '../components/breadCrumb/bread-crumb.module';
 import { LoginComponentModule } from './login/login.module';
 import { IndexComponentModule } from './index/index.module';
 import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.module';
-import { DataCollectionViewComponentModule } from './dataCollection/dataCollection.module';
+import { DataCollectionComponentModule } from './dataCollection/dataCollection.module';
+import { DataCollectionLoginComponent } from './dataCollection/dataCollectionLogin.component';
+
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -47,11 +49,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     LoginComponentModule,
     IndexComponentModule,
     CPViewComponentModule,
-    DataCollectionViewComponentModule,
+    DataCollectionComponentModule,
     BreadCrumbModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [DataCollectionLoginComponent]
 })
 
 export class AppModule { }

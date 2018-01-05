@@ -1,0 +1,51 @@
+
+
+<!--<div class="modal-content">-->
+    <!--<div class="modal-title">-->
+        <!--<h4 class="modal-title pull-left">データ取得編集</h4>-->
+        <!--<button type="button" class="close pull-right" (click)="close()">-->
+          <!--<span>&times;</span>-->
+        <!--</button>-->
+    <!--</div>-->
+    <!--<div class="modal-body">-->
+        <!--This is a modal.-->
+    <!--</div>-->
+<!--</div>-->
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">{{title}}</h4>
+        <button type="button" class="close pull-right" (click)="bsModalRef.hide()">
+          <span>&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        ID is {{id}}.
+        <!--<form>-->
+            <div>
+                OS TYPE:
+                <select>
+                    <option>dddddd</option>
+                </select>
+            </div>
+            <div>
+                優先度
+            </div>
+            <div>
+                デバイスグループ
+            </div>
+            <div>
+                コレクションポリシーグループ名
+            </div>
+            <div>
+                有効期間
+            </div>
+            <div>
+                データ取得期間
+            </div>
+            <div>
+                <button (click)="bsModalRef.hide()">cancel</button><button>save</button>
+            </div>
+        <!--</form>-->
+    </div>
+</div>
