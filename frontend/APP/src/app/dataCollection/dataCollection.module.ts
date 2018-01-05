@@ -12,4 +12,4 @@ import { DataCollectionLoginComponent } from './dataCollectionLogin.component';
     exports: [],
     providers: [],
 })
-export class DataCollectionViewComponentModule {}
+export class DataCollectionComponentModule {}

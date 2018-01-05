@@ -2,7 +2,6 @@ import { Component, OnInit, ComponentFactoryResolver, AfterViewInit, ElementRef 
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { DataCollectionLoginComponent } from './dataCollectionLogin.component';
-import { CLICPLoginComponent } from '../collectionPolicy/cliCPLogin.component'
 import * as _ from 'lodash';
 declare var $: any;
 // import { DataCollectionService } from './dataCollection.service';
@@ -41,12 +40,13 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         }
     ];
     modalRef: BsModalRef;
-    config = {
+    modalConfig = {
         animated: true,
         keyboard: true,
         backdrop: true,
-        ignoreBackdropClick: false
+        ignoreBackdropClick: true
       };
+
     constructor(private modalService: BsModalService) {}
 
     ngOnInit() {
@@ -54,31 +54,41 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         this.model = this.dcModel;
         // this.drawCPTable();
     }
+
     ngAfterViewInit() {
         this.drawCPTable();
     }
+
     public fomatterBtn(cellvalue, options, rowObject) {
         // console.log(rowObject);
         return '<button class="btn btn-xs btn-success edit" id='+ rowObject["dcNo"] + '><i class="fa fa-pencil-square"></i> 編集</button>'
     };
+
     newDC() {
         console.log("aaa");
-        this.modalRef = this.modalService.show(CLICPLoginComponent, this.config);
+        this.modalRef = this.modalService.show(DataCollectionLoginComponent, this.modalConfig);
+
+        this.modalRef.content.title = 'データ取得新規';
       // init and open modal
     }
+
     public editDC(){
+        let _this = this;
+
         $('.edit').click(function (event) {
             let id = $(event)[0].target.id;
-            console.log('id', id);
-            alert("id="+id);
-
+            // console.log('id', id);
+            // alert("id="+id);
+            _this.modalRef = _this.modalService.show(DataCollectionLoginComponent, _this.modalConfig);
+            _this.modalRef.content.title = 'データ取得編集';
+            _this.modalRef.content.id = id;
         });
     }
 
     public renderColor(){
-        let _this = $('.status');
-        for (let i=0;i<_this.length;i++){
-            let _target = $(_this[i]);
+        let _status = $('.status');
+        for (let i=0;i<_status.length;i++){
+            let _target = $(_status[i]);
             if (_target.html().search('無効') != -1){
                 _target.html('<a href="#" class = "btn btn-default btn-xs disabled">無 効</a>');
             } else {

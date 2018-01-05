@@ -1,13 +1,25 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { HttpClientComponent } from '../../components/utils/httpClient';
+import { Component, OnInit } from '@angular/core';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 @Component({
-    selector: 'dc-login',
+    selector: 'modal-content',
     templateUrl: 'dataCollectionLogin.component.html',
     styleUrls: ['dataCollection.component.less']
 })
 
-export class DataCollectionLoginComponent {
+export class DataCollectionLoginComponent implements OnInit {
+    title: string;
+    id: number = 0;
+    // modalTitle:string;
+
+    constructor(public bsModalRef: BsModalRef) {}
+
+    ngOnInit() {
+        // this.modalTitle = 'data';
+        // this.cpType = 'cli';
+        // this.modalRef = this.modalService;
+        // this.drawCPTable();
+    }
+
 
 }
