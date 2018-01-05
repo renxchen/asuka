@@ -9,21 +9,23 @@
 @desc:
 
 '''
-import os, sys
-
-script_dir = os.path.split(os.path.realpath(__file__))[0]
-prj_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))))
-sys.path.append(prj_dir)
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
-
-import django
-
-django.setup()
+# import os, sys
+#
+# script_dir = os.path.split(os.path.realpath(__file__))[0]
+# prj_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))))
+# sys.path.append(prj_dir)
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
+#
+# import django
+#
+# django.setup()
 
 import json
 from collections import OrderedDict
+
+from backend.apolo.db_utils.db_opt import DBOpt
 from backend.apolo.tools import constants
-from backend.apolo.models import CollPolicyRuleTree, CollPolicy, CollPolicyCliRule
+
 
 class Policy_tree_node(object):
     def __init__(self):
@@ -107,7 +109,7 @@ class Rule_Tree(object):
         return block_rule_list, data_rule_list
 
 
-class Policy_tree(object):
+class Policy_tree(DBOpt):
     def __init__(self, coll_policy_id):
         # the type is dict
         self.all_nodes = OrderedDict()
@@ -118,7 +120,7 @@ class Policy_tree(object):
     # output :json data of tree
     def get_policy_tree(self):
 
-        policy_name = CollPolicy.objects.get(coll_policy_id=self.coll_policy_id).name
+        policy_name = self.get_policy_tree_from_db(self.coll_policy_id).name
         root = {'id': 'j1',
                 'text': policy_name,
                 'icon': constants.POLICY_TREE_ROOT_ICON,
@@ -131,7 +133,7 @@ class Policy_tree(object):
     # get all the nodes in the coll_policy_tree
     def __get_node_list__(self):
 
-        policy_tree_query_set = CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id)
+        policy_tree_query_set =self.get_tree_detail_from_db(self.coll_policy_id)
         node_array = []
         for item in policy_tree_query_set:
             rule = item.rule
@@ -151,19 +153,19 @@ class Policy_tree(object):
             node_array.append(policy_tree_node)
         return node_array
 
-    # get all the rules of the coll_policy
-    def __get_rule_list__(self):
-
-        rules_query_set = None
-        try:
-            rules_query_set = CollPolicyCliRule.objects.filter(coll_policy=self.coll_policy_id)
-        except Exception as e:
-            print e.message
-        return rules_query_set
+    # # get all the rules of the coll_policy
+    # def __get_rule_list__(self):
+    #
+    #     rules_query_set = None
+    #     try:
+    #         rules_query_set = CollPolicyCliRule.objects.filter(coll_policy=self.coll_policy_id)
+    #     except Exception as e:
+    #         print e.message
+    #     return rules_query_set
 
     def get_rules_tree(self):
 
-        rule_list = self.__get_rule_list__()
+        rule_list = self.get_many_rules_detail_from_db(self.coll_policy_id)
         rule_tree = Rule_Tree()
         err_having = False
         for rule in rule_list:

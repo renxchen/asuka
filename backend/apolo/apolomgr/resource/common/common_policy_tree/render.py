@@ -10,27 +10,22 @@
 @desc:
 
 '''
-import os
-import sys
 
-script_dir = os.path.split(os.path.realpath(__file__))[0]
-prj_dir = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
-sys.path.append(prj_dir)
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
+# import os, sys
 
-import django
-django.setup()
-
-from backend.apolo.models import CollPolicyCliRule
 from backend.apolo.apolomgr.resource.common.common_policy_tree.dispatch import Dispatch
+from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.db_utils.db_opt import DBOpt
+from backend.apolo.models import CollPolicyCliRule
 
-class Render(object):
+
+class Render(Tool, DBOpt):
     def __init__(self, **kwargs):
         self.kwargs = kwargs
         self.data = kwargs['data']
-        self.tree= kwargs['tree']
-        self.tree_id = kwargs['tree_id'] #the clicked tree node id
-        # save format [(leaf tree_id,leaf rule_id),(parent tree_id,parent rule_id)...(root tree_id,root rule_id)]
+        self.tree= kwargs['tree']  # json data from front
+        self.tree_id = kwargs['tree_id'] # the clicked tree node id
+        # save format [leaf rule_id,parent rule_id...root rule_id]
         self.leaf_path = []
         self.rule_context = {}
 
@@ -42,7 +37,66 @@ class Render(object):
                       ]
 
     def render(self):
+        self.data = """w34nh-----imnt000100#show interfaces
+Load for five secs: 3%/0%; one minute: 1%; five minutes: 1%
+Time source is NTP, 12:29:03.494 JST Wed Oct 11 2017
 
+GigabitEthernet0/0/0 is up, line protocol is up
+  Hardware is 4XGE-BUILT-IN, address is 2c54.2d61.7200 (bia 2c54.2d61.7200)
+  Internet address is 10.92.51.106/30
+  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive not supported
+  Full Duplex, 10008, link type is force-up, media type is T
+  output flow-control is on, input flow-control is on
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 00:00:00, output 02:45:36, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: Class-based queueing
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     901097 packets input, 70495509 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 watchdog, 638231 multicast, 0 pause input
+     280805 packets output, 26218227 bytes, 0 underruns
+     0 output errors, 0 collisions, 2 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier, 0 pause output
+     0 output buffer failures, 0 output buffers swapped out
+GigabitEthernet0/0/1 is up, line protocol is up
+  Hardware is 4XGE-BUILT-IN, address is 2c54.2d61.7201 (bia 2c54.2d61.7201)
+  Internet address is 10.92.51.234/30
+  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive not supported
+  Full Duplex, 10009, link type is auto, media type is T
+  output flow-control is on, input flow-control is on
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 00:00:00, output 01:50:16, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: Class-based queueing
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     740674 packets input, 59583182 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 watchdog, 638387 multicast, 0 pause input
+     110833 packets output, 14928926 bytes, 0 underruns
+     0 output errors, 0 collisions, 2 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier, 0 pause output
+     0 output buffer failures, 0 output buffers swapped out"""""
         # get leaf path
         self.get_path_of_leaf(self.tree)
         self.execute_dispatch()
@@ -50,12 +104,13 @@ class Render(object):
         html_text = self.generate_html()
         return html_text
 
-    # get the path that is from root to the leaf node
+    # get the path that is from root to the clicked node
+    # save format :[rule_id1,rule_id2...rule_idn]
     def get_path_of_leaf(self, buffer_dict):
 
         if buffer_dict['id'] == self.tree_id:
             # save the leaf node
-            self.leaf_path.append((buffer_dict['id'], buffer_dict['rule_id']))
+            self.leaf_path.append(buffer_dict['rule_id'])
             return True
 
         if buffer_dict["children"]:
@@ -64,26 +119,20 @@ class Render(object):
                     # save the parent node of the leaf
                     # if buffer_dict['rule_id'] != 0:
                     if buffer_dict['rule_id']:
-                        self.leaf_path.append((buffer_dict['id'], buffer_dict['rule_id']))
+                        self.leaf_path.append(buffer_dict['rule_id'])
                     return True
 
     # get the dispatch executed result
     def execute_dispatch(self):
 
-        for i in self.leaf_path:
-            tree_id = i[0]
-            rule_id = i[1]
+        for rule_id in self.leaf_path:
             rule_context =self.__get_rule_from_db__(rule_id)
             # save the data as input of rules
-            self.rule_context.update({tree_id: rule_context})
+            if not self.rule_context.has_key(rule_id):
+                self.rule_context.update({rule_id: rule_context})
         arry =self.leaf_path
         arry.reverse()
-        the_first_data = self.rule_context[arry[0][0]]
-        # set the init data
-        the_first_data['data'] = self.data
-        the_first_data['start_line'] = 0
-        the_first_data['end_line'] = len(self.data.split('\n'))-1
-        p = Dispatch(arry, self.rule_context, the_first_data)
+        p = Dispatch(arry, self.rule_context, self.data)
         p.dispatch()
         arry = p.get_result()
         # save format as like {deep:[{startline, endline..},{}]}
@@ -149,29 +198,22 @@ class Render(object):
         html_data = '<pre>{}</pre>'.format("\n".join(all_data))
         return html_data
 
-    @staticmethod
-    def __get_rule_from_db__(rule_id):
-        obj = CollPolicyCliRule.objects.get(ruleid=rule_id)
-        # set input
-        input_data_dict = {'rule_type': obj.rule_type,
-                           'basic_characters': obj.mark_string,
-                           'split_characters': obj.split_char,
-                           'x_offset': obj.x_offset,
-                           'y_offset': obj.y_offset,
-                           'expect_line_number': obj.line_nums,
-                           'extract_regexp': obj.extract_key,
-                           'start_line': None,
-                           'end_line': None,
-                           'deep': 0,
-                           'block_start_characters': obj.mark_string,
-                           'block_end_characters': obj.end_mark_string,
-                           'is_include_end_characters': obj.is_include,
-                           'is_serial': obj.is_serial,
-                           'block_start_offset': obj.start_line_num,
-                           'block_end_offset': obj.end_line_num
-                           }
 
-        return input_data_dict
+    def __get_rule_from_db__(self, rule_id):
+       obj = self.get_rule_detail_from_db(rule_id)
+       return self.get_rule_value(obj)
+
+if __name__ == '__main__':
+    queryset = CollPolicyCliRule.objects.filter(coll_policy=1)
+    r = Render(**{"data":"","tree":"","tree_id":""})
+    for recoder in queryset:
+        k = r.get_rule_value(recoder)
+        print k
+
+
+
+
+
 
 
 
