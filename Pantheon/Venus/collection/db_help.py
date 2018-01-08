@@ -32,6 +32,8 @@ def get_items_schedule(item_type):
         "coll_policy_rule_tree_treeid",
         "coll_policy_rule_tree_treeid__rule_id_path",
         "coll_policy_rule_tree_treeid__rule_id",
+        "coll_policy_rule_tree_treeid__rule__value_type",
+        "coll_policy__value_type",
         "schedule__priority",
         "policys_groups__exec_interval",
         "policys_groups__history",

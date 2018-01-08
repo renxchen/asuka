@@ -1,4 +1,16 @@
 """
+############Common###########
+"""
+VALUE_TYPE_MAPPING = {
+    0: "Int"
+}
+ITEM_TYPE_MAPPING = {
+    0: "Cli",
+    1: "Snmp"
+}
+
+
+"""
 ############Collection###########
 """
 """

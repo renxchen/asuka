@@ -38,6 +38,7 @@ def __merge_snmp(items, param_keys):
     result['ip'] = items[0]['device__ip']
     result['community'] = items[0]['device__snmp_community']
     result['timeout'] = items[0]['device__ostype__snmp_timeout']
+    result['snmp_value_type'] = items[0]['coll_policy__value_type']
     result['commands'] = dict(
         operate="",
         oids=[]
@@ -51,7 +52,8 @@ def __merge_snmp(items, param_keys):
             dict(
                 item_id=item['item_id'],
                 policy_id=item['coll_policy_id'],
-                oid=item['coll_policy__snmp_oid']
+                oid=item['coll_policy__snmp_oid'],
+                device_id=item['device__device_id']
             )
 
         )
@@ -70,6 +72,7 @@ def __merge_cli(items, param_keys):
     result['commands'] = []
     result['method'] = CLI_COLLECTION_DEFAULT_METHOD
     result['platform'] = 'ios'
+    result['cli_value_type'] = items[0]['coll_policy_rule_tree_treeid__rule__value_type']
     result['items'] = []
     result.update(__add_param(items[0], param_keys))
     for item in items:
@@ -81,7 +84,8 @@ def __merge_cli(items, param_keys):
                 tree_id=item['coll_policy_rule_tree_treeid'],
                 tree_path=item['coll_policy_rule_tree_treeid__rule_id_path'],
                 command=item['coll_policy__cli_command'],
-                rule_id=item['coll_policy_rule_tree_treeid__rule_id']
+                rule_id=item['coll_policy_rule_tree_treeid__rule_id'],
+                device_id=item['device__device_id']
             )
 
         )
