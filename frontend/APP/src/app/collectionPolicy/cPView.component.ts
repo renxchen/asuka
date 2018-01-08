@@ -112,7 +112,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         $('.edit').click(function (event) {
             let id = $(event)[0].target.id;
             console.log('id', id);
-            if (this.cPType === '0') {
+            if (_t.cPType === '0') {
                 _t.router.navigate(['/index/cliCPEdit'],
                 { queryParams: {'id' : id }});
             } else {

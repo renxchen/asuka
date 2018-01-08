@@ -1,5 +1,67 @@
 <div class="ibox-title">
-    <h5>コレクションポリシー名： </h5>
+    <!-- bind collection policy name -->
+    <h5>コレクションポリシー名：{{cPName}} </h5>
 </div>
-<div class="ibox-content text-center p-md" style="min-height:350px;">
+<div class="ibox-content text-center p-md" style="min-height:660px;">
+    <!-- define role -->
+    <div class="col-md-4 col-xs-6">
+        <!-- block tree -->
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <i class="fa fa-cubes fa-lg"></i>&nbsp;
+                ブロックルール
+            </div>
+            <div class="panel-body">
+                <div id="blockTree" class="jstree"></div>
+            </div>
+            <div class="panel-footer">
+                <div class="descript" id="descr_block">概要が表示されます。</div>
+            </div>
+        </div>
+        <!-- data tree -->
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <i class="fa fa-text-height fa-lg"></i>&nbsp;
+                データ抽出ルール
+            </div>
+            <div class="panel-body">
+                <div id="dataTree" class="jstree"></div>
+            </div>
+            <div class="panel-footer">
+                <div class="descript" id="descr_data">概要が表示されます。</div>
+            </div>
+        </div>
+        
+    </div>
+    <!-- "policy tree -->
+    <div class="col-md-4 col-xs-6">
+        <div class="panel panel-default">
+            <div class="panel-body" id="tree_wrap">
+                <div id="policyTree" class="jstree"></div>
+                <!-- <div id="tree_defn" class="jstree jstree-3 jstree-default jstree-default-responsive" role="tree" tabindex="0" aria-activedescendant="seq_0" aria-busy="false">
+                    <ul class="jstree-container-ul jstree-children" role="group">
+                        <li role="treeitem" data-dnd="0" aria-selected="false" aria-level="1" aria-labelledby="seq_0_anchor" aria-disabled="true" id="seq_0" class="jstree-node  jstree-leaf jstree-last">
+                            <i class="jstree-icon jstree-ocl" role="presentation"></i>
+                            <a class="jstree-anchor  jstree-disabled" href="#" tabindex="-1" id="seq_0_anchor">
+                                <i class="jstree-icon jstree-themeicon fa fa-tags fa-lg jstree-themeicon-custom" role="presentation">
+                                </i>ルールツリー定義
+                            </a>
+                        </li>
+                    </ul>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <!-- simple -->
+    <div class="col-md-4 col-xs-6">
+        <textarea class="form-control" id="analysis_wrap" placeholder="ここの文章をハイライト変換します。"></textarea>
+        <hr>
+        <div class="panel panel-primary">
+            <div class="panel-body" id="highlight_wrap">
+                <div id="highlight">
+                    insert content highlighted
+                </div>
+            </div>
+        </div>
+    </div>  
 </div>
