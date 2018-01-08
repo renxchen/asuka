@@ -135,5 +135,5 @@ def snmp_main():
 
 
 if __name__ == "__main__":
-    # cli_main()
-    snmp_main()
+    cli_main()
+    # snmp_main()

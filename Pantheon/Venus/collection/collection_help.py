@@ -1,25 +1,27 @@
 import time
+import re
 from Pantheon.Venus.collection.db_help import get_items_schedule, get_all_rule
 from Pantheon.Venus.constants import OPEN_VALID_PERIOD_TYPE, \
-    VALID_PERIOD_SPLIT, \
+    TREE_PATH_SPLIT, \
     VALID_DATE_FORMAT,\
     SCHEDULE_SPECIALLY, SCHEDULE_CLOSED, SCHEDULE_GET_NORMALLY, SCHEDULE_WEEKS_SPLIT, SCHEDULE_DATE_SPLIT, \
-    SCHEDULE_SPLIT, CLI_COLLECTION_DEFAULT_METHOD, SNMP_COLLECTION_DEFAULT_METHOD
+    SCHEDULE_SPLIT, CLI_COLLECTION_DEFAULT_METHOD, SNMP_COLLECTION_DEFAULT_METHOD, \
+    CLI_TYPE_CODE
 
 
-def get_items(now_time, item_type, other_param=[], is_rules=True):
+def get_items(now_time, item_type, other_param=[]):
     items = get_items_schedule(item_type)
     devices = get_task_information(now_time, items)
     tmp_result = merge_device(devices)
-    if item_type == 0:
-        func = __merge_cli
-    else:
-        func = __merge_snmp
-    devices = [func(item, other_param) for item in tmp_result.values()]
-    if is_rules:
+    if item_type == CLI_TYPE_CODE:
         rules = __add_rules()
-        for device in devices:
-            device['rules'] = rules
+        devices = [__merge_cli(item, other_param, rules=rules) for item in tmp_result.values()]
+    else:
+        devices = [__merge_snmp(item, other_param) for item in tmp_result.values()]
+
+
+        # for device in devices:
+        #     device['rules'] = rules
     return devices
 
 
@@ -38,7 +40,7 @@ def __merge_snmp(items, param_keys):
     result['ip'] = items[0]['device__ip']
     result['community'] = items[0]['device__snmp_community']
     result['timeout'] = items[0]['device__ostype__snmp_timeout']
-    result['snmp_value_type'] = items[0]['coll_policy__value_type']
+
     result['commands'] = dict(
         operate="",
         oids=[]
@@ -53,15 +55,15 @@ def __merge_snmp(items, param_keys):
                 item_id=item['item_id'],
                 policy_id=item['coll_policy_id'],
                 oid=item['coll_policy__snmp_oid'],
-                device_id=item['device__device_id']
+                device_id=item['device__device_id'],
+                value_type=item['coll_policy__value_type']
             )
 
         )
     return result
 
 
-def __merge_cli(items, param_keys):
-
+def __merge_cli(items, param_keys, rules):
     result = dict()
     if len(items) == 0:
         return []
@@ -72,10 +74,11 @@ def __merge_cli(items, param_keys):
     result['commands'] = []
     result['method'] = CLI_COLLECTION_DEFAULT_METHOD
     result['platform'] = 'ios'
-    result['cli_value_type'] = items[0]['coll_policy_rule_tree_treeid__rule__value_type']
+    result['rules'] = rules
     result['items'] = []
     result.update(__add_param(items[0], param_keys))
     for item in items:
+
         result["commands"].append(item['coll_policy__cli_command'])
         result['items'].append(
             dict(
@@ -85,7 +88,9 @@ def __merge_cli(items, param_keys):
                 tree_path=item['coll_policy_rule_tree_treeid__rule_id_path'],
                 command=item['coll_policy__cli_command'],
                 rule_id=item['coll_policy_rule_tree_treeid__rule_id'],
-                device_id=item['device__device_id']
+                device_id=item['device__device_id'],
+                value_type=item['coll_policy_rule_tree_treeid__rule__value_type'],
+                block_path=__create_path(rules, item['coll_policy_rule_tree_treeid__rule_id_path'])
             )
 
         )
@@ -275,6 +280,18 @@ def __translate_valid_period_date(given_date):
     start_time_stamp = time.strptime(start_date, VALID_DATE_FORMAT)
     end_time_stamp = time.strptime(end_date, VALID_DATE_FORMAT)
     return int(time.mktime(start_time_stamp)), int(time.mktime(end_time_stamp))
+
+
+def __create_path(rules, path):
+    path_list = path[1:].split(TREE_PATH_SPLIT)
+    result = ['']
+    if len(path) != 1:
+        for each_path in path_list:
+            each_path_rules = rules[str(each_path)]
+            result.append(str(each_path_rules['key_str']))
+    else:
+        result.append('')
+    return "/".join(result)
 
 
 if __name__ == "__main__":

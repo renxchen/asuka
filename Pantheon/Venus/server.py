@@ -69,8 +69,7 @@ class CollectionApiHandle(web.RequestHandler):
             now_time = param["now_time"]
             item_type = param["item_type"]
             other_param = param["other_param"] if "other_param" in param else []
-            is_rules = param["is_rules"] if "is_rules" in param else True
-            devices_info = get_items(now_time, item_type, other_param, is_rules)
+            devices_info = get_items(now_time, item_type, other_param)
 
             result = dict(
                 status="success",
