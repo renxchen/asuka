@@ -1,7 +1,10 @@
-import { Component, OnInit, AfterViewInit, } from '@angular/core';
+import { Component, OnInit, AfterViewInit, enableProdMode} from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
+// import * as _ from 'lodash';
+
+enableProdMode();
 
 @Component({
     selector: 'dc-login',
@@ -12,6 +15,17 @@ import { HttpClientComponent } from '../../components/utils/httpClient';
 export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     title: string;
     id: number = -1;
+    // minDate = new Date(2017, 5, 10);
+    maxDate = new Date(2018, 10, 15);
+    bsValue: Date = new Date();
+
+    isTimeMeridian: boolean = false;
+    startTime: Date = new Date(2018, 1, 1, 0, 0);
+    endTime: Date = new Date(2018, 1, 1, 23, 59);
+    startDateTime: Date = new Date(2018, 1, 1, 0, 0);
+    endDateTime: Date = new Date(2018, 1, 1, 23, 59);
+    // bsRangeValue: any = [new Date(2017, 7, 4), new Date(2017, 7, 20)];
+
     selectedOsType: string;
     osType: any = [];
     priority: any;
@@ -62,7 +76,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     }
 
     setInitSelect() {
-        $('input[value="0"]').attr('checked',true);
+        $('input[value="0"]').attr('checked','checked');
     }
 
     changeOsType() {
@@ -90,6 +104,14 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     }
 
     save() {
+        let startDate = $('input[name="startDate"]').val();
+        // console.log(startDate);
+        let endDate = $('input[name="endDate"]').val();
+        // console.log(endDate);
+        let timeFormat = this.startTime.getHours();
+        console.log(timeFormat);
+        let timeFormat2 = this.startTime.getMinutes();
+        console.log(timeFormat2);
         if (this.id == -1){
             // save as new
         } else {

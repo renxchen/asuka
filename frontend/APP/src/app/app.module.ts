@@ -2,13 +2,12 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpModule, Http } from '@angular/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { appRouting } from './app.router';
 import { TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { SharedModule } from './sharedModule/shared.module';
-import { ModalModule } from 'ngx-bootstrap';
-
+import { ModalModule, BsDatepickerModule, TimepickerModule } from 'ngx-bootstrap';
 import { AppComponent } from './app.component';
 import { HClientModule } from '../components/utils/httpClient.module';
 import { BreadCrumbModule } from '../components/breadCrumb/bread-crumb.module';
@@ -30,6 +29,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserModule,
     HttpClientModule,
     ModalModule.forRoot(),
+    BsDatepickerModule.forRoot(),
+    TimepickerModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
           provide: TranslateLoader,
@@ -39,6 +40,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     HttpModule,
     FormsModule,
+    ReactiveFormsModule,
     appRouting,
     SharedModule,
     HClientModule,

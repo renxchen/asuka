@@ -52,6 +52,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         // this.cpType = 'cli';
         this.model = this.dcModel;
+
         // this.drawCPTable();
     }
 
