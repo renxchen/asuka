@@ -47,6 +47,9 @@
 // Media query style
 @import "./assets/less/media.less";
 
+//Date picker style
+@import '../node_modules/ngx-bootstrap/datepicker/bs-datepicker.css';
+
 // Custom style
 // Your custom style to override base style
 @import "./assets/less/custom.less";
@@ -65,6 +68,9 @@
 .modal {
   background: rgba(0,0,0,0.5) !important;
 }
+
+//Modify the drop back of modals
+bs-datepicker-container { z-index: 3000!important; }
 
 
 
