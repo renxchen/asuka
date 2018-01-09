@@ -12,19 +12,31 @@
 
 from backend.apolo.apolomgr.resource.common.common_policy_tree.rule import Policy
 
-
 class Dispatch(object):
 
-    def __init__(self, path, rules, first_rule_data):
-        self.instance = Policy(extract_policy=first_rule_data)
+    def __init__(self, path, rules, raw_data):
+
+        self.raw_data = raw_data
+        self.instance = None
         # path is that is from root node to leaf node .
-        # for example :[(tree id of root,rule id of root),..,(tree id of leaf,rule id of leaf)]
+        # for example :[rule id of root,..,rule id of leaf]
         self.path = path
-        # {tree_id,rule_context}
+        # {rule_id:rule_context,...,}
         self.rules = rules
         self.buffer_res = []
         self.work_follow = {}
+        self.__set_instance__()
         self.set_work_follow()
+
+    def __set_instance__(self):
+
+        the_first_data = self.rules[self.path[0]]
+        # set the init data
+        the_first_data['data'] = self.raw_data
+        the_first_data['start_line'] = 0
+        the_first_data['end_line'] = len(self.raw_data.split('\n'))-1
+        self.instance = Policy(extract_policy=the_first_data)
+
 
     def dispatch(self, work_follow_num=0):
         work_follow_num += 1
@@ -36,8 +48,8 @@ class Dispatch(object):
             if self.work_follow.has_key(work_follow_num+1):
                 for pre in result:
                     # set the input of the next method
-                    tree_id = self.path[work_follow_num][0]
-                    input_dict = self.rules[tree_id]
+                    rule_id = self.path[work_follow_num]
+                    input_dict = self.rules[rule_id]
                     input_dict['deep'] = work_follow_num
                     input_dict['start_line'] = pre['start_line']
                     input_dict['end_line'] = pre['end_line']
@@ -48,23 +60,22 @@ class Dispatch(object):
 
     def set_work_follow(self):
         work_follow_num = 1
-        for item in self.path:
-            tree_id = item[0]
-            if self.rules[tree_id]['rule_type'] ==1:
+        for rule_id in self.path:
+            if self.rules[rule_id]['rule_type'] ==1:
                 self.work_follow.update({work_follow_num: "x_offset_space_extract"})
-            elif self.rules[tree_id]['rule_type'] ==2:
+            elif self.rules[rule_id]['rule_type'] ==2:
                 self.work_follow.update({work_follow_num: "y_offset_space_extract"})
-            elif self.rules[tree_id]['rule_type'] == 3:
+            elif self.rules[rule_id]['rule_type'] == 3:
                 self.work_follow.update({work_follow_num: "regexp_extract"})
-            elif self.rules[tree_id]['rule_type'] == 4:
+            elif self.rules[rule_id]['rule_type'] == 4:
                 self.work_follow .update({work_follow_num: "expect_line_or_all_extract"})
-            elif self.rules[tree_id]['rule_type'] ==5:
+            elif self.rules[rule_id]['rule_type'] ==5:
                 self.work_follow.update({work_follow_num: "extract_block_by_indent"})
-            elif self.rules[tree_id]['rule_type'] ==6:
+            elif self.rules[rule_id]['rule_type'] ==6:
                 self.work_follow.update({work_follow_num: "extract_block_by_line_num"})
-            elif self.rules[tree_id]['rule_type'] == 7:
+            elif self.rules[rule_id]['rule_type'] == 7:
                 self.work_follow.update({work_follow_num: "extract_block_by_string_range"})
-            elif self.rules[tree_id]['rule_type'] == 8:
+            elif self.rules[rule_id]['rule_type'] == 8:
                 self.work_follow .update({work_follow_num: "extract_block_by_regular"})
             else:
                 return {"errorMsg": "the rule type is not exist"}

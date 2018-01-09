@@ -6,9 +6,9 @@ import time
 import zmq
 import threading
 from threading import Thread
-from Venus.configurations import Configurations
+from Pantheon.Venus.configurations import Configurations
 from tornado import options
-from Venus.helper import get_logger
+from Pantheon.Venus.helper import get_logger
 
 __author__ = 'Zhu Tong <zhtong@cisco.com>'
 __version__ = '0.5'
@@ -84,10 +84,12 @@ class WorkerBase(Thread):
 
 def main(worker):
     options.define("s", default='localhost', help="zmq server", type=str)
-    options.define("t", default=20, help="threads", type=int)
+    options.define("t", default=10, help="threads", type=int)
     options.parse_command_line()
     server = options.options.s
     threads = options.options.t
+    if hasattr(worker, "threads"):
+        threads = worker.threads
 
     pid = os.getpid()
     config = Configurations()
