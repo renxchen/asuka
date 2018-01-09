@@ -77,11 +77,42 @@
                 <div id="validPeriod" class="col-sm-12">
                     <div class="col-sm-3"></div>
                     <div class="col-sm-9">
-                        <div style="margin-bottom: 5px; margin-top: 5px">
-                            取得開始日時:&nbsp;<input type="datetime-local">
+                        <div class="col-sm-3" style="margin-bottom: 5px; margin-top: 30px; padding-right: 0px; padding-left: 0px;">
+                            取得開始日時:
                         </div>
-                        <div>
-                            取得終了日時:&nbsp;<input type="datetime-local">
+                        <div class="col-sm-5" style="margin-bottom: 25px; margin-top: 23px; padding-right: 0px; padding-left: 0px;">
+                            <input type="text" placeholder="YYYY-MM-DD" name="startDate" class="bsDate"
+                               [minDate]="bsValue"
+                               [maxDate]="maxDate"
+                               [bsConfig]="{dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue'}"
+                               #dps="bsDatepicker"
+                               bsDatepicker>
+                        </div>
+                        <div class="col-sm-4" style=" padding-right: 0px; padding-left: 0px;">
+                            <timepicker name="startDateTime" [(ngModel)]="startDateTime"
+                                        [showMeridian]="isTimeMeridian"[minuteStep]="1">
+
+                            </timepicker>
+                        </div>
+                    </div>
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-9">
+                        <div class="col-sm-3" style="margin-bottom: 5px; margin-top: 30px; padding-right: 0px; padding-left: 0px;">
+                            取得終了日時:&nbsp;
+                        </div>
+                        <div class="col-sm-5" style="margin-bottom: 25px; margin-top: 23px; padding-right: 0px; padding-left: 0px;">
+                            <input type="text" placeholder="YYYY-MM-DD" name="endDate" class="bsDate"
+                               [minDate]="bsValue"
+                               [maxDate]="maxDate"
+                               [bsConfig]="{dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue'}"
+                               #dpe="bsDatepicker"
+                               bsDatepicker>
+                        </div>
+                        <div class="col-sm-4" style=" padding-right: 0px; padding-left: 0px;">
+                            <timepicker name="endDateTime" [(ngModel)]="endDateTime"
+                                            [showMeridian]="isTimeMeridian" [minuteStep]="1">
+
+                            </timepicker>
                         </div>
                     </div>
                 </div>
@@ -100,7 +131,7 @@
                 <div id="dataSchedule" class="col-sm-12">
                     <div class="col-sm-3"></div>
                     <div class="col-sm-9">
-                        <div class="col-sm-2">
+                        <div class="col-sm-2" style="margin-top: 2px">
                             曜日
                         </div>
 
@@ -110,15 +141,28 @@
                             {{item.value}}&nbsp;&nbsp;&nbsp;&nbsp;
                         </div>
 
-                        <div class="col-sm-9">
-                            <div style="margin-bottom: 5px; margin-top: 5px">
-                                開始時間:&nbsp;<input type="time">
-                            </div>
-                            <div>
-                                終了時間:&nbsp;<input type="time">
-                            </div>
-                        </div>
 
+                    </div>
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-9">
+                        <div class="col-sm-2" style="margin-bottom: 5px; margin-top: 30px; padding-right: 0px; padding-left: 0px;">
+                            開始時間:
+                        </div>
+                        <div class="col-sm-10" >
+                            <timepicker name="startTime" [(ngModel)]="startTime"
+                                        [showMeridian]="isTimeMeridian" [minuteStep]="1">
+
+                            </timepicker>
+                        </div>
+                        <div class="col-sm-2" style="margin-bottom: 5px; margin-top: 30px; padding-right: 0px; padding-left: 0px;">
+                            終了時間:
+                        </div>
+                        <div class="col-sm-10" >
+                           <timepicker name="endTime" [(ngModel)]="endTime"
+                                        [showMeridian]="isTimeMeridian"[minuteStep]="1">
+
+                            </timepicker>
+                        </div>
                     </div>
 
                 </div>
