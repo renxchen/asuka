@@ -27,7 +27,7 @@ class SNMPParser(Parser):
         super(SNMPParser, self).__init__(param)
 
     def handle(self):
-        bulk_save_result(self.parser_params['items'], ITEM_TYPE_MAPPING[SNMP_TYPE_CODE])
+        bulk_save_result(self.parser_params['items'], SNMP_TYPE_CODE)
         pass
 
 
@@ -51,7 +51,7 @@ class CliParser(Parser):
             arry = p.get_result()
             if len(arry) == 0:
                 continue
-            item['value'] = arry[1][0]
+            item['value'] = arry[-1][0]
             result.append(item)
         bulk_save_result(result, CLI_TYPE_CODE)
 
@@ -66,12 +66,20 @@ class CliParser(Parser):
         return [str(rule) for rule in rules]
 
 
+def parser_main(item_type, params):
+    if item_type == CLI_TYPE_CODE:
+        func = CliParser(params)
+    else:
+        func = SNMPParser(params)
+    func.handle()
+
+
 if __name__ == "__main__":
-    with open("test_cli_param.json") as f:
-        test_cli_param = json.loads(f.read())
-    cli_handle = CliParser(test_cli_param)
-    cli_handle.handle()
-    # with open("test_snmp_param.json") as f:
-    #     test_snmp_param = json.loads(f.read())
-    # snmp_handle = SNMPParser(test_snmp_param)
-    # snmp_handle.handle()
+    # with open("test_cli_param.json") as f:
+    #     test_cli_param = json.loads(f.read())
+    # cli_handle = CliParser(test_cli_param)
+    # cli_handle.handle()
+    with open("test_snmp_param.json") as f:
+        test_snmp_param = json.loads(f.read())
+    snmp_handle = SNMPParser(test_snmp_param)
+    snmp_handle.handle()

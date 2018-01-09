@@ -1,5 +1,6 @@
 import time
 import re
+import copy
 from Pantheon.Venus.collection.db_help import get_items_schedule, get_all_rule
 from Pantheon.Venus.constants import OPEN_VALID_PERIOD_TYPE, \
     TREE_PATH_SPLIT, \
@@ -9,17 +10,27 @@ from Pantheon.Venus.constants import OPEN_VALID_PERIOD_TYPE, \
     CLI_TYPE_CODE
 
 
+def __create_test_devices(template):
+    test_devices = []
+    for i in range(68):
+        for k in range(101, 116):
+            tmp = copy.copy(template[0])
+            tmp['device__ip'] = "192.168.100.%d" % k
+            tmp['device__device_id'] = i*15 + k
+            test_devices.append(tmp)
+    return test_devices
+
+
 def get_items(now_time, item_type, other_param=[]):
     items = get_items_schedule(item_type)
     devices = get_task_information(now_time, items)
+    devices = __create_test_devices(devices)
     tmp_result = merge_device(devices)
     if item_type == CLI_TYPE_CODE:
         rules = __add_rules()
         devices = [__merge_cli(item, other_param, rules=rules) for item in tmp_result.values()]
     else:
         devices = [__merge_snmp(item, other_param) for item in tmp_result.values()]
-
-
         # for device in devices:
         #     device['rules'] = rules
     return devices

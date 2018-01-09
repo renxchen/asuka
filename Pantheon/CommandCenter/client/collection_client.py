@@ -37,7 +37,6 @@ def __add_param(device={}):
 
 def get_devices(param):
     __service_url = "http://127.0.0.1:8888/api/v1/getCollectionInfor"
-
     res = requests.post(__service_url, data=json.dumps(param))
     status_code = res.status_code
     if status_code == 200:
@@ -79,31 +78,33 @@ def __get_snmp_data(param):
 
 
 def send_handler_request_cli(param, output):
+    __service_url = "http://127.0.0.1:8888/api/v1/parser"
     if output['status'] != "success":
         raise CollectionException("Collection Error:%s" % "Response status is fail")
     param['start_time'] = output['start_time']
     param['end_time'] = output['end_time']
+    param['item_type'] = CLI_TYPE_CODE
     tmp_dict = {}
     for output in output['output']:
         tmp_dict[str(output['command']).strip()] = output['output']
     for item in param['items']:
         item['output'] = tmp_dict[str(item['command']).strip()]
-    print json.dumps(param, indent=2)
+    # res = requests.post(__service_url, data=json.dumps(param))
 
 
 def send_handler_request_snmp(param, output):
+    __service_url = "http://127.0.0.1:8888/api/v1/parser"
     if output['status'] != "success":
         raise CollectionException("Collection Error:%s" % "Response status is fail")
     param['start_time'] = output['start_time']
     param['end_time'] = output['end_time']
-
+    param['item_type'] = SNMP_TYPE_CODE
     tmp_dict = {}
-
     for output in output['output']:
         tmp_dict[str(output['oid']).strip()] = output['output']
     for item in param['items']:
         item['output'] = tmp_dict[str(item['oid']).strip()]
-    print json.dumps(param, indent=2)
+    res = requests.post(__service_url, data=json.dumps(param))
 
 
 def cli_main():
@@ -114,6 +115,7 @@ def cli_main():
         is_rules=False
     )
     devices = get_devices(param)
+    print len(devices)
     pool = ThreadPool(15)
     pool.map(__get_cli_data, devices)
     pool.close()
@@ -135,5 +137,8 @@ def snmp_main():
 
 
 if __name__ == "__main__":
+    now_time = int(time.time())
     cli_main()
     # snmp_main()
+    end_time = int(time.time())
+    print end_time - now_time
