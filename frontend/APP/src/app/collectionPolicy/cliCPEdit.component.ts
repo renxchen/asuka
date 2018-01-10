@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
+import { CLICPLoginComponent } from './cliCPLogin.component';
 declare var $: any;
 
 @Component({
@@ -18,100 +19,135 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
     ruleTreeData: any;
     testData: any = [
         {
-            'text': 'b1',
+            'text': 'block_1',
+            'is_root': true, // root_node can not be moved;
+            'node_type': 'block_rule_1', // for editing and deleting
+            'icon': 'fa fa-folder-o',
+            'state': {
+                'opened': true,
+            },
             'children': [
                 {
-                    'text': 'rule 1rule 1',
+                    'text': 'br_1_1',
+                    'icon': 'fa fa-cubes',
                     'children': [],
-                    'id': 1
+                    'rule_id': 1,
+                    'node_type': 'block_rule_1'
                 },
                 {
-                    'text': 'testc',
+                    'text': 'br_1_2',
+                    'icon': 'fa fa-cubes',
                     'children': [],
-                    'id': 6
+                    'rule_id': 2,
+                    'node_type': 'block_rule_1'
                 }
             ],
-            'id': 0,
         },
         {
             'text': 'b2',
+            'icon': 'fa fa-folder-o',
+            'node_type': 'block_rule_2',
+            'is_root': true,
+            'state': {
+                'opened': true,
+            },
             'children': [
                 {
-                    'text': 'block rule 2',
+                    'text': 'br_2_1',
+                    'icon': 'fa fa-cubes',
                     'children': [],
-                    'id': 2
-                }
-            ],
-            'id': 0
-        },
-        {
-            'text': 'b3',
-            'children': [
-                {
-                    'text': 'block rule 3',
-                    'children': [],
+                    'node_type': 'block_rule_2',
                     'rule_id': 3
                 }
             ],
-            'id': 0
+        },
+        {
+            'text': 'b3',
+            'icon': 'fa fa-folder-o',
+            'node_type': 'block_rule_3',
+            // root can't be moved
+            'is_root': true,
+            'state': {
+                'opened': true, // is the node open
+            },
+            'children': [
+                {
+                    'text': 'br_3_1',
+                    'icon': 'fa fa-cubes',
+                    'children': [],
+                    'node_type': 'block_rule_3',
+                    'rule_id': 4
+                }
+            ],
         }
     ];
     testData2: any = [
         // 'Simple root node',
         {
-            'text': 'Root node 2 <button type="button" class="btn btn-xs btn-primary add"><i class="fa fa-plus-square"></i> 追加</button>',
+            'text': 'd1',
+            // used for create rule
+            'icon': 'fa fa-folder-o',
+            'node_type': 'data_rule_1',
+            'is_root': true,
             'children': [
-                { 'text': 'Child 1' },
-                'Child 2'
+                {
+                    'text': 'd_1_1',
+                    'icon': 'fa fa-text-height',
+                    'node_type': 'data_rule_1',
+                    'rule_id': 5
+                },
+                {
+                    'text': 'd_1_2',
+                    'node_type': 'data_rule_1',
+                    'icon': 'fa fa-text-height'
+                }
             ]
         },
         {
-            'text': 'Root node 2 <button type="button" class="btn btn-xs btn-primary add"><i class="fa fa-plus-square"></i> 追加</button>',
+            'text': 'd2',
+            'icon': 'fa fa-folder-o',
+            'node_type': 'data_rule_2',
+            'is_root': true,
             'children': [
-                { 'text': 'Child 1' },
-                'Child 2'
+                {
+                    'text': 'd_2_1',
+                    // used for editing and delete
+                    'icon': 'fa fa-text-height',
+                    'node_type': 'data_rule_2',
+                    'rule_id': 6
+                },
+                {
+                    'text': 'd_2_2',
+                    'icon': 'fa fa-text-height'
+                }
             ]
         },
         {
-            'text': 'Root node  <button type="button" class="btn btn-xs btn-primary add"><i class="fa fa-plus-square"></i> 追加</button>',
+            'text': 'd3',
+            'icon': 'fa fa-folder-o',
+            'type': 'data_rule_3',
+            'is_root': true,
             'children': [
-                { 'text': 'Child 1' },
-                'Child 2',
+                {
+                    'text': 'd_3_1',
+                    'icon': 'fa fa-text-height',
+                    'node_type': 'data_rule_3',
+                    'rule_id': 6
+                },
+                {
+                    'text': 'd_3_2',
+                    'node_type': 'data_rule_3',
+                    'icon': 'fa fa-text-height'
+                }
             ],
         }
     ];
     testData3: any = [
         {
             'text': 'test',
-            'rule_id': 0,
-            // 'children': [
-            //     {
-            //         'text': 'block rule 1',
-            //         'rule_id': 1,
-            //         'children': [
-            //             {
-            //                 'text': 'block rule 2',
-            //                 'rule_id': 2,
-            //                 'children': [],
-            //                 'id': 'j1-2',
-            //             },
-            //             {
-            //                 'text': 'data rule 1',
-            //                 'rule_id': 4,
-            //                 'children': [],
-            //                 'id': 'j1-3',
-            //             },
-            //             {
-            //                 'text': 'data rule 1',
-            //                 'rule_id': 4,
-            //                 'children': [],
-            //                 'id': 'j1-4',
-            //             }
-            //         ],
-            //         'id': 'j1-1',
-            //     }
-            // ],
-            'id': 'j1',
+            'icon': 'fa fa-tags fa-lg',
+            'node_type': 'policy_rule',
+            'is_root': true,
         },
 
     ];
@@ -130,11 +166,10 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
     ngOnInit() {
     }
     ngAfterViewInit() {
+        this.nodeCustomizeAndRoot();
         this.blockTree(this.testData);
         this.dataTree(this.testData2);
         this.policyTree(this.testData3);
-        this.getSelectedNode();
-        // this.moveNode();
     }
     public getCPInfo(id: any) {
         this.apiPrefix = '/v1';
@@ -159,70 +194,306 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
                 }
             });
     }
+    public nodeCustomizeAndRoot() {
+        'use strict';
+        // node_customize
+        if ($.jstree.plugins.node_customize) { return; }
+        $.jstree.defaults.node_customize = {};
+        $.jstree.plugins.node_customize = function (options, parent) {
+            this.redraw_node = function (obj, deep, callback, force_draw) {
+                let node_id = obj;
+                let node = this.get_node(obj);
+                let el = parent.redraw_node.call(this, obj, deep, callback, force_draw);
+                let i, j, tmp = null, elm = null;
+                if (el && node && node.parent !== '#') {
+                    for (i = 0, j = el.childNodes.length; i < j; i++) {
+                        if (el.childNodes[i] && el.childNodes[i].className && el.childNodes[i].className.indexOf('jstree-anchor') !== -1) {
+                            tmp = el.childNodes[i];
+                            break;
+                        }
+                    }
+                    if (tmp) {
+                        let cfg = this.settings.node_customize;
+                        for (let i = 0; i < cfg.length; i++) {
+                            let $html = $(cfg[i].html);
+                            $html.insertAfter(tmp);
+                            $html.bind('click', { 'node': node }, cfg[i].click);
+                        }
+
+
+                    }
+                }
+                return el;
+            };
+        };
+
+        // root_node
+        if ($.jstree.plugins.root_node) { return; }
+        $.jstree.defaults.root_node = {};
+        $.jstree.plugins.root_node = function (options, parent) {
+            this.redraw_node = function (obj, deep, callback, force_draw) {
+                let node_id = obj;
+                let node = this.get_node(obj);
+                let el = parent.redraw_node.call(this, obj, deep, callback, force_draw);
+                let i, j, tmp = null, elm = null;
+
+                if (node.parent === '#') {
+                    for (i = 0, j = el.childNodes.length; i < j; i++) {
+                        if (el.childNodes[i] && el.childNodes[i].className && el.childNodes[i].className.indexOf('jstree-anchor') !== -1) {
+                            tmp = el.childNodes[i];
+                            break;
+                        }
+                    }
+                    if (tmp) {
+                        let cfg = this.settings.root_node;
+                        for (let i = 0; i < cfg.length; i++) {
+                            let $html = $(cfg[i].html);
+                            $html.insertAfter(tmp);
+                            $html.bind('click', { 'node': node }, cfg[i].click);
+                        }
+
+
+                    }
+                }
+                return el;
+            };
+        };
+    }
+    // root_node can not be moved
+    public moveNodeRule(node) {
+        if (node[0]['original']['is_root']) {
+            return false;
+        }
+        return true;
+    }
+    public policyMoveRule(operation, node, node_parent, node_position, more) {
+        console.log('node_parent', node_parent);
+        if (node_parent.parent === null) {
+            return false;
+        }
+        // block_rule can't be dragged to data_rule;
+        if (node['original']['node_type'].indexOf('block_rule') !== -1
+            && node_parent['original']['node_type']
+            && node_parent['original']['node_type'].indexOf('data_rule') !== -1) {
+            return false;
+        }
+        // data_rule be dragged to data
+        if (node['original']['node_type'].indexOf('data') !== -1
+            && node_parent['original']['node_type']
+            && node_parent['original']['node_type'].indexOf('data') !== -1) {
+            return false;
+        }
+        // policy tree can keep open;
+        if (operation === 'copy_node') {
+            node_parent.state.opened = true;
+        }
+        return true;
+    }
+    // policy tree hightlight
+    public getPlyTreeInfo() {
+        return $('#policyTree')
+            .jstree(true)
+            .get_json('#', {
+                flat: false, no_state: true,
+                no_li_attr: true, no_a_attr: true,
+                no_data: false
+            });
+    }
+    // highlight
+    public hightLight(param: any) {
+        this.apiPrefix = '/v1';
+        let highLightUrl = '/api_policy_tree_highlight';
+        this.httpClient.setUrl(this.apiPrefix);
+        this.httpClient
+            .toJson(this.httpClient.post(highLightUrl, param)).subscribe(res => {
+                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                    if (res['data']) {
+                        let data = res['data'];
+                        // data
+                        $('#highlight_wrap').html(data);
+                    }
+                } else {
+                    if (res['status']['message']) {
+                        alert(res['status']['message']);
+                    }
+                }
+            });
+    }
+    public savePlyTree() {
+        let param = {
+            'coll_policy_id': this.cPId,
+            'tree': JSON.stringify(this.getPlyTreeInfo()),
+            'raw_data': $('#input_wrap').val()
+        };
+        console.log('param', param);
+        this.apiPrefix = '/v1';
+        let savePlytUrl = '/api_policy_tree/';
+        this.httpClient.setUrl(this.apiPrefix);
+        this.httpClient
+            .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
+                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                    if (res['data'] && res['data']['policy_tree_json']) {
+                        let policyTree = res['data']['policy_tree_json'];
+                        this.policyTree(policyTree);
+                    }
+                } else {
+                    if (res['status']['message']) {
+                        alert(res['status']['message']);
+                    }
+                }
+            });
+    }
     public blockTree(data: any) {
-        console.log('tree');
+        let _t = this;
         $('#blockTree').jstree({
             'core': {
-                'check_callback': true,
+                'check_callback': function (operation, node, node_parent, node_position, more) {
+                    return false;
+                },
                 'data': data,
-                'li_attr': '<button>追加</button>'
             },
-            'plugins': ['dnd', 'types'],
-            'types' : {
-                '#' : {
-                      'ax_children' : 5
-                    }
-            }
+            'plugins': ['types', 'dnd', 'crrm', 'node_customize', 'root_node'],
+            'dnd': {
+                'is_draggable': function (node) {
+                    return _t.moveNodeRule(node);
+                },
+                'always_copy': true,
+            },
+            'root_node':
+            [{
+                'html': `<button class="btn btn-xs btn-primary"
+                        style="margin-left:20px" type="button" >
+                            <i class="fa fa-plus-square"></i>&nbsp追加
+                        </button>`,
+                'click': function (event) {
+                    let blockType = event.data.node['node_type'];
+                    // call createBlockRule();
+                }
+            }],
+            'node_customize': [{
+                'html': `<button class="btn btn-outline btn-info btn-xs"
+                        sytle="margin-left:10px;margin-bottom:2px;
+                        " type="button">
+                            <i class="fa fa-paste"></i> 編集
+                        </button>`,
+                'click': function (event) {
+                    let node = event.data.node;
+                    let node_type = event.data.node['node_type'];
+                    let blocRuleId = event.data.node['block_rule_id'];
+                    let refPending = $('#policyTree').jstree(true).get_json('#', { flat: false, no_state: true,
+                        no_li_attr: true, no_a_attr: true,
+                        no_data: false});
+                    let rending = JSON.stringify(refPending);
+                    console.log('node', node);
+                    console.log('pending', rending);
+                    // check rule_id not in policy tree
+                    // if (blocRuleId){
+                    // }
+                    // call editBlockRule(node_type,blocRuleId);
+                }
+            }]
+        }).bind('move_node.jstree', function (e, data) {
+        }).bind('activate_node.jstree', function (e, node) {
+            console.log(node);
+            // show_detail(node);
         });
     }
     public dataTree(data: any) {
+        let _t = this;
         $('#dataTree').jstree({
             'core': {
-                'check_callback': true,
+                'check_callback': function (operation, node, node_parent, node_position, more) {
+                    return false;
+                },
                 'data': data,
             },
-            'plugins': ['dnd'],
-            'types' : {
-                '#' : {
-                      'ax_children' : 3
-                    }
-            }
+            'plugins': ['types', 'dnd', 'state', 'crrm', 'node_customize', 'root_node'],
+            'dnd': {
+                'is_draggable': function (node) {
+                    return _t.moveNodeRule(node);
+                },
+                'always_copy': true,
+            },
+            'state': { 'opened': true },
+            'root_node':
+            [{
+                'html': `<button class="btn btn-xs btn-primary"
+                        style="margin-left:20px" type="button" >
+                            <i class="fa fa-plus-square"></i>&nbsp追加
+                        </button>`,
+                'click': function (event) {
+                    // change_display_detail("block_add", "data_add", "追加");
+                }
+            }],
+            'node_customize': [{
+                'html': `<button class="btn btn-outline btn-info btn-xs"
+                        sytle="margin-left:10px;margin-bottom:2px;
+                        " type="button">
+                            <i class="fa fa-paste"></i> 編集
+                        </button>`,
+                'click': function (event) {
+                    // show_rule_detail(event.data.node);
+                }
+            }]
+        }).bind('move_node.jstree', function (e, data) {
+        }).bind('activate_node.jstree', function (e, node) {
+            console.log(node);
+            // show_detail(node);
         });
     }
     public policyTree(data: any) {
+        let _t = this;
         $('#policyTree').jstree({
             'core': {
-                'check_callback': true,
+                'check_callback': function (operation, node, node_parent, node_position, more) {
+                    return _t.policyMoveRule(operation, node, node_parent, node_position, more);
+                },
                 'data': data,
             },
-            'plugins': ['dnd', 'contextmenu']
-        });
-    }
-    public getSelectedNode() {
-        let wholedata = $('#dataTree').jstree(true);
-        let tree = wholedata.get_container_ul ();
-        console.log('whole tree', tree);
-        $('#dataTree').on('changed.jstree', function (e, data) {
-            console.log('data', data);
-            if (data.selected.length) {
-                $(data.selected).each(function (idx) {
-                    let node = data.instance.get_node(data.selected[idx]);
-                    console.log('selected', node.id);
-                });
-            }
-        });
-    }
-    public moveNode() {
-        $('#dataTree').on ('move_node.jstree', function (e, data) {
-            console.log('ddd', data);
-            if (data.rslt.ot !== data.rslt.rt) {
-               console.log('Node was moved to a different tree-instance');
-            } else {
-               console.log('Node was moved inside the same tree-instance');
-            }
-         });
-    }
-    public deleteNode() {
-        // $('#PolicyTree').jstree(true).delete_node([node.id]);
+            'plugins': ['type', 'dnd', 'crrm', 'node_customize', 'state'],
+            'type': { 'opened': true },
+            'dnd': {
+                'is_draggable': function (node) {
+                    return _t.moveNodeRule(node);
+                }
+            },
+            'node_customize': [
+                {
+                    'html': `<button class="btn btn-outline btn-danger  btn-xs"
+                                sytle="margin-left:10px;margin-bottom:2px;"
+                                type="button">
+                                <i class="fa fa-minus-square"></i> 消除
+                            </button>`,
+                    'click': function (event) {
+                        $('#policyTree').jstree(`delete_node`, event.data.node.id);
+                    }
+                },
+                {
+                    'html': `<button class="btn btn-success btn-outline btn-xs"
+                                sytle="margin-left:10px;margin-bottom:2px;"
+                                type="button">
+                                <i class="fa fa-list"></i> ハイライト
+                            </button>`,
+                    'click': function (event) {
+                        let param = {
+                            'coll_policy_id': _t.cPId,
+                            'tree': JSON.stringify(_t.getPlyTreeInfo),
+                            'tree_id': event.data.node['id'],
+                            'raw_data': $('#input_wrap').val()
+                        };
+                        // highlight;
+                        _t.hightLight(param);
+                    }
+                }
+            ],
+        })
+            .bind('move_node.jstree', function (e, data) { })
+            .on('copy_node.jstree', function (e, data) {
+                data.node.original = $.extend(true, data.node.original, data.original.original);
+                data.node.data = $.extend(true, data.node.data, data.original.data);
+            })
+            .bind('activate_node.jstree', function (e, node) {
+
+            });
     }
 }
