@@ -1,4 +1,20 @@
 """
+############Common###########
+"""
+VALUE_TYPE_MAPPING = {
+    0: "Int",
+    1: "Text",
+    2: "Float",
+    3: "Str"
+}
+ITEM_TYPE_MAPPING = {
+    0: "Cli",
+    1: "Snmp"
+}
+SNMP_TYPE_CODE = 1
+CLI_TYPE_CODE = 0
+
+"""
 ############Collection###########
 """
 """
@@ -34,10 +50,15 @@ SNMP_COLLECTION_DEFAULT_METHOD = "bulk_get"
 """
 ############Trigger###########
 """
-TRIGGER_DB_MODULES = "Venus.db_units.models"
+TRIGGER_DB_MODULES = "Pantheon.Venus.db_units.models"
 TRIGGER_NUMERIC = ["Float", "Int"]
 TRIGGER_EVENT_SOURCE = 0
 TRIGGER_OPEN = 0
 TRIGGER_CLOSE = 1
 TRIGGER_VALUE = 1
 NORMAL_VALUE = 0
+
+"""
+##########Parser###########
+"""
+TREE_PATH_SPLIT = "/"

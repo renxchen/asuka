@@ -27,7 +27,7 @@ class PolicyTreeHighLightViewSet(viewsets.ViewSet):
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         self.raw_data = views_helper.get_request_value(self.request, 'raw_data', 'BODY')
         self.tree_id = views_helper.get_request_value(self.request, 'tree_id', 'BODY')
-        self.tree = views_helper.get_request_body(self.request, 'tree', 'BODY')
+        self.tree = views_helper.get_request_value(self.request, 'tree', 'BODY')
 
     def post(self):
         request_dict = {

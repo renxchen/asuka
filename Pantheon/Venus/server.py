@@ -68,17 +68,18 @@ class CollectionApiHandle(web.RequestHandler):
             param = json.loads(self.request.body)
             now_time = param["now_time"]
             item_type = param["item_type"]
-            devices_info = get_items(now_time, item_type)
+            other_param = param["other_param"] if "other_param" in param else []
+            devices_info = get_items(now_time, item_type, other_param)
 
             result = dict(
                 status="success",
-                output=devices_info,
+                devices=devices_info,
                 message=""
             )
         except Exception, e:
             result = dict(
                 status="success",
-                output=[],
+                devices=[],
                 message=str(e)
             )
 
@@ -86,8 +87,44 @@ class CollectionApiHandle(web.RequestHandler):
         self.finish()
 
 
+class ParserApiHandle(web.RequestHandler):
+    @web.asynchronous
+    def post(self, *args, **kwargs):
+        def cb_func(response, *args):
+            self.write(json.dumps(response, indent=2))
+            self.finish()
+            session_mgr.set_read(task_id)
+            del task_dict[task_id]
+        channel = "parser"
+        self.set_header("Content-Type", "application/json")
+        params = json.loads(self.request.body)
+        task_id = uuid.uuid4().hex
+        timer = time.time()
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+        session_mgr.put(task_id,
+                        dict(status='Queue',
+                             params=params,
+                             timer=timer,
+                             timestamp=timestamp,
+                             read=False,
+                             category=channel))
+        if channel not in task_q:
+            task_q[channel] = Queue.Queue()
+        q = task_q[channel]
+        q.put(task_id)
+        task_dict[task_id] = cb_func, None
+        zmq_publish.send_string(b'%s task' % channel)
+        logging.info('Publish new task %s to %s' % (task_id, channel))
+        # self.finish()
+
+
 class TriggerApiHandle(web.RequestHandler):
     def put(self, *args, **kwargs):
+        def cb_func(response, *args):
+            self.write(json.dumps(response, indent=2))
+            self.finish()
+            session_mgr.set_read(task_id)
+            del task_dict[task_id]
         message = {}
         try:
             channel = "Trigger"
@@ -107,9 +144,7 @@ class TriggerApiHandle(web.RequestHandler):
                 task_q[channel] = Queue.Queue()
             q = task_q[channel]
             q.put(task_id)
-
-
-
+            task_dict[task_id] = cb_func, None
             zmq_publish.send_string(b'%s task' % channel)
             logging.info('Publish new task %s to %s' % (task_id, channel))
         except Exception, e:
@@ -218,6 +253,7 @@ if __name__ == '__main__':
     web.Application([(r'/api/v1/test/?(.*)', TestApiHandler),
                      (r'/api/v1/saveOutput/?(.*)', SaveFileApiHandle),
                      (r'/api/v1/getCollectionInfor/?(.*)', CollectionApiHandle),
+                     (r'/api/v1/parser/?(.*)', ParserApiHandle),
                      ],
                     autoreload=True,
                     ).listen(port)

@@ -1,15 +1,13 @@
-import os
-import django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Pantheon.Venus.db_units.settings")
-django.setup()
-from ..db_units.models import Items, PolicysGroups
+from Pantheon.Venus.db_units.db_units import *
+from ..db_units.models import Items, PolicysGroups, CollPolicyCliRule
 
 
 def get_items_schedule(item_type):
     items = Items.objects.filter(**{"status": 1, "schedule__status": 1, "item_type": item_type}).order_by("schedule__priority").values(
         "item_id",
         "schedule__valid_period_type",
-        "schedule__valid_period_time",
+        "schedule__start_period_time",
+        "schedule__end_period_time",
         "schedule__data_schedule_type",
         "schedule__data_schedule_time",
         "last_exec_time",
@@ -31,17 +29,27 @@ def get_items_schedule(item_type):
         "coll_policy__cli_command",
         "coll_policy__snmp_oid",
         # "exec_interval",
-
+        "coll_policy_rule_tree_treeid",
+        "coll_policy_rule_tree_treeid__rule_id_path",
+        "coll_policy_rule_tree_treeid__rule_id",
+        "coll_policy_rule_tree_treeid__rule__value_type",
+        "coll_policy__value_type",
         "schedule__priority",
         "policys_groups__exec_interval",
         "policys_groups__history",
         "coll_policy_id",
-        "item_type")
+        "item_type",
+        "coll_policy_id")
     return items
 
 
 def get_policy_interval(policy_group_id):
     return PolicysGroups.objects.filter(**{"policy_group_id": policy_group_id})[0]
+
+
+def get_all_rule():
+    rules = CollPolicyCliRule.objects.filter(**{}).values()
+    return rules
 
 # def update_exec_time():
 
