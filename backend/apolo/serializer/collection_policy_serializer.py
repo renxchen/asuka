@@ -6,8 +6,8 @@ class CollPolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = CollPolicy
         fields = (
-            'name', 'cli_command', 'cli_command_result', 'desc', 'policy_type', 'snmp_oid', 'history', 'ostype',
-            'value_type', 'ostype_name')
+            'coll_policy_id', 'name', 'cli_command', 'cli_command_result', 'desc', 'policy_type', 'snmp_oid', 'history',
+            'ostype', 'value_type', 'ostype_name')
         # fields = '__all__'
 
     def create(self, validated_data):
