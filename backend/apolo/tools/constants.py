@@ -47,6 +47,7 @@ NO_USERNAME_OR_PASSWORD = "No user or password found."
 USER_AND_PASSWD_INCORRECT = "User or password is incorrect."
 USER_DISABLED = "User is disabled."
 USER_LOGOUT_SUCCESSFUL = "User logout successful."
+COLLECTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 #########################################
 # API log or exception define
 #########################################
