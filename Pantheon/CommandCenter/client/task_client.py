@@ -3,7 +3,7 @@ import requests
 import json
 import time
 from multiprocessing.dummy import Pool as ThreadPool
-TIMEOUT = 5
+TIMEOUT = 60
 DEFAULT_LOG_FILE_PATH = "log.log"
 DEFAULT_LOG_LEVEL = logging.INFO
 BASE_CLI_METHOD = "telnet"
@@ -19,14 +19,15 @@ GET_DEVICES_SERVICE_URL = "http://127.0.0.1:8888/api/v1/getCollectionInfor"
 PARSER_SERVICE_URL = "http://127.0.0.1:8888/api/v1/parser"
 
 
-
-
 class LogMessage(object):
     DEBUG_NO_DEVICE_RUNNING_AT_TIME = "No device need to running"
-    CRITICAL_SERVICE_TIMEOUT = "Service request timeout"
+    CRITICAL_SERVICE_TIMEOUT = "Wait Service response timeout"
+    CRITICAL_SERVICE_CONNECT_ERROR = "Connect Service Error"
+
     CRITICAL_GET_DEVICE_INFORMATION_ERROR = "Get device information fail: %s"
     CRITICAL_COLLECTION_ERROR = "Collection fail: %s"
     CRITICAL_PARSER_ERROR = "Parser fail: %s"
+    ERROR_COLLECTION = "Device %s collection fail: %s"
 
 
 class DeviceServiceExceptions(Exception):
@@ -72,7 +73,12 @@ def log_factory(**kwargs):
 
 def get_devices(param):
     __service_url = GET_DEVICES_SERVICE_URL
-    res = requests.post(__service_url, data=json.dumps(param), timeout=TIMEOUT)
+    try:
+        res = requests.post(__service_url, data=json.dumps(param), timeout=TIMEOUT)
+    except requests.exceptions.ConnectionError:
+        raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_CONNECT_ERROR)
+    except requests.exceptions.ReadTimeout:
+        raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_TIMEOUT)
     status_code = res.status_code
     if status_code == 200:
         devices = json.loads(str(res.text))
@@ -86,15 +92,21 @@ def get_devices(param):
 def __get_cli_data(param):
     __base_url = GET_CLI_DATA_SERVICE_URL
     __url = __base_url % 'cli'
+
     try:
         res = requests.post(__url, data=json.dumps(param), timeout=TIMEOUT)
-    except requests.exceptions:
-        raise CollectionServiceException(LogMessage.CRITICAL_SERVICE_TIMEOUT)
+    except requests.exceptions.ConnectionError:
+        raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_CONNECT_ERROR)
+    except requests.exceptions.ReadTimeout:
+        raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_TIMEOUT)
     status_code = res.status_code
     if status_code == 200:
         output = json.loads(res.text)
     else:
         raise CollectionServiceException(LogMessage.CRITICAL_COLLECTION_ERROR % str(res.text))
+    if output['status'] != "success":
+        cli_collection_logger.error(LogMessage.ERROR_COLLECTION % (str(output['ip']), str(output['message'])))
+        return
     try:
         send_handler_request_cli(param, output)
     except Exception, e:
@@ -139,17 +151,19 @@ def cli_main():
             }
         )
         return device
+
+    devices = []
     cli_logger.info("Cli Task %d Begin" % now_time)
     param = dict(
         now_time=now_time,
         item_type=CLI_TYPE_CODE
     )
-    devices = get_devices(param)
-    devices = map(__add_param, devices['devices'])
-    if len(devices) == 0:
-        cli_logger.debug(LogMessage.DEBUG_NO_DEVICE_RUNNING_AT_TIME)
-    pool = ThreadPool(CLI_THREADPOOL_SIZE)
     try:
+        devices = get_devices(param)
+        devices = map(__add_param, devices['devices'])
+        if len(devices) == 0:
+            cli_logger.debug(LogMessage.DEBUG_NO_DEVICE_RUNNING_AT_TIME)
+        pool = ThreadPool(CLI_THREADPOOL_SIZE)
         pool.map(__get_cli_data, devices)
         pool.close()
         pool.join()
@@ -170,8 +184,10 @@ def __get_snmp_data(param):
     __url = __base_url % 'snmp'
     try:
         res = requests.post(__url, data=json.dumps(param), timeout=TIMEOUT)
-    except requests.exceptions:
-        raise CollectionServiceException(LogMessage.CRITICAL_SERVICE_TIMEOUT)
+    except requests.exceptions.ConnectionError:
+        raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_CONNECT_ERROR)
+    except requests.exceptions.ReadTimeout:
+        raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_TIMEOUT)
     status_code = res.status_code
     if status_code == 200:
         output = json.loads(res.text)
@@ -220,12 +236,13 @@ def snmp_main():
         now_time=now_time,
         item_type=SNMP_TYPE_CODE
     )
-    devices = get_devices(param)
-    devices = map(__add_param, devices['devices'])
-    if len(devices) == 0:
-        snmp_logger.debug(LogMessage.DEBUG_NO_DEVICE_RUNNING_AT_TIME)
-    pool = ThreadPool(SNMP_THREADPOOL_SIZE)
+    devices = []
     try:
+        devices = get_devices(param)
+        devices = map(__add_param, devices['devices'])
+        if len(devices) == 0:
+            snmp_logger.debug(LogMessage.DEBUG_NO_DEVICE_RUNNING_AT_TIME)
+        pool = ThreadPool(SNMP_THREADPOOL_SIZE)
         pool.map(__get_snmp_data, devices)
         pool.close()
         pool.join()
@@ -242,6 +259,7 @@ def snmp_main():
 
 
 if __name__ == "__main__":
+    now_time = int(time.time())
     snmp_parser_logger = log_factory(log_name="Snmp_Parser")
     snmp_collection_logger = log_factory(log_name="Snmp_Collection")
     snmp_device_logger = log_factory(log_name="Snmp_Device")
@@ -252,5 +270,5 @@ if __name__ == "__main__":
     cli_logger = log_factory(log_name="Cli")
     cli_main()
     # snmp_main()
-    # print log_factory(log_name="test", log_level=logging.INFO)
-    # print log_factory(log_name="test", log_level=logging.CRITICAL)
+    end_time = int(time.time())
+    print end_time - now_time
