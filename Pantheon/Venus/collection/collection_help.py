@@ -24,7 +24,7 @@ def __create_test_devices(template):
 def get_items(now_time, item_type, other_param=[]):
     items = get_items_schedule(item_type)
     devices = get_task_information(now_time, items)
-    devices = __create_test_devices(devices)
+    # devices = __create_test_devices(devices)
     tmp_result = merge_device(devices)
     if item_type == CLI_TYPE_CODE:
         rules = __add_rules()

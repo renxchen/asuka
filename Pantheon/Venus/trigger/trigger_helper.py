@@ -1,11 +1,16 @@
-from db_help import get_functions_by_device_policy, get_latest_event, save_events
+from db_help import get_functions_by_device_policy, get_latest_event, save_events, get_functions_by_item_id
 from function_helper import get_function_value
 from Pantheon.Venus.constants import TRIGGER_EVENT_SOURCE, TRIGGER_OPEN, TRIGGER_VALUE, NORMAL_VALUE
 import re
 import time
 
 
-def trigger(device_id, policy_id, clock):
+def bulk_trigger(items, clock):
+    for item in items:
+        trigger(item['item_id'], clock)
+
+
+def trigger(item_id, clock):
     """
     Parser trigger which was defined by given device and policy
     :param device_id:
@@ -13,7 +18,8 @@ def trigger(device_id, policy_id, clock):
     :return:
     """
     parser_detail = []
-    functions = get_functions_by_device_policy(device_id, policy_id)
+    # functions = get_functions_by_device_policy(device_id, policy_id)
+    functions = get_functions_by_item_id(item_id)
     functions_value = {}
     events = []
     """
@@ -76,4 +82,6 @@ def save_event(events):
     save_events(tmp)
 
 if __name__ == "__main__":
-    trigger(1, 2, 123)
+    test = [(1, 2), (1, 2), (1, 2)]
+    bulk_trigger(test, 123)
+    # print eval("None > 1")

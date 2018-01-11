@@ -19,7 +19,7 @@ def get_functions_by_item_id(item_id):
     :param item_id: item id
     :return: functions list
     """
-    functions = Functions.objects.filter(**{"item_id": item_id})
+    functions = Functions.objects.filter(**{"item_id": item_id, "item__status": 1})
     return functions
 
 

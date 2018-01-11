@@ -17,6 +17,7 @@ GET_CLI_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
 GET_SNMP_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
 GET_DEVICES_SERVICE_URL = "http://127.0.0.1:8888/api/v1/getCollectionInfor"
 PARSER_SERVICE_URL = "http://127.0.0.1:8888/api/v1/parser"
+TRIGGER_SERVICE_URL = "http://127.0.0.1:8888/api/v1/trigger"
 
 
 class LogMessage(object):
@@ -28,6 +29,7 @@ class LogMessage(object):
     CRITICAL_COLLECTION_ERROR = "Collection fail: %s"
     CRITICAL_PARSER_ERROR = "Parser fail: %s"
     ERROR_COLLECTION = "Device %s collection fail: %s"
+    ERROR_TRIGGER = "Trigger fail: %s"
 
 
 class DeviceServiceExceptions(Exception):
@@ -47,6 +49,14 @@ class CollectionServiceException(Exception):
 
 
 class ParserServiceException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg
+
+
+class TriggerServiceException(Exception):
     def __init__(self, msg):
         self.msg = msg
 
@@ -83,16 +93,33 @@ def get_devices(param):
     if status_code == 200:
         devices = json.loads(str(res.text))
     else:
-        raise DeviceServiceExceptions(str(res.text))
+        raise TriggerServiceException(str(res.text))
     if devices['status'] != "success":
-        raise DeviceServiceExceptions(LogMessage.CRITICAL_GET_DEVICE_INFORMATION_ERROR % devices['message'])
+        raise TriggerServiceException(LogMessage.CRITICAL_GET_DEVICE_INFORMATION_ERROR % devices['message'])
     return devices
+
+
+def send_trigger(param):
+    __service_url = TRIGGER_SERVICE_URL
+    try:
+        res = requests.post(__service_url, data=json.dumps(param), timeout=TIMEOUT)
+    except requests.exceptions.ConnectionError:
+        raise TriggerServiceException(LogMessage.CRITICAL_SERVICE_CONNECT_ERROR)
+    except requests.exceptions.ReadTimeout:
+        raise TriggerServiceException(LogMessage.CRITICAL_SERVICE_TIMEOUT)
+    status_code = res.status_code
+    if status_code == 200:
+        devices = json.loads(str(res.text))
+    else:
+        raise TriggerServiceException(str(res.text))
+    if devices['status'] != "success":
+        raise TriggerServiceException(LogMessage.ERROR_TRIGGER % devices['message'])
+    return
 
 
 def __get_cli_data(param):
     __base_url = GET_CLI_DATA_SERVICE_URL
     __url = __base_url % 'cli'
-
     try:
         res = requests.post(__url, data=json.dumps(param), timeout=TIMEOUT)
     except requests.exceptions.ConnectionError:
@@ -111,6 +138,12 @@ def __get_cli_data(param):
         send_handler_request_cli(param, output)
     except Exception, e:
         raise ParserServiceException(str(e))
+
+    try:
+        send_trigger(param)
+    except Exception, e:
+        raise TriggerServiceException(str(e))
+
     return output
 
 
@@ -119,13 +152,11 @@ def send_handler_request_cli(param, output):
     param['start_time'] = output.get('start_time')
     param['end_time'] = output.get('end_time')
     param['item_type'] = CLI_TYPE_CODE
-
     tmp_dict = {}
     for output in output.get('output'):
         tmp_dict[str(output.get('command')).strip()] = output.get('output')
     for item in param['items']:
         item['output'] = tmp_dict[str(item['command']).strip()]
-    # print json.dumps(param, indent=2)
     try:
         res = requests.post(__service_url, data=json.dumps(param), timeout=TIMEOUT)
     except Exception:
@@ -173,6 +204,8 @@ def cli_main():
         cli_collection_logger.error(str(e))
     except ParserServiceException, e:
         cli_parser_logger.error(str(e))
+    except TriggerServiceException, e:
+        cli_trigger_logger.error(str(e))
     except Exception, e:
         cli_logger.error(str(e))
     cli_logger.info("Cli Task %d End" % now_time)
@@ -252,6 +285,8 @@ def snmp_main():
         snmp_collection_logger.error(str(e))
     except ParserServiceException, e:
         snmp_parser_logger.error(str(e))
+    except TriggerServiceException, e:
+        snmp_trigger_logger.error(str(e))
     except Exception, e:
         snmp_logger.error(str(e))
     snmp_logger.info("Snmp Task %d End" % now_time)
@@ -263,10 +298,12 @@ if __name__ == "__main__":
     snmp_parser_logger = log_factory(log_name="Snmp_Parser")
     snmp_collection_logger = log_factory(log_name="Snmp_Collection")
     snmp_device_logger = log_factory(log_name="Snmp_Device")
+    snmp_trigger_logger = log_factory(log_name="Snmp_Trigger")
     snmp_logger = log_factory(log_name="Snmp")
     cli_parser_logger = log_factory(log_name="Cli_Parser")
     cli_collection_logger = log_factory(log_name="Cli_Collection")
     cli_device_logger = log_factory(log_name="Cli_Device")
+    cli_trigger_logger = log_factory(log_name="Cli_Trigger")
     cli_logger = log_factory(log_name="Cli")
     cli_main()
     # snmp_main()
