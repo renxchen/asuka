@@ -143,6 +143,16 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 'snmp_oid': self.snmp_oid,
                 'policy_type': self.policy_type,
             }
+            if self.name is not '':
+                get_name_from_cp = self.get_cp(**{'name': self.name})
+                if get_name_from_cp is not False:
+                    data = {
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.COLLECTION_POLICY_NAME_DUPLICATE
+                        }
+                    }
+                    return api_return(data=data)
             if int(self.policy_type) == 1:
                 data['value_type'] = self.value_type
             serializer = CollPolicySerializer(data=data)
