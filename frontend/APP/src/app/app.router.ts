@@ -82,6 +82,7 @@ const routes: Routes = [
             path: 'dataCollectionView',
             component: DataCollectionViewComponent,
             data: {
+              parentTitle: 'データ取得',
               title: 'データ取得一覧'
             }
           }

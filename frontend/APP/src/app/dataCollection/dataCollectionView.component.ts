@@ -1,6 +1,8 @@
 import { Component, OnInit, ComponentFactoryResolver, AfterViewInit, ElementRef } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { HttpClientComponent } from '../../components/utils/httpClient';
+import { Router } from '@angular/router';
 import { DataCollectionLoginComponent } from './dataCollectionLogin.component';
 import * as _ from 'lodash';
 declare var $: any;
@@ -47,11 +49,15 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         ignoreBackdropClick: true
       };
 
-    constructor(private modalService: BsModalService) {}
+    constructor(
+        private modalService: BsModalService,
+        public httpClient: HttpClientComponent,
+        public router: Router,
+    ) {}
 
     ngOnInit() {
         // this.cpType = 'cli';
-        this.model = this.dcModel;
+        // this.model = this.dcModel;
 
         // this.drawCPTable();
     }
@@ -66,20 +72,18 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
     };
 
     newDC() {
-        console.log("aaa");
+        // open modal
         this.modalRef = this.modalService.show(DataCollectionLoginComponent, this.modalConfig);
-
+        // init the title of modal
         this.modalRef.content.title = 'データ取得新規';
-      // init and open modal
+
     }
 
     public editDC(){
         let _this = this;
-
         $('.edit').click(function (event) {
             let id = $(event)[0].target.id;
-            // console.log('id', id);
-            // alert("id="+id);
+            // open modal and init the title and id of modal
             _this.modalRef = _this.modalService.show(DataCollectionLoginComponent, _this.modalConfig);
             _this.modalRef.content.title = 'データ取得編集';
             _this.modalRef.content.id = id;
@@ -96,30 +100,37 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
                 _target.html('<a href="#" class = "btn btn-primary btn-xs disabled">有 効</a>');
             }
         }
-
-
     }
 
     public drawCPTable() {
-        let _t = this;
+        let _this = this;
         $('#dcTable').jqGrid({
-            // url: 'getTableData',
-            // mtype: 'GET',
-            colModel: this.model,
+            // url: '/v1/api_data_collection/',
+            // datatype: 'JSON',
             datatype: 'local',
+            // mtype: 'get',
+            colModel: this.dcModel,
+            // postData: { '': '' },
             data: this.testData,
-            viewrecords: true,
-            gridComplete: function() {
-                _t.editDC();
-                _t.renderColor();
+            // viewrecords: true,
+            loadComplete: function() {
+                _this.editDC();
+                _this.renderColor();
             },
             rowNum: 10,
             rowList: [ 10, 20, 30],
             autowidth: true,
             beforeSelectRow: function(rowid, e) { return false; },
-            // height: 400,
+            height: 230,
             pager: '#dcPager',
-            // emptyrecords: 'Nothing to display'
+            // jsonReader: {
+            //     root: 'data',
+            //     page: 'current_page_num',
+            //     total: 'num_page',
+            //     records: 'total_num',
+            //     userData: 'status',
+            //     repeatitems: false,
+            // },
         });
         $('#dcTable').jqGrid('filterToolbar', {defaultSearch: 'cn'});
     }

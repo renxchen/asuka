@@ -27,7 +27,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     // bsRangeValue: any = [new Date(2017, 7, 4), new Date(2017, 7, 20)];
 
     selectedOsType: string;
-    osType: any = [];
+    osType: any = [{id: 0, name: 'os type 1'}, {id:1, name: 'os type 2'}];
     priority: any;
     priorities: any = [{id: 0, value: '標準'}, {id:1, value: '高'}];
     deviceGroup: any;
@@ -38,9 +38,9 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     dataScheduleTypes: any = [{id:0, value:'常に取得'}, {id:1, value: '取得停止'}, {id:2, value: '周期取得'}];
     weekdays: any = [
         {id: 1, value: '月', ifCheck: 'checked'},
-        {id: 2, value: '火', ifCheck: ''},
-        {id: 3, value: '水', ifCheck: ''},
-        {id: 4, value: '木', ifCheck: ''},
+        {id: 2, value: '火', ifCheck: 'checked'},
+        {id: 3, value: '水', ifCheck: 'checked'},
+        {id: 4, value: '木', ifCheck: 'checked'},
         {id: 5, value: '金', ifCheck: 'checked'},
         {id: 6, value: '土', ifCheck: ''},
         {id: 7, value: '日', ifCheck: ''}
@@ -56,6 +56,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.getOsTypes();
+        this.deviceGroups = [{id: 0, name: 'device group 1'}, {id:1, name: 'device group 2'}];
+        this.policyGroups = [{id: 0, name: 'cpg 1'}, {id:1, name: 'cpg 2'}];
 
     }
 
@@ -63,10 +65,12 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         setTimeout(() => {
            if(this.id == -1){
                 this.setInitSelect();
+                $('button.btn-danger').hide();
                 $('#validPeriod').hide();
                 $('#dataSchedule').hide();
             } else {
                 //set init value for this id
+               // $('button.btn-primary').attr('disabled','disabled');
             }
         },0);
     }
@@ -83,8 +87,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         let _p = $('#osType').val();
         // send this os type id to API and get groups information
         let _this = this;
-        _this.deviceGroups = [];
-        _this.policyGroups = [];
+        _this.deviceGroups = [{id: 0, name: 'device group 1'}, {id:1, name: 'device group 2'}];
+        _this.policyGroups = [{id: 0, name: 'cpg 1'}, {id:1, name: 'cpg 2'}];
     }
 
     changeValidPeriodType(id: number){
@@ -117,6 +121,15 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         } else {
             // save
         }
+    }
+
+    delete() {
+        let isDelete: boolean = confirm('delete?');
+        if (isDelete){
+            let _id = this.id;
+            console.log(_id);
+        }
+
     }
 
 }

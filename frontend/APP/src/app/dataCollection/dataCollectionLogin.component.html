@@ -1,8 +1,8 @@
 <div class="modal-content">
     <div class="modal-header">
-        <h4 class="modal-title pull-left">{{title}}</h4>
+        <h3 class="modal-title pull-left">{{title}}</h3>
         <button type="button" class="close pull-right" (click)="bsModalRef.hide()">
-          <span>&times;</span>
+          <span style="font-size: 30px">&times;</span>
         </button>
     </div>
     <div class="modal-body" style="padding-bottom: 20px">
@@ -83,7 +83,6 @@
                         <div class="col-sm-5" style="margin-bottom: 25px; margin-top: 23px; padding-right: 0px; padding-left: 0px;">
                             <input type="text" placeholder="YYYY-MM-DD" name="startDate" class="bsDate"
                                [minDate]="bsValue"
-                               [maxDate]="maxDate"
                                [bsConfig]="{dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue'}"
                                #dps="bsDatepicker"
                                bsDatepicker>
@@ -103,7 +102,6 @@
                         <div class="col-sm-5" style="margin-bottom: 25px; margin-top: 23px; padding-right: 0px; padding-left: 0px;">
                             <input type="text" placeholder="YYYY-MM-DD" name="endDate" class="bsDate"
                                [minDate]="bsValue"
-                               [maxDate]="maxDate"
                                [bsConfig]="{dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue'}"
                                #dpe="bsDatepicker"
                                bsDatepicker>
@@ -169,13 +167,13 @@
 
             </div>
             <div class="form-group" style="margin-bottom: 0px">
+                <button class="btn btn-danger btn-sm pull-right" style="margin-right: 5px"
+                        type="button" (click)="delete()">
+                    <i class="fa fa-minus-square" ></i> 削除
+                </button>
                 <button class="btn btn-primary btn-sm pull-right" style="margin-right: 5px"
                         type="submit" (click)="save()">
                     <i class="fa fa-check-square" ></i> 保存
-                </button>
-                <button class="btn btn-warning btn-sm pull-right" style="margin-right: 5px"
-                        type="button" (click)="bsModalRef.hide()">
-                    <i class="fa fa-window-close" ></i> キャンセル
                 </button>
             </div>
         </form>
