@@ -1,11 +1,7 @@
-import os
-import django
 import importlib
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Venus.db_units.settings")
-django.setup()
-from Venus.db_units.models import Items, Functions, TriggerDetail, Mapping, Event
-from django.db.models import Max
-from Venus.constants import TRIGGER_DB_MODULES, TRIGGER_NUMERIC, TRIGGER_VALUE, NORMAL_VALUE
+from Pantheon.Venus.db_units.db_units import *
+from Pantheon.Venus.db_units.models import Items, Functions, TriggerDetail, Mapping, Event
+from Pantheon.Venus.constants import TRIGGER_DB_MODULES, TRIGGER_NUMERIC
 
 
 def get_items_by_device_policy(device_id, policy_id):
@@ -23,7 +19,7 @@ def get_functions_by_item_id(item_id):
     :param item_id: item id
     :return: functions list
     """
-    functions = Functions.objects.filter(**{"item_id": item_id})
+    functions = Functions.objects.filter(**{"item_id": item_id, "item__status": 1})
     return functions
 
 
@@ -114,6 +110,21 @@ def save_event(source, object_id, number, clock, value):
         ).save()
     except Exception, e:
         raise Exception(e)
+
+
+def save_events(events):
+    tmp = []
+    for event in events:
+        tmp.append(
+            Event(
+                source=event[0],
+                objectid=event[1],
+                number=event[2],
+                clock=event[3],
+                value=event[4]
+            )
+        )
+    Event.objects.bulk_create(tmp)
 
 
 if __name__ == "__main__":

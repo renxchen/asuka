@@ -115,47 +115,36 @@ class ParserApiHandle(web.RequestHandler):
         task_dict[task_id] = cb_func, None
         zmq_publish.send_string(b'%s task' % channel)
         logging.info('Publish new task %s to %s' % (task_id, channel))
-        # self.finish()
 
 
 class TriggerApiHandle(web.RequestHandler):
-    def put(self, *args, **kwargs):
+    @web.asynchronous
+    def post(self, *args, **kwargs):
         def cb_func(response, *args):
             self.write(json.dumps(response, indent=2))
             self.finish()
             session_mgr.set_read(task_id)
             del task_dict[task_id]
-        message = {}
-        try:
-            channel = "Trigger"
-            self.set_header("Content-Type", "application/json")
-            params = json.loads(self.request.body)
-            task_id = uuid.uuid4().hex
-            timer = time.time()
-            timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-            session_mgr.put(task_id,
-                            dict(status='Queue',
-                                 params=params,
-                                 timer=timer,
-                                 timestamp=timestamp,
-                                 read=False,
-                                 category=channel))
-            if channel not in task_q:
-                task_q[channel] = Queue.Queue()
-            q = task_q[channel]
-            q.put(task_id)
-            task_dict[task_id] = cb_func, None
-            zmq_publish.send_string(b'%s task' % channel)
-            logging.info('Publish new task %s to %s' % (task_id, channel))
-        except Exception, e:
-            message['status'] = "Error"
-            message['message'] = str(e)
-            self.write(
-                json.dumps(
-                    message
-                )
-            )
-        self.finish()
+        channel = "trigger"
+        self.set_header("Content-Type", "application/json")
+        params = json.loads(self.request.body)
+        task_id = uuid.uuid4().hex
+        timer = time.time()
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+        session_mgr.put(task_id,
+                        dict(status='Queue',
+                             params=params,
+                             timer=timer,
+                             timestamp=timestamp,
+                             read=False,
+                             category=channel))
+        if channel not in task_q:
+            task_q[channel] = Queue.Queue()
+        q = task_q[channel]
+        q.put(task_id)
+        task_dict[task_id] = cb_func, None
+        zmq_publish.send_string(b'%s task' % channel)
+        logging.info('Publish new task %s to %s' % (task_id, channel))
 
 
 class SaveFileApiHandle(web.RequestHandler):
@@ -254,6 +243,7 @@ if __name__ == '__main__':
                      (r'/api/v1/saveOutput/?(.*)', SaveFileApiHandle),
                      (r'/api/v1/getCollectionInfor/?(.*)', CollectionApiHandle),
                      (r'/api/v1/parser/?(.*)', ParserApiHandle),
+                     (r'/api/v1/trigger/?(.*)', TriggerApiHandle)
                      ],
                     autoreload=True,
                     ).listen(port)

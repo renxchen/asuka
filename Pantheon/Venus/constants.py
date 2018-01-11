@@ -51,6 +51,7 @@ SNMP_COLLECTION_DEFAULT_METHOD = "bulk_get"
 ############Trigger###########
 """
 TRIGGER_DB_MODULES = "Pantheon.Venus.db_units.models"
+TRIGGER_BASE_PATH = "Pantheon.Venus.trigger"
 TRIGGER_NUMERIC = ["Float", "Int"]
 TRIGGER_EVENT_SOURCE = 0
 TRIGGER_OPEN = 0
