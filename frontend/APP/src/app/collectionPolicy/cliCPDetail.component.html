@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-success">
+            <div class="panel-body text-right">
+                <button type="button" class="btn btn-success" (click)="naviCPEdit()">
+                    <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                    編集する
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ibox float-e-margins">
+    <div class="ibox-content confirm_default">
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1 col-md-11">
+                <dl class="dl-horizontal" id="cp_default">
+                    <dt>コレクションポリシー名：</dt>
+                    <dd>
+                        <p class="confirm confirm_text" id="collection_policy">{{name}}collection policyTree</p>
+                    </dd>
+                    <dt>実行コマンド：</dt>
+                    <dd>
+                        <p class="confirm confirm_text" id="exec_command">cliCommand{{cliCommand}}</p>
+                    </dd>
+                    <dt class="unuse_east ">OS Type：</dt>
+                    <dd>
+                        <select name="" id="" class="form-control" 
+                        style="border: 1px solid #878787; margin-bottom:10px" disabled="disabled">
+                            <option value="">{{osType}} osType</option>
+                        </select>
+                    </dd>
+                   
+                    <dt>概要：</dt>
+                    <dd>
+                        <p class="confirm confirm_textarea" id="descr">{{desc}}desc</p>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ibox float-e-margins">
+    <div class="ibox-title">
+        <h3>ツリー構成</h3>
+    </div>
+    <div class="ibox-content">
+        <div class="row">
+            <div class="col-lg-3 col-lg-offset-1 col-xs-4">
+                <div id="policyTree" class="jstree"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- <div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-success">
+            <div class="panel-body text-right">
+                <button type="button" class="btn btn-success" (click)="naviCPEdit()">
+                    <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                    編集する
+                </button>
+            </div>
+        </div>
+    </div>
+</div> -->

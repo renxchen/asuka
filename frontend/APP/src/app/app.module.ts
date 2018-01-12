@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpModule, Http } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { appRouting } from './app.router';
+import { appRouting, entryComponentList } from './app.router';
 import { TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { SharedModule } from './sharedModule/shared.module';
@@ -56,7 +56,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [DataCollectionLoginComponent]
+  entryComponents: [DataCollectionLoginComponent, entryComponentList]
 })
 
 export class AppModule { }

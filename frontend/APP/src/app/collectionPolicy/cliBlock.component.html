@@ -1,0 +1,63 @@
+<div class="modal-content">
+  <div class="modal-header popup-title" style="font-size:21px">
+    <i class="fa fa-cubes"></i>&nbsp;ルール
+    <span [ngClass]="{'hidden':(actionType)=='edit'}">追加</span>
+    <span [ngClass]="{'hidden':(actionType)=='create'}">編集</span>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <i aria-hidden="true" class="fa fa-times"></i>
+    </button>
+  </div>
+  <!-- <div class="modal-body">
+    <form id="form_rule" novalidate="novalidate">
+      <div class="row">
+          <div class="col-xs-5">
+              <div class="form-group">
+                <label for="name">
+                    <i class="fa fa-asterisk text-danger" aria-hidden="true" title="必須項目"></i>
+                    ルール名：
+                </label>
+                <input type="text" class="form-control" id="name"
+                  name="name" [(ngModel)]="name" maxlength="30" 
+                  placeholder="英数字のみ" required="" aria-required="true">
+              </div>
+              <div class="form-group">
+                <label for="desc">概要：</label>
+                <textarea class="form-control" id="desc" name="desc" [(ngModel)]="name" maxlength="2000"></textarea>
+              </div>
+          </div>
+          <div class="col-xs-7" id="rule_detail"><!-- インデントによって絞る -->
+            <div class="form-group">
+                <label for="PIVOT_STRING">
+                <i class="fa fa-asterisk text-danger" aria-hidden="true" title="必須項目"></i>
+              基準文字列（ブロック識別子）：
+              </label>
+            <input type="text" class="form-control" id="PIVOT_STRING" name="PIVOT_STRING" maxlength="256" placeholder="正規表現で記述可能" required="" aria-required="true">
+            </div>
+          <div class="form-group">
+          <label for="BLOCK_NAME">
+          <i class="fa fa-asterisk text-danger" aria-hidden="true" title="必須項目"></i>
+          ブロック識別子名：
+          </label>
+          <input type="text" class="form-control" id="BLOCK_NAME" name="BLOCK_NAME" maxlength="30" pattern="^[- a-zA-Z0-9_]{1,30}$" placeholder="英数字のみ" required="" aria-required="true">
+          </div>
+          <div class="checkbox unuse_east hidden">
+          <label>
+          <input type="checkbox" name="BLOCK_NAME_SEQ" value="Y" disabled="">
+          ブロック識別子に連番を付与
+          </label>
+          </div></div>
+      </div>
+      <div class="row hidden">
+          <div class="col-xs-12 text-warning" id="rule_errtxt"></div>
+      </div>
+      <div class="hidden" id="modal_indicator"><p class="text-center">
+          <i class="fa fa-spinner fa-2x fa-spin fa-fw"></i>
+          処理中…
+      </p></div>
+  </form></div> -->
+  <div class="modal-footer">
+      <button type="button" class="btn btn-primary" (click)="save()">
+          <i class="fa fa-clipboard"></i> 保存
+      </button>
+  </div>
+</div>
