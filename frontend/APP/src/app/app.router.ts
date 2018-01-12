@@ -14,6 +14,10 @@ import { SNMPCPLoginComponent } from './collectionPolicy/snmpCPLogin.component';
 import { SNMPCPEditComponent } from './collectionPolicy/snmpCPEdit.component';
 // data collection
 import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
+import { PoliciesPerDeviceComponent } from './dataCollection/policiesPerDevice.component';
+import { DevicesPerPolicyComponent } from './dataCollection/devicesPerPolicy.component';
+import { DataCollectionLoginComponent } from './dataCollection/dataCollectionLogin.component';
+
 const routes: Routes = [
   {
     path: '',
@@ -96,7 +100,24 @@ const routes: Routes = [
         path: 'dataCollectionView',
         component: DataCollectionViewComponent,
         data: {
+          parentTitle: 'データ取得',
           title: 'データ取得一覧'
+        }
+      },
+      {
+        path: 'policiesPerDevice',
+        component: PoliciesPerDeviceComponent,
+        data: {
+          parentTitle: 'データ取得',
+          title: 'デバイス毎のデータ収集中の項目出力機能'
+        }
+      },
+      {
+        path: 'devicesPerPolicy',
+        component: DevicesPerPolicyComponent,
+        data: {
+          parentTitle: 'データ取得',
+          title: 'コレクションポリシー毎のデバイス一覧出力機能'
         }
       }
     ]
@@ -104,5 +125,8 @@ const routes: Routes = [
 ];
 export const appRouting = RouterModule.forRoot(routes);
 export const entryComponentList: any[] = [
+  // collection policy
   CLIBlockComponent,
+  // data
+  DataCollectionLoginComponent
 ];

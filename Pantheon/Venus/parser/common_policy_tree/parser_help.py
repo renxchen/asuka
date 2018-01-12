@@ -14,6 +14,9 @@ class Parser(object):
     def get_param_from_request(self, param):
         self.parser_params['rules'] = param['rules'] if "rules" in param else {}
         self.parser_params['items'] = param['items'] if "items" in param else []
+        # self.parser_params['task_timestamp'] = param['task_timestamp'] if "task_timestamp" in param else 0
+        for item in self.parser_params['items']:
+            item['task_timestamp'] = param['task_timestamp'] if "task_timestamp" in param else 0
 
     def handle(self):
         pass
@@ -75,11 +78,11 @@ def parser_main(item_type, params):
 
 
 if __name__ == "__main__":
-    # with open("test_cli_param.json") as f:
-    #     test_cli_param = json.loads(f.read())
-    # cli_handle = CliParser(test_cli_param)
-    # cli_handle.handle()
-    with open("test_snmp_param.json") as f:
-        test_snmp_param = json.loads(f.read())
-    snmp_handle = SNMPParser(test_snmp_param)
-    snmp_handle.handle()
+    with open("test_cli_param.json") as f:
+        test_cli_param = json.loads(f.read())
+    cli_handle = CliParser(test_cli_param)
+    cli_handle.handle()
+    # with open("test_snmp_param.json") as f:
+    #     test_snmp_param = json.loads(f.read())
+    # snmp_handle = SNMPParser(test_snmp_param)
+    # snmp_handle.handle()

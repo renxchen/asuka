@@ -15,7 +15,6 @@ import { LoginComponentModule } from './login/login.module';
 import { IndexComponentModule } from './index/index.module';
 import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.module';
 import { DataCollectionComponentModule } from './dataCollection/dataCollection.module';
-import { DataCollectionLoginComponent } from './dataCollection/dataCollectionLogin.component';
 
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -56,7 +55,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [DataCollectionLoginComponent, entryComponentList]
+  entryComponents: [entryComponentList]
 })
 
 export class AppModule { }

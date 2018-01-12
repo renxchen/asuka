@@ -35,12 +35,14 @@ def __save_cli_bulk(result):
         tmp = []
         for data in result[table]:
             value = data['value']['extract_data']
+            if len(value) == 0:
+                value = None
             block_path = data['block_path']
             item_id = data['item_id']
             tmp.append(table(
                 value=value,
                 ns=clock,
-                clock=clock,
+                clock=data['task_timestamp'],
                 item_id=item_id,
                 block_path=block_path
             ))
@@ -62,7 +64,7 @@ def __save_snmp_bulk(result):
             tmp.append(table(
                 value=value1 if value1 else value2,
                 ns=clock,
-                clock=clock,
+                clock=data['task_timestamp'],
                 item_id=item_id
             ))
         table.objects.bulk_create(tmp)

@@ -7,6 +7,10 @@ BASE_CLI_PLATFORM = 'ios'
 BASE_SNMP_METHOD = "bulk_get"
 CLI_TYPE_CODE = 0
 SNMP_TYPE_CODE = 1
+GET_CLI_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
+GET_SNMP_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
+GET_DEVICES_SERVICE_URL = "http://127.0.0.1:8888/api/v1/getCollectionInfor"
+PARSER_SERVICE_URL = "http://127.0.0.1:8888/api/v1/parser"
 
 
 class DeviceExceptions(Exception):
@@ -25,6 +29,8 @@ class CollectionException(Exception):
         return self.msg
 
 
+
+
 def __add_param(device={}):
     device.update(
         {
@@ -36,7 +42,7 @@ def __add_param(device={}):
 
 
 def get_devices(param):
-    __service_url = "http://127.0.0.1:8888/api/v1/getCollectionInfor"
+    __service_url = GET_DEVICES_SERVICE_URL
     res = requests.post(__service_url, data=json.dumps(param))
     status_code = res.status_code
     if status_code == 200:
@@ -49,7 +55,7 @@ def get_devices(param):
 
 
 def __get_cli_data(param):
-    __base_url = 'http://10.71.244.134:8080/api/v1/sync/%s'
+    __base_url = GET_CLI_DATA_SERVICE_URL
     __url = __base_url % 'cli'
     res = requests.post(__url, data=json.dumps(param))
     status_code = res.status_code
@@ -64,7 +70,7 @@ def __get_cli_data(param):
 
 
 def __get_snmp_data(param):
-    __base_url = 'http://10.71.244.134:8080/api/v1/sync/%s'
+    __base_url = GET_SNMP_DATA_SERVICE_URL
     __url = __base_url % 'snmp'
 
     res = requests.post(__url, data=json.dumps(param))
@@ -78,7 +84,7 @@ def __get_snmp_data(param):
 
 
 def send_handler_request_cli(param, output):
-    __service_url = "http://127.0.0.1:8888/api/v1/parser"
+    __service_url = PARSER_SERVICE_URL
     if output['status'] != "success":
         raise CollectionException("Collection Error:%s" % "Response status is fail")
     param['start_time'] = output['start_time']
@@ -89,11 +95,12 @@ def send_handler_request_cli(param, output):
         tmp_dict[str(output['command']).strip()] = output['output']
     for item in param['items']:
         item['output'] = tmp_dict[str(item['command']).strip()]
-    # res = requests.post(__service_url, data=json.dumps(param))
+    res = requests.post(__service_url, data=json.dumps(param))
+    raise
 
 
 def send_handler_request_snmp(param, output):
-    __service_url = "http://127.0.0.1:8888/api/v1/parser"
+    __service_url = PARSER_SERVICE_URL
     if output['status'] != "success":
         raise CollectionException("Collection Error:%s" % "Response status is fail")
     param['start_time'] = output['start_time']
@@ -115,7 +122,6 @@ def cli_main():
         is_rules=False
     )
     devices = get_devices(param)
-    print len(devices)
     pool = ThreadPool(15)
     pool.map(__get_cli_data, devices)
     pool.close()
