@@ -76,7 +76,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             beforeSelectRow: function(rowid, e) { return false; },
             pager: '#cpPager',
             postData: { 'policy_type': cPType },
-            rowNum: 10,
+            rowNum: 5,
             rowList: [5, 10, 15],
             autowidth: true,
             height: 340,
@@ -98,6 +98,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         let _t = this;
         $('.detail').click(function (event) {
             let id = $(event)[0].target.id;
+            console.log(id);
             if (this.cPType === '0') {
             //     _t.router.navigate(['/index/cliCPViewDetail'],
             //     { queryParams: {'id' : id }});
@@ -112,12 +113,12 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         $('.edit').click(function (event) {
             let id = $(event)[0].target.id;
             console.log('id', id);
-            if (_t.cPType === '0') {
-                _t.router.navigate(['/index/cliCPEdit'],
-                { queryParams: {'id' : id }});
+            if (this.cPType === '0') {
+                // _t.router.navigate(['/index/cliCPViewEdit'],
+                // { queryParams: {'id' : id }});
             } else {
-                _t.router.navigate(['/index/snmpCPEdit'],
-                { queryParams: {'id' : id }});
+                // _t.router.navigate(['/index/snmpCPViewEdit'],
+                // { queryParams: {'id' : id }});
             }
         });
     }

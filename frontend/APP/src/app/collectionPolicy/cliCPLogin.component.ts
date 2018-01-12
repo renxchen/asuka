@@ -23,7 +23,6 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
     nameNotNull;
     cmdNotNull;
     osTypeFlg: boolean;
-    uniqueFlg: boolean;
     constructor(
         private router: Router,
         private activedRoute: ActivatedRoute,
@@ -50,6 +49,7 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
             cPInfo['cli_command'] = this.cliCommand;
             cPInfo['desc'] = this.desc;
             cPInfo['ostype'] = this.selectedOsType;
+            console.log(cPInfo);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
@@ -61,10 +61,7 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                             { queryParams: {'id' : id }});
                         }
                     } else {
-                        if (res['status']['message'] === 'CP_NAME_DUPLICATE') {
-                            this.msgFlg = false;
-                            this.uniqueFlg = false;
-                        } else {
+                        if (['status']['message']) {
                             alert(res['status']['message']);
                         }
                     }
