@@ -572,5 +572,4 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
     public dataRuleAction(sendInfo: any) {
         // this.bsModalRef = this.modalService.show(CLIdataComponent, this.modalConfig);
      }
-     // detail haven't been completed
 }

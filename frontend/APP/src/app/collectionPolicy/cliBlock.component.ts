@@ -10,13 +10,6 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 
 export class CLIBlockComponent implements OnInit, AfterViewInit {
     actionType: any;
-    ruleId: any;
-    ruleType: any;
-    name: any;
-    desc: any;
-    markString: any;
-    keyStr: any;
-
     constructor(
         private httpClient: HttpClientComponent,
         private bsModalRef: BsModalRef) {
