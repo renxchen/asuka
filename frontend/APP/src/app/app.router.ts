@@ -8,6 +8,9 @@ import { CLICPEditComponent } from './collectionPolicy/cliCPEdit.component';
 import { SNMPCPLoginComponent } from './collectionPolicy/snmpCPLogin.component';
 import { SNMPCPEditComponent } from './collectionPolicy/snmpCPEdit.component';
 import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
+import { PoliciesPerDeviceComponent } from './dataCollection/policiesPerDevice.component';
+import { DevicesPerPolicyComponent } from './dataCollection/devicesPerPolicy.component';
+
 const routes: Routes = [
     {
         path: '',
@@ -84,6 +87,22 @@ const routes: Routes = [
             data: {
               parentTitle: 'データ取得',
               title: 'データ取得一覧'
+            }
+          },
+          {
+            path: 'policiesPerDevice',
+            component: PoliciesPerDeviceComponent,
+            data: {
+              parentTitle: 'データ取得',
+              title: 'デバイス毎のデータ収集中の項目出力機能'
+            }
+          },
+          {
+            path: 'devicesPerPolicy',
+            component: DevicesPerPolicyComponent,
+            data: {
+              parentTitle: 'データ取得',
+              title: 'コレクションポリシー毎のデバイス一覧出力機能'
             }
           }
         ]
