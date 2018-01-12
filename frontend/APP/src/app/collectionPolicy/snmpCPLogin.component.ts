@@ -25,6 +25,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
     nameNotNull;
     oidNotNull;
     osTypeFlg: boolean;
+    uniqueFlg: boolean;
     constructor(
         private router: Router,
         private activedRoute: ActivatedRoute,
@@ -49,14 +50,12 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         let cPLoginUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
         let cPEditUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
         if (this.doCheck() === true) {
-            console.log('cpLogin');
             this.msgFlg = true;
             cPInfo['name'] = this.name;
             cPInfo['snmp_oid'] = this.snmpOid;
             cPInfo['value_type'] = this.selectedRtnType;
             cPInfo['desc'] = this.desc;
             cPInfo['ostype'] = this.selectedOsType;
-            console.log(cPInfo);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
@@ -67,10 +66,10 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                             this.router.navigate(['/index/snmpCPEdit'],
                             { queryParams: {'id' : id }});
                         }
-                        console.log('res', res);
                     } else {
-                        if (['status']['message']) {
-                            alert(res['status']['message']);
+                        if (res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                            this.msgFlg = false;
+                            this.uniqueFlg = false;
                         }
                     }
                 });
@@ -100,7 +99,6 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         this.oidRegExp  = '[0-9]+?(\.[0-9]+?)+';
         let nameReg = new RegExp(this.nameRegExp);
         let oidReg = new RegExp(this.oidRegExp);
-        console.log(oidReg.test('1.1.1'));
         if (this.name && this.name.trim()) {
             this.nameNotNull = true;
             if (nameReg.test(this.name) === true) {

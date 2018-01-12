@@ -1,5 +1,62 @@
 <div class="ibox-title">
-    <h5>コレクションポリシー名： </h5>
+    <!-- bind collection policy name -->
+    <h5>コレクションポリシー名：{{cPName}} </h5>
 </div>
-<div class="ibox-content text-center p-md" style="min-height:350px;">
+<div class="ibox-content text-center p-md" style="min-height:660px;">
+    <!-- define role -->
+    <div class="col-md-4 col-xs-6">
+        <!-- block tree -->
+        <div class="panel panel-danger">
+            <div class="panel-heading">
+                <i class="fa fa-cubes fa-lg"></i>&nbsp;
+                ブロックルール
+            </div>
+            <div class="panel-body">
+                <div id="blockTree" class="jstree"></div>
+            </div>
+            <div class="panel-footer">
+                <div class="descript" id="descr_block">概要が表示されます。</div>
+            </div>
+        </div>
+        <!-- data tree -->
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <i class="fa fa-text-height fa-lg"></i>&nbsp;
+                データ抽出ルール
+            </div>
+            <div class="panel-body">
+                <div id="dataTree" class="jstree"></div>
+            </div>
+            <div class="panel-footer">
+                <div class="descript" id="descr_data">概要が表示されます。</div>
+            </div>
+        </div>
+        
+    </div>
+    <!-- "policy tree -->
+    <div class="col-md-4 col-xs-6">
+        <div class="panel panel-default">
+            <div class="panel-body" id="tree_wrap">
+                <div id="policyTree" class="jstree"></div>
+            </div>
+        </div>
+    </div>
+    <!-- simple -->
+    <div class="col-md-4 col-xs-6">
+        <textarea class="form-control" id="input_wrap" placeholder="ここの文章をハイライト変換します。"></textarea>
+        <hr>
+        <div class="panel panel-primary">
+            <div class="panel-body" id="highlight_wrap">
+                <div id="highlight"></div>
+            </div>
+        </div>
+    </div> 
+    <div class="row">
+        <div class="col-xs-12 text-right">
+            <button type="button" class="btn btn-primary" id="save_policy" (click)="savePlyTree()">
+                <i class="fa fa-edit"></i>
+                保存
+            </button>
+        </div>
+    </div>
 </div>

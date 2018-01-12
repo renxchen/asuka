@@ -6,12 +6,15 @@ import { CPViewComponent } from './cPView.component';
 import { CPGViewComponent } from './cPGView.component';
 import { CLICPLoginComponent } from './cliCPLogin.component';
 import { CLICPEditComponent } from './cliCPEdit.component';
+import { CLICPDetailComponent } from './cliCPDetail.component';
+import { CLIBlockComponent } from './cliBlock.component';
 import { SNMPCPLoginComponent } from './snmpCPLogin.component';
 import { SNMPCPEditComponent } from './snmpCPEdit.component';
 
 @NgModule({
     declarations: [CPViewComponent, CPGViewComponent,
                     CLICPLoginComponent, CLICPEditComponent,
+                    CLICPDetailComponent, CLIBlockComponent,
                     SNMPCPLoginComponent, SNMPCPEditComponent],
     imports: [FormsModule, CommonModule, SharedModule],
     exports: [],
