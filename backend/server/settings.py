@@ -27,7 +27,7 @@ SECRET_KEY = '$x=wa!v!@^lm48y9lol)#91-c42-x&ths!z*s7agl3^mt0=5%y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -122,7 +122,7 @@ DATABASES = {
         'NAME': "apolo",
         'HOST': '127.0.0.1',
         "USER": "root",
-        "PASSWORD": "1234"
+        "PASSWORD": "123456"
     }
 }
 
