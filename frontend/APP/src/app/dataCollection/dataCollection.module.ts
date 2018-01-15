@@ -14,7 +14,12 @@ import { DevicesPerPolicyComponent } from './devicesPerPolicy.component';
         PoliciesPerDeviceComponent,
         DevicesPerPolicyComponent
     ],
-    imports: [ CommonModule, FormsModule, BsDatepickerModule.forRoot(),TimepickerModule.forRoot(), ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        BsDatepickerModule.forRoot(),
+        TimepickerModule.forRoot(),
+    ],
     exports: [],
     providers: [],
 })
