@@ -10,6 +10,8 @@
 
 '''
 import traceback
+
+from django.db import transaction
 from rest_framework import viewsets
 
 from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree
@@ -40,7 +42,6 @@ class PolicyTreeViewSet(viewsets.ViewSet):
     def get(self):
         # v1/api_policy_tree/?coll_policy_id=xxx
         try:
-            data = {}
             self.coll_policy_id = views_helper.get_request_get(self.request, 'coll_policy_id')
             cp = CollPolicy.objects.get(coll_policy_id=self.coll_policy_id)
             cli_command_result = cp.cli_command_result
@@ -63,13 +64,13 @@ class PolicyTreeViewSet(viewsets.ViewSet):
                 block_rule_tree_dict = rule_tree_tuple[0]
                 data_rule_tree_dict = rule_tree_tuple[1]
                 data = {
-                    'data': [{
+                    'data': {
                         "coll_policy_name": policy_name,
                         "cli_command_result": cli_command_result,
                         "policy_tree_json": policy_tree_dict,
                         "block_rule_tree_json": block_rule_tree_dict,
                         "data_rule_tree_json": data_rule_tree_dict,
-                    }],
+                    },
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.TRUE,
@@ -97,38 +98,47 @@ class PolicyTreeViewSet(viewsets.ViewSet):
 
         try:
             tree_is_exits = CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id)
-            if tree_is_exits:
-                # check the policy is exits in the item tables
-                items_list = Items.objects.filter(coll_policy=self.coll_policy_id)
-                if len(items_list) > 0:
-                    data = {
-                        'data': '',
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.POLICY_IS_APPLIED
+            with transaction.atomic():
+                if tree_is_exits:
+                    # check the policy is exits in the item tables
+                    items_list = Items.objects.filter(coll_policy=self.coll_policy_id)
+                    if len(items_list) > 0:
+                        data = {
+                            'data': '',
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.POLICY_IS_APPLIED
+                            }
                         }
-                    }
-                    return api_return(data=data)
-                else:
-                    # del the old policy tree
-                    CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id).delete()
+                        return api_return(data=data)
+                    else:
+                        # del the old policy tree
+                        CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id).delete()
+
 
                 # save the new policy
-            # update cli_command_result into coll_policy table
-            coll_policy = CollPolicy.objects.get(pk=self.coll_policy_id)
-            if self.raw_data:
-                coll_policy.cli_command_result = self.raw_data
-                coll_policy.save()
-                # select all nodes of the policy tree
-            policy_tree = Policy_tree(self.coll_policy_id)
-            policy_tree.get_all_nodes(self.tree)
-            obj = policy_tree.all_nodes
-            data = self.__save_the_policy_tree__(nodes_dict=obj)
+                # update cli_command_result into coll_policy table
+                coll_policy = CollPolicy.objects.get(pk=self.coll_policy_id)
+                if self.raw_data:
+                    coll_policy.cli_command_result = self.raw_data
+                    coll_policy.save()
+                    # select all nodes of the policy tree
+                policy_tree = Policy_tree(self.coll_policy_id)
+                policy_tree.get_all_nodes(self.tree)
+                obj = policy_tree.all_nodes
+                data = self.__save_the_policy_tree__(nodes_dict=obj)
+                return api_return(data=data)
+        except Exception as e:
+            data = {
+                'data': '',
+                'new_token': self.new_token,
+                constants.STATUS: {
+                    constants.STATUS: constants.FALSE,
+                    constants.MESSAGE: constants.DB_EXCEPTION
+                }
+            }
             return api_return(data=data)
-        except Exception, e:
-            print traceback.format_exc(e)
-            return exception_handler(e)
 
     def __save_the_policy_tree__(self, nodes_dict):
 

@@ -9,7 +9,7 @@ from backend.apolo.apolomgr.resource.collection_policy_group import collection_p
 from backend.apolo.apolomgr.resource.collection_policy_tree import policy_tree_highlight_view, policytree_view, \
     policy_tree_rule_view
 from backend.apolo.apolomgr.resource.common import common_views
-from backend.apolo.apolomgr.resource.data_collection import data_collection_view
+from backend.apolo.apolomgr.resource.data_collection import data_collection_view, new_data_collection_view
 from backend.apolo.apolomgr.resource.login import authentication
 from backend.apolo.apolomgr.resource.login.authentication import auth_if_refresh_required
 
@@ -105,4 +105,11 @@ def api_policy_tree_rule(request):
 @permission_classes((IsAuthenticated,))
 def api_data_collection(request):
     resource_object = data_collection_view.DataCollectionViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+@api_view(['POST', "GET"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_new_data_collection(request):
+    resource_object = new_data_collection_view.NewDataCollectionViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))

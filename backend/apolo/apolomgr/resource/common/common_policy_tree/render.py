@@ -37,80 +37,83 @@ class Render(Tool, DBOpt):
                       ]
 
     def render(self):
-        self.data = """w34nh-----imnt000100#show interfaces
-Load for five secs: 3%/0%; one minute: 1%; five minutes: 1%
-Time source is NTP, 12:29:03.494 JST Wed Oct 11 2017
-
-GigabitEthernet0/0/0 is up, line protocol is up
-  Hardware is 4XGE-BUILT-IN, address is 2c54.2d61.7200 (bia 2c54.2d61.7200)
-  Internet address is 10.92.51.106/30
-  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,
-     reliability 255/255, txload 1/255, rxload 1/255
-  Encapsulation ARPA, loopback not set
-  Keepalive not supported
-  Full Duplex, 10008, link type is force-up, media type is T
-  output flow-control is on, input flow-control is on
-  ARP type: ARPA, ARP Timeout 04:00:00
-  Last input 00:00:00, output 02:45:36, output hang never
-  Last clearing of "show interface" counters never
-  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0
-  Queueing strategy: Class-based queueing
-  Output queue: 0/40 (size/max)
-  5 minute input rate 0 bits/sec, 0 packets/sec
-  5 minute output rate 0 bits/sec, 0 packets/sec
-     901097 packets input, 70495509 bytes, 0 no buffer
-     Received 0 broadcasts (0 IP multicasts)
-     0 runts, 0 giants, 0 throttles
-     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
-     0 watchdog, 638231 multicast, 0 pause input
-     280805 packets output, 26218227 bytes, 0 underruns
-     0 output errors, 0 collisions, 2 interface resets
-     0 unknown protocol drops
-     0 babbles, 0 late collision, 0 deferred
-     0 lost carrier, 0 no carrier, 0 pause output
-     0 output buffer failures, 0 output buffers swapped out
-GigabitEthernet0/0/1 is up, line protocol is up
-  Hardware is 4XGE-BUILT-IN, address is 2c54.2d61.7201 (bia 2c54.2d61.7201)
-  Internet address is 10.92.51.234/30
-  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,
-     reliability 255/255, txload 1/255, rxload 1/255
-  Encapsulation ARPA, loopback not set
-  Keepalive not supported
-  Full Duplex, 10009, link type is auto, media type is T
-  output flow-control is on, input flow-control is on
-  ARP type: ARPA, ARP Timeout 04:00:00
-  Last input 00:00:00, output 01:50:16, output hang never
-  Last clearing of "show interface" counters never
-  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0
-  Queueing strategy: Class-based queueing
-  Output queue: 0/40 (size/max)
-  5 minute input rate 0 bits/sec, 0 packets/sec
-  5 minute output rate 0 bits/sec, 0 packets/sec
-     740674 packets input, 59583182 bytes, 0 no buffer
-     Received 0 broadcasts (0 IP multicasts)
-     0 runts, 0 giants, 0 throttles
-     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
-     0 watchdog, 638387 multicast, 0 pause input
-     110833 packets output, 14928926 bytes, 0 underruns
-     0 output errors, 0 collisions, 2 interface resets
-     0 unknown protocol drops
-     0 babbles, 0 late collision, 0 deferred
-     0 lost carrier, 0 no carrier, 0 pause output
-     0 output buffer failures, 0 output buffers swapped out"""""
+#         self.data = """w34nh-----imnt000100#show interfaces
+# Load for five secs: 3%/0%; one minute: 1%; five minutes: 1%
+# Time source is NTP, 12:29:03.494 JST Wed Oct 11 2017
+#
+# GigabitEthernet0/0/0 is up, line protocol is up
+#   Hardware is 4XGE-BUILT-IN, address is 2c54.2d61.7200 (bia 2c54.2d61.7200)
+#   Internet address is 10.92.51.106/30
+#   MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,
+#      reliability 255/255, txload 1/255, rxload 1/255
+#   Encapsulation ARPA, loopback not set
+#   Keepalive not supported
+#   Full Duplex, 10008, link type is force-up, media type is T
+#   output flow-control is on, input flow-control is on
+#   ARP type: ARPA, ARP Timeout 04:00:00
+#   Last input 00:00:00, output 02:45:36, output hang never
+#   Last clearing of "show interface" counters never
+#   Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0
+#   Queueing strategy: Class-based queueing
+#   Output queue: 0/40 (size/max)
+#   5 minute input rate 0 bits/sec, 0 packets/sec
+#   5 minute output rate 0 bits/sec, 0 packets/sec
+#      901097 packets input, 70495509 bytes, 0 no buffer
+#      Received 0 broadcasts (0 IP multicasts)
+#      0 runts, 0 giants, 0 throttles
+#      0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+#      0 watchdog, 638231 multicast, 0 pause input
+#      280805 packets output, 26218227 bytes, 0 underruns
+#      0 output errors, 0 collisions, 2 interface resets
+#      0 unknown protocol drops
+#      0 babbles, 0 late collision, 0 deferred
+#      0 lost carrier, 0 no carrier, 0 pause output
+#      0 output buffer failures, 0 output buffers swapped out
+# GigabitEthernet0/0/1 is up, line protocol is up
+#   Hardware is 4XGE-BUILT-IN, address is 2c54.2d61.7201 (bia 2c54.2d61.7201)
+#   Internet address is 10.92.51.234/30
+#   MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec,
+#      reliability 255/255, txload 1/255, rxload 1/255
+#   Encapsulation ARPA, loopback not set
+#   Keepalive not supported
+#   Full Duplex, 10009, link type is auto, media type is T
+#   output flow-control is on, input flow-control is on
+#   ARP type: ARPA, ARP Timeout 04:00:00
+#   Last input 00:00:00, output 01:50:16, output hang never
+#   Last clearing of "show interface" counters never
+#   Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0
+#   Queueing strategy: Class-based queueing
+#   Output queue: 0/40 (size/max)
+#   5 minute input rate 0 bits/sec, 0 packets/sec
+#   5 minute output rate 0 bits/sec, 0 packets/sec
+#      740674 packets input, 59583182 bytes, 0 no buffer
+#      Received 0 broadcasts (0 IP multicasts)
+#      0 runts, 0 giants, 0 throttles
+#      0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+#      0 watchdog, 638387 multicast, 0 pause input
+#      110833 packets output, 14928926 bytes, 0 underruns
+#      0 output errors, 0 collisions, 2 interface resets
+#      0 unknown protocol drops
+#      0 babbles, 0 late collision, 0 deferred
+#      0 lost carrier, 0 no carrier, 0 pause output
+#      0 output buffer failures, 0 output buffers swapped out"""""out
+#         self.data = """show interface\r\nGigabitEthernet1 is up, line protocol is up \r\n  Hardware is CSR vNIC, address is 0050.5684.2218 (bia 0050.5684.2218)\r\n  Internet address is 10.71.244.135/24\r\n  MTU 1500 bytes, BW 1000001 Kbit/sec, DLY 10 usec, \r\n     reliability 255/255, txload 1/255, rxload 1/255\r\n  Encapsulation ARPA, loopback not set\r\n  Keepalive set (10 sec)\r\n  Full Duplex, 1000Mbps, link type is auto, media type is RJ45\r\n  output flow-control is unsupported, input flow-control is unsupported\r\n  ARP type: ARPA, ARP Timeout 04:00:00\r\n  Last input 00:00:01, output 00:49:23, output hang never\r\n  Last clearing of \"show interface\" counters never\r\n  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0\r\n  Queueing strategy: fifo\r\n  Output queue: 0/40 (size/max)\r\n  5 minute input rate 0 bits/sec, 0 packets/sec\r\n  5 minute output rate 0 bits/sec, 0 packets/sec\r\n     4898778 packets input, 368037813 bytes, 0 no buffer\r\n     Received 0 broadcasts (0 IP multicasts)\r\n     0 runts, 0 giants, 0 throttles \r\n     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\r\n     0 watchdog, 0 multicast, 0 pause input\r\n     229376 packets output, 48675828 bytes, 0 underruns\r\n     0 output errors, 0 collisions, 0 interface resets\r\n     96787 unknown protocol drops\r\n     0 babbles, 0 late collision, 0 deferred\r\n     0 lost carrier, 0 no carrier, 0 pause output\r\n     0 output buffer failures, 0 output buffers swapped out\r\nGigabitEthernet2 is up, line protocol is up \r\n  Hardware is CSR vNIC, address is 0050.5684.3c66 (bia 0050.5684.3c66)\r\n  Internet address is 192.168.10.101/24\r\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec, \r\n     reliability 255/255, txload 1/255, rxload 1/255\r\n  Encapsulation ARPA, loopback not set\r\n  Keepalive set (10 sec)\r\n  Full Duplex, 1000Mbps, link type is auto, media type is RJ45\r\n  output flow-control is unsupported, input flow-control is unsupported\r\n  ARP type: ARPA, ARP Timeout 04:00:00\r\n  Last input 00:12:18, output 00:12:18, output hang never\r\n  Last clearing of \"show interface\" counters never\r\n  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0\r\n  Queueing strategy: fifo\r\n  Output queue: 0/40 (size/max)\r\n  5 minute input rate 0 bits/sec, 0 packets/sec\r\n  5 minute output rate 0 bits/sec, 0 packets/sec\r\n     49359330 packets input, 4227422779 bytes, 0 no buffer\r\n     Received 0 broadcasts (0 IP multicasts)\r\n     0 runts, 0 giants, 0 throttles \r\n     56389 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\r\n     0 watchdog, 0 multicast, 0 pause input\r\n     2413588 packets output, 241943100 bytes, 0 underruns\r\n     0 output errors, 0 collisions, 1 interface resets\r\n     90 unknown protocol drops\r\n     0 babbles, 0 late collision, 0 deferred\r\n     0 lost carrier, 0 no carrier, 0 pause output\r\n     0 output buffer failures, 0 output buffers swapped out\r\nGigabitEthernet3 is up, line protocol is up \r\n  Hardware is CSR vNIC, address is 0050.5684.7de8 (bia 0050.5684.7de8)\r\n  Internet address is 192.168.100.101/24\r\n  MTU 1500 bytes, BW 1000000 Kbit/sec, DLY 10 usec, \r\n     reliability 255/255, txload 1/255, rxload 1/255\r\n  Encapsulation ARPA, loopback not set\r\n  Keepalive set (10 sec)\r\n  Full Duplex, 1000Mbps, link type is auto, media type is RJ45\r\n  output flow-control is unsupported, input flow-control is unsupported\r\n  ARP type: ARPA, ARP Timeout 04:00:00\r\n  Last input 00:00:01, output 00:01:13, output hang never\r\n  Last clearing of \"show interface\" counters never\r\n  Input queue: 1/375/123/0 (size/max/drops/flushes); Total output drops: 0\r\n  Queueing strategy: fifo\r\n  Output queue: 0/40 (size/max)\r\n  5 minute input rate 1000 bits/sec, 1 packets/sec\r\n  5 minute output rate 1000 bits/sec, 1 packets/sec\r\n     264412255 packets input, 17786748607 bytes, 0 no buffer\r\n     Received 0 broadcasts (0 IP multicasts)\r\n     0 runts, 0 giants, 0 throttles \r\n     233016 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored\r\n     0 watchdog, 0 multicast, 0 pause input\r\n     278564517 packets output, 27758801729 bytes, 0 underruns\r\n     0 output errors, 0 collisions, 1 interface resets\r\n     92076 unknown protocol drops\r\n     0 babbles, 0 late collision, 0 deferred\r\n     0 lost carrier, 0 no carrier, 0 pause output\r\n     0 output buffer failures, 0 output buffers swapped out\r\ncrs1000_1
+# """
         # get leaf path
         self.get_path_of_leaf(self.tree)
         self.execute_dispatch()
-
-        html_text = self.generate_html()
+        if self.dispatch_result:
+            html_text = self.generate_html()
+        else:
+            html_text = None
         return html_text
 
     # get the path that is from root to the clicked node
     # save format :[rule_id1,rule_id2...rule_idn]
     def get_path_of_leaf(self, buffer_dict):
-
         if buffer_dict['id'] == self.tree_id:
             # save the leaf node
-            self.leaf_path.append(buffer_dict['rule_id'])
+            self.leaf_path.append(buffer_dict['data']['rule_id'])
             return True
 
         if buffer_dict["children"]:
@@ -118,13 +121,12 @@ GigabitEthernet0/0/1 is up, line protocol is up
                 if self.get_path_of_leaf(d):
                     # save the parent node of the leaf
                     # if buffer_dict['rule_id'] != 0:
-                    if buffer_dict['rule_id']:
-                        self.leaf_path.append(buffer_dict['rule_id'])
+                    if buffer_dict['data']['rule_id']:
+                        self.leaf_path.append(buffer_dict['data']['rule_id'])
                     return True
 
     # get the dispatch executed result
     def execute_dispatch(self):
-
         for rule_id in self.leaf_path:
             rule_context =self.__get_rule_from_db__(rule_id)
             # save the data as input of rules
@@ -147,7 +149,7 @@ GigabitEthernet0/0/1 is up, line protocol is up
 
     def generate_html(self):
         # render
-        deep = len(self.leaf_path) - 1
+        deep = len(self.leaf_path)-1
         all_data = self.data.split('\n')
         while deep >= 0:
             color_index = 0
@@ -177,14 +179,16 @@ GigabitEthernet0/0/1 is up, line protocol is up
                     html_context_list = html_context.split('\n')
                     j = 0
                     for i in range(len(all_data)):
-                        if i == start_line and i < end_line + 1:
-                            all_data[i] = html_context_list[j]
-                            j = j + 1
+                        if start_line <= i:
+                            if i < end_line + 1:
+                                all_data[i] = html_context_list[j]
+                                j = j + 1
                 else:
                     # the node is not leaf
                     # the node is block area
                     # node = self.dispatch_result[deep]
                     # for item in node:
+
                     start_line = item['start_line']
                     end_line = item['end_line']
                     for i in range(len(all_data)):
@@ -195,7 +199,7 @@ GigabitEthernet0/0/1 is up, line protocol is up
                         if i == end_line:
                             all_data[i] = all_data[i] + '</div>'
             deep = deep - 1
-        html_data = '<pre>{}</pre>'.format("\n".join(all_data))
+        html_data = "\n".join(all_data)
         return html_data
 
 

@@ -13,7 +13,6 @@ from backend.apolo.tools import constants
 
 
 class Tool(object):
-
     @staticmethod
     def set_split_char(split_char_num=None):
 
@@ -50,3 +49,17 @@ class Tool(object):
                            'block_end_offset': obj.end_line_num
                            }
         return input_data_dict
+
+    @staticmethod
+    def split_data_schedule_time(data_schedule_time):
+
+        schedule_arry = data_schedule_time.split('@')
+        weeks = schedule_arry[0].split(';')
+        schedule_time = schedule_arry[1].split('-')
+        schedule_start_time = schedule_time[0]
+        schedule_end_time = schedule_time[1]
+
+        return {'weeks': weeks,
+                'schedule_start_time': schedule_start_time,
+                'schedule_end_time': schedule_end_time
+                }

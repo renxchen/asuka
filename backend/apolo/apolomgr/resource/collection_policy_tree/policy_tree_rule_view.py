@@ -60,10 +60,9 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         try:
             data = {}
             insert_info = views_helper.get_request_value(self.request, key='rule_info', method_type='BODY')
-            print insert_info
-            policy_tree_id = insert_info['coll_policy']
+            coll_policy_id = insert_info['coll_policy']
             name = insert_info['name']
-            query_set = CollPolicyCliRule.objects.filter(name=name, coll_policy=policy_tree_id)
+            query_set = CollPolicyCliRule.objects.filter(name=name, coll_policy=coll_policy_id)
             if len(query_set) > 0:
                 data = {
                     'data': '',
@@ -77,7 +76,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
                 serializer = CollPolicyCliRuleSerializer(data=insert_info)
                 if serializer.is_valid():
                     serializer.save()
-                    policy_tree = Policy_tree(policy_tree_id)
+                    policy_tree = Policy_tree(coll_policy_id)
                     rule_tree_tuple = policy_tree.get_rules_tree()
                     data = {
                         'data': '',
