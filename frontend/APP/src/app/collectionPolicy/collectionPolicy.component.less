@@ -22,3 +22,58 @@
 .cp-add-row {
     margin-top: 40px;
 }
+#input_wrap {
+    border: 3px double #9ccf9f;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 102%;
+    height: 20rem;
+    overflow: auto;
+    padding: 15px 0 0 15px;
+    white-space: pre;
+}
+#highlight_wrap {
+    max-height: 20rem;
+    overflow: auto;
+    text-align: left;
+}
+#highlight {
+    font-family: monospace;
+    white-space: pre;
+}
+.jstree {
+    text-align: left;
+}
+.confirm_default dl {
+    margin-bottom: 0;
+    // margin-top: inherit + .5rem;
+}
+.confirm.confirm_text {
+    border-bottom: 1px solid #878787;
+    min-height: 1rem;
+    padding-bottom: 2px;
+    padding-left: .5rem;
+}
+.confirm.confirm_text::before {
+    /* https://stackoverflow.com/questions/2965229/nbsp-not-working-in-css-content-tag */
+    content: '\00a0';
+}
+.confirm.confirm_textarea {
+    border: 1px solid #878787;
+    height: 10rem;
+    overflow: auto;
+    padding: 2px .5rem;
+    white-space: pre;
+}
+#rule_values {
+    border-left: 1px dashed #ccc;
+}
+#rule_values .ibox-title h5 span {
+    display: inline-block;
+    margin-left: 1rem;
+}
+
+.popup-title{
+    font-size: 21px;
+}
+
