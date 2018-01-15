@@ -63,13 +63,13 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.drawCPTable();
+        this.drawDCTable();
     }
 
     public fomatterBtn(cellvalue, options, rowObject) {
         // console.log(rowObject);
         return '<button class="btn btn-xs btn-success edit" id='+ rowObject["dcNo"] + '><i class="fa fa-pencil-square"></i> 編集</button>'
-    };
+    }
 
     newDC() {
         // open modal
@@ -102,7 +102,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         }
     }
 
-    public drawCPTable() {
+    public drawDCTable() {
         let _this = this;
         $('#dcTable').jqGrid({
             // url: '/v1/api_data_collection/',
