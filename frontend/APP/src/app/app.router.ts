@@ -1,15 +1,22 @@
 import { RouterModule, Routes } from '@angular/router';
+// login
 import { LoginComponent } from './login/login.component';
+// index
 import { IndexComponent } from './index/index.component';
+// collection policy
 import { CPViewComponent } from './collectionPolicy/cPView.component';
 import { CPGViewComponent } from './collectionPolicy/cPGView.component';
 import { CLICPLoginComponent } from './collectionPolicy/cliCPLogin.component';
 import { CLICPEditComponent } from './collectionPolicy/cliCPEdit.component';
+import { CLICPDetailComponent } from './collectionPolicy/cliCPDetail.component';
+import { CLIBlockComponent } from './collectionPolicy/cliBlock.component';
 import { SNMPCPLoginComponent } from './collectionPolicy/snmpCPLogin.component';
 import { SNMPCPEditComponent } from './collectionPolicy/snmpCPEdit.component';
+// data collection
 import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
 import { PoliciesPerDeviceComponent } from './dataCollection/policiesPerDevice.component';
 import { DevicesPerPolicyComponent } from './dataCollection/devicesPerPolicy.component';
+import { DataCollectionLoginComponent } from './dataCollection/dataCollectionLogin.component';
 
 const routes: Routes = [
     {
@@ -33,6 +40,7 @@ const routes: Routes = [
               title: 'コレクションポリシー一覧',
             }
           },
+          // collection policy
           {
             path: 'cPView',
             component: CPViewComponent,
@@ -66,6 +74,14 @@ const routes: Routes = [
             }
           },
           {
+            path: 'cliCPDetail',
+            component: CLICPDetailComponent,
+            data: {
+              parentTitle: 'コレクションポリシー',
+              title: 'CLIコレクションポリシー確認'
+            }
+          },
+          {
             path: 'snmpCPLogin',
             component: SNMPCPLoginComponent,
             data: {
@@ -81,6 +97,7 @@ const routes: Routes = [
               title: 'SNMPコレクションポリシー：編集'
             }
           },
+          // data collection
           {
             path: 'dataCollectionView',
             component: DataCollectionViewComponent,
@@ -109,3 +126,9 @@ const routes: Routes = [
     }
 ];
 export const appRouting = RouterModule.forRoot(routes);
+export const entryComponentList: any[] = [
+  // collection policy
+  CLIBlockComponent,
+  // data
+  DataCollectionLoginComponent
+];
