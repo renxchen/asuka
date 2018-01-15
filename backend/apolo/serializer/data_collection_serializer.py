@@ -11,20 +11,34 @@
 '''
 from rest_framework import serializers
 
-from backend.apolo.models import Schedules
+from backend.apolo.models import Schedules, CollPolicyGroups, Groups, Items
 
 
 class SchedulesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedules
-        fields = ('schedule_id', 'valid_period_type', 'data_schedule_type', 'valid_period_time',
-                  'data_schedule_time', 'priority', 'status', 'policy_group_name',
-                  'device_group_name', 'ostype_name')
+        fields = ('schedule_id', 'valid_period_type', 'data_schedule_type', 'start_period_time',
+                  'end_period_time', 'period_time', 'data_schedule_time', 'priority', 'status',
+                  'policy_group_name', 'device_group_name', 'ostype_name',)
 
-    def create(self, validated_data):
-        return Schedules.objects.create(**validated_data)
+class SchedulesAddSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Schedules
+        fields = '__all__'
 
-    def update(self, instance, validated_data):
-        pass
+class ItemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Items
+        fields = '__all__'
 
+class CollPolicyGroupIDNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CollPolicyGroups
+        fields = ('policy_group_id', 'name',)
+        # fields = '__all__'
 
+class DeviceGroupIDNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Groups
+        fields = ('group_id', 'name',)
+        # fields = '__all__'

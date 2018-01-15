@@ -12,9 +12,11 @@
 import traceback
 
 from django.core.paginator import Paginator
+from django.db import transaction
 from rest_framework import viewsets
 
-from backend.apolo.models import Schedules
+from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.models import Schedules, Items
 from backend.apolo.serializer.data_collection_serializer import SchedulesSerializer
 from backend.apolo.tools import views_helper, constants
 from backend.apolo.tools.exception import exception_handler
@@ -29,9 +31,8 @@ class DataCollectionViewSet(viewsets.ViewSet):
         self.page_from = views_helper.get_request_value(self.request, 'page', 'GET')
         self.max_size_per_page = views_helper.get_request_value(self.request, 'rows', 'GET')
 
-
     def get(self):
-        # /v1/api_data_collection/
+
         # v1/api_data_collection/?page=1&rows=10&sidx=status&sord=desc
         # v1/api_data_collection/?page=1&rows=10&status=3
         #  v1/api_data_collection/?id=1
@@ -44,15 +45,19 @@ class DataCollectionViewSet(viewsets.ViewSet):
         # start_datetime = views_helper.get_request_value(self.request, 'start_datetime', 'GET')
         # end_datetime = views_helper.get_request_value(self.request, 'end_datetime', 'GET')
         status =views_helper.get_request_value(self.request, 'status', 'GET')
-        id = views_helper.get_request_value(self.request, 'id', 'GET')
+        schedule_id = views_helper.get_request_value(self.request, 'id', 'GET')
 
         try:
-            if id is not '':
-               print id
-               queryset= Schedules.objectss.filter(schedule_id=id)
-               serializer = SchedulesSerializer(queryset, many=True)
+            if schedule_id is not '':
+               # edit page
+               schedules_obj = Schedules.objects.get(schedule_id=schedule_id)
+               schedules_dict = SchedulesSerializer(schedules_obj).data
+               data_schedule_time = Tool.split_data_schedule_time(schedules_dict['data_schedule_time'])
+               schedules_dict.update(data_schedule_time)
+               schedules_dict['start_period_time'] = schedules_dict['start_period_time'].replace('@', ' ')
+               schedules_dict['end_period_time'] = schedules_dict['end_period_time'].replace('@', ' ')
                data = {
-                   'data': serializer.data,
+                   'data': schedules_dict,
                    'new_token': self.new_token,
                    constants.STATUS: {
                        constants.STATUS: constants.TRUE,
@@ -104,6 +109,69 @@ class DataCollectionViewSet(viewsets.ViewSet):
         except Exception, e:
             print traceback.format_exc(e)
             return exception_handler(e)
+
+    def put(self):
+        # load data
+        schedule_id = views_helper.get_request_value(self.request, 'id', 'GET')
+        if not self.__update_recode_check__(schedule_id):
+            data = {
+                'new_token': self.new_token,
+                constants.STATUS: {
+                    constants.STATUS: constants.FALSE,
+                    constants.MESSAGE: constants.CAN_NOT_UPDATE_SCHEDULE_MESSAGE  # can not delete
+                }
+            }
+            return api_return(data=data)
+        else:
+            pass
+
+
+    def delete(self):
+        # v1/api_data_collection/?id=1
+        schedule_id = views_helper.get_request_value(self.request, 'id', 'GET')
+        if not self.__delete_recode_check__(schedule_id):
+            pass
+        else:
+
+            if not self.__delete_recode_check__():
+                data = {
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.CAN_NOT_DELETE_SCHEDULE_MESSAGE  # can not delete
+                    }
+                }
+                return api_return(data=data)
+            else:
+
+                try:
+                    with transaction.atomic():
+                        # delete items table
+                        # delete schedule table
+                        Items.objects.filter(schedule_id=schedule_id).delete()
+                        Schedules.objects.get(schedule_id=schedule_id).delete()
+                        data = {
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.TRUE,
+                                constants.MESSAGE: constants.SUCCESS
+                            }
+                        }
+                        return api_return(data=data)
+                except Exception as e:
+                    print traceback.format_exc(e)
+                    return exception_handler(e)
+
+    @staticmethod
+    def __update_recode_check__(schedule_id):
+        print schedule_id
+        return True
+
+    @staticmethod
+    def __delete_recode_check__(schedule_id):
+        print schedule_id
+        return True
+
 
 
 

@@ -383,6 +383,12 @@ class Schedules(models.Model):
     def ostype_name(self):
         return self.ostype.name
 
+    @property
+    def period_time(self):
+        before = self.start_period_time.replace('@', ' ')
+        after = self.end_period_time.replace('@', ' ')
+        return str(before) + '~' + str(after)
+
 
 class TriggerDetail(models.Model):
     trigger_detail_id = models.AutoField(primary_key=True)
