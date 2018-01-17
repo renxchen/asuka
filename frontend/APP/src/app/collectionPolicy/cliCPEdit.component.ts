@@ -233,16 +233,16 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
         let cPIdeTmp: any = this.activedRoute.snapshot.queryParams['id'];
         if (cPIdeTmp && typeof (cPIdeTmp) !== 'undefined') {
             this.cPId = cPIdeTmp;
-            // this.getCPInfo(this.cPId);
+            this.getCPInfo(this.cPId);
         }
     }
     ngOnInit() {
     }
     ngAfterViewInit() {
         this.nodeCustomizeAndRoot();
-        this.blockTree(this.testData);
-        this.dataTree(this.testData2);
-        this.policyTree(this.testData3);
+        // this.blockTree(this.testData);
+        // this.dataTree(this.testData2);
+        // this.policyTree(this.testData3);
     }
     public getCPInfo(id: any) {
         this.apiPrefix = '/v1';
@@ -258,7 +258,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
                         this.blockTreeData = data['block_rule_tree_json'];
                         this.dataTreeData = data['data_rule_tree_json'];
                         this.ruleTreeData = data['policy_tree_json'];
-                        $('#input_wrap').html(data['cli_command_result']);
+                        $('#input-wrap').html(data['cli_command_result']);
                         this.blockTree(this.blockTreeData);
                         this.dataTree(this.dataTreeData);
                         this.policyTree(this.ruleTreeData);
@@ -391,25 +391,25 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
             });
     }
     public savePlyTree() {
-        let param = {
-            'coll_policy_id': this.cPId,
-            'tree': this.getPlyTreeInfo()[0],
-            'raw_data': $('#input_wrap').val()
-        };
-        this.apiPrefix = '/v1';
-        let savePlytUrl = '/api_policy_tree/';
-        this.httpClient.setUrl(this.apiPrefix);
-        this.httpClient
-            .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    alert('保存しました');
-                    this.router.navigate(['/index/cliCPDetail'], { queryParams: { 'id': this.cPId } });
-                } else {
-                    if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
-                    }
-                }
-            });
+        // let param = {
+        //     'coll_policy_id': this.cPId,
+        //     'tree': this.getPlyTreeInfo()[0],
+        //     'raw_data': $('#input-wrap').val()
+        // };
+        // this.apiPrefix = '/v1';
+        // let savePlytUrl = '/api_policy_tree/';
+        // this.httpClient.setUrl(this.apiPrefix);
+        // this.httpClient
+            // .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
+            //     if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+            //         alert('保存しました');
+            //         this.router.navigate(['/index/cliCPDetail'], { queryParams: { 'id': this.cPId } });
+            //     } else {
+            //         if (res['status'] && res['status']['message']) {
+            //             alert(res['status']['message']);
+            //         }
+            //     }
+            // });
     }
     public blockTree(data: any) {
         let _t = this;
@@ -443,7 +443,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
                         'cPId': _t.cPId
                     };
                     _t.blockRuleAction(addBlockParam);
-                    console.log('block_add', addBlockParam);
+                    // console.log('block_add', addBlockParam);
                 }
             }],
             'node_customize': [{
@@ -469,7 +469,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
             }]
         }).bind('move_node.jstree', function (e, data) {
         }).bind('activate_node.jstree', function (e, node) {
-            console.log(node);
+            // console.log(node);
             // show_detail(node);
         });
     }
@@ -570,7 +570,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
                             'coll_policy_id': _t.cPId,
                             'tree': _t.getPlyTreeInfo()[0],
                             'tree_id': event.data.node['id'],
-                            'raw_data': $('#input_wrap').val()
+                            'raw_data': $('#input-wrap').val()
                         };
                         // highlight;
                         if (param.raw_data) {

@@ -88,14 +88,16 @@
                 </div>  
             </div>
             <!-- 指定文字列-指定文字列でのブロック抽出 block_rule_3 -->
+            <!-- block识别子和start文字列重复 -->
             <div class="col-xs-7" [ngClass]="{'hidden': (ruleType)!='block_rule_3'}">
                 <div class="form-group">
-                <label for="startMrkStr">
+                <label for="markString">
                     <i class="fa fa-asterisk text-danger" aria-hidden="true" title="必須項目"></i>
-                    ブロック識別子名：
+                    スタート文字列：
                     </label>
-                    <input type="text" class="form-control" id="startMrkStr" name="startMrkStr" maxlength="256"
-                    [(ngModel)]="startMrkStr" placeholder="英数字のみ" required="" aria-required="true">
+                    <input type="text" class="form-control" id="markString"
+                    name="markString" [(ngModel)]="markString" maxlength="256"
+                    placeholder="英数字のみ" required="" aria-required="true">
                 </div>  
                 <div class="form-group">
                     <label for="endMrkStr">
@@ -110,12 +112,12 @@
                     [checked]="isInclude">エンド文字列行を含まない
                 </div>  
                 <div class="form-group">
-                    <label for="markString">
+                    <label for="extractKey">
                     <i class="fa fa-asterisk text-danger" aria-hidden="true" title="必須項目"></i>
                     ブロック識別子：
                     </label>
-                    <input type="text" class="form-control" id="markString"
-                    name="markString" [(ngModel)]="markString" maxlength="256"
+                    <input type="text" class="form-control" id="extractKey"
+                    name="extractKey" [(ngModel)]="extractKey" maxlength="256"
                     placeholder="正規表現で記述可能" required="" aria-required="true">
                 </div>
                 <div class="form-group">
@@ -154,6 +156,7 @@
         </div>
     </form>
 </div>
+<div *ngIf = "descFlg">lalalal</div>
   <div class="modal-footer">
       <button type="button" class="btn btn-primary" (click)="save()">
           <i class="fa fa-clipboard"></i> 保存
