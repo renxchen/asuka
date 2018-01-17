@@ -11,7 +11,7 @@
 
 '''
 import re
-from backend.apolo.tools import constants
+import constants
 
 class Policy(object):
 

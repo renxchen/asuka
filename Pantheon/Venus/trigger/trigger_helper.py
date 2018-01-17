@@ -19,7 +19,10 @@ def trigger(item_id, clock):
     """
     parser_detail = []
     # functions = get_functions_by_device_policy(device_id, policy_id)
+    time1 = time.time()
     functions = get_functions_by_item_id(item_id)
+    time2 = time.time()
+    print time2-time1, "1"
     functions_value = {}
     events = []
     """
@@ -28,6 +31,8 @@ def trigger(item_id, clock):
     for function in functions:
         functions_value.update(get_function_value(function))
         parser_detail.append(function.trigger_detail)
+    time3 = time.time()
+    print time3-time2, "2"
     """
     replace trigger expression by function value
     """
@@ -44,6 +49,8 @@ def trigger(item_id, clock):
             trigger_status = 1
         events.append([trigger_detail.trigger, trigger_status, clock])
     save_event(events)
+    time4 = time.time()
+    print time4-time3, "3"
 
 
 def judging_expression(expression):
@@ -82,6 +89,8 @@ def save_event(events):
     save_events(tmp)
 
 if __name__ == "__main__":
-    test = [(1, 2), (1, 2), (1, 2)]
+    import cProfile
+    test = [{"item_id": 4}]
     bulk_trigger(test, 123)
+    # cProfile.run("bulk_trigger(test, 123)")
     # print eval("None > 1")

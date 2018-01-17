@@ -10,7 +10,7 @@
 
 '''
 
-from backend.apolo.apolomgr.resource.common.common_policy_tree.rule import Policy
+from rule import Policy
 
 class Dispatch(object):
 

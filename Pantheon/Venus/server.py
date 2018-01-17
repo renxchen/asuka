@@ -6,7 +6,8 @@ from zmq.eventloop.ioloop import ZMQIOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 from threading import Thread
 from session_mgr import SessionManager
-from collection.collection_help import get_items
+# from collection.collection_help import get_collection_devices, get_items
+from collection.collection_helper import get_devices, get_valid_items
 import json
 import time
 import threading
@@ -68,8 +69,8 @@ class CollectionApiHandle(web.RequestHandler):
             param = json.loads(self.request.body)
             now_time = param["now_time"]
             item_type = param["item_type"]
-            other_param = param["other_param"] if "other_param" in param else []
-            devices_info = get_items(now_time, item_type, other_param)
+            # other_param = param["other_param"] if "other_param" in param else []
+            devices_info = get_devices(now_time, item_type)
 
             result = dict(
                 status="success",
@@ -80,6 +81,33 @@ class CollectionApiHandle(web.RequestHandler):
             result = dict(
                 status="success",
                 devices=[],
+                message=str(e)
+            )
+
+        self.write(json.dumps(result))
+        self.finish()
+
+
+
+class ItemsApiHandle(web.RequestHandler):
+    @web.asynchronous
+    def post(self, *args, **kwargs):
+        try:
+            param = json.loads(self.request.body)
+            now_time = param["now_time"]
+            item_type = param["item_type"]
+            # other_param = param["other_param"] if "other_param" in param else []
+            items = get_valid_items(now_time, item_type)
+
+            result = dict(
+                status="success",
+                items=items,
+                message=""
+            )
+        except Exception, e:
+            result = dict(
+                status="success",
+                items=[],
                 message=str(e)
             )
 
@@ -207,7 +235,7 @@ def on_worker_data_in(data):
 
 
 if __name__ == '__main__':
-    options.define("p", default=8888, help="run on the given port", type=int)
+    options.define("p", default=7777, help="run on the given port", type=int)
     options.parse_command_line()
     config = Configurations()
     port = options.options.p
@@ -243,7 +271,8 @@ if __name__ == '__main__':
                      (r'/api/v1/saveOutput/?(.*)', SaveFileApiHandle),
                      (r'/api/v1/getCollectionInfor/?(.*)', CollectionApiHandle),
                      (r'/api/v1/parser/?(.*)', ParserApiHandle),
-                     (r'/api/v1/trigger/?(.*)', TriggerApiHandle)
+                     (r'/api/v1/trigger/?(.*)', TriggerApiHandle),
+                     (r'/api/v1/getItems/?(.*)', ItemsApiHandle)
                      ],
                     autoreload=True,
                     ).listen(port)

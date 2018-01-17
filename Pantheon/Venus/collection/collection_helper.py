@@ -1,47 +1,112 @@
 import time
 import re
 import copy
-from Pantheon.Venus.collection.db_help import get_items_schedule, get_all_rule
+from Pantheon.Venus.collection.db_help import get_items_schedule, get_all_rule, get_all_items_from_db
 from Pantheon.Venus.constants import OPEN_VALID_PERIOD_TYPE, \
     TREE_PATH_SPLIT, \
     VALID_DATE_FORMAT,\
     SCHEDULE_SPECIALLY, SCHEDULE_CLOSED, SCHEDULE_GET_NORMALLY, SCHEDULE_WEEKS_SPLIT, SCHEDULE_DATE_SPLIT, \
     SCHEDULE_SPLIT, CLI_COLLECTION_DEFAULT_METHOD, SNMP_COLLECTION_DEFAULT_METHOD, \
-    CLI_TYPE_CODE
+    CLI_TYPE_CODE, ALL_TYPE_CODE
 
 
-def __create_test_devices(template):
-    test_devices = []
-    for i in range(68):
-        for k in range(101, 116):
-            tmp = copy.copy(template[0])
-            tmp['device__ip'] = "192.168.100.%d" % k
-            tmp['device__device_id'] = i*15 + k
-            test_devices.append(tmp)
-    return test_devices
+def deco_item(func):
+    def wrapper(item, now_time):
+        if "valid_status" in item.keys():
+            if item['valid_status'] is False:
+                return item
+        status = func(item, now_time)
+        item = __add_items_valid_status(item, status)
+        return item
+    return wrapper
 
 
-def get_items(now_time, item_type, other_param=[]):
-    items = get_items_schedule(item_type)
-    devices = get_task_information(now_time, items)
-    # devices = __create_test_devices(devices)
-    tmp_result = merge_device(devices)
+def __item_type_mapping(item):
+    def common(item):
+        tmp_item = {}
+        tmp_item['valid_status'] = item['valid_status']
+        tmp_item['policy_group_id'] = item['policys_groups__policy_group_id']
+        tmp_item['policy_group_name'] = item['policys_groups__policy_group_id__name']
+        tmp_item['coll_policy_id'] = item['coll_policy_id']
+        tmp_item['item_id'] = item['item_id']
+        tmp_item['item_type'] = item['item_type']
+        tmp_item['device_id'] = item['device__device_id']
+        tmp_item['priority'] = item['schedule__priority']
+        return tmp_item
+
+    def wrapper_snmp(item):
+        return item
+
+    def wrapper_cli(item):
+        return item
+
+    result = common(item)
+    if item['item_type'] == CLI_TYPE_CODE:
+        result.update(wrapper_cli(result))
+    else:
+        result.update(wrapper_snmp(result))
+    return result
+
+
+def get_items(now_time, item_type):
+    items = get_all_items_from_db()
+    items = [item for item in items if __filter_item_type(item, item_type)]
+    return items
+
+
+def get_valid_items(now_time, item_type):
+    items = get_items(now_time, item_type)
+    items = valid_items(now_time, items)
+    items = map(__item_type_mapping, items)
+    return items
+
+
+def valid_items(now_time, items):
+    """
+       filter by item interval
+       combine each item with now_time stamp
+       """
+    items = [item for item in items if __check_item_interval(item, now_time)]
+
+    """
+    filter by valid period type
+    combine each item with now_time stamp
+    """
+    items = [item for item in items if __check_period_time(item, now_time)]
+    """
+    filter by schedule time type
+    combine each item with now_time stamp
+    """
+    items = [item for item in items if __check_schedule_time(item, now_time)]
+
+    """
+    filter device's priority, hard coding
+    """
+    items = __check_device_priority(items)
+
+    """
+    get biggest priority for each item
+    """
+
+    """
+    filter stop collection
+    """
+    items = [item for item in items if __check_is_stop_collection(item, now_time)]
+    return items
+
+
+def get_devices(now_time, item_type):
+    items = get_items(now_time, item_type)
+    items = valid_items(now_time, items)
+    items = [item for item in items if item.get('valid_status')]
+    devices = __merge_device(items)
+    other_param = []
     if item_type == CLI_TYPE_CODE:
         rules = __add_rules()
-        devices = [__merge_cli(item, other_param, rules=rules) for item in tmp_result.values()]
+        devices = [__merge_cli(item, other_param, rules=rules) for item in devices.values()]
     else:
-        devices = [__merge_snmp(item, other_param) for item in tmp_result.values()]
-        # for device in devices:
-        #     device['rules'] = rules
+        devices = [__merge_snmp(item, other_param) for item in devices.values()]
     return devices
-
-
-def __add_rules():
-    tmp_rules = {}
-    all_rules = get_all_rule()
-    for rule in all_rules:
-        tmp_rules[str(rule['ruleid'])] = rule
-    return tmp_rules
 
 
 def __merge_snmp(items, param_keys):
@@ -116,7 +181,15 @@ def __add_param(items, param_keys):
     return result
 
 
-def merge_device(items):
+def __add_rules():
+    tmp_rules = {}
+    all_rules = get_all_rule()
+    for rule in all_rules:
+        tmp_rules[str(rule['ruleid'])] = rule
+    return tmp_rules
+
+
+def __merge_device(items):
     tmp_devices = {}
     for item in items:
         if item['device__device_id'] in tmp_devices:
@@ -127,63 +200,27 @@ def merge_device(items):
     return tmp_devices
 
 
-def get_task_information(now_time, items):
+def __filter_item_type(item, item_type):
     """
-    Get device information which need to be collected at given time
-    :param now_time: time stamp
-    :return: device information list
+    :param item: item Queryset
+    :param item_type: 0: cli 1 snmp -1 all
+    :return: True or False
     """
-
-    """
-    filter by item interval
-    combine each item with now_time stamp
-    """
-    items = map(lambda x: x[0], filter(check_item_interval, map(lambda x: (x, now_time), items)))
-
-    """
-    filter by valid period type
-    combine each item with now_time stamp
-    """
-    items = map(lambda x: x[0], filter(check_period_time, map(lambda x: (x, now_time), items)))
-    """
-    filter by schedule time type
-    combine each item with now_time stamp
-    """
-    items = map(lambda x: x[0], filter(check_schedule_time, map(lambda x: (x, now_time), items)))
-
-    """
-    filter device's priority, hard coding
-    """
-    items = check_device_priority(items)
-    """
-    filter stop collection
-    """
-    items = filter(check_is_stop_collection, items)
-    return items
+    if item['item_type'] == item_type:
+        return True
+    elif item_type == ALL_TYPE_CODE:
+        return True
+    else:
+        return False
 
 
-def check_device_priority(items):
-    result = {}
+@deco_item
+def __check_item_interval(item, now_time):
     """
-    Group by policy id and device id
+    :param item: item instance include:policys_groups__exec_interval, last_exec_time
+    :param now_time: now timestampe
+    :return:True or False
     """
-    for item in items:
-        item_key = "%s_%s" % (str(item["coll_policy_id"]), str(item["device__device_id"]))
-        if item_key in result.keys():
-            pass
-        else:
-            result[item_key] = []
-        result[item_key].append(item)
-    """
-    get biggest priority for each item
-    """
-    result = map(lambda i: sorted(i, key=lambda x: x['schedule__priority'], reverse=True)[0], result.values())
-    return result
-
-
-def check_item_interval(param):
-    item = param[0]
-    now_time = param[1]
     exec_interval = item["policys_groups__exec_interval"]
     last_exec_time = item['last_exec_time']
     if now_time / exec_interval == last_exec_time / exec_interval:
@@ -192,9 +229,8 @@ def check_item_interval(param):
         return True
 
 
-def check_period_time(param):
-    item = param[0]
-    now_time = param[1]
+@deco_item
+def __check_period_time(item, now_time):
     """
     0: open valid period type
     1: close valid period type
@@ -207,20 +243,13 @@ def check_period_time(param):
         return True
 
 
-def check_is_stop_collection(item):
-    if item["schedule__data_schedule_type"] == SCHEDULE_CLOSED:
-        return False
-    return True
-
-
-def check_schedule_time(param):
+@deco_item
+def __check_schedule_time(item, now_time):
     """
     Judging given item whether start at now time
     :param param:0:item,1:now time
     :return:True Or False
     """
-    item = param[0]
-    now_time = param[1]
     if item["schedule__data_schedule_type"] not in [SCHEDULE_GET_NORMALLY, SCHEDULE_SPECIALLY]:
         return True
     """
@@ -254,6 +283,59 @@ def check_schedule_time(param):
         return False
 
 
+def __check_device_priority(items):
+    result = {}
+    """
+    Group by policy id and device id
+    """
+    invalid_items = []
+    for item in items:
+        if "valid_status" in item.keys():
+            if item['valid_status'] is False:
+                invalid_items.append(item)
+                continue
+        item_key = "%s_%s" % (str(item["coll_policy_id"]), str(item["device__device_id"]))
+        if item_key in result.keys():
+            pass
+        else:
+            result[item_key] = []
+        result[item_key].append(item)
+
+    tmp_items = map(lambda i: sorted(i, key=lambda x: x['schedule__priority'], reverse=True), result.values())
+    items = []
+    status = None
+    for tmp in tmp_items:
+        for i, value in enumerate(tmp):
+            if i == 0:
+                status = True
+            else:
+                status = False
+            value['valid_status'] = status
+            items.append(value)
+    items.extend(invalid_items)
+    return items
+
+
+@deco_item
+def __check_is_stop_collection(item, now_time):
+    if item["schedule__data_schedule_type"] == SCHEDULE_CLOSED:
+        return False
+    return True
+
+
+def __translate_valid_period_date(given_date):
+    """
+    translate given date to time stamp
+    :param given_date: Schedule's valid period time
+    :return:time stamp
+    """
+    start_date = given_date[0]
+    end_date = given_date[1]
+    start_time_stamp = time.strptime(start_date, VALID_DATE_FORMAT)
+    end_time_stamp = time.strptime(end_date, VALID_DATE_FORMAT)
+    return int(time.mktime(start_time_stamp)), int(time.mktime(end_time_stamp))
+
+
 def __check_date_range(start_time, end_time, now_time):
     """
     Judging given time whether in date range
@@ -280,19 +362,6 @@ def __check_week(now_time, weeks):
     return False
 
 
-def __translate_valid_period_date(given_date):
-    """
-    translate given date to time stamp
-    :param given_date: Schedule's valid period time
-    :return:time stamp
-    """
-    start_date = given_date[0]
-    end_date = given_date[1]
-    start_time_stamp = time.strptime(start_date, VALID_DATE_FORMAT)
-    end_time_stamp = time.strptime(end_date, VALID_DATE_FORMAT)
-    return int(time.mktime(start_time_stamp)), int(time.mktime(end_time_stamp))
-
-
 def __create_path(rules, path):
     path_list = path[1:].split(TREE_PATH_SPLIT)
     result = ['']
@@ -305,17 +374,11 @@ def __create_path(rules, path):
     return "/".join(result)
 
 
+def __add_items_valid_status(item, status):
+    item['valid_status'] = status
+    return item
+
+
 if __name__ == "__main__":
-    # print int(time.time())
-    # get_task_information()
-    # print time.localtime()
-    # print __translate_valid_period_date("2017-12-12@12:12;2017-12-12@13:12")
-    # "2017/12/13 12:12:12 2"
-    # "2017/12/15 11:19:44"
-    # 1513484916, 1513312116
-    # start_time = time.time()
-    print get_items(1513312116, 0, ['coll_policy_rule_tree_treeid', 'coll_policy_rule_tree_treeid__rule_id_path', 'item_id'])
-    # end_time = time.time()
-    # a = 2
-    # b = 1 + 1
-    # print id(a), id(b)
+    for i in get_valid_items(1513312116, -1):
+        print i
