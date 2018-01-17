@@ -300,12 +300,16 @@ class Items(models.Model):
     value_type = models.IntegerField(blank=True, null=True)
     item_type = models.IntegerField(blank=True, null=True)
     key_str = models.CharField(max_length=30, blank=True, null=True)
-    status = models.IntegerField(blank=True, null=True)
-    last_exec_time = models.IntegerField(blank=True, null=True)
+    # modify 1.17 add default value
+    status = models.IntegerField(blank=True, null=True, default=1)
+    #modify 1.17 add default value
+    last_exec_time = models.IntegerField(blank=True, null=True, default=0)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
     coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING, db_column='coll_policy_rule_tree_treeid')
     device = models.ForeignKey(Devices, models.DO_NOTHING)
     schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
+    #add 1.17
+    policys_groups = models.ForeignKey('PolicysGroups', models.DO_NOTHING)
 
     class Meta:
         # managed = False
