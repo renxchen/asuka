@@ -19,45 +19,45 @@ import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.modul
 import { DataCollectionComponentModule } from './dataCollection/dataCollection.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    ModalModule.forRoot(),
-    BsDatepickerModule.forRoot(),
-    TimepickerModule.forRoot(),
-    TranslateModule.forRoot({
-      loader: {
-          provide: TranslateLoader,
-          useFactory: (HttpLoaderFactory),
-          deps: [HttpClient]
-      }
-    }),
-    HttpModule,
-    FormsModule,
-    ReactiveFormsModule,
-    appRouting,
-    SharedModule,
-    HClientModule,
-    BreadCrumbModule,
-    LoginComponentModule,
-    IndexComponentModule,
-    CPViewComponentModule,
-    LoginComponentModule,
-    IndexComponentModule,
-    CPViewComponentModule,
-    DataCollectionComponentModule,
-    BreadCrumbModule,
-    ModModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent],
-  entryComponents: [entryComponentList]
+    declarations: [
+        AppComponent
+    ],
+    imports: [
+        BrowserModule,
+        HttpClientModule,
+        ModalModule.forRoot(),
+        BsDatepickerModule.forRoot(),
+        TimepickerModule.forRoot(),
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: (HttpLoaderFactory),
+                deps: [HttpClient]
+            }
+        }),
+        HttpModule,
+        FormsModule,
+        ReactiveFormsModule,
+        appRouting,
+        SharedModule,
+        HClientModule,
+        BreadCrumbModule,
+        LoginComponentModule,
+        IndexComponentModule,
+        CPViewComponentModule,
+        LoginComponentModule,
+        IndexComponentModule,
+        CPViewComponentModule,
+        DataCollectionComponentModule,
+        BreadCrumbModule,
+        ModModule
+    ],
+    providers: [],
+    bootstrap: [AppComponent],
+    entryComponents: [entryComponentList]
 })
 
 export class AppModule { }

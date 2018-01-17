@@ -179,7 +179,9 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         //                     this.modalMsg = '削除に成功しました。';
         //                     this.closeMsg = '閉じる';
         //                     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            // $('#modalButton').on('click', function () {
         //                     _t.cPTable.trigger('reloadGrid');
+                            // });
         //                 } else {
         //                     // check this cp occupation, add 'occupation' feedback
         //                     if (res['status']['message'] && ['status']['message'] === 'occupation') {
