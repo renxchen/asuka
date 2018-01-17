@@ -9,7 +9,7 @@
 @desc:
 
 '''
-from backend.apolo.tools import constants
+import constants
 
 
 class Tool(object):

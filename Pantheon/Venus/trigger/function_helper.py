@@ -1,7 +1,7 @@
 from db_help import get_history
 from Pantheon.Venus.constants import VALUE_TYPE_MAPPING, ITEM_TYPE_MAPPING, TRIGGER_BASE_PATH
 import importlib
-
+import time
 
 class FunctionException(Exception):
     def __init__(self, message):
@@ -46,6 +46,7 @@ def get_function_value(function):
     :param function: function object
     :return:{function_id: function value}
     """
+    time.clock()
     function_pattern = "%sFunction"
     function_name = function_pattern % function.function
     function_param = function.parameter
@@ -55,7 +56,10 @@ def get_function_value(function):
         function_name = function_pattern % "Last"
     function_module = getattr(this_module, function_name)
     instance = function_module()
-    return {function_id: instance.get_value(function.item, function_param)}
+    time.clock()
+    value = instance.get_value(function.item, function_param)
+    print time.clock()
+    return {function_id: value}
 
 if __name__ == "__main__":
     pass
