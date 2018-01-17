@@ -17,11 +17,11 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
     dcModel: any = [
         {label: 'No', hidden: true, name: 'deviceNo', index: 'deviceNo'},
         {label: 'コレクションポリシー',  name: 'policy', width: 30, align: 'center',
-        cellattr: this.arrtSetting.bind(this), sortable: false, classes: 'policy'},
+        cellattr: this.arrtSetting.bind(this), sortable: false, classes: 'policy', search: false,},
         {label: 'デバイス', name: 'device', width: 50, align: 'center',
-            classes: 'device', sortable: false,},
+            classes: 'device',},
         {label: 'ステータス',  name: 'status', width: 30,
-            align: 'center', sortable: false },
+            align: 'center', sortable: false, search: false, },
 
     ];
 
@@ -56,12 +56,17 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
     }
 
     public renderLink(){
+        let _this = this;
         let _device = $('.device');
         for (let i=0;i<_device.length;i++){
             let _target = $(_device[i]);
-            let _content = '<a href="#" style="color:blue;">';
-            _content += _target.html() + '</a>';
+            let _content = '<div style="color:blue;">';
+            _content += _target.html() + '</div>';
             _target.html(_content);
+            let deviceNo = _target.prev().prev().html();
+            _target.click( function (event) {
+                _this.router.navigate(['/index/policiesPerDevice'],{queryParams:{'id':deviceNo}});
+            })
         }
 
         let _policy = $($('.policy')["0"]);
@@ -116,5 +121,6 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
             //     repeatitems: false,
             // },
         });
+        $('#devicesTable').jqGrid('filterToolbar', {defaultSearch: 'cn'});
     }
 }

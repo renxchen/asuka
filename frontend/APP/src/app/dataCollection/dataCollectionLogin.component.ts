@@ -3,6 +3,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 // import * as _ from 'lodash';
+declare var $: any;
 
 enableProdMode();
 

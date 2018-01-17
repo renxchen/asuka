@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 declare var $: any;
 import * as _ from 'lodash';
 
@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
     dd: string = '1';
-    deviceId: number;
+    deviceNo: number;
     stopAll = '<button class="btn btn-xs btn-primary">全停止</button>';
     startAll = '<button class="btn btn-default">全解除</button>';
     dcModel: any = [
@@ -47,15 +47,22 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
     constructor(
         public httpClient: HttpClientComponent,
         public router: Router,
+        private route: ActivatedRoute,
     ) {}
 
     ngOnInit() {
+        // this.route.params.subscribe(params => {
+        //     this.deviceNo = params['deviceNo'];
+        // });
+        this.deviceNo = this.route.snapshot.queryParams['id'];
+        console.log(this.deviceNo);
 
     }
 
     ngAfterViewInit() {
         this.setSelect();
         this.drawPPDTable();
+
 
     }
 
@@ -66,6 +73,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             search_contains: true,
         }).change( function () {
             _this.dd = $('#device').val();
+
         });
     }
 
@@ -112,6 +120,10 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         });
     }
 
+    public renderTitleHeight(){
+        $('.ui-jqgrid-htable th div').height(22);
+    }
+
     public drawPPDTable() {
         let _this = this;
         $('#policiesTable').jqGrid({
@@ -125,7 +137,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             // viewrecords: true,
             loadComplete: function () {
                 _this.stopPolicy();
-                // _this.renderColor();
+                _this.renderTitleHeight();
             },
             rowNum: 10,
             // rowList: [10, 20, 30],
