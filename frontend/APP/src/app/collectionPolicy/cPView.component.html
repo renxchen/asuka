@@ -2,12 +2,11 @@
     <h5>コレクションポリシー一覧 </h5>
 </div> -->
 <div class="ibox-content text-center p-md" style="min-height:610px;">
-    <div class="btn-groups" data-toggle="buttons">
-        <label for = "type_cli" class="btn btn-sm btn-default" 
-        [ngClass]="{'active':(cPType)=='0'}"
-        style="border-top-right-radius:0px;border-bottom-right-radius:0px">
+    <div class="btn-group btn-groups" data-toggle="buttons">
+        <label for = "cli" class="btn btn-default btn-change-cli" 
+        [ngClass]="{'active':(cPType)=='0'}">
             <input 
-            id = "type_cli"
+            id = "cli"
             name="cp_type" 
             value="0"
             autocomplete="off" 
@@ -17,11 +16,10 @@
             (click)="changeCPType($event)"
             >CLIコレクションポリシー
         </label>
-        <label for="type_snmp" class="btn btn-sm btn-default active" 
-        [ngClass]="{'active':(cPType)=='1'}"
-        style="border-top-left-radius:0px;border-bottom-left-radius:0px">
+        <label for="snmp" class="btn btn-default btn-change-snmp" 
+        [ngClass]="{'active':(cPType)=='1'}">
             <input 
-                id="type_snmp"
+                id="snmp"
                 name="cp_type" 
                 value="1"
                 autocomplete="off" 
@@ -47,3 +45,4 @@
         </div>
     </div>
 </div>
+<button (click)= "pageCheck()">button</button>

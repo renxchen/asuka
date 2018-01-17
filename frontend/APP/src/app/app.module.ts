@@ -10,7 +10,9 @@ import { SharedModule } from './sharedModule/shared.module';
 import { ModalModule, BsDatepickerModule, TimepickerModule } from 'ngx-bootstrap';
 import { AppComponent } from './app.component';
 import { HClientModule } from '../components/utils/httpClient.module';
+import { ValidationModule } from '../components/validation/validation.module';
 import { BreadCrumbModule } from '../components/breadCrumb/bread-crumb.module';
+import { ModModule } from '../components/modal/modal.module';
 import { LoginComponentModule } from './login/login.module';
 import { IndexComponentModule } from './index/index.module';
 import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.module';
@@ -50,7 +52,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     IndexComponentModule,
     CPViewComponentModule,
     DataCollectionComponentModule,
-    BreadCrumbModule
+    BreadCrumbModule,
+    ModModule
   ],
   providers: [],
   bootstrap: [AppComponent],

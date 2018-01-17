@@ -1,4 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
+import { ModalComponent } from '../components/modal/modal.component';
+
 // login
 import { LoginComponent } from './login/login.component';
 // index
@@ -127,6 +129,7 @@ const routes: Routes = [
 ];
 export const appRouting = RouterModule.forRoot(routes);
 export const entryComponentList: any[] = [
+  ModalComponent,
   // collection policy
   CLIBlockComponent,
   // data

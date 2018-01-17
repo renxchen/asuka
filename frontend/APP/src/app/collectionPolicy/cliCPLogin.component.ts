@@ -1,6 +1,8 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
+import { Validator } from '../../components/validation/validation';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'cli-login',
@@ -17,19 +19,19 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
     desc: any;
     selectedOsType: any;
     regExp: string;
-    msgFlg: Boolean = true;
-    nameFlg: boolean;
-    cmdFlg: boolean;
-    nameNotNull;
-    cmdNotNull;
-    osTypeFlg: boolean;
-    uniqueFlg: boolean;
+    nameFlg: Boolean = true;
+    cmdFlg: Boolean = true;
+    descFlg: Boolean = false;
+    nameNotNull: Boolean = true;
+    cmdNotNull: Boolean = true;
+    osTypeFlg: Boolean = true;
+    uniqueFlg: Boolean = true;
     constructor(
         private router: Router,
         private activedRoute: ActivatedRoute,
         private httpClient: HttpClientComponent) { }
     ngOnInit() {
-        this.selectedOsType = 'null';
+        // this.selectedOsType = 'null';
         let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cPType'];
         if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
             this.cPType = cPTypeTmp;
@@ -44,8 +46,7 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
         this.apiPrefix = '/v1';
         let cPLoginUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
         let cPEditUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
-        if (this.doCheck() === true) {
-            this.msgFlg = true;
+        if (this.doCheck()) {
             cPInfo['name'] = this.name;
             cPInfo['cli_command'] = this.cliCommand;
             cPInfo['desc'] = this.desc;
@@ -58,19 +59,16 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                         if (res['data']) {
                             let id = res['data']['coll_policy_id'];
                             this.router.navigate(['/index/cliCPEdit'],
-                            { queryParams: {'id' : id }});
+                                { queryParams: { 'id': id } });
                         }
                     } else {
-                        if (res['status']['message'] === 'CP_NAME_DUPLICATE') {
-                            this.msgFlg = false;
+                        if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
                             this.uniqueFlg = false;
                         } else {
                             alert(res['status']['message']);
                         }
                     }
                 });
-        } else {
-            this.msgFlg = false;
         }
     }
     public getOsType() {
@@ -81,8 +79,9 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data']) {
-                        console.log(res['data']);
                         this.osType = res['data'];
+                        let osTypeTmp = _.clone(res['data']);
+                        this.selectedOsType = res['data'][0]['ostypeid'];
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
@@ -91,42 +90,19 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                 }
             });
     }
-    public doCheck() {
-        this.regExp = '[- 0-9a-zA-Z_]';
-        let reg = new RegExp(this.regExp);
-        if (this.name && this.name.trim()) {
-            this.nameNotNull = true;
-            if (reg.test(this.name) === true) {
-                this.nameFlg = true;
-            } else {
-                this.nameFlg = false;
-            }
-        } else {
-            this.nameNotNull = false;
-            this.nameFlg = true;
+    public doCheck(): boolean {
+        this.nameNotNull = Validator.notNullCheck(this.name);
+        if (this.nameNotNull) {
+            this.nameFlg = Validator.noSpecSymbol(this.name);
         }
-        if (this.cliCommand && this.cliCommand.trim()) {
-            this.cmdNotNull = true;
-            if (reg.test(this.cliCommand) === true) {
-                this.cmdFlg = true;
-            } else {
-                this.cmdFlg = false;
-            }
-        } else {
-            this.cmdNotNull = false;
-            this.cmdFlg = true;
+        this.descFlg = Validator.includeChinese(this.desc);
+        this.cmdNotNull = Validator.notNullCheck(this.cliCommand);
+        if (this.cmdNotNull) {
+            this.cmdFlg = Validator.noCommsymbol(this.cliCommand);
         }
-        if (this.selectedOsType !== 'null') {
-            this.osTypeFlg = true;
-        } else {
-            this.osTypeFlg = false;
-        }
-        if (this.nameFlg === true
-            && this.nameNotNull === true
-            && this.cmdFlg === true
-            && this.cmdNotNull === true
-            && this.selectedOsType !== 'null'
-            ) {
+        if (this.nameNotNull && this.nameFlg
+            && this.cmdNotNull && this.cmdFlg
+            && !this.descFlg) {
             return true;
         } else {
             return false;
