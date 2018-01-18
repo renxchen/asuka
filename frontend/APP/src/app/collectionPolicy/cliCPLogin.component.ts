@@ -34,11 +34,14 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
         let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cPType'];
         if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
             this.cPType = cPTypeTmp;
+        } else {
+            this.router.navigate(['/index/index']);
         }
         this.getOsType();
         this.labelParentAlert();
     }
     ngAfterViewInit() {
+        this.getOsType();
     }
     public cPLogin() {
         let cPInfo: any = {};

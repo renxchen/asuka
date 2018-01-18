@@ -67,7 +67,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             datatype: 'JSON',
             mtype: 'get',
             colModel: [
-                { label: 'No', hidden: true, name: 'coll_policy_id', index: 'coll_policy_id', search: false },
+                { label: 'No', hidden: true, name: 'coll_policy_id', index: 'coll_policy_id', search: false, key: true },
                 { label: 'コレクションポリシー名', name: 'name', index: 'name', width: 50, align: 'center', search: true },
                 { label: 'OS Type', name: 'ostype_name', index: 'ostype', width: 50, align: 'center', search: true },
                 { label: thirdCol, name: thirdName, index: thirdName, width: 50, align: 'center', search: true },
@@ -77,7 +77,6 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                     formatter: this.formatterBtn, resizable: false
                 }
             ],
-            // loadComplete: this.loadCompleteFun,
             gridComplete: function () {
                 _t.detailBtn();
                 _t.editBtn();
@@ -121,8 +120,8 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.router.navigate(['/index/cliCPDetail'],
                     { queryParams: { 'id': id } });
             } else {
-                //     _t.router.navigate(['/index/snmpCPDetail'],
-                //     { queryParams: {'id' : id }});
+                _t.router.navigate(['/index/snmpCPDetail'],
+                    { queryParams: { 'id': id } });
             }
         });
     }
@@ -137,66 +136,68 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             //     .toJson(_t.httpClient.get(url + '?id=' + id))
             //     .subscribe(res => {
             //         if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                        if (_t.cPType === '0') {
-                            _t.router.navigate(['/index/cliCPEdit'],
-                                { queryParams: { 'id': id } });
-                        } else {
-                            _t.router.navigate(['/index/snmpCPEdit'],
-                                { queryParams: { 'id': id } });
-                        }
-                    // } else {
-                    //     if (res['status'] && res['status']['message']) {
-                    //                 alert(res['status']['message']);
-                    //             }
-                        // check this cp occupation, add 'occupation' feedback
-                        // if (res['status']['message'] && res['status']['message'] === 'occupation') {
-                        //     this.modalMsg = 'This collection policy is being occupied';
-                        //     this.closeMsg = 'close';
-                        //     _t.showAlertModal(this.modalMsg, this.closeMsg);
-                        // } else {
-                        //     if (res['status'] && res['status']['message']) {
-                        //         alert(res['status']['message']);
-                        //     }
-                        // }
-                    // }
-                // });
+            if (_t.cPType === '0') {
+                _t.router.navigate(['/index/cliCPEdit'],
+                    { queryParams: { 'id': id } });
+            } else {
+                _t.router.navigate(['/index/snmpCPEdit'],
+                    { queryParams: { 'id': id } });
+            }
+            // } else {
+            //     if (res['status'] && res['status']['message']) {
+            //                 alert(res['status']['message']);
+            //             }
+            // check this cp occupation, add 'occupation' feedback
+            // if (res['status']['message'] && res['status']['message'] === 'occupation') {
+            //     this.modalMsg = 'This collection policy is being occupied';
+            //     this.closeMsg = 'close';
+            //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+            // } else {
+            //     if (res['status'] && res['status']['message']) {
+            //         alert(res['status']['message']);
+            //     }
+            // }
+            // }
+            // });
         });
     }
     public deleteBtn() {
-        // let _t = this;
-        // _t.apiPrefix = '/v1';
-        // let url = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
-        // $('.delete').click(function (event) {
-        //     let id = $(event)[0].target.id;
-        //     let name = _t.cPTable.getRowData(id)['name'];
-        //     let alt = confirm(name + 'を削除します。よろしいですか？');
-        //     if (alt) {
-        //         _t.httpClient.setUrl(_t.apiPrefix);
-        //         _t.httpClient
-        //             .toJson(_t.httpClient.delete(url + '?id=' + id))
-        //             .subscribe(res => {
-        //                 if (res['status']['status'].toLowerCase() === 'true') {
-        //                     this.modalMsg = '削除に成功しました。';
-        //                     this.closeMsg = '閉じる';
-        //                     _t.showAlertModal(this.modalMsg, this.closeMsg);
-                            // $('#modalButton').on('click', function () {
-        //                     _t.cPTable.trigger('reloadGrid');
-                            // });
-        //                 } else {
-        //                     // check this cp occupation, add 'occupation' feedback
-        //                     if (res['status']['message'] && ['status']['message'] === 'occupation') {
-        //                         this.modalMsg = 'This collection policy is being occupied';
-        //                         this.closeMsg = 'close';
-        //                         _t.showAlertModal(this.modalMsg, this.closeMsg);
-        //                     } else {
-        //                         if (res['status'] && res['status']['message']) {
-        //                             alert(res['status']['message']);
-        //                         }
-        //                     }
-        //                 }
-        //             });
-        //     }
-        // });
+        let _t = this;
+        _t.apiPrefix = '/v1';
+        let url = '/api_collection_policy/';
+        $('.delete').click(function (event) {
+            event.stopPropagation();
+            console.log('event', event);
+            let id = $(event)[0].target.id;
+            let name = $('#cpTable').jqGrid().getRowData(id)['name'];
+            let alt = confirm(name + 'を削除します。よろしいですか？');
+            if (alt) {
+                _t.httpClient.setUrl(_t.apiPrefix);
+                _t.httpClient
+                    .toJson(_t.httpClient.delete(url + '?id=' + id))
+                    .subscribe(res => {
+                        if (res['status']['status'].toLowerCase() === 'true') {
+                            this.modalMsg = '削除に成功しました。';
+                            this.closeMsg = '閉じる';
+                            _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            $('#modalButton').on('click', function () {
+                                _t.cPTable.trigger('reloadGrid');
+                            });
+                        } else {
+                            // check this cp occupation, add 'occupation' feedback
+                            if (res['status']['message'] && ['status']['message'] === 'occupation') {
+                                this.modalMsg = 'This collection policy is being occupied';
+                                this.closeMsg = 'close';
+                                _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            } else {
+                                if (res['status'] && res['status']['message']) {
+                                    alert(res['status']['message']);
+                                }
+                            }
+                        }
+                    });
+            }
+        });
     }
     public cpLogin() {
         if (this.cPType === '0') {

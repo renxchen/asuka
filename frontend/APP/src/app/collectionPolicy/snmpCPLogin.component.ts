@@ -42,6 +42,8 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cPType'];
         if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
             this.cPType = cPTypeTmp;
+        } else {
+            this.router.navigate(['/index/']);
         }
         this.selectedRtnType = '1';
         this.getOsType();
@@ -54,7 +56,6 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         let cPInfo: any = {};
         this.apiPrefix = '/v1';
         let cPLoginUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
-        let cPEditUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
         if (this.doCheck()) {
             cPInfo['name'] = this.name;
             cPInfo['snmp_oid'] = this.snmpOid;
@@ -76,7 +77,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                         this.showAlertModal(this.modalMsg, this.closeMsg);
                         $('#modalButton').on('click', function () {
                             _t.router.navigate(['/index/']);
-                          });
+                        });
                     } else {
                         if (res['status']['message'] === 'CP_NAME_DUPLICATE') {
                             this.uniqueFlg = false;
@@ -135,9 +136,5 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
-    }
-    public closeAlertModal() {
-        this.modalService._hideBackdrop();
-        this.router.navigate(['/index/']);
     }
 }

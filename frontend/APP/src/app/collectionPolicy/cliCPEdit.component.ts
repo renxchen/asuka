@@ -234,6 +234,8 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
         if (cPIdeTmp && typeof (cPIdeTmp) !== 'undefined') {
             this.cPId = cPIdeTmp;
             this.getCPInfo(this.cPId);
+        } else {
+            this.router.navigate(['/index/']);
         }
     }
     ngOnInit() {
@@ -400,16 +402,16 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
         // let savePlytUrl = '/api_policy_tree/';
         // this.httpClient.setUrl(this.apiPrefix);
         // this.httpClient
-            // .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
-            //     if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-            //         alert('保存しました');
-            //         this.router.navigate(['/index/cliCPDetail'], { queryParams: { 'id': this.cPId } });
-            //     } else {
-            //         if (res['status'] && res['status']['message']) {
-            //             alert(res['status']['message']);
-            //         }
-            //     }
-            // });
+        // .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
+        //     if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+        //         alert('保存しました');
+        //         this.router.navigate(['/index/cliCPDetail'], { queryParams: { 'id': this.cPId } });
+        //     } else {
+        //         if (res['status'] && res['status']['message']) {
+        //             alert(res['status']['message']);
+        //         }
+        //     }
+        // });
     }
     public blockTree(data: any) {
         let _t = this;
@@ -529,8 +531,8 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
                     _t.dataRuleAction(editDataParam);
                 }
             }]
-        }).bind('move_node.jstree', function (e, data) {})
-        .bind('activate_node.jstree', function (e, node) {});
+        }).bind('move_node.jstree', function (e, data) { })
+            .bind('activate_node.jstree', function (e, node) { });
     }
     public policyTree(data: any) {
         let _t = this;
@@ -582,12 +584,12 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
                 }
             ],
         })
-            .bind('move_node.jstree', function (e, data) {})
+            .bind('move_node.jstree', function (e, data) { })
             .on('copy_node.jstree', function (e, data) {
                 data.node.original = $.extend(true, data.node.original, data.original.original);
                 data.node.data = $.extend(true, data.node.data, data.original.data);
             })
-            .bind('activate_node.jstree', function (e, node) {});
+            .bind('activate_node.jstree', function (e, node) { });
     }
     public blockRuleAction(sendInfo: any) {
         this.modalRef = this.modalService.show(CLIBlockComponent, this.modalConfig);
@@ -596,6 +598,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
     public dataRuleAction(sendInfo: any) {
         // this.bsModalRef = this.modalService.show(CLIdataComponent, this.modalConfig);
         // this.bsModalRef.content.info = sendInfo;
-     }
-     // detail haven't been completed
+    }
+    // detail haven't been completed
 }
