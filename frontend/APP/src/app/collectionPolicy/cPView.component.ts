@@ -167,7 +167,6 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         let url = '/api_collection_policy/';
         $('.delete').click(function (event) {
             event.stopPropagation();
-            console.log('event', event);
             let id = $(event)[0].target.id;
             let name = $('#cpTable').jqGrid().getRowData(id)['name'];
             let alt = confirm(name + 'を削除します。よろしいですか？');
@@ -176,16 +175,16 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.httpClient
                     .toJson(_t.httpClient.delete(url + '?id=' + id))
                     .subscribe(res => {
-                        if (res['status']['status'].toLowerCase() === 'true') {
+                        if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                             this.modalMsg = '削除に成功しました。';
                             this.closeMsg = '閉じる';
                             _t.showAlertModal(this.modalMsg, this.closeMsg);
                             $('#modalButton').on('click', function () {
-                                _t.cPTable.trigger('reloadGrid');
+                                $('#cpTable').jqGrid().trigger('reloadGrid');
                             });
                         } else {
                             // check this cp occupation, add 'occupation' feedback
-                            if (res['status']['message'] && ['status']['message'] === 'occupation') {
+                            if (res['status'] && ['status']['message'] === 'occupation') {
                                 this.modalMsg = 'This collection policy is being occupied';
                                 this.closeMsg = 'close';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
