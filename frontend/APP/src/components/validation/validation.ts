@@ -1,7 +1,9 @@
 export class Validator {
-    static noSpecSymbolReg: String = '^[-a-zA-Z0-9_]{1,30}$';
-    static noCommsymbolReg: String = '^[-a-zA-Z0-9_]{1,256}$';
+    // need modify noSpecSymbolReg
+    static noSpecSymbolReg: String = '^[-a-zA-Z0-9_]{1,256}$';
+    static noCommsymbolReg: String = '^[-a-zA-Z0-9_]{1,30}$';
     static includeChineseReg: String = '[\u4e00-\u9fa5]';
+    static oidReg:  String = '[0-9]+?(\.[0-9]+?)+';
     static regTest(reg: any, value: any) {
         let regInstance = new RegExp(reg);
         return regInstance.test(value);
@@ -29,6 +31,13 @@ export class Validator {
     }
     static includeChinese(param: any) {
         if (Validator.regTest(Validator.includeChineseReg, param)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    static oidRegCheck(param: any) {
+        if (Validator.regTest(Validator.oidReg, param)) {
             return true;
         } else {
             return false;
