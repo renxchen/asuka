@@ -3,7 +3,7 @@
         <div class="panel panel-success">
             <div class="panel-body text-right">
                 <button type="button" class="btn btn-success" (click)="naviCPEdit()">
-                    <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                    <i class="fa fa-pencil-square"></i>
                     編集する
                 </button>
             </div>
@@ -14,26 +14,25 @@
     <div class="ibox-content confirm-default">
         <div class="row">
             <div class="col-lg-10 col-lg-offset-1 col-md-11">
-                <dl class="dl-horizontal" id="cp_default">
+                <dl class="dl-horizontal">
                     <dt>コレクションポリシー名：</dt>
                     <dd>
-                        <p class="confirm confirm-text" id="collection_policy">{{name}}</p>
+                        <p class="confirm confirm-text">{{name}}</p>
                     </dd>
                     <dt>実行コマンド：</dt>
                     <dd>
-                        <p class="confirm confirm-text" id="exec_command">{{cliCommand}}</p>
+                        <p class="confirm confirm-text">{{cliCommand}}</p>
                     </dd>
-                    <dt class="unuse_east ">OS Type：</dt>
+                    <dt>OS Type：</dt>
                     <dd>
                         <select name="" id="" class="form-control" 
                         style="border: 1px solid #878787; margin-bottom:10px" disabled="disabled">
                             <option value="">{{osType}}</option>
                         </select>
-                    </dd>
-                   
+                    </dd>                   
                     <dt>概要：</dt>
                     <dd>
-                        <p class="confirm confirm-textarea" id="descr">{{desc}}</p>
+                        <p class="confirm confirm-textarea">{{desc}}</p>
                     </dd>
                 </dl>
             </div>
@@ -52,15 +51,15 @@
         </div>
     </div>
 </div>
-<!-- <div class="row">
+<div class="row">
     <div class="col-lg-12">
         <div class="panel panel-success">
             <div class="panel-body text-right">
                 <button type="button" class="btn btn-success" (click)="naviCPEdit()">
-                    <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                    <i class="fa fa-pencil-square"></i>
                     編集する
                 </button>
             </div>
         </div>
     </div>
-</div> -->
+</div>

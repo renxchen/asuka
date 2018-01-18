@@ -1,6 +1,11 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { ModalComponent } from '../../components/modal/modal.component';
+import { Validator } from '../../components/validation/validation';
+import * as _ from 'lodash';
 
 @Component({
     selector: 'snmp-login',
@@ -17,40 +22,41 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
     desc: any;
     selectedOsType: any;
     selectedRtnType: any;
-    nameRegExp: string;
-    oidRegExp: string;
-    msgFlg: Boolean = true;
-    nameFlg: boolean;
-    oidFlg: boolean;
-    nameNotNull;
-    oidNotNull;
-    osTypeFlg: boolean;
-    uniqueFlg: boolean;
+    modalRef: BsModalRef;
+    modalMsg: any;
+    closeMsg: any;
+    nameNotNull: Boolean = true;
+    nameFlg: Boolean = true;
+    descFlg: Boolean = false;
+    oidNotNull: Boolean = true;
+    oidFlg: Boolean = true;
+    uniqueFlg: Boolean = true;
     constructor(
         private router: Router,
         private activedRoute: ActivatedRoute,
-        private httpClient: HttpClientComponent) {
+        private httpClient: HttpClientComponent,
+        private modalService: BsModalService
+    ) {
     }
     ngOnInit() {
-        this.selectedOsType = 'null';
-        this.selectedRtnType = '1';
         let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cPType'];
         if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
             this.cPType = cPTypeTmp;
+        } else {
+            this.router.navigate(['/index/']);
         }
+        this.selectedRtnType = '1';
         this.getOsType();
-        this.selectedOsType = 'null';
         this.labelParentAlert();
     }
     ngAfterViewInit() {
     }
     public cPLogin() {
+        let _t = this;
         let cPInfo: any = {};
         this.apiPrefix = '/v1';
         let cPLoginUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
-        let cPEditUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
-        if (this.doCheck() === true) {
-            this.msgFlg = true;
+        if (this.doCheck()) {
             cPInfo['name'] = this.name;
             cPInfo['snmp_oid'] = this.snmpOid;
             cPInfo['value_type'] = this.selectedRtnType;
@@ -61,20 +67,23 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
                 .subscribe(res => {
                     if (res['status']['status'].toString().toLowerCase() === 'true') {
-                        if (res['data']) {
-                            let id = res['data']['coll_policy_id'];
-                            this.router.navigate(['/index/snmpCPEdit'],
-                            { queryParams: {'id' : id }});
-                        }
+                        // if (res['data']) {
+                        //     let id = res['data']['coll_policy_id'];
+                        //     this.router.navigate(['/index/snmpCPEdit'],
+                        //     { queryParams: {'id' : id }});
+                        // }
+                        this.modalMsg = '保存しました。';
+                        this.closeMsg = '一覧へ戻る';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        $('#modalButton').on('click', function () {
+                            _t.router.navigate(['/index/']);
+                        });
                     } else {
                         if (res['status']['message'] === 'CP_NAME_DUPLICATE') {
-                            this.msgFlg = false;
                             this.uniqueFlg = false;
                         }
                     }
                 });
-        } else {
-            this.msgFlg = false;
         }
     }
     public getOsType() {
@@ -86,6 +95,8 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data']) {
                         this.osType = res['data'];
+                        let osTypeTmp = _.clone(res['data']);
+                        this.selectedOsType = res['data'][0]['ostypeid'].toString();
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
@@ -95,43 +106,18 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
             });
     }
     public doCheck() {
-        this.nameRegExp = '[- 0-9a-zA-Z_]{1,256}';
-        this.oidRegExp  = '[0-9]+?(\.[0-9]+?)+';
-        let nameReg = new RegExp(this.nameRegExp);
-        let oidReg = new RegExp(this.oidRegExp);
-        if (this.name && this.name.trim()) {
-            this.nameNotNull = true;
-            if (nameReg.test(this.name) === true) {
-                this.nameFlg = true;
-            } else {
-                this.nameFlg = false;
-            }
-        } else {
-            this.nameNotNull = false;
-            this.nameFlg = true;
+        this.nameNotNull = Validator.notNullCheck(this.name);
+        if (this.nameNotNull) {
+            this.nameFlg = Validator.noSpecSymbol(this.name);
         }
-        if (this.snmpOid && this.snmpOid.trim()) {
-            this.oidNotNull = true;
-            if (oidReg.test(this.snmpOid) === true) {
-                this.oidFlg = true;
-            } else {
-                this.oidFlg = false;
-            }
-        } else {
-            this.oidNotNull = false;
-            this.oidFlg = true;
+        this.descFlg = Validator.includeChinese(this.desc);
+        this.oidNotNull = Validator.notNullCheck(this.snmpOid);
+        if (this.oidNotNull) {
+            this.oidFlg = Validator.oidRegCheck(this.snmpOid);
         }
-        if (this.selectedOsType !== 'null') {
-            this.osTypeFlg = true;
-        } else {
-            this.osTypeFlg = false;
-        }
-        if (this.nameFlg === true
-            && this.nameNotNull === true
-            && this.oidFlg === true
-            && this.oidNotNull === true
-            && this.selectedOsType !== 'null'
-            ) {
+        if (this.nameNotNull && this.nameFlg
+            && this.oidNotNull && this.oidFlg
+            && !this.descFlg) {
             return true;
         } else {
             return false;
@@ -145,5 +131,10 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                 _t.router.navigate(['/index/cPView/']);
             }
         });
+    }
+    public showAlertModal(modalMsg: any, closeMsg: any) {
+        this.modalRef = this.modalService.show(ModalComponent);
+        this.modalRef.content.modalMsg = modalMsg;
+        this.modalRef.content.closeMsg = closeMsg;
     }
 }
