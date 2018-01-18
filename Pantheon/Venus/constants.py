@@ -13,6 +13,7 @@ ITEM_TYPE_MAPPING = {
 }
 SNMP_TYPE_CODE = 1
 CLI_TYPE_CODE = 0
+ALL_TYPE_CODE = -1
 
 """
 ############Collection###########

@@ -11,12 +11,13 @@ BASE_CLI_PLATFORM = 'ios'
 BASE_SNMP_METHOD = "bulk_get"
 CLI_TYPE_CODE = 0
 SNMP_TYPE_CODE = 1
-CLI_THREADPOOL_SIZE = 15
+CLI_THREADPOOL_SIZE = 150
 SNMP_THREADPOOL_SIZE = 15
 GET_CLI_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
 GET_SNMP_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
-GET_DEVICES_SERVICE_URL = "http://127.0.0.1:8888/api/v1/getCollectionInfor"
-PARSER_SERVICE_URL = "http://127.0.0.1:8888/api/v1/parser"
+GET_DEVICES_SERVICE_URL = "http://10.71.244.134:7777/api/v1/getCollectionInfor"
+PARSER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/parser"
+# TRIGGER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/trigger"
 TRIGGER_SERVICE_URL = "http://127.0.0.1:8888/api/v1/trigger"
 
 
@@ -139,10 +140,10 @@ def __get_cli_data(param):
     except Exception, e:
         raise ParserServiceException(str(e))
 
-    try:
-        send_trigger(param)
-    except Exception, e:
-        raise TriggerServiceException(str(e))
+    # try:
+    #     send_trigger(param)
+    # except Exception, e:
+    #     raise TriggerServiceException(str(e))
 
     return output
 
@@ -189,27 +190,34 @@ def cli_main():
         now_time=now_time,
         item_type=CLI_TYPE_CODE
     )
-    try:
-        devices = get_devices(param)
-        devices = map(__add_param, devices['devices'])
-        if len(devices) == 0:
-            cli_logger.debug(LogMessage.DEBUG_NO_DEVICE_RUNNING_AT_TIME)
-        pool = ThreadPool(CLI_THREADPOOL_SIZE)
-        pool.map(__get_cli_data, devices)
-        pool.close()
-        pool.join()
-    except DeviceServiceExceptions, e:
-        cli_device_logger.error(str(e))
-    except CollectionServiceException, e:
-        cli_collection_logger.error(str(e))
-    except ParserServiceException, e:
-        cli_parser_logger.error(str(e))
-    except TriggerServiceException, e:
-        cli_trigger_logger.error(str(e))
-    except Exception, e:
-        cli_logger.error(str(e))
-    cli_logger.info("Cli Task %d End" % now_time)
-    cli_logger.info("Total device task: %d" % len(devices))
+    devices = get_devices(param)
+    items = []
+    for i in devices['devices']:
+        items.extend(i['items'])
+    send_trigger({"items": items, "task_timestamp": 123})
+    # for i in items:
+    #     print i
+    # try:
+    #     devices = get_devices(param)
+    #     devices = map(__add_param, devices['devices'])
+    #     if len(devices) == 0:
+    #         cli_logger.debug(LogMessage.DEBUG_NO_DEVICE_RUNNING_AT_TIME)
+    #     pool = ThreadPool(CLI_THREADPOOL_SIZE)
+    #     pool.map(__get_cli_data, devices)
+    #     pool.close()
+    #     pool.join()
+    # except DeviceServiceExceptions, e:
+    #     cli_device_logger.error(str(e))
+    # except CollectionServiceException, e:
+    #     cli_collection_logger.error(str(e))
+    # except ParserServiceException, e:
+    #     cli_parser_logger.error(str(e))
+    # except TriggerServiceException, e:
+    #     cli_trigger_logger.error(str(e))
+    # except Exception, e:
+    #     cli_logger.error(str(e))
+    # cli_logger.info("Cli Task %d End" % now_time)
+    # cli_logger.info("Total device task: %d" % len(devices))
 
 
 def __get_snmp_data(param):
