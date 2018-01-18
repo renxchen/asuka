@@ -70,6 +70,8 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         if (cPIdTmp) {
             this.cPId = cPIdTmp;
             this.getCPDetailInfo(this.cPId);
+        } else {
+            this.router.navigate(['/index/']);
         }
     }
     ngOnInit() {
@@ -83,10 +85,8 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get(url))
             .subscribe(res => {
-                console.log(res);
                 if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
-                    if (res['data']) {
-                        // 麻烦后台将res['data]由list改回dic
+                    if (res['data'] && res['data'].length > 0) {
                         let data = res['data'][0];
                         this.name = _.get(data, 'name');
                         this.osType = _.get(data, 'ostype_name');
@@ -106,7 +106,6 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
             });
     }
     public drawPlyTree(data: any) {
-        console.log(data);
         $('#policyTree').jstree({
             core: {
                 check_callback: false,
@@ -122,7 +121,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         //     .toJson(this.httpClient.get(url + '?id=' + this.cPId))
         //     .subscribe(res => {
         //         if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    this.router.navigate(['/index/cliCPEdit'], { queryParams: { 'id': this.cPId } });
+        this.router.navigate(['/index/cliCPEdit'], { queryParams: { 'id': this.cPId } });
         //         } else {
         //             // check this cp occupation, add 'occupation' feedback
         //             if (res['status']['message'] && ['status']['message'] === 'occupation') {

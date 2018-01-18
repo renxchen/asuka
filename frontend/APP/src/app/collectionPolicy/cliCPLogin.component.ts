@@ -24,7 +24,6 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
     descFlg: Boolean = false;
     nameNotNull: Boolean = true;
     cmdNotNull: Boolean = true;
-    osTypeFlg: Boolean = true;
     uniqueFlg: Boolean = true;
     constructor(
         private router: Router,
@@ -35,11 +34,14 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
         let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cPType'];
         if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
             this.cPType = cPTypeTmp;
+        } else {
+            this.router.navigate(['/index/index']);
         }
         this.getOsType();
         this.labelParentAlert();
     }
     ngAfterViewInit() {
+        this.getOsType();
     }
     public cPLogin() {
         let cPInfo: any = {};
@@ -81,7 +83,7 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                     if (res['data']) {
                         this.osType = res['data'];
                         let osTypeTmp = _.clone(res['data']);
-                        this.selectedOsType = res['data'][0]['ostypeid'];
+                        this.selectedOsType = res['data'][0]['ostypeid'].toString();
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
