@@ -10,10 +10,10 @@
             <div class="form-group">
                 <label class="col-sm-3 control-label">
                     <!--<span style="color:red">※</span>-->
-                    OS TYPE:
+                    OS TYPE:{{selectedOsType}}
                 </label>
                 <div class="col-sm-6" >
-                    <select class="form-control"
+                    <select class="form-control" [(ngModel)]="selectedOsType"
                             id="osType" name="selectedOsType" (change)="changeOsType()">
                         <option *ngFor="let item of osType" value="{{item.id}}">
                             {{item.name}}
