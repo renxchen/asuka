@@ -1,13 +1,11 @@
+# -*- coding: utf-8 -*-
 import time
-import re
-import copy
-from Pantheon.Venus.collection.db_help import get_items_schedule, get_all_rule, get_all_items_from_db
-from Pantheon.Venus.constants import OPEN_VALID_PERIOD_TYPE, \
-    TREE_PATH_SPLIT, \
-    VALID_DATE_FORMAT,\
-    SCHEDULE_SPECIALLY, SCHEDULE_CLOSED, SCHEDULE_GET_NORMALLY, SCHEDULE_WEEKS_SPLIT, SCHEDULE_DATE_SPLIT, \
-    SCHEDULE_SPLIT, CLI_COLLECTION_DEFAULT_METHOD, SNMP_COLLECTION_DEFAULT_METHOD, \
-    CLI_TYPE_CODE, ALL_TYPE_CODE
+from Pantheon.Venus.collection.db_help import get_all_rule, get_all_items_from_db
+from Pantheon.Venus.constants import DevicesConstants, CommonConstants, ParserConstants
+
+
+__version__ = '0.1'
+__author__ = 'Rubick <haonchen@cisco.com>'
 
 
 def deco_item(func):
@@ -41,7 +39,7 @@ def __item_type_mapping(item):
         return item
 
     result = common(item)
-    if item['item_type'] == CLI_TYPE_CODE:
+    if item['item_type'] == CommonConstants.CLI_TYPE_CODE:
         result.update(wrapper_cli(result))
     else:
         result.update(wrapper_snmp(result))
@@ -101,7 +99,7 @@ def get_devices(now_time, item_type):
     items = [item for item in items if item.get('valid_status')]
     devices = __merge_device(items)
     other_param = []
-    if item_type == CLI_TYPE_CODE:
+    if item_type == CommonConstants.CLI_TYPE_CODE:
         rules = __add_rules()
         devices = [__merge_cli(item, other_param, rules=rules) for item in devices.values()]
     else:
@@ -148,7 +146,7 @@ def __merge_cli(items, param_keys, rules):
     result['default_commands'] = items[0]['device__ostype__start_default_commands']
     result['timeout'] = items[0]['device__ostype__telnet_timeout']
     result['commands'] = []
-    result['method'] = CLI_COLLECTION_DEFAULT_METHOD
+    result['method'] = DevicesConstants.CLI_COLLECTION_DEFAULT_METHOD
     result['platform'] = 'ios'
     result['rules'] = rules
     result['items'] = []
@@ -208,7 +206,7 @@ def __filter_item_type(item, item_type):
     """
     if item['item_type'] == item_type:
         return True
-    elif item_type == ALL_TYPE_CODE:
+    elif item_type == CommonConstants.ALL_TYPE_CODE:
         return True
     else:
         return False
@@ -235,7 +233,7 @@ def __check_period_time(item, now_time):
     0: open valid period type
     1: close valid period type
     """
-    if item['schedule__valid_period_type'] == OPEN_VALID_PERIOD_TYPE:
+    if item['schedule__valid_period_type'] == DevicesConstants.OPEN_VALID_PERIOD_TYPE:
         item_valid_period_time = __translate_valid_period_date((item['schedule__start_period_time'],
                                                                 item['schedule__end_period_time']))
         return __check_date_range(item_valid_period_time[0], item_valid_period_time[1], now_time)
@@ -247,15 +245,16 @@ def __check_period_time(item, now_time):
 def __check_schedule_time(item, now_time):
     """
     Judging given item whether start at now time
-    :param param:0:item,1:now time
+    :now_time: given time stamp
     :return:True Or False
     """
-    if item["schedule__data_schedule_type"] not in [SCHEDULE_GET_NORMALLY, SCHEDULE_SPECIALLY]:
+    if item["schedule__data_schedule_type"] not in [DevicesConstants.SCHEDULE_GET_NORMALLY,
+                                                    DevicesConstants.SCHEDULE_SPECIALLY]:
         return True
     """
     collection data normally
     """
-    if item["schedule__data_schedule_type"] == SCHEDULE_GET_NORMALLY:
+    if item["schedule__data_schedule_type"] == DevicesConstants.SCHEDULE_GET_NORMALLY:
         return True
     # """
     # stop collection data
@@ -265,18 +264,20 @@ def __check_schedule_time(item, now_time):
     """
     collection data periodically
     """
-    if item["schedule__data_schedule_type"] == SCHEDULE_SPECIALLY:
+    if item["schedule__data_schedule_type"] == DevicesConstants.SCHEDULE_SPECIALLY:
         """
         filter week
         """
-        weeks = str(item["schedule__data_schedule_time"].split(SCHEDULE_DATE_SPLIT)[0]).split(SCHEDULE_WEEKS_SPLIT)
+        weeks = str(item["schedule__data_schedule_time"].split(DevicesConstants.SCHEDULE_DATE_SPLIT)[0]).split(
+            DevicesConstants.SCHEDULE_WEEKS_SPLIT)
         week_status = __check_week(now_time, weeks)
         if week_status:
             now_date = time.localtime(now_time)
-            tmp_start = time.strptime(str(item["schedule__data_schedule_time"].split(SCHEDULE_DATE_SPLIT)[1])
-                                      .split(SCHEDULE_SPLIT)[0], "%H:%M")
+            tmp_start = time.strptime(str(item["schedule__data_schedule_time"].split(
+                DevicesConstants.SCHEDULE_DATE_SPLIT)[1])
+                                      .split(DevicesConstants.SCHEDULE_SPLIT)[0], "%H:%M")
             tmp_end = time.strptime(str(item["schedule__data_schedule_time"]
-                                        .split(SCHEDULE_DATE_SPLIT)[1]).split("-")[1], "%H:%M")
+                                        .split(DevicesConstants.SCHEDULE_DATE_SPLIT)[1]).split("-")[1], "%H:%M")
             now = time.strptime(str(str(now_date.tm_hour) + ":" + str(now_date.tm_min)), "%H:%M")
             status = __check_date_range(tmp_start, tmp_end, now)
             return status
@@ -301,12 +302,11 @@ def __check_device_priority(items):
             result[item_key] = []
         result[item_key].append(item)
 
-    tmp_items = map(lambda i: sorted(i, key=lambda x: x['schedule__priority'], reverse=True), result.values())
+    tmp_items = map(lambda k: sorted(k, key=lambda x: x['schedule__priority'], reverse=True), result.values())
     items = []
-    status = None
     for tmp in tmp_items:
-        for i, value in enumerate(tmp):
-            if i == 0:
+        for index, value in enumerate(tmp):
+            if index == 0:
                 status = True
             else:
                 status = False
@@ -318,7 +318,7 @@ def __check_device_priority(items):
 
 @deco_item
 def __check_is_stop_collection(item, now_time):
-    if item["schedule__data_schedule_type"] == SCHEDULE_CLOSED:
+    if item["schedule__data_schedule_type"] == DevicesConstants.SCHEDULE_CLOSED:
         return False
     return True
 
@@ -331,8 +331,8 @@ def __translate_valid_period_date(given_date):
     """
     start_date = given_date[0]
     end_date = given_date[1]
-    start_time_stamp = time.strptime(start_date, VALID_DATE_FORMAT)
-    end_time_stamp = time.strptime(end_date, VALID_DATE_FORMAT)
+    start_time_stamp = time.strptime(start_date, DevicesConstants.VALID_DATE_FORMAT)
+    end_time_stamp = time.strptime(end_date, DevicesConstants.VALID_DATE_FORMAT)
     return int(time.mktime(start_time_stamp)), int(time.mktime(end_time_stamp))
 
 
@@ -363,7 +363,7 @@ def __check_week(now_time, weeks):
 
 
 def __create_path(rules, path):
-    path_list = path[1:].split(TREE_PATH_SPLIT)
+    path_list = path[1:].split(ParserConstants.TREE_PATH_SPLIT)
     result = ['']
     if len(path) != 1:
         for each_path in path_list:

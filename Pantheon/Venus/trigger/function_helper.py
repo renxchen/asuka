@@ -3,6 +3,7 @@ from Pantheon.Venus.constants import VALUE_TYPE_MAPPING, ITEM_TYPE_MAPPING, TRIG
 import importlib
 import time
 
+
 class FunctionException(Exception):
     def __init__(self, message):
         self.__str = message
@@ -18,18 +19,17 @@ class FunctionBase(object):
     def get_history(self, item):
         return get_history(item.item_id, VALUE_TYPE_MAPPING.get(item.value_type), ITEM_TYPE_MAPPING.get(item.item_type))
 
-    def get_value(self):
+    def get_value(self, item, param):
         pass
 
 
 class LastFunction(FunctionBase):
     """
     Last function, get last value according to function param
-    :param item:
-    :param function_param:
     :return:last(function_param) value
     """
     def __init__(self):
+        super(LastFunction, self).__init__()
         pass
 
     def get_value(self, item, param):
