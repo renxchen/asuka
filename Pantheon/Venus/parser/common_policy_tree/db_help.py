@@ -1,7 +1,6 @@
 from Pantheon.Venus.db_units import db_units
 from Pantheon.Venus.db_units.models import CollPolicyCliRule
-from Pantheon.Venus.constants import TRIGGER_DB_MODULES, VALUE_TYPE_MAPPING, CLI_TYPE_CODE, \
-    ITEM_TYPE_MAPPING
+from Pantheon.Venus.constants import CommonConstants, TriggerConstants
 import importlib
 import time
 
@@ -15,13 +14,13 @@ def bulk_save_result(results, item_type):
     data = {}
     for result in results:
         value_type = result['value_type']
-        keys = get_history_table(VALUE_TYPE_MAPPING.get(value_type), ITEM_TYPE_MAPPING.get(item_type))
+        keys = get_history_table(CommonConstants.VALUE_TYPE_MAPPING.get(value_type), CommonConstants.ITEM_TYPE_MAPPING.get(item_type))
         if keys in data.keys():
             pass
         else:
             data[keys] = []
         data[keys].append(result)
-    if item_type == CLI_TYPE_CODE:
+    if item_type == CommonConstants.CLI_TYPE_CODE:
         __save_cli_bulk(data)
     else:
         __save_snmp_bulk(data)
@@ -81,7 +80,7 @@ def get_history_table(value_type, policy_type):
 
     base_db_format = "History%s%s"
     table_name = base_db_format % (policy_type, value_type)
-    db_module = importlib.import_module(TRIGGER_DB_MODULES)
+    db_module = importlib.import_module(TriggerConstants.TRIGGER_DB_MODULES)
     if hasattr(db_module, table_name) is False:
         raise Exception("%s table isn't exist" % table_name)
     table = getattr(db_module, table_name)

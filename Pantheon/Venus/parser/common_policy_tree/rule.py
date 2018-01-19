@@ -28,7 +28,6 @@ class Policy(object):
         self.data_list = self.data.split('\n')[self.start_line:self.end_line + 1]
 
     def __set_input__(self):
-        print self.extract_policy['start_line'], self.extract_policy['end_line']
         # self.data = self.extract_policy['data']
         self.start_line = self.extract_policy['start_line']
         self.end_line = self.extract_policy['end_line']
@@ -307,8 +306,6 @@ class Policy(object):
                 extract_data_index.append(last_character_index)
                 break
         self.res['extract_data_index'] = extract_data_index
-        print new_list[0]
-        print new_list[209]
         return self.res
 
     @staticmethod

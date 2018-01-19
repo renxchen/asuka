@@ -1,7 +1,8 @@
 import importlib
+import time
 from Pantheon.Venus.db_units.db_units import *
 from Pantheon.Venus.db_units.models import Items, Functions, TriggerDetail, Mapping, Event
-from Pantheon.Venus.constants import TRIGGER_DB_MODULES, TRIGGER_NUMERIC
+from Pantheon.Venus.constants import TriggerConstants
 
 
 def get_items_by_device_policy(device_id, policy_id):
@@ -58,12 +59,12 @@ def get_history(item_id, value_type, policy_type):
 
     base_db_format = "History%s%s"
     table_name = base_db_format % (policy_type, value_type)
-    db_module = importlib.import_module(TRIGGER_DB_MODULES)
+    db_module = importlib.import_module(TriggerConstants.TRIGGER_DB_MODULES)
     if hasattr(db_module, table_name) is False:
         raise Exception("%s table isn't exist" % table_name)
     table = getattr(db_module, table_name)
     history = table.objects.filter(**{"item_id": item_id}).order_by("clock")
-    if value_type not in TRIGGER_NUMERIC:
+    if value_type not in TriggerConstants.TRIGGER_NUMERIC:
         for h in history:
             h.value = "'" + h.value + "'"
     return history
@@ -134,5 +135,9 @@ if __name__ == "__main__":
     #     print i.trigger_detail.trigger_detail_id
     # pass
     # print get_cli_history(2, "Int")
-    print get_latest_event(0, 1)
     # get_trigger_detail_by_policy_device(1, 1)
+    time.clock()
+    for i in get_history(4, "Str", "Cli"):
+        i
+        pass
+    print time.clock()

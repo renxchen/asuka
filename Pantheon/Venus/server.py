@@ -1,36 +1,35 @@
 # -*- coding: utf-8 -*-
-from tornado import web, ioloop, options
-from configurations import Configurations
-from units import save_output_file
-from zmq.eventloop.ioloop import ZMQIOLoop
-from zmq.eventloop.zmqstream import ZMQStream
-from threading import Thread
-from session_mgr import SessionManager
-# from collection.collection_help import get_collection_devices, get_items
-from collection.collection_helper import get_devices, get_valid_items
+__version__ = '0.1'
+__author__ = 'Rubick <haonchen@cisco.com>'
+
+
 import json
 import time
-import threading
-import os
 import Queue
 import zmq
 import logging
 import uuid
-__author__ = 'Rubick <haonchen@cisco.com>'
-__version__ = '0.1'
+from tornado import web, ioloop, options
+from zmq.eventloop.ioloop import ZMQIOLoop
+from zmq.eventloop.zmqstream import ZMQStream
+from threading import Thread
+from Pantheon.Venus.session_mgr import SessionManager
+from Pantheon.Venus.configurations import Configurations
+# from collection.collection_help import get_collection_devices, get_items
+from Pantheon.Venus.collection.devices_helper import get_devices, get_valid_items
 
 
 class TaskDispatcher(Thread):
     """
-    该线程通过zmq接收Worker的任务请求，从相应Channel的队列中读取队列，发给Worker
+    Task Dispatcher
     """
     def run(self):
         while True:
             channel = zmq_dispatch.recv_string()  # got task request from worker
-            q = task_q[channel]
+            tmp_q = task_q[channel]
             logging.debug('Receive request from %s worker' % channel)
-            if q.qsize():
-                task_id = q.get()
+            if tmp_q.qsize():
+                task_id = tmp_q.get()
                 task = session_mgr.get(task_id)
                 session_mgr.update(task_id, dict(status='start'))
                 zmq_dispatch.send_string(b'%s %s' % (task_id, json.dumps(task)))
@@ -62,7 +61,7 @@ class TestApiHandler(web.RequestHandler):
         self.finish()
 
 
-class CollectionApiHandle(web.RequestHandler):
+class DevicesApiHandle(web.RequestHandler):
     @web.asynchronous
     def post(self, *args, **kwargs):
         try:
@@ -74,13 +73,13 @@ class CollectionApiHandle(web.RequestHandler):
 
             result = dict(
                 status="success",
-                devices=devices_info,
+                output=devices_info,
                 message=""
             )
         except Exception, e:
             result = dict(
                 status="success",
-                devices=[],
+                output=[],
                 message=str(e)
             )
 
@@ -243,13 +242,10 @@ if __name__ == '__main__':
     loop = ZMQIOLoop()
     loop.install()
     context = zmq.Context()
-    # zmq socket 用来通知workers有新任务
     zmq_publish = context.socket(zmq.PUB)
     zmq_publish.bind("tcp://127.0.0.1:%s" % str(config.get_configuration("zmqPublish")))
-    # zmq socket 用来发送任务给Worker
     zmq_dispatch = context.socket(zmq.REP)
     zmq_dispatch.bind("tcp://127.0.0.1:%s" % str(config.get_configuration("zmqDispatch")))
-    # zmq socket 用来接收Worker的任务结果
     zmq_result = context.socket(zmq.PULL)
     zmq_result.bind("tcp://127.0.0.1:%s" % str(config.get_configuration("zmqResult")))
     receiver = ZMQStream(zmq_result)
@@ -265,18 +261,15 @@ if __name__ == '__main__':
     session_mgr.daemon = True
     session_mgr.start()
 
-    print('Tornado server started on port %d' % port)
-    print('Press "Ctrl+C" to exit.\n')
+    print 'Tornado server started on port %d' % port
+    print 'Press "Ctrl+C" to exit.\n'
     web.Application([(r'/api/v1/test/?(.*)', TestApiHandler),
                      (r'/api/v1/saveOutput/?(.*)', SaveFileApiHandle),
-                     (r'/api/v1/getCollectionInfor/?(.*)', CollectionApiHandle),
+                     (r'/api/v1/getCollectionInfor/?(.*)', DevicesApiHandle),
                      (r'/api/v1/parser/?(.*)', ParserApiHandle),
                      (r'/api/v1/trigger/?(.*)', TriggerApiHandle),
-                     (r'/api/v1/getItems/?(.*)', ItemsApiHandle)
-                     ],
-                    autoreload=True,
-                    ).listen(port)
-
+                     (r'/api/v1/getItems/?(.*)', ItemsApiHandle)],
+                    autoreload=True).listen(port)
     try:
         ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:

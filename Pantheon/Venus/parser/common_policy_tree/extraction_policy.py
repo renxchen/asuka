@@ -301,8 +301,6 @@ class DataExtractPolicy(object):
                 extract_data_index.append(last_character_index)
                 break
         self.res['extract_data_index'] = extract_data_index
-        print new_list[0]
-        print new_list[209]
         return self.res
 
     def dispatch(self):
@@ -386,7 +384,7 @@ def test():
     d = DataExtractPolicy(data, **extract_policy)
     r = d.dispatch()
     render = Render(**r)
-    print render.render()
+    # print render.render()
 
 
 test()

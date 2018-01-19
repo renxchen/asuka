@@ -1,7 +1,8 @@
 from db_help import get_history
-from Pantheon.Venus.constants import VALUE_TYPE_MAPPING, ITEM_TYPE_MAPPING, TRIGGER_BASE_PATH
+from Pantheon.Venus.constants import TriggerConstants, CommonConstants
 import importlib
 import time
+
 
 class FunctionException(Exception):
     def __init__(self, message):
@@ -16,20 +17,20 @@ class FunctionBase(object):
         pass
 
     def get_history(self, item):
-        return get_history(item.item_id, VALUE_TYPE_MAPPING.get(item.value_type), ITEM_TYPE_MAPPING.get(item.item_type))
+        return get_history(item.item_id, CommonConstants.VALUE_TYPE_MAPPING.get(item.value_type),
+                           CommonConstants.ITEM_TYPE_MAPPING.get(item.item_type))
 
-    def get_value(self):
+    def get_value(self, item, param):
         pass
 
 
 class LastFunction(FunctionBase):
     """
     Last function, get last value according to function param
-    :param item:
-    :param function_param:
     :return:last(function_param) value
     """
     def __init__(self):
+        super(LastFunction, self).__init__()
         pass
 
     def get_value(self, item, param):
@@ -51,7 +52,7 @@ def get_function_value(function):
     function_name = function_pattern % function.function
     function_param = function.parameter
     function_id = function.function_id
-    this_module = importlib.import_module(TRIGGER_BASE_PATH + '.function_helper')
+    this_module = importlib.import_module(TriggerConstants.TRIGGER_BASE_PATH + '.function_helper')
     if hasattr(this_module, function_name) is False:
         function_name = function_pattern % "Last"
     function_module = getattr(this_module, function_name)
