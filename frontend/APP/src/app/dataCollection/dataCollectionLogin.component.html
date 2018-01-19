@@ -10,12 +10,12 @@
             <div class="form-group">
                 <label class="col-sm-3 control-label">
                     <!--<span style="color:red">※</span>-->
-                    OS TYPE:{{selectedOsType}}
+                    OS TYPE:
                 </label>
                 <div class="col-sm-6" >
                     <select class="form-control" [(ngModel)]="selectedOsType"
                             id="osType" name="selectedOsType" (change)="changeOsType()">
-                        <option *ngFor="let item of osType" value="{{item.id}}">
+                        <option *ngFor="let item of osType" value="{{item.ostypeid}}">
                             {{item.name}}
                         </option>
                     </select>
@@ -27,7 +27,7 @@
                     優先度:
                 </label>
                 <div class="col-sm-6" >
-                    <select class="form-control"
+                    <select class="form-control" [(ngModel)]="priority"
                             id="priority" name="priority">
                         <option *ngFor="let item of priorities" value="{{item.id}}">
                             {{item.value}}
@@ -41,9 +41,9 @@
                     デバイスグループ:
                 </label>
                 <div class="col-sm-6" >
-                    <select class="form-control"
+                    <select class="form-control" [(ngModel)]="deviceGroup"
                             id="deviceGroup" name="deviceGroup">
-                        <option *ngFor="let item of deviceGroups" value="{{item.id}}">
+                        <option *ngFor="let item of deviceGroups" value="{{item.group_id}}">
                             {{item.name}}
                         </option>
                     </select>
@@ -55,10 +55,10 @@
                     コレクション<br>ポリシーグループ:
                 </label>
                 <div class="col-sm-6" >
-                    <select class="form-control"
+                    <select class="form-control" [(ngModel)]="policyGroup"
                             id="policyGroup" name="policyGroup">
                         <option value="-1">全機能OFF</option>
-                        <option *ngFor="let item of policyGroups" value="{{item.id}}">
+                        <option *ngFor="let item of policyGroups" value="{{item.policy_group_id}}">
                             {{item.name}}
                         </option>
                     </select>
@@ -82,7 +82,7 @@
                         </div>
                         <div class="col-sm-5" style="margin-bottom: 25px; margin-top: 23px; padding-right: 0px; padding-left: 0px;">
                             <input type="text" placeholder="YYYY-MM-DD" name="startDate" class="bsDate"
-                               [minDate]="bsValue"
+                               [minDate]="bsValue" [(ngModel)]="startDate"
                                [bsConfig]="{dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue'}"
                                #dps="bsDatepicker"
                                bsDatepicker>
@@ -101,7 +101,7 @@
                         </div>
                         <div class="col-sm-5" style="margin-bottom: 25px; margin-top: 23px; padding-right: 0px; padding-left: 0px;">
                             <input type="text" placeholder="YYYY-MM-DD" name="endDate" class="bsDate"
-                               [minDate]="bsValue"
+                               [minDate]="bsValue" [(ngModel)]="endDate"
                                [bsConfig]="{dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue'}"
                                #dpe="bsDatepicker"
                                bsDatepicker>
@@ -134,7 +134,7 @@
                         </div>
 
                         <div *ngFor="let item of weekdays" style="float: left">
-                            <input name="weekday" type="checkbox"
+                            <input name="weekday" type="checkbox" (click)="changeWeekdays(item.id)"
                                    value="{{item.id}}" checked="{{item.ifCheck}}">
                             {{item.value}}&nbsp;&nbsp;&nbsp;&nbsp;
                         </div>
