@@ -16,7 +16,7 @@ from threading import Thread
 from Pantheon.Venus.session_mgr import SessionManager
 from Pantheon.Venus.configurations import Configurations
 # from collection.collection_help import get_collection_devices, get_items
-from Pantheon.Venus.collection.collection_helper import get_devices, get_valid_items
+from Pantheon.Venus.collection.devices_helper import get_devices, get_valid_items
 
 
 class TaskDispatcher(Thread):
@@ -61,7 +61,7 @@ class TestApiHandler(web.RequestHandler):
         self.finish()
 
 
-class CollectionApiHandle(web.RequestHandler):
+class DevicesApiHandle(web.RequestHandler):
     @web.asynchronous
     def post(self, *args, **kwargs):
         try:
@@ -73,13 +73,13 @@ class CollectionApiHandle(web.RequestHandler):
 
             result = dict(
                 status="success",
-                devices=devices_info,
+                output=devices_info,
                 message=""
             )
         except Exception, e:
             result = dict(
                 status="success",
-                devices=[],
+                output=[],
                 message=str(e)
             )
 
@@ -265,7 +265,7 @@ if __name__ == '__main__':
     print 'Press "Ctrl+C" to exit.\n'
     web.Application([(r'/api/v1/test/?(.*)', TestApiHandler),
                      (r'/api/v1/saveOutput/?(.*)', SaveFileApiHandle),
-                     (r'/api/v1/getCollectionInfor/?(.*)', CollectionApiHandle),
+                     (r'/api/v1/getCollectionInfor/?(.*)', DevicesApiHandle),
                      (r'/api/v1/parser/?(.*)', ParserApiHandle),
                      (r'/api/v1/trigger/?(.*)', TriggerApiHandle),
                      (r'/api/v1/getItems/?(.*)', ItemsApiHandle)],

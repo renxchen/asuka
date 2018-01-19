@@ -16,7 +16,6 @@ def parser(rule_path, all_rules, data):
     p = Dispatch(rule_path, tmp_rules, the_first_data)
     p.dispatch()
     arry = p.get_result()
-    print arry
 
 
 def __get_rule_path(rule_path, all_rules):

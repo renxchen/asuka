@@ -1,11 +1,23 @@
 # -*- coding: utf-8 -*-
 import time
+import copy
 from Pantheon.Venus.collection.db_help import get_all_rule, get_all_items_from_db
 from Pantheon.Venus.constants import DevicesConstants, CommonConstants, ParserConstants
 
 
 __version__ = '0.1'
 __author__ = 'Rubick <haonchen@cisco.com>'
+
+
+def __create_test_devices(template):
+    test_devices = []
+    for i in range(68):
+        for k in range(101, 116):
+            tmp = copy.copy(template[0])
+            tmp['device__ip'] = "192.168.100.%d" % k
+            tmp['device__device_id'] = i*15 + k
+            test_devices.append(tmp)
+    return test_devices
 
 
 def deco_item(func):
@@ -94,17 +106,25 @@ def valid_items(now_time, items):
 
 
 def get_devices(now_time, item_type):
+    result = {
+        "parser_params": {},
+        "devices": []
+    }
     items = get_items(now_time, item_type)
     items = valid_items(now_time, items)
+    # items = __create_test_devices(items)
     items = [item for item in items if item.get('valid_status')]
     devices = __merge_device(items)
     other_param = []
     if item_type == CommonConstants.CLI_TYPE_CODE:
         rules = __add_rules()
-        devices = [__merge_cli(item, other_param, rules=rules) for item in devices.values()]
+        devices = [__merge_cli(item, other_param, rules) for item in devices.values()]
+        result['parser_params']['rules'] = rules
+        result['devices'] = devices
     else:
         devices = [__merge_snmp(item, other_param) for item in devices.values()]
-    return devices
+        result['devices'] = devices
+    return result
 
 
 def __merge_snmp(items, param_keys):
@@ -148,7 +168,6 @@ def __merge_cli(items, param_keys, rules):
     result['commands'] = []
     result['method'] = DevicesConstants.CLI_COLLECTION_DEFAULT_METHOD
     result['platform'] = 'ios'
-    result['rules'] = rules
     result['items'] = []
     result.update(__add_param(items[0], param_keys))
     for item in items:
