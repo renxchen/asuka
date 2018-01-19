@@ -16,7 +16,10 @@ export class ModalComponent implements OnInit, AfterViewInit {
 
     }
     ngAfterViewInit() {
-        setTimeout(() => {
-        }, 0);
+        // setTimeout(() => {
+        // }, 0);
+    }
+    public closeAlertModal() {
+        this.bsModalRef.hide();
     }
 }

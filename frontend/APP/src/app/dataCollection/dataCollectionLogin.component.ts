@@ -2,7 +2,8 @@ import { Component, OnInit, AfterViewInit, enableProdMode} from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
-// import * as _ from 'lodash';
+import * as _ from 'lodash';
+declare var $: any;
 
 enableProdMode();
 
@@ -13,6 +14,7 @@ enableProdMode();
 })
 
 export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
+    apiPrefix: any;
     title: string;
     id: number = -1;
     // minDate = new Date(2017, 5, 10);
@@ -26,7 +28,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     endDateTime: Date = new Date(2018, 1, 1, 23, 59);
     // bsRangeValue: any = [new Date(2017, 7, 4), new Date(2017, 7, 20)];
 
-    selectedOsType: string;
+    selectedOsType: String;
     osType: any = [{id: 0, name: 'os type 1'}, {id:1, name: 'os type 2'}];
     priority: any;
     priorities: any = [{id: 0, value: '標準'}, {id:1, value: '高'}];
@@ -64,11 +66,13 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {
         setTimeout(() => {
            if(this.id == -1){
+
                 this.setInitSelect();
                 $('button.btn-danger').hide();
                 $('#validPeriod').hide();
                 $('#dataSchedule').hide();
             } else {
+               // this.getDetailById(this.id);
                 //set init value for this id
                // $('button.btn-primary').attr('disabled','disabled');
             }
@@ -77,6 +81,23 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     getOsTypes() {
 
+    }
+
+    getDetailById(id){
+        console.log("schedule id "+id);
+        this.apiPrefix = '/v1';
+        let url = '/api_data_collection/?id=' + id;
+        this.httpClient.setUrl(this.apiPrefix);
+        // return this.httpClient.toJson(this.httpClient.get(url));
+        this.httpClient.toJson(this.httpClient.get(url)).subscribe(res => {
+            let data = res['data'];
+            console.log(res.data);
+            this.selectedOsType = _.get(data, 'ostype_name').toString();
+            // res.data["ostype_name"];
+            console.log(this.selectedOsType);
+
+        });
+        // console.log(result);
     }
 
     setInitSelect() {
@@ -117,10 +138,13 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         let timeFormat2 = this.startTime.getMinutes();
         console.log(timeFormat2);
         if (this.id == -1){
-            // save as new
+
         } else {
             // save
         }
+        let ostype = $('#osType').val();
+        console.log('os',ostype);
+        console.log(this.selectedOsType);
     }
 
     delete() {
@@ -128,6 +152,16 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         if (isDelete){
             let _id = this.id;
             console.log(_id);
+            this.apiPrefix = '/v1';
+            let url = '/api_data_collection/?id=' + _id;
+            this.httpClient.setUrl(this.apiPrefix);
+            // return this.httpClient.toJson(this.httpClient.get(url));
+            this.httpClient
+                .toJson(this.httpClient.delete(url))
+                .subscribe(res => {
+            console.log('delete',res);
+        });
+
         }
 
     }

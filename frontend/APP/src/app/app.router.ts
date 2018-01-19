@@ -13,6 +13,7 @@ import { CLICPEditComponent } from './collectionPolicy/cliCPEdit.component';
 import { CLICPDetailComponent } from './collectionPolicy/cliCPDetail.component';
 import { CLIBlockComponent } from './collectionPolicy/cliBlock.component';
 import { SNMPCPLoginComponent } from './collectionPolicy/snmpCPLogin.component';
+import { SNMPCPDetailComponent } from './collectionPolicy/snmpCPDetail.component';
 import { SNMPCPEditComponent } from './collectionPolicy/snmpCPEdit.component';
 // data collection
 import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
@@ -89,6 +90,14 @@ const routes: Routes = [
             data: {
               parentTitle: 'コレクションポリシー',
               title: 'SNMPコレクションポリシー登録'
+            }
+          },
+          {
+            path: 'snmpCPDetail',
+            component: SNMPCPDetailComponent,
+            data: {
+              parentTitle: 'コレクションポリシー',
+              title: 'SNMPコレクションポリシー：確認'
             }
           },
           {
