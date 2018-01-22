@@ -26,9 +26,9 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
     ];
 
     testData: any = [
-        {deviceNo: 10, device:'SSEU A', status: '取得中', policy: 'CPU監視'},
-        {deviceNo: 20, device:'SSEU B', status: '停止', policy: 'CPU監視'},
-        {deviceNo: 30, device:'SSEU C', status: '取得中', policy: 'CPU監視'}
+        {deviceNo: 1, device:'SSEU A', status: '取得中', policy: 'CPU監視'},
+        {deviceNo: 2, device:'SSEU B', status: '停止', policy: 'CPU監視'},
+        {deviceNo: 3, device:'SSEU C', status: '取得中', policy: 'CPU監視'}
     ];
 
     constructor(
