@@ -17,6 +17,7 @@ import { LoginComponentModule } from './login/login.module';
 import { IndexComponentModule } from './index/index.module';
 import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.module';
 import { DataCollectionComponentModule } from './dataCollection/dataCollection.module';
+import { ActionPolicyComponentModule } from './actionPolicy/actionPolicy.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -52,6 +53,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         IndexComponentModule,
         CPViewComponentModule,
         DataCollectionComponentModule,
+        ActionPolicyComponentModule,
         BreadCrumbModule,
         ModModule
     ],

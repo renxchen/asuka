@@ -21,6 +21,12 @@ import { PoliciesPerDeviceComponent } from './dataCollection/policiesPerDevice.c
 import { DevicesPerPolicyComponent } from './dataCollection/devicesPerPolicy.component';
 import { DataCollectionLoginComponent } from './dataCollection/dataCollectionLogin.component';
 
+import { ActionPolicyViewComponent } from './actionPolicy/actionPolicyView.component';
+import { ActionPolicyLoginComponent } from './actionPolicy/actionPolicyLogin.component';
+import { DataTableViewComponent } from './actionPolicy/dataTableView.component';
+import { ActionPolicyHistoryComponent } from './actionPolicy/actionPolicyHistory.component';
+import { DataTableLoginComponent } from './actionPolicy/dataTableLogin.component'
+
 const routes: Routes = [
     {
         path: '',
@@ -132,15 +138,41 @@ const routes: Routes = [
               parentTitle: 'データ取得',
               title: 'コレクションポリシー毎のデバイス一覧出力機能'
             }
+          },
+          {
+            path: 'dataTableView',
+            component: DataTableViewComponent,
+            data: {
+              parentTitle: 'アクションポリシー',
+              title: 'テーブル一覧'
+            }
+          },
+          {
+            path: 'actionPolicyView',
+            component: ActionPolicyViewComponent,
+            data: {
+              parentTitle: 'アクションポリシー',
+              title: 'アクションポリシー一覧'
+            }
+          },
+          {
+            path: 'actionPolicyHistory',
+            component: ActionPolicyHistoryComponent,
+            data: {
+              parentTitle: 'アクションポリシー',
+              title: 'アクション実行履歴'
+            }
           }
         ]
     }
 ];
 export const appRouting = RouterModule.forRoot(routes);
 export const entryComponentList: any[] = [
-  ModalComponent,
-  // collection policy
-  CLIBlockComponent,
-  // data
-  DataCollectionLoginComponent
+    ModalComponent,
+    // collection policy
+    CLIBlockComponent,
+    // data
+    DataCollectionLoginComponent,
+    DataTableLoginComponent,
+    ActionPolicyLoginComponent
 ];
