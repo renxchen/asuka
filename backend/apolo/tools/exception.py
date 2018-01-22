@@ -6,7 +6,6 @@ import logging
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
 
-
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 formatter = Formatter(
@@ -39,7 +38,11 @@ def exception_handler(e):
         logger.info("Parameter type error.")  ###Logger###
         data = {'message': "Parameter type error."}
         return api_return(data=eval(json.dumps(data)))
+    elif 'ValidationError' in repr(e):
+        logger.info("ValidationError error when execute serializer.is_valid().")  ###Logger###
+        data = {'message': str(e)}
+        return api_return(data=eval(json.dumps(data)))
     else:
-        logger.info("Error or exception occurred.")  ###Logger###
+        logger.info("Error or exception occurred. %s" % str(e))  ###Logger###
         data = {'message': "Error or exception occurred."}
         return api_return(data=eval(json.dumps(data)))
