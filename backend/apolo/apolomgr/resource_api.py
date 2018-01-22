@@ -130,7 +130,7 @@ def api_device_group(request):
 @api_view(["GET"])
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))
-def api_data_table_column(request):
+def api_data_table_step3_table(request):
     resource_object = data_table_step3_views.DataTableCoulumnViewsSet(request=request)
     return HttpResponse(run_request_method(resource_object))
 
