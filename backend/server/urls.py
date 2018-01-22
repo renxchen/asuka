@@ -40,7 +40,12 @@ urlpatterns = [
     url(r'^v1/api_get_collection_policy_name/', resource_api.api_get_collection_policy_name),
     url(r'^v1/api_policy_tree_rule/', resource_api.api_policy_tree_rule),
     url(r'^v1/api_data_collection/', resource_api.api_data_collection),
-    url(r'^v1/api_new_data_collection/', resource_api.api_new_data_collection)
+    url(r'^v1/api_new_data_collection/', resource_api.api_new_data_collection),
+    url(r'^v1/api_device_group/', resource_api.api_device_group),
+    url(r'^v1/api_data_table_column/', resource_api.api_data_table_column),
+    url(r'^v1/api_data_table_step4_tree/', resource_api.api_data_table_step4_tree),
+    url(r'^v1/api_data_table_step4_table/', resource_api.api_data_table_step4_table),
+    url(r'^v1/api_data_table_step1/', resource_api.api_data_table_step1)
     # url(r'^users/$', user_list, name='user-list'),
     # url(r'^i18n/', include('django.conf.urls.i18n')),
 ]

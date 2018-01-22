@@ -57,6 +57,10 @@ class CollPolicy(models.Model):
         # managed = False
         db_table = 'coll_policy'
 
+    @property
+    def ostype_name(self):
+        return self.ostype.name
+
 
 class CollPolicyCliRule(models.Model):
     ruleid = models.AutoField(primary_key=True)
@@ -165,6 +169,10 @@ class DevicesGroups(models.Model):
     class Meta:
         # managed = False
         db_table = 'devices_groups'
+
+    @property
+    def group_name(self):
+        return self.group.name
 
 
 class Event(models.Model):

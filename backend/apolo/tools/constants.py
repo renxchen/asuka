@@ -6,7 +6,7 @@
 #########################################
 # PATHS
 #########################################
-LOG_PATH = 'logs/logger_authentication.log'
+LOG_PATH = 'C:/J2EE/pyworkspace/apolo/backend/logs/logger_authentication.log'
 
 #########################################
 # API token related define
@@ -48,6 +48,7 @@ USER_AND_PASSWD_INCORRECT = "User or password is incorrect."
 USER_DISABLED = "User is disabled."
 USER_LOGOUT_SUCCESSFUL = "User logout successful."
 COLLECTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
+DATA_TABLE_NAME_DUPLICATE = 'DATA_TABLE_NAME_DUPLICATE'
 #########################################
 # API log or exception define
 #########################################
