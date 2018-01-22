@@ -10,7 +10,8 @@
 """
 
 from backend.apolo.serializer.collection_policy_serializer import OstypeSerializer, CollPolicyNameSerializer
-from backend.apolo.models import Ostype, CollPolicy
+from backend.apolo.serializer.devices_groups_serializer import DevicesGroupsSerializer
+from backend.apolo.models import Ostype, CollPolicy, DevicesGroups
 from backend.apolo.tools import constants
 from rest_framework import viewsets
 from backend.apolo.tools.views_helper import api_return
@@ -87,6 +88,43 @@ class CollPolicyViewSet(viewsets.ViewSet):
         except Exception, e:
             print traceback.format_exc(e)
             # return exception_handler(e)
+
+    def post(self):
+        pass
+
+    def put(self):
+        pass
+
+    def delete(self):
+        pass
+
+
+class DeviceGroupViewSet(viewsets.ViewSet):
+    def __init__(self, request, **kwargs):
+        super(DeviceGroupViewSet, self).__init__(**kwargs)
+        self.request = request
+        self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
+        self.id = views_helper.get_request_value(self.request, 'id', 'GET')
+
+    def get(self):
+        try:
+            queryset = DevicesGroups.objects.all()
+            if self.id:
+                query_conditions = {'devicegroup_id': self.id}
+                queryset = DevicesGroups.objects.filter(**query_conditions)
+            serializer = DevicesGroupsSerializer(queryset, many=True)
+            data = {
+                'data': serializer.data,
+                'new_token': self.new_token,
+                constants.STATUS: {
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.SUCCESS
+                }
+            }
+            return api_return(data=data)
+        except Exception, e:
+            print traceback.format_exc(e)
+            return exception_handler(e)
 
     def post(self):
         pass

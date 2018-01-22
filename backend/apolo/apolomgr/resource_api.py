@@ -8,6 +8,8 @@ from backend.apolo.apolomgr.resource.collection_policy import collection_policy_
 from backend.apolo.apolomgr.resource.collection_policy_group import collection_policy_group_views
 from backend.apolo.apolomgr.resource.collection_policy_tree import policy_tree_highlight_view, policytree_view, \
     policy_tree_rule_view
+from backend.apolo.apolomgr.resource.action_policy_table import data_table_step3_views, data_table_step1_views, \
+    data_table_step4_table_views, data_table_step4_tree_views
 from backend.apolo.apolomgr.resource.common import common_views
 from backend.apolo.apolomgr.resource.data_collection import data_collection_view, new_data_collection_view
 from backend.apolo.apolomgr.resource.login import authentication
@@ -100,6 +102,7 @@ def api_policy_tree_rule(request):
     resource_object = policy_tree_rule_view.PolicyTreeRuleViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
 
+
 @api_view(['POST', "GET", "DELETE", "PUT"])
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))
@@ -107,9 +110,51 @@ def api_data_collection(request):
     resource_object = data_collection_view.DataCollectionViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
 
+
 @api_view(['POST', "GET"])
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))
 def api_new_data_collection(request):
     resource_object = new_data_collection_view.NewDataCollectionViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(["GET"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_device_group(request):
+    resource_object = common_views.DeviceGroupViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(["GET"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_data_table_column(request):
+    resource_object = data_table_step3_views.DataTableCoulumnViewsSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(["GET"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_data_table_step4_tree(request):
+    resource_object = data_table_step4_tree_views.DataTableTreeViewsSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(["GET"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_data_table_step4_table(request):
+    resource_object = data_table_step4_table_views.DataTableTableViewsSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(['POST', "GET", "DELETE", "PUT"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_data_table_step1(request):
+    resource_object = data_table_step1_views.TableViewsSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+

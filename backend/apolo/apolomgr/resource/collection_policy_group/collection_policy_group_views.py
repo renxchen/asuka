@@ -264,8 +264,10 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             queryset.delete()
             data = {
                 'new_token': self.new_token,
-                constants.STATUS: constants.TRUE,
-                constants.MESSAGE: constants.SUCCESS
+                constants.STATUS: {
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.SUCCESS
+                }
             }
             return api_return(data=data)
         except Exception, e:

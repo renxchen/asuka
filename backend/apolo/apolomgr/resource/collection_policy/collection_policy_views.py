@@ -1,3 +1,4 @@
+#!
 #!/usr/bin/env python
 
 """
@@ -34,7 +35,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
         method = 'GET'
         if request.method.lower() == 'get':
             method = 'GET'
-        if request.method.lower() == 'post':
+        if request.method.lower() == 'post' or request.method.lower() == 'put':
             method = 'BODY'
         self.name = views_helper.get_request_value(self.request, 'name', method)
         self.ostype = views_helper.get_request_value(self.request, 'ostype', method)
@@ -247,8 +248,9 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 return api_return(data=data)
             if collection_policy_in_items is False:
                 pg = self.get_cp_from_policys_groups(**{'policy_id': self.id})
-                # delete cp in policys_groups table
-                pg.delete()
+                if pg is not False:
+                    # delete cp in policys_groups table
+                    pg.delete()
                 # delete cp in coll_policy table
                 collection_policy_in_cp.delete()
                 data = {
