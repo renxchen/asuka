@@ -312,28 +312,28 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         // }
     }
     public deleteRule() {
-        let alt = confirm('このルールを削除します。よろしいですか？');
-        this.apiPrefix = '/v1';
-        // let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;
-        let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&policy_tree_id=' + this.cpId;
-        if (alt) {
-            this.httpClient
-                .toJson(this.httpClient.delete(delUrl)).subscribe(res => {
-                    let status = _.get(res, 'status');
-                    let msg = _.get(status, 'message');
-                    let data = _.get(status, 'data');
-                    if (status && status['status'].toLowerCase() === 'true') {
-                        if (data) {
-                            let blockTree: any = {};
-                            blockTree = _.get(data, 'block_rule_tree_json');
-                            alert('削除しました。');
-                            this.bsModalRef.hide();
-                            this.modalService.setDismissReason(blockTree);
-                        }
-                    } else {
-                        alert(msg);
-                    }
-                });
-        }
+        // let alt = confirm('このルールを削除します。よろしいですか？');
+        // this.apiPrefix = '/v1';
+        // // let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;
+        // let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&policy_tree_id=' + this.cpId;
+        // if (alt) {
+        //     this.httpClient
+        //         .toJson(this.httpClient.delete(delUrl)).subscribe(res => {
+        //             let status = _.get(res, 'status');
+        //             let msg = _.get(status, 'message');
+        //             let data = _.get(status, 'data');
+        //             if (status && status['status'].toLowerCase() === 'true') {
+        //                 if (data) {
+        //                     let blockTree: any = {};
+        //                     blockTree = _.get(data, 'block_rule_tree_json');
+        //                     alert('削除しました。');
+        //                     this.bsModalRef.hide();
+        //                     this.modalService.setDismissReason(blockTree);
+        //                 }
+        //             } else {
+        //                 alert(msg);
+        //             }
+        //         });
+        // }
     }
 }

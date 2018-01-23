@@ -48,11 +48,12 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     dataScheduleType: any;
     dataScheduleTypes: any = [{id: 0, value:'常に取得'}, {id: 1, value: '取得停止'}, {id: 2, value: '周期取得'}];
     weekdays: any = [
-        {id: 1, value: '月', ifCheck: 'checked'},
-        {id: 2, value: '火', ifCheck: 'checked'},
-        {id: 3, value: '水', ifCheck: 'checked'},
-        {id: 4, value: '木', ifCheck: 'checked'},
-        {id: 5, value: '金', ifCheck: 'checked'},
+        {id: 1, value: '月', ifCheck: ''},
+        {id: 2, value: '火', ifCheck: ''},
+        {id: 3, value: '水', ifCheck: ''},
+        {id: 4, value: '木', ifCheck: ''},
+        {id: 5, value: '金', ifCheck: ''},
+        // {id: 5, value: '金', ifCheck: 'checked'},
         {id: 6, value: '土', ifCheck: ''},
         {id: 7, value: '日', ifCheck: ''}
     ];
@@ -146,6 +147,26 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         this.priority = _.get(data, 'priority');
                         this.deviceGroup = _.get(data, 'device_group_id').toString();
                         this.policyGroup = _.get(data, 'policy_group_id').toString();
+
+                        let spt = _.get(data, 'start_period_time').split('@')[1];
+                        let ept = _.get(data, 'end_period_time');
+                        let sst = _.get(data, 'schedule_start_time');
+                        let set = _.get(data, 'schedule_end_time');
+                        this.startDateTime.setHours(parseInt(spt.split(':')[0]));
+                        this.startDateTime.setMinutes(parseInt(spt.split(':')[1]));
+                        this.endDateTime.setHours(parseInt(ept.split(':')[0]));
+                        this.endDateTime.setMinutes(parseInt(ept.split(':')[1]));
+                        this.startTime.setHours(parseInt(sst.split(':')[0]));
+                        this.startTime.setMinutes(parseInt(sst.split(':')[1]));
+                        this.endTime.setHours(parseInt(set.split(':')[0]));
+                        this.endTime.setMinutes(parseInt(set.split(':')[1]));
+
+                        let weeks: any = _.get(data, 'weeks');
+                        for (let i=0; i< this.weekdays.length; i++){
+                            if (this.weekdays[i] in weeks){
+                                this.weekdays[i]['ifCheck'] = 'checked';
+                            }
+                        }
 
                     }
                 } else {
