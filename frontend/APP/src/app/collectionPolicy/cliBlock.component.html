@@ -163,7 +163,7 @@
                 <div class="col-sm-12 text-warning" *ngIf='!keyUnqFlg'>ブロック識別子は重複しています。</div>
                 <div class="col-sm-12 text-warning" *ngIf='!mrkStrNotNull'>基準文字列は必須入力です。</div>
                 <div class="col-sm-12 text-warning" *ngIf='!keyStrNotNull'>ブロック識別子名は必須入力です。</div>
-                <div class="col-sm-12 text-warning" *ngIf='keyStrNotNull&&!keyStrFlg'>ブロック識別子名はは半角英数字のみで入力してください</div>
+                <div class="col-sm-12 text-warning" *ngIf='keyStrNotNull&&!keyStrFlg'>ブロック識別子名は半角英数字のみで入力してください</div>
                 <div class="col-sm-12 text-warning" *ngIf='!sLnNubFlg'>基準以下スタート行: int needed</div>
                 <div class="col-sm-12 text-warning" *ngIf='!eLnNubFlg'>基準以下エンド行: int needed</div>
                 <div class="col-sm-12 text-warning" *ngIf='eLnNubFlg&&eLnNubFlg&&!lnNubFlg'>スタート行数はエンド行数より小さい値にしてください。</div>
@@ -172,9 +172,6 @@
                 <div class="col-sm-12 text-warning" *ngIf='!extractKeyNotNull'>ブロック識別子名は必須入力です。</div>
             </div>
     </form>
-    <!-- <div class="form-group"> -->
-                                
-    <!-- </div> -->
     </div>
     <div class="modal-footer">
         <button *ngIf="delBtn" type="button" class="btn btn-danger" (click)="deleteRule()">
