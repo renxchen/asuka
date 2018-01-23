@@ -64,18 +64,17 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {
         setTimeout(() => {
             if (typeof (this.info) !== 'undefined') {
-                // console.log('this', this.info);
                 this.cpId = this.info['cPId'];
-                console.log('cpid', this.info);
                 this.ruleType = this.info['ruleType'];
                 this.actionType = this.info['actionType'];
                 if (this.actionType === 'edit') {
                     if (this.info['delFlg']) {
+                        this.delBtn = false;
                     } else {
                         this.delBtn = true;
                     }
                     this.ruleId = this.info['ruleId'];
-                    this.getDataRule(this.ruleId);
+                    this.getDataRule(this.cpId, this.ruleId);
                 }
             }
         }, 0);
@@ -91,14 +90,14 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
             return '1';
         }
     }
-    public commInfo(ruleId: any) {
+    public commInfo(cpId: any, ruleId: any) {
         this.apiPrefix = '/v1';
-        let url = '/api_policy_tree_rule/?rule_id=' + ruleId;
+        let url = '/api_policy_tree_rule/?coll_policy_id=' + cpId + '&rule_id=' + ruleId;
         this.httpClient.setUrl(this.apiPrefix);
         return this.httpClient.toJson(this.httpClient.get(url));
     }
-    public getDataRule(ruleId: any) {
-        this.commInfo(ruleId).subscribe(res => {
+    public getDataRule(cpId: any, ruleId: any) {
+        this.commInfo(cpId, ruleId).subscribe(res => {
             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                 if (res['data']) {
                     let data = res['data'];
@@ -111,6 +110,12 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     this.endMrkStr = _.get(data, 'end_mark_string');
                     this.isInclude = _.get(data, 'is_include');
                     this.isSerial = _.get(data, 'is_serial');
+                    this.extractKey = _.get(data, 'extract_key');
+                }
+                if (res['rule_is_used'] && res['rule_is_used'] === true) {
+                    this.delBtn = false;
+                } else {
+                    this.delBtn = true;
                 }
             }
         });
@@ -177,7 +182,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         // }
         if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull_A && this.endMrkStrFlg && this.extractKeyFlg) {
+            && this.mrkStrNotNull_A && this.endMrkStrFlg && this.extractKeyNotNull) {
             return true;
         } else {
             return false;
@@ -189,7 +194,6 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         let rule_info: any = {};
         if (this.ruleType === 'block_rule_1') {
             if (this.blockRuleADCheck()) {
-                console.log('b1');
                 rule_info['coll_policy'] = this.cpId;
                 rule_info['rule_type'] = this.ruleType;
                 rule_info['name'] = this.name;
@@ -197,14 +201,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                 rule_info['mark_string'] = this.markString;
                 rule_info['key_str'] = this.keyStr;
                 rule_info['is_serial'] = this.typeFomatter(this.isSerial);
-                console.log('rule_info', rule_info);
                 sendRuleInfo['rule_info'] = rule_info;
                 return sendRuleInfo;
             }
         } else if (this.ruleType === 'block_rule_2') {
-            console.log(12);
             if (this.blockRuleBCheck()) {
-                console.log('b2');
                 rule_info['coll_policy'] = this.cpId;
                 rule_info['rule_type'] = this.ruleType;
                 rule_info['name'] = this.name;
@@ -214,7 +215,6 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                 rule_info['start_line_num'] = this.startLnNum;
                 rule_info['end_line_num'] = this.endLnNum;
                 rule_info['is_serial'] = this.typeFomatter(this.isSerial);
-                console.log(rule_info);
                 sendRuleInfo['rule_info'] = rule_info;
                 return sendRuleInfo;
             }
@@ -250,20 +250,18 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     }
     public saveRule() {
         // this.apiPrefix = '/v1';
-        // let id = this.cpId;
+        // let id = this.ruleId                            ;
         // let editUrl = '/api_policy_tree_rule/?rule_id=' + id;
         // let createUrl = '/api_policy_tree_rule/';
         // this.httpClient.setUrl(this.apiPrefix);
         // let sendInfo = this.blockRulePrepare();
-        // console.log('sendInfo', sendInfo);
         // if (this.actionType === 'create' && sendInfo !== '') {
         //     this.httpClient
         //         .toJson(this.httpClient.post(createUrl, sendInfo))
         //         .subscribe(res => {
-        //             console.log(res);
         //             let status = _.get(res, 'status');
         //             let msg = _.get(status, 'message');
-        //             let data = _.get(status, 'data');
+        //             let data = _.get(res, 'data');
         //             if (status && status['status'].toLowerCase() === 'true') {
         //                 if (data) {
         //                     let blockTree: any = {};
@@ -273,9 +271,9 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         //                     this.modalService.setDismissReason(blockTree);
         //                 }
         //             } else {
-        //                 if (msg && msg === 'the same name rule is existence') {
+        //                 if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
         //                     this.uniqueFlg = false;
-        //                 } else if (msg && msg === 'key_str duplicatoin') {
+        //                 } else if (msg && msg === 'KEY_STR RULE_NAME_IS_EXISTENCE') {
         //                     this.keyUnqFlg = false;
         //                 } else {
         //                     alert(msg);
@@ -285,12 +283,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
 
         // } else if (this.actionType === 'edit' && sendInfo !== '') {
         //     this.httpClient
-        //         .toJson(this.httpClient.put(editUrl, this.blockRulePrepare()))
+        //         .toJson(this.httpClient.put(editUrl, sendInfo))
         //         .subscribe(res => {
-        //             console.log(res);
         //             let status = _.get(res, 'status');
         //             let msg = _.get(status, 'message');
-        //             let data = _.get(status, 'data');
+        //             let data = _.get(res, 'data');
         //             if (status && status['status'].toLowerCase() === 'true') {
         //                 if (data) {
         //                     let blockTree: any = {};
@@ -300,7 +297,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         //                     this.modalService.setDismissReason(blockTree);
         //                 }
         //             } else {
-        //                 if (msg && msg === 'the same name rule is existence') {
+        //                 if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
         //                     this.uniqueFlg = false;
         //                 } else if (msg && msg === 'key_str duplicatoin') {
         //                     this.keyUnqFlg = false;
@@ -314,14 +311,13 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     public deleteRule() {
         let alt = confirm('このルールを削除します。よろしいですか？');
         this.apiPrefix = '/v1';
-        // let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;
-        let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&policy_tree_id=' + this.cpId;
+        let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;
         if (alt) {
             this.httpClient
                 .toJson(this.httpClient.delete(delUrl)).subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    let data = _.get(status, 'data');
+                    let data = _.get(res, 'data');
                     if (status && status['status'].toLowerCase() === 'true') {
                         if (data) {
                             let blockTree: any = {};
