@@ -37,13 +37,14 @@ class DataCollectionViewSet(viewsets.ViewSet):
         # v1/api_data_collection/?page=1&rows=10&status=3
         #  v1/api_data_collection/?id=1
         # search conditions
-        priority = views_helper.get_request_value(self.request, 'policy_type', 'GET')
-        os_type = views_helper.get_request_value(self.request, 'os_type', 'GET')
-        device_group = views_helper.get_request_value(self.request, 'device_group', 'GET')
-        coll_policy_group = views_helper.get_request_value(self.request, 'coll_policy_group', 'GET')
+        # priority = views_helper.get_request_value(self.request, 'policy_type', 'GET')
+        os_type = views_helper.get_request_value(self.request, 'ostype_name', 'GET')
+        device_group = views_helper.get_request_value(self.request, 'device_group_name', 'GET')
+        coll_policy_group = views_helper.get_request_value(self.request, 'policy_group_name', 'GET')
+        priority = views_helper.get_request_value(self.request, 'priority', 'GET')
+        start_period_time = views_helper.get_request_value(self.request, 'start_period_time', 'GET')
+        end_period_time = views_helper.get_request_value(self.request, 'end_period_time', 'GET')
         data_schedule_type = views_helper.get_request_value(self.request, 'data_schedule_type', 'GET')
-        # start_datetime = views_helper.get_request_value(self.request, 'start_datetime', 'GET')
-        # end_datetime = views_helper.get_request_value(self.request, 'end_datetime', 'GET')
         status =views_helper.get_request_value(self.request, 'status', 'GET')
         schedule_id = views_helper.get_request_value(self.request, 'id', 'GET')
 
@@ -65,23 +66,29 @@ class DataCollectionViewSet(viewsets.ViewSet):
                    }
                }
                return api_return(data=data)
+
             field_relation_ships = {
                 'priority': 'priority',
                 'data_schedule_type': 'data_schedule_type',
-                'os_type': 'ostype__name',
-                'coll_policy_group': 'coll_policy_groups__name',
-                'device_group': 'groups__name',
+                'ostype': 'ostype__name',
+                'start_period_time': 'start_period_time',
+                'end_period_time': 'end_period_time',
+                'policy_group': 'policy_group__name',
+                'device_group': 'device_group__name',
                 'status': 'status'
             }
             query_data = {
-                'priority': priority,
-                'status': status,
-                'data_schedule_type': data_schedule_type,
+                'priority': Tool.priority_mapping(priority),
+                'status': Tool.schedule_status_mapping(status),
+                'data_schedule_type': Tool.schedule_type_mapping(data_schedule_type),
+                'start_period_time': start_period_time.replace(' ', '@'),
+                'end_period_time': end_period_time.replace(' ', '@'),
                 'ostype__name': os_type,
-                'coll_policy_groups__name': coll_policy_group,
-                'groups__name': device_group
+                'policy_group__name': coll_policy_group,
+                'device_group__name': device_group
             }
-            search_fields = ['priority', 'ostype', 'device_group', 'coll_policy_group', 'data_schedule_type', 'status']
+            search_fields = ['priority', 'ostype', 'device_group', 'policy_group', 'start_period_time',
+                             'end_period_time', 'data_schedule_type', 'status']
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                           query_data, search_fields)
             total_num = len(Schedules.objects.all())
@@ -130,37 +137,33 @@ class DataCollectionViewSet(viewsets.ViewSet):
         # v1/api_data_collection/?id=1
         schedule_id = views_helper.get_request_value(self.request, 'id', 'GET')
         if not self.__delete_recode_check__(schedule_id):
-            pass
+            data = {
+                'new_token': self.new_token,
+                constants.STATUS: {
+                    constants.STATUS: constants.FALSE,
+                    constants.MESSAGE: constants.CAN_NOT_DELETE_SCHEDULE_MESSAGE  # can not delete
+                }
+            }
+            return api_return(data=data)
         else:
 
-            if not self.__delete_recode_check__():
-                data = {
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.FALSE,
-                        constants.MESSAGE: constants.CAN_NOT_DELETE_SCHEDULE_MESSAGE  # can not delete
-                    }
-                }
-                return api_return(data=data)
-            else:
-
-                try:
-                    with transaction.atomic():
-                        # delete items table
-                        # delete schedule table
-                        Items.objects.filter(schedule_id=schedule_id).delete()
-                        Schedules.objects.get(schedule_id=schedule_id).delete()
-                        data = {
-                            'new_token': self.new_token,
-                            constants.STATUS: {
-                                constants.STATUS: constants.TRUE,
-                                constants.MESSAGE: constants.SUCCESS
-                            }
+            try:
+                with transaction.atomic():
+                    # delete items table
+                    # delete schedule table
+                    Items.objects.filter(schedule_id=schedule_id).delete()
+                    Schedules.objects.get(schedule_id=schedule_id).delete()
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.TRUE,
+                            constants.MESSAGE: constants.SUCCESS
                         }
-                        return api_return(data=data)
-                except Exception as e:
-                    print traceback.format_exc(e)
-                    return exception_handler(e)
+                    }
+                    return api_return(data=data)
+            except Exception as e:
+                print traceback.format_exc(e)
+                return exception_handler(e)
 
     @staticmethod
     def __update_recode_check__(schedule_id):

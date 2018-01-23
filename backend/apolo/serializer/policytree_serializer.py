@@ -49,5 +49,6 @@ class CollPolicyCliRuleSerializer(serializers.ModelSerializer):
         instance.is_serial = validated_data.get('is_serial', instance.is_serial)
         instance.is_include = validated_data.get('is_include', instance.is_include)
         instance.command = validated_data.get('command', instance.command)
+        instance.value_type = validated_data.get('value_type', instance.value_type)
         instance.save()
         return instance

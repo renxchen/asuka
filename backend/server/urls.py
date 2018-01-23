@@ -45,7 +45,10 @@ urlpatterns = [
     url(r'^v1/api_data_table_step3_table/', resource_api.api_data_table_step3_table),
     url(r'^v1/api_data_table_step4_tree/', resource_api.api_data_table_step4_tree),
     url(r'^v1/api_data_table_step4_table/', resource_api.api_data_table_step4_table),
-    url(r'^v1/api_data_table_step1/', resource_api.api_data_table_step1)
+    url(r'^v1/api_data_table_step1/', resource_api.api_data_table_step1),
+    url(r'^v1/api_data_collection_devices/', resource_api.api_data_collection_by_device),
+    url(r"^v1/api_collection_policy_edit_page/", resource_api.api_collection_policy_edit),
+    url(r'^v1/api_data_collection_policy/', resource_api.api_data_collection_by_cp)
     # url(r'^users/$', user_list, name='user-list'),
     # url(r'^i18n/', include('django.conf.urls.i18n')),
 ]

@@ -18,6 +18,7 @@ from backend.apolo.serializer.collection_policy_serializer import OstypeSerializ
 from backend.apolo.serializer.data_collection_serializer import CollPolicyGroupIDNameSerializer, \
     DeviceGroupIDNameSerializer, SchedulesAddSerializer, ItemsSerializer
 from backend.apolo.tools import views_helper, constants
+from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 
 
@@ -39,8 +40,9 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
         self.end_period_time = views_helper.get_request_value(self.request, "end_period_time", 'BODY')
         self.data_schedule_type = views_helper.get_request_value(self.request, "data_schedule_type", 'BODY')
         self.weeks = views_helper.get_request_value(self.request, "weeks", 'BODY')
-        self.schedule_start_time = views_helper.get_request_value(self.request, "schedule_start_time", 'BODY')
-        self.schedule_end_time = views_helper.get_request_value(self.request, "schedule_end_time", 'BODY')
+        # self.schedule_start_time = views_helper.get_request_value(self.request, "schedule_start_time", 'BODY')
+        # self.schedule_end_time = views_helper.get_request_value(self.request, "schedule_end_time", 'BODY')
+        self.data_schedule_time = views_helper.get_request_value(self.request, "data_schedule_time", 'BODY')
 
     @staticmethod
     def __get_ostype__():
@@ -91,7 +93,7 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
 
     def __insert_data_check__(self, devices, coll_policies):
 
-        select_sql = 'select  item_id,schedule_id from Items where'
+        select_sql = 'select item_id,schedule_id from Items where'
 
         for i in range(len(devices)):
             device_id = devices[i]
@@ -121,25 +123,24 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
 
     def __set_schedule_data__(self):
 
-        if self.weeks:
-            week_time = ';'.join(self.weeks)
-        else:
-            week_time = '1;2;3;4;5;6;7'
+        # if self.weeks:
+        #     week_time = ';'.join(self.weeks)
+        # else:
+        #     week_time = '1;2;3;4;5;6;7'
 
-        data_schedule_time = '{}@{}-{}'.format(week_time, self.schedule_start_time, self.schedule_end_time)
+        # data_schedule_time = '{}@{}-{}'.format(week_time, self.schedule_start_time, self.schedule_end_time)
         schedule_recode_data = {
             'valid_period_type': self.valid_period_type,
             'data_schedule_type': self.data_schedule_type,
-            'start_period_time': self.start_period_time.replace(' ', '@'),
-            'end_period_time': self.end_period_time.replace(' ', '@'),
-            'data_schedule_time': data_schedule_time,
+            'start_period_time': self.start_period_time,
+            'end_period_time': self.end_period_time,
+            'data_schedule_time': self.data_schedule_time,
             'priority': self.priority,
             'status': constants.SCHEDULE_STATUS_DEFAULT,
             'policy_group': self.policy_group_id,
             'device_group': self.device_group_id,
             'ostype': self.ostype
         }
-
         return schedule_recode_data
 
     def __get_devices__(self):
@@ -261,3 +262,4 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                             return api_return(data=data)
             except Exception as e:
                 print e
+                return exception_handler(e)

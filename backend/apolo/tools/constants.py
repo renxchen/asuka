@@ -93,26 +93,49 @@ RULE_NODE_ICON = 'fa fa-folder-o'
 # Policy Tree Message
 #########################################
 NODE_IS_EXISTENCE = 'the node exist in the tree'  # ツリー内に定義されているため、編集できません。
-RULE_NAME_IS_EXISTENCE = 'the same name rule is existence'  # 既に同じ表示名のルールが登録されています。
+RULE_NAME_IS_EXISTENCE = 'RULE_NAME_IS_EXISTENCE'  # 既に同じ表示名のルールが登録されています。
 POLICY_IS_APPLIED = 'the policy is being applied by schedule function'  # このコレクションポリシーがスケジュールに利用されています。
 POLICY_DATA_VALID_ERROR = 'data valid error when insert policy tree rules'  # コレクションポリシーツリーに追加されたデータが適切ではないです。
 RULE_DATA_VALID_ERROR = 'data valid error in saving the rule'  # ルールを追加する時に、データが適切ではないです
 LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定義されていないです
 DB_EXCEPTION ='there is an db exception'
+RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
 
 #########################################
 # data collection value setting
 #########################################
-SCHEDULE_STATUS_DEFAULT = 0
+SCHEDULE_STATUS_DEFAULT = 1
 ITEM_TABLE_STATUS_DEFAULT = 0
-ITEM_TYPE_CLE = 0
-ITEM_TYPE_SNMP = 1
+ITEM_TYPE_CLE = 0  #cli
+ITEM_TYPE_SNMP = 1  # snmp
 VALUE_TYPE = {
     'INT': 0,
     'FLOAT': 1,
     'STRING': 2
 }
 LEAF_NODE_MARK = 1
+########################################
+# Mapping data
+########################################
+PRIORITY_STANDARD_LEVEL_VALUE = 0
+PRIORITY_STANDARD_LEVEL_KEY = u'標準'
+PRIORITY_HIGH_LEVEL_VALUE = 1
+PRIORITY_HIGH_LEVEL_KEY =u'高'
+PRIORITY_URGENT_LEVEL_VALUE = 2
+PRIORITY_URGENT_LEVEL_KEY = u'緊急'
+
+SCHEDULE_TYPE_OFTEN_KEY = u'常に取得'
+SCHEDULE_TYPE_OFTEN_VALUE = 1
+SCHEDULE_TYPE_STOP_KEY = u'取得停止'
+SCHEDULE_TYPE_STOP_VALUE = 2
+SCHEDULE_TYPE_PERIOD_KEY = u'周期取得'
+SCHEDULE_TYPE_PERIOD_VALUE = 3
+
+SCHEDULE_STATUS_ON_KEY = u'有効'
+SCHEDULE_STATUS_ON_VALUE = 1
+SCHEDULE_STATUS_OFF_KEY = u'無効'
+SCHEDULE_STATUS_OFF_VALUE = 0
+
 #########################################
 # data collection Error Message
 #########################################
@@ -120,4 +143,5 @@ LEAF_NODE_MARK = 1
 POLICY_DEVICE_COMBINATION = 'the combination of policy and device  is used'
 CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
 CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
+DATA_COLLECTION_POST_URL ='http://10.71.244.134:7777/api/v1/getItems'
 

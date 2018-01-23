@@ -33,6 +33,20 @@ class CollPolicyNameSerializer(serializers.ModelSerializer):
         fields = ('coll_policy_id', 'name', 'policy_type',)
 
 
+class CollPolicyEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CollPolicy
+        fields = ('coll_policy_id', 'name', 'desc', 'cli_command', 'ostype')
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.cli_command = validated_data.get('cli_command', instance.cli_command)
+        instance.desc = validated_data.get('desc', instance.desc)
+        instance.ostype = validated_data.get('ostype', instance.ostype)
+        instance.save()
+        return instance
+
+
 class CollPolicyGroupSerializer(serializers.ModelSerializer):
     # ostype_name = serializers.RelatedField(source='ostype', read_only=True)
     # ostype_name = serializers.ReadOnlyField()
