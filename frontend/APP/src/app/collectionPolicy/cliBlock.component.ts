@@ -1,6 +1,8 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Validator } from '../../components/validation/validation';
+import { CollectionPolicyService } from './collectionPolicy.service';
+import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import * as _ from 'lodash';
 @Component({
@@ -28,48 +30,51 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     isSerial: any;
     // data rule
     extractKey: any = null;
-    splitChar: any = null;
-    xOffset: any = null;
-    yOffset: any = null;
-    lineNums: any = null;
-    // "split_char": null,分隔符按空格/，正则（data）0123
-    // "extract_key": null,抽出数据的正则表达式（data）
-    // "x_offset": null,横向偏移（data）
-    // "y_offset": null,纵向偏移（data）
-    // "line_nums": null,抽出行数（data）
-
     // warning flg
-    descFlg: boolean;
-    nameNotNull: boolean;
-    nameFlg: boolean;
-    mrkStrNotNull: boolean;
-    mrkStrFlg: boolean;
-    keyStrNotNull: boolean;
-    keyStrFlg: boolean;
-    lnNubFlg: boolean;
-    sLnNubFlg: boolean;
-    eLnNubFlg: boolean;
-    endMrkNotNull: boolean;
-    endMrkStrFlg: boolean;
-    extractKeyNotNull: boolean;
-    extractKeyFlg: boolean;
+    // descFlg: Boolean = false;
+    nameNotNull: Boolean = true;
+    nameFlg: Boolean = true;
+    uniqueFlg: Boolean = true;
+    keyUnqFlg: Boolean = true;
+    mrkStrNotNull: Boolean = true;
+    mrkStrNotNull_A: Boolean = true;
+    keyStrNotNull: Boolean = true;
+    keyStrFlg: Boolean = true;
+    lnNubFlg: Boolean = true;
+    sLnNubFlg: Boolean = true;
+    eLnNubFlg: Boolean = true;
+    endMrkNotNull: Boolean = true;
+    endMrkStrFlg: Boolean = true;
+    extractKeyNotNull: Boolean = true;
+    extractKeyFlg: Boolean = true;
+    delBtn: Boolean = false;
 
     constructor(
         private httpClient: HttpClientComponent,
-        private bsModalRef: BsModalRef) {
+        private bsModalRef: BsModalRef,
+        private modalService: BsModalService,
+        private service: CollectionPolicyService) {
     }
     ngOnInit() {
+        this.startLnNum = 0;
+        this.endLnNum = 0;
+        this.isSerial = true;
+        this.isInclude = true;
     }
     ngAfterViewInit() {
         setTimeout(() => {
             if (typeof (this.info) !== 'undefined') {
                 // console.log('this', this.info);
-                this.cpId = this.info['cpId'];
+                this.cpId = this.info['cPId'];
+                console.log('cpid', this.info);
                 this.ruleType = this.info['ruleType'];
                 this.actionType = this.info['actionType'];
-                // this.ruleId = this.info['ruleId'];
-                this.ruleId = '5';
-                if (this.info['actionType'] === 'edit') {
+                if (this.actionType === 'edit') {
+                    if (this.info['delFlg']) {
+                    } else {
+                        this.delBtn = true;
+                    }
+                    this.ruleId = this.info['ruleId'];
                     this.getDataRule(this.ruleId);
                 }
             }
@@ -94,7 +99,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     }
     public getDataRule(ruleId: any) {
         this.commInfo(ruleId).subscribe(res => {
-            if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
+            if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                 if (res['data']) {
                     let data = res['data'];
                     this.name = _.get(data, 'name');
@@ -115,15 +120,14 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         if (this.nameNotNull) {
             this.nameFlg = Validator.noSpecSymbol(this.name);
         }
-        this.keyStrNotNull = Validator.notNullCheck(this.keyStrNotNull);
-        if (this.keyStrFlg) {
-            this.keyStrFlg = Validator.noCommsymbol(this.keyStr);
+        this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
+        if (this.keyStrNotNull) {
+            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
-        if (this.mrkStrNotNull) {
-            this.mrkStrFlg = Validator.noCommsymbol(this.markString);
-        }
-        if (this.nameFlg && this.keyStrFlg && this.mrkStrFlg) {
+        if (this.nameNotNull && this.nameFlg
+            && this.keyStrNotNull && this.keyStrFlg
+            && this.mrkStrNotNull) {
             return true;
         } else {
             return false;
@@ -134,14 +138,23 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         if (this.nameNotNull) {
             this.nameFlg = Validator.noSpecSymbol(this.name);
         }
-        this.keyStrNotNull = Validator.notNullCheck(this.keyStrNotNull);
+        this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
-            this.keyStrFlg = Validator.notNullCheck(this.keyStr);
+            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
         }
+        this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         this.sLnNubFlg = Number.isInteger(this.startLnNum);
         this.eLnNubFlg = Number.isInteger(this.endLnNum);
         if (this.sLnNubFlg && this.eLnNubFlg) {
-            this.lnNubFlg = this.startLnNum < this.endLnNum ? true : false;
+            this.lnNubFlg = this.startLnNum > this.endLnNum ? false : true;
+        }
+        if (this.nameNotNull && this.nameFlg
+            && this.keyStrNotNull && this.keyStrFlg
+            && this.sLnNubFlg && this.eLnNubFlg
+            && this.lnNubFlg && this.mrkStrNotNull) {
+            return true;
+        } else {
+            return false;
         }
     }
     public blockRuleCCheck() {
@@ -149,23 +162,22 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         if (this.nameNotNull) {
             this.nameFlg = Validator.noSpecSymbol(this.name);
         }
-        this.keyStrNotNull = Validator.notNullCheck(this.keyStrNotNull);
+        this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrFlg) {
-            this.keyStrFlg = Validator.noCommsymbol(this.keyStr);
+            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
         }
-        this.mrkStrNotNull = Validator.notNullCheck(this.markString);
-        if (this.mrkStrNotNull) {
-            this.mrkStrFlg = Validator.noCommsymbol(this.markString);
-        }
+        this.mrkStrNotNull_A = Validator.notNullCheck(this.markString);
         this.extractKeyNotNull = Validator.notNullCheck(this.extractKey);
-        if (this.extractKey) {
-            this.extractKeyFlg = Validator.noCommsymbol(this.extractKey);
-        }
+        // if (this.extractKey) {
+        //     this.extractKeyFlg = Validator.noCommsymbol(this.extractKey);
+        // }
         this.endMrkNotNull = Validator.notNullCheck(this.endMrkStr);
-        if (this.endMrkNotNull) {
-            this.endMrkStrFlg = Validator.noCommsymbol(this.endMrkStr);
-        }
-        if (this.nameFlg && this.keyStrFlg && this.mrkStrFlg && this.endMrkStrFlg && this.extractKeyFlg) {
+        // if (this.endMrkNotNull) {
+        //     this.endMrkStrFlg = Validator.noCommsymbol(this.endMrkStr);
+        // }
+        if (this.nameNotNull && this.nameFlg
+            && this.keyStrNotNull && this.keyStrFlg
+            && this.mrkStrNotNull_A && this.endMrkStrFlg && this.extractKeyFlg) {
             return true;
         } else {
             return false;
@@ -175,100 +187,154 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     public blockRulePrepare() {
         let sendRuleInfo: any = {};
         let rule_info: any = {};
-        rule_info['coll_policy'] = '1';
-        rule_info['rule_type'] = this.ruleType;
-        rule_info['name'] = this.name;
-        rule_info['desc'] = this.desc;
-        rule_info['mark_string'] = this.markString;
-        rule_info['key_str'] = this.keyStr;
-        rule_info['is_serial'] = this.typeFomatter(this.isSerial);
-        sendRuleInfo['rule_info'] = rule_info;
-        return sendRuleInfo;
-        // if (this.ruleType === 'block_rule_1') {
-        //     console.log('2222');
-        //     if (this.blockRuleADCheck()) {
-        //         console.log('33333');
-        //         rule_info['coll_policy'] = this.cpId;
-        //         rule_info['rule_type'] = this.ruleType;
-        //         rule_info['name'] = this.name;
-        //         rule_info['desc'] = this.desc;
-        //         rule_info['mark_string'] = this.markString;
-        //         rule_info['key_str'] = this.keyStr;
-        //         rule_info['is_serial'] = this.typeFomatter(this.isSerial);
-        //         console.log('rule_info', rule_info);
-        //         sendRuleInfo['rule_info'] = rule_info;
-        //         return sendRuleInfo;
-        //     }
-        // } else if (this.ruleType === 'block_rule_2') {
-        //     if (this.blockRuleBCheck()) {
-        //         rule_info['coll_policy'] = this.cpId;
-        //         rule_info['rule_type'] = this.ruleType;
-        //         rule_info['name'] = this.name;
-        //         rule_info['desc'] = this.desc;
-        //         rule_info['mark_string'] = this.markString;
-        //         rule_info['key_str'] = this.keyStr;
-        //         rule_info['start_line_num'] = this.startLnNum;
-        //         rule_info['end_line_num'] = this.endLnNum;
-        //         rule_info['is_serial'] = this.typeFomatter(this.isSerial);
-        //         return rule_info;
-        //     }
-        //     return rule_info;
-        // } else if (this.ruleType === 'block_rule_3') {
-        //     rule_info['coll_policy'] = this.cpId;
-        //     rule_info['rule_type'] = this.ruleType;
-        //     rule_info['name'] = this.name;
-        //     rule_info['desc'] = this.desc;
-        //     rule_info['mark_string'] = this.markString;
-        //     rule_info['end_mark_string'] = this.endMrkStr;
-        //     rule_info['extractKey'] = this.extractKey;
-        //     rule_info['key_str'] = this.keyStr;
-        //     rule_info['is_serial'] = this.typeFomatter(this.isSerial);
-        //     rule_info['is_include'] = this.typeFomatter(this.isInclude);
-        //     return rule_info;
-        // } else if (this.ruleType === 'block_rule_4') {
-        //     if (this.blockRuleADCheck()) {
-        //         rule_info['coll_policy'] = this.cpId;
-                // rule_info['rule_type'] = this.ruleType;
-        //         rule_info['name'] = this.name;
-        //         rule_info['desc'] = this.desc;
-        //         rule_info['mark_string'] = this.markString;
-        //         rule_info['key_str'] = this.keyStr;
-        //         return rule_info;
-        //     }
-        // }
-        // return;
+        if (this.ruleType === 'block_rule_1') {
+            if (this.blockRuleADCheck()) {
+                console.log('b1');
+                rule_info['coll_policy'] = this.cpId;
+                rule_info['rule_type'] = this.ruleType;
+                rule_info['name'] = this.name;
+                rule_info['desc'] = this.desc;
+                rule_info['mark_string'] = this.markString;
+                rule_info['key_str'] = this.keyStr;
+                rule_info['is_serial'] = this.typeFomatter(this.isSerial);
+                console.log('rule_info', rule_info);
+                sendRuleInfo['rule_info'] = rule_info;
+                return sendRuleInfo;
+            }
+        } else if (this.ruleType === 'block_rule_2') {
+            console.log(12);
+            if (this.blockRuleBCheck()) {
+                console.log('b2');
+                rule_info['coll_policy'] = this.cpId;
+                rule_info['rule_type'] = this.ruleType;
+                rule_info['name'] = this.name;
+                rule_info['desc'] = this.desc;
+                rule_info['mark_string'] = this.markString;
+                rule_info['key_str'] = this.keyStr;
+                rule_info['start_line_num'] = this.startLnNum;
+                rule_info['end_line_num'] = this.endLnNum;
+                rule_info['is_serial'] = this.typeFomatter(this.isSerial);
+                console.log(rule_info);
+                sendRuleInfo['rule_info'] = rule_info;
+                return sendRuleInfo;
+            }
+        } else if (this.ruleType === 'block_rule_3') {
+            if (this.blockRuleCCheck()) {
+                rule_info['coll_policy'] = this.cpId;
+                rule_info['rule_type'] = this.ruleType;
+                rule_info['name'] = this.name;
+                rule_info['desc'] = this.desc;
+                rule_info['mark_string'] = this.markString;
+                rule_info['end_mark_string'] = this.endMrkStr;
+                // same as marktring
+                rule_info['extractKey'] = this.extractKey;
+                rule_info['key_str'] = this.keyStr;
+                rule_info['is_serial'] = this.typeFomatter(this.isSerial);
+                rule_info['is_include'] = this.typeFomatter(this.isInclude);
+                sendRuleInfo['rule_info'] = rule_info;
+                return sendRuleInfo;
+            }
+        } else if (this.ruleType === 'block_rule_4') {
+            if (this.blockRuleADCheck()) {
+                rule_info['coll_policy'] = this.cpId;
+                rule_info['rule_type'] = this.ruleType;
+                rule_info['name'] = this.name;
+                rule_info['desc'] = this.desc;
+                rule_info['mark_string'] = this.markString;
+                rule_info['key_str'] = this.keyStr;
+                sendRuleInfo['rule_info'] = rule_info;
+                return sendRuleInfo;
+            }
+        }
+        return '';
     }
-    public save() {
-    //     this.apiPrefix = '/v1';
-    //     let editUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId;
-    //     let createUrl = '/api_policy_tree_rule/';
-    //     this.httpClient.setUrl(this.apiPrefix);
-    //     if (this.actionType === 'create') {
-    //         this.httpClient
-    //             .toJson(this.httpClient.post(createUrl, this.blockRulePrepare()))
-    //             .subscribe(res => {
-    //                 console.log('res', res);
-    //                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-    //                     alert('save success');
-    //                 } else {
-    //                     if (res['status'] && res['status']['message']) {
-    //                         alert('modify failure');
-    //                     }
-    //                 }
-    //             });
+    public saveRule() {
+        return;
+        this.apiPrefix = '/v1';
+        let id = this.cpId;
+        let editUrl = '/api_policy_tree_rule/?rule_id=' + id;
+        let createUrl = '/api_policy_tree_rule/';
+        this.httpClient.setUrl(this.apiPrefix);
+        let sendInfo = this.blockRulePrepare();
+        console.log('sendInfo', sendInfo);
+        if (this.actionType === 'create' && sendInfo !== '') {
+            this.httpClient
+                .toJson(this.httpClient.post(createUrl, sendInfo))
+                .subscribe(res => {
+                    console.log(res);
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(status, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data) {
+                            let blockTree: any = {};
+                            blockTree = _.get(data, 'block_rule_tree_json');
+                            alert('保存しました。');
+                            this.bsModalRef.hide();
+                            this.modalService.setDismissReason(blockTree);
+                        }
+                    } else {
+                        if (msg && msg === 'the same name rule is existence') {
+                            this.uniqueFlg = false;
+                        } else if (msg && msg === 'key_str duplicatoin') {
+                            this.keyUnqFlg = false;
+                        } else {
+                            alert(msg);
+                        }
+                    }
+                });
 
-    //     } else {
-    //         this.httpClient
-    //             .toJson(this.httpClient.put(editUrl, this.blockRulePrepare()))
-    //             .subscribe(res => {
-    //                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-    //                     alert('modify success');
-    //                 } else {
-    //                     if (res['status'] && res['status']['message']) {
-    //                         alert('modify failure');
-    //                     }
-    //                 }
-    //             });
-    //     }
+        } else if (this.actionType === 'edit' && sendInfo !== '') {
+            this.httpClient
+                .toJson(this.httpClient.put(editUrl, this.blockRulePrepare()))
+                .subscribe(res => {
+                    console.log(res);
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(status, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data) {
+                            let blockTree: any = {};
+                            blockTree = _.get(data, 'block_rule_tree_json');
+                            alert('編集しました。');
+                            this.bsModalRef.hide();
+                            this.modalService.setDismissReason(blockTree);
+                        }
+                    } else {
+                        if (msg && msg === 'the same name rule is existence') {
+                            this.uniqueFlg = false;
+                        } else if (msg && msg === 'key_str duplicatoin') {
+                            this.keyUnqFlg = false;
+                        } else {
+                            alert(msg);
+                        }
+                    }
+                });
+        }
+    }
+    public deleteRule() {
+        let alt = confirm('このルールを削除します。よろしいですか？');
+        this.apiPrefix = '/v1';
+        // let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;
+        let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&policy_tree_id=' + this.cpId;
+        if (alt) {
+            this.httpClient
+                .toJson(this.httpClient.delete(delUrl)).subscribe(res => {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(status, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data) {
+                            let blockTree: any = {};
+                            blockTree = _.get(data, 'block_rule_tree_json');
+                            alert('削除しました。');
+                            this.bsModalRef.hide();
+                            this.modalService.setDismissReason(blockTree);
+                        }
+                    } else {
+                        alert(msg);
+                    }
+                });
+        }
     }
 }

@@ -10,11 +10,14 @@ import { CPViewComponent } from './collectionPolicy/cPView.component';
 import { CPGViewComponent } from './collectionPolicy/cPGView.component';
 import { CLICPLoginComponent } from './collectionPolicy/cliCPLogin.component';
 import { CLICPEditComponent } from './collectionPolicy/cliCPEdit.component';
+import { CLICPEditPopComponent } from './collectionPolicy/cliCPEditPop.component';
 import { CLICPDetailComponent } from './collectionPolicy/cliCPDetail.component';
 import { CLIBlockComponent } from './collectionPolicy/cliBlock.component';
+import { CLIDataComponent } from './collectionPolicy/cliData.component';
 import { SNMPCPLoginComponent } from './collectionPolicy/snmpCPLogin.component';
 import { SNMPCPDetailComponent } from './collectionPolicy/snmpCPDetail.component';
 import { SNMPCPEditComponent } from './collectionPolicy/snmpCPEdit.component';
+
 // data collection
 import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
 import { PoliciesPerDeviceComponent } from './dataCollection/policiesPerDevice.component';
@@ -168,9 +171,11 @@ const routes: Routes = [
 ];
 export const appRouting = RouterModule.forRoot(routes);
 export const entryComponentList: any[] = [
-    ModalComponent,
+ModalComponent,
     // collection policy
     CLIBlockComponent,
+    CLIDataComponent,
+    CLICPEditPopComponent,
     // data
     DataCollectionLoginComponent,
     DataTableLoginComponent,
