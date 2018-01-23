@@ -182,7 +182,6 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         if(typeof(deviceId) == 'undefined'){
            return;
         }
-        alert(deviceId);
         $('#policiesTable').jqGrid({
             // url: '/v1/api_data_collection/?id='+deviceId,
             // datatype: 'JSON',
