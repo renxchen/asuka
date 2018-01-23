@@ -17,7 +17,7 @@
                 <dl class="dl-horizontal">
                     <dt>コレクションポリシー名：</dt>
                     <dd>
-                        <p class="confirm confirm-text">{{name}}</p>
+                        <p class="confirm confirm-text">{{cpName}}</p>
                     </dd>
                     <dt>実行コマンド：</dt>
                     <dd>
@@ -32,7 +32,7 @@
                     </dd>                   
                     <dt>概要：</dt>
                     <dd>
-                        <p class="confirm confirm-textarea">{{desc}}</p>
+                        <p class="confirm confirm-textarea">{{cpDesc}}</p>
                     </dd>
                 </dl>
             </div>
@@ -48,6 +48,306 @@
             <div class="col-lg-3 col-lg-offset-1 col-xs-4">
                 <div id="policyTree" class="jstree"></div>
             </div>
+            <!--  -->
+            <div class="col-lg-8 col-xs-8" *ngIf="ruleFlg" id="rule-info">
+                <div class="ibox-title">
+                    <h5>
+                        <i class="fa fa-lg fa-cubes" *ngIf="iconFlg"></i>
+                        <i class="fa fa-lg fa-text-height" *ngIf="!iconFlg"></i>
+                        <span>{{ruleTypeName}}rule type name</span>
+                    </h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row"><div class="col-md-11 col-xs-12">
+                        <div id="rule_default">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>ルール名：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{name}}rule name</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>概要：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-textarea">{{desc}}rule desc</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- block_rule_1 -->
+                        <div *ngIf="ruleType=='block_rule_1'">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>基準文字列：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{markString}}mark_string</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>ブロック識別子名：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{keyStr}} key_str</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div>
+                                    <input type="checkbox" id="isSerial" name="isSerial"
+                                    [(ngModel)]="isSerial" >ブロック識別子に連番を付与
+                                </div>  
+                            </div>
+                        </div>
+                        <!-- block_rule_2 -->
+                        <div *ngIf="ruleType=='block_rule_2'">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>基準文字列：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{markString}}mark_string</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>ブロック識別子名：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{keyStr}} key_str</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>基準以下スタート行：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{startLnNum}} startlnNum</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>基準以下エンド行：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{endLnNum}} startlnNum</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div>
+                                    <input type="checkbox" id="isSerial" name="isSerial"
+                                    [(ngModel)]="isSerial" >ブロック識別子に連番を付与
+                                </div>  
+                            </div>
+                        </div>
+                        <!-- block_rule_3 -->
+                        <div *ngIf="ruleType=='block_rule_3'">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>スタート文字列：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{markString}} markString</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>エンド文字列：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{endMrkStr}} markString</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div>
+                                    <input type="checkbox" id="isSerial" name="isSerial"
+                                    [(ngModel)]="isInclude" >エンド文字列行を含まない:
+                                </div>  
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>ブロック識別子：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{extractKey}} markString</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>ブロック識別子名：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{keyStr}} key_str</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div>
+                                    <input type="checkbox" id="isSerial" name="isSerial"
+                                    [(ngModel)]="isSerial" >ブロック識別子に連番を付与
+                                </div>  
+                            </div>
+                        </div>
+                        <!-- block_rule_4 -->
+                        <div *ngIf="ruleType=='block_rule_4'">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>基準文字列：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{markString}}mark_string</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>ブロック識別子名：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{keyStr}} key_str</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- data_rule_1 -->
+                        <div *ngIf="ruleType=='data_rule_1'">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>基準となる文字列:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{markString}}markString</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>切り分け文字:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{selSplitChar}}selSplitChar</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>基準文字列からの距離：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{xOffset}}xOffset</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>データ識別子名：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{keyStr}}keyStr</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>抽出するデータ（正規表現）:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{extractKey}}extractKey</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- data_rule_2 -->
+                        <div *ngIf="ruleType=='data_rule_2'">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>基準となる文字列:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{markString}}markString</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>基準文字列からの距離:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{xOffset}}xOffset</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>切り分け文字:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{selSplitChar}}selSplitChar</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>先頭文字からの距離：:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{yOffset}}yOffset</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>データ識別子名：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{keyStr}}keyStr</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>抽出するデータ（正規表現）:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{extractKey}}extractKey</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- data_rule_3 -->
+                        <div *ngIf="ruleType=='data_rule_3'">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>抽出するデータ（正規表現）：</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{extractKey}}extractKey</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>データ識別子名:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{keyStr}}keyStr</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- data_rule_4 -->
+                        <div *ngIf="ruleType=='data_rule_4'">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>データ識別子名:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{lineNums}}lineNums</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- data_rule_5 -->
+                        <div *ngIf="ruleType=='data_rule_5'">
+                            <div class="row">
+                                <div class="col-md-3 col-xs-4 text-right">
+                                    <strong>データ識別子名:</strong>
+                                </div>
+                                <div class="col-md-9 col-xs-8">
+                                    <p class="confirm confirm-text">{{command}}command</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--  -->
         </div>
     </div>
 </div>

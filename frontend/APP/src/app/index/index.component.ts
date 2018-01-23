@@ -19,7 +19,7 @@ export class IndexComponent implements OnInit, AfterViewInit {
         private service: IndexService,
         private activatedRoute: ActivatedRoute,
         private translate: TranslateService) {
-        this. translate.setDefaultLang('en');
+        this. translate.setDefaultLang('ja');
     }
     ngOnInit() {
         localStorage.setItem('requestFailed', '');
