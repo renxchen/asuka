@@ -9,6 +9,7 @@
 @desc:
 
 '''
+import time
 from backend.apolo.tools import constants
 
 
@@ -63,3 +64,54 @@ class Tool(object):
                 'schedule_start_time': schedule_start_time,
                 'schedule_end_time': schedule_end_time
                 }
+
+    @staticmethod
+    def priority_mapping(priority_key):
+        levels = [{constants.PRIORITY_HIGH_LEVEL_KEY: constants.PRIORITY_HIGH_LEVEL_VALUE},
+                  {constants.PRIORITY_STANDARD_LEVEL_KEY: constants.PRIORITY_STANDARD_LEVEL_VALUE},
+                  {constants.PRIORITY_URGENT_LEVEL_KEY: constants.PRIORITY_URGENT_LEVEL_VALUE}]
+        level_value = []
+        for item in levels:
+            if priority_key in item.keys()[0]:
+                level_value.append(item.values()[0])
+        return level_value
+
+    @staticmethod
+    def schedule_type_mapping(schedule_type_key):
+        levels = [{constants.SCHEDULE_TYPE_OFTEN_KEY: constants.SCHEDULE_TYPE_OFTEN_VALUE},
+                  {constants.SCHEDULE_TYPE_STOP_KEY: constants.SCHEDULE_TYPE_STOP_VALUE},
+                  {constants.SCHEDULE_TYPE_PERIOD_KEY: constants.SCHEDULE_TYPE_PERIOD_VALUE}]
+        level_value = []
+        for item in levels:
+            if schedule_type_key in item.keys()[0]:
+                level_value.append(item.values()[0])
+
+        return level_value
+
+    @staticmethod
+    def schedule_status_mapping(schedule_status_key):
+        levels = [{constants.SCHEDULE_STATUS_ON_KEY: constants.SCHEDULE_STATUS_ON_VALUE},
+                  {constants.SCHEDULE_STATUS_OFF_KEY: constants.SCHEDULE_STATUS_OFF_VALUE}
+                ]
+        level_value = []
+        for item in levels:
+            if schedule_status_key in item.keys()[0]:
+                level_value.append(item.values()[0])
+
+        return level_value
+
+    @staticmethod
+    def set_priority_mapping(priority_value):
+        if priority_value == constants.PRIORITY_HIGH_LEVEL_VALUE:
+            return constants.PRIORITY_HIGH_LEVEL_KEY
+        elif priority_value == constants.PRIORITY_URGENT_LEVEL_VALUE:
+            return constants.PRIORITY_URGENT_LEVEL_KEY
+        elif priority_value == constants.PRIORITY_STANDARD_LEVEL_VALUE:
+            return constants.PRIORITY_STANDARD_LEVEL_KEY
+        else:
+            return 'ERROR'
+
+
+if __name__ == '__main__':
+    t = Tool()
+

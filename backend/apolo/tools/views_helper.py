@@ -34,7 +34,14 @@ def get_search_conditions(request, field_relation_ships, query_data, search_fiel
                 # Q(Name__contains=sqlstr) , Q(MUser__username__contains=sqlstr)
                 # each_q = Q(value + '__icontains' + '=' + query_data[value])
                 # search_conditions.append(each_q)
-                search_conditions[field_relation_ships[value] + '__contains'] = query_data[field]
+                if field =='priority':
+                    search_conditions[field_relation_ships[value] + '__in'] = query_data[field]
+                elif field == 'data_schedule_type':
+                    search_conditions[field_relation_ships[value] + '__in'] = query_data[field]
+                elif field == 'status':
+                    search_conditions[field_relation_ships[value] + '__in'] = query_data[field]
+                else:
+                    search_conditions[field_relation_ships[value] + '__contains'] = query_data[field]
     sorts = []
     if sort_by:
         if sort_by in field_relation_ships:
