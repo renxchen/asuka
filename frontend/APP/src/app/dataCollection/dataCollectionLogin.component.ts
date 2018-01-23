@@ -168,6 +168,11 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                             }
                         }
 
+                        let valid_period_type = _.get(data, 'valid_period_type');
+                        $('input[name="validPeriodType"][value="'+valid_period_type+'"]').attr('checked','checked');
+                        let data_schedule_type = _.get(data, 'data_schedule_type');
+                        $('input[name="dataScheduleType"][value="'+data_schedule_type+'"]').attr('checked','checked');
+
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
