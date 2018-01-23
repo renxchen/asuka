@@ -15,50 +15,45 @@ declare var $: any;
 export class CLICPDetailComponent implements OnInit, AfterViewInit {
     cPId: any;
     apiPrefix: any;
-    name: any;
+    cpName: any;
     osType: any;
     cliCommand: any;
-    desc: any;
+    cpDesc: any;
     policyTree: any;
     modalRef: BsModalRef;
     closeMsg: any;
     modalMsg: any;
+    // blockruleInfo
+    ruleType: any;
+    ruleTypeName: any;
+    ruleId: any;
+    name: any;
+    desc: any;
+    markString: any;
+    keyStr: any;
+    selSplitChar: any;
+    xOffset: any;
+    yOffset: any;
+    extractKey: any;
+    lineNums: any;
+    command: any;
+    // dataruleInfo
+    startLnNum: any;
+    endLnNum: any;
+    endMrkStr: any;
+    isInclude: any;
+    isSerial: any;
+    ruleFlg: Boolean = false;
+    iconFlg: boolean;
     treeData: any = [
         {
-            'text': 'test_1',
-            'icon': 'fa fa-cubes fa-lg',
+            'text': 'data_rule_3_subscription',
+            'icon': 'fa fa-text-height fa-lg',
             'data': {
-                'rule_id': '1',
-                'rule_type': 'policy_rule',
+                'rule_id': '37',
+                'rule_type': 'data_rule_3',
             }
-        },
-        {
-            'text': 'test_2',
-            'icon': 'fa fa-cubes fa-lg',
-            'data': {
-                'rule_id': '2',
-                'rule_type': 'policy_rule',
-            },
-            'children': [
-                {
-                    'text': 'd_1_1',
-                    'icon': 'fa fa-text-height',
-                    'data': {
-                        'rule_type': 'data_rule_1',
-                        'rule_id': 5
-                    }
-                },
-                {
-                    'text': 'd_1_2',
-                    'icon': 'fa fa-text-height',
-                    'data': {
-                        'rule_type': 'data_rule_1',
-                        'rule_id': '6'
-                    }
-                }
-            ]
         }
-
     ];
     constructor(
         private httpClient: HttpClientComponent,
@@ -77,6 +72,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
     ngOnInit() {
     }
     ngAfterViewInit() {
+        this.drawPlyTree(this.treeData);
     }
     public getCPDetailInfo(id: any) {
         this.apiPrefix = '/v1';
@@ -88,10 +84,10 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
                 if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         let data = res['data'][0];
-                        this.name = _.get(data, 'name');
+                        this.cpName = _.get(data, 'name');
                         this.osType = _.get(data, 'ostype_name');
                         this.cliCommand = _.get(data, 'cli_command');
-                        this.desc = _.get(data, 'desc');
+                        this.cpDesc = _.get(data, 'desc');
                         if (res['policy_tree']) {
                             let policy = res['policy_tree'];
                             let tree = _.get(policy, 'children');
@@ -106,10 +102,86 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
             });
     }
     public drawPlyTree(data: any) {
+        let _t = this;
         $('#policyTree').jstree({
             core: {
-                check_callback: false,
+                'check_callback': function (operation, node, node_parent, node_position, more) {
+                    return false;
+                },
                 data: data
+            },
+            plugins: ['types', 'dnd', 'state', 'crrm', 'node_customize', 'root_node']
+        }).bind('activate_node.jstree', function (e, data) {
+            // console.log(123);
+            _t.ruleFlg = true;
+            // if (data.node) {
+            //     let ruleData = data.node.data;
+            //     _t.ruleId = _.get(ruleData, 'rule_id');
+            //     _t.ruleType = _.get(ruleData, 'rule_type');
+            //     _t.getDataRule(_t.ruleId);
+            //     _t.ruleTypeName = _t.ruleNameFormatter(_t.ruleType);
+            // }
+        });
+    }
+    public ruleNameFormatter(name: any) {
+        if (name.indexOf('block_rule') !== -1) {
+            this.iconFlg = true;
+        } else {
+            this.iconFlg = false;
+        }
+        this.ruleType = name;
+        if (name === 'block_rule_1') {
+            return 'インデントによるブロック定義';
+        } else if (name === 'block_rule_2') {
+            return '行数によるブロック定義';
+        } else if (name === 'block_rule_3') {
+            return '指定文字列-指定文字列でのブロック抽出';
+        } else if (name === 'block_rule_4') {
+            return '正規表現を含むブロック抽出';
+        } if (name === 'data_rule_1') {
+            return '特定文字からの距離での抽出';
+        } else if (name === 'data_rule_2') {
+            return '行数による抽出';
+        } else if (name === 'data_rule_3') {
+            return '正規表現による抽出';
+        } else if (name === 'data_rule_4') {
+            return '行数の抽出';
+        } else {
+            return '出力全抽出';
+        }
+    }
+    public commInfo(ruleId: any) {
+        this.apiPrefix = '/v1';
+        let url = '/api_policy_tree_rule/?rule_id=' + ruleId;
+        this.httpClient.setUrl(this.apiPrefix);
+        return this.httpClient.toJson(this.httpClient.get(url));
+    }
+    public getDataRule(ruleId: any) {
+        this.commInfo(ruleId).subscribe(res => {
+            let status = _.get(res, 'status');
+            let data = _.get(res, 'data');
+            if (status && status['status'].toLowerCase() === 'true') {
+                if (data) {
+                    this.name = _.get(data, 'name');
+                    this.desc = _.get(data, 'desc');
+                    this.markString = _.get(data, 'mark_string');
+                    this.keyStr = _.get(data, 'key_str');
+                    this.startLnNum = _.get(data, 'start_line_num');
+                    this.endLnNum = _.get(data, 'end_line_num');
+                    this.endMrkStr = _.get(data, 'end_mark_string');
+                    this.isInclude = _.get(data, 'is_include');
+                    this.isSerial = _.get(data, 'is_serial');
+                    this.selSplitChar = _.get(data, 'split_char');
+                    this.xOffset = _.get(data, 'x_offset');
+                    this.yOffset = _.get(data, 'y_offset');
+                    this.lineNums = _.get(data, 'line_nums');
+                    // 后台定义该字段
+                    this.command = _.get(data, 'command');
+                } else {
+                    if (res['status'] && res['status']['message']) {
+                        alert(res['status']['message']);
+                    }
+                }
             }
         });
     }
@@ -121,7 +193,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         //     .toJson(this.httpClient.get(url + '?id=' + this.cPId))
         //     .subscribe(res => {
         //         if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-        this.router.navigate(['/index/cliCPEdit'], { queryParams: { 'id': this.cPId } });
+        // this.router.navigate(['/index/cliCPEdit'], { queryParams: { 'id': this.cPId } });
         //         } else {
         //             // check this cp occupation, add 'occupation' feedback
         //             if (res['status']['message'] && ['status']['message'] === 'occupation') {

@@ -1,19 +1,26 @@
-import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { CollectionPolicyService } from './collectionPolicy.service';
 import { HttpClientComponent } from '../../components/utils/httpClient';
-import { CLICPLoginComponent } from './cliCPLogin.component';
+import { CLICPEditPopComponent } from './cliCPEditPop.component';
 import { CLIBlockComponent } from './cliBlock.component';
+import { CLIDataComponent } from './cliData.component';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
+import { ModalDirective } from 'ngx-bootstrap/modal';
+import { Subscription } from 'rxjs/Rx';
+import * as _ from 'lodash';
 declare var $: any;
 
 @Component({
     selector: 'cli-edit',
     templateUrl: 'cliCPEdit.component.html',
-    styleUrls: ['collectionPolicy.component.less']
+    styleUrls: ['collectionPolicy.component.less'],
+    providers: [CollectionPolicyService]
 })
 
-export class CLICPEditComponent implements OnInit, AfterViewInit {
+export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
+    @ViewChild('CLIDataComponent') cliModal: ModalDirective;
     cPId: string;
     apiPrefix: string;
     cPName: string;
@@ -29,206 +36,12 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
         ignoreBackdropClick: true,
         class: 'modal-lg'
     };
-    testData: any = [
-        {
-            'text': 'block_1',
-            'icon': 'fa fa-folder-o',
-            'data': {
-                'is_root': true, // root_node can not be moved;
-                'rule_type': 'block_rule_1', // for editing and deleting
-            },
-            'state': {
-                'opened': true,
-            },
-            'children': [
-                {
-                    'text': 'br_1_1',
-                    'icon': 'fa fa-cubes',
-                    'children': [],
-                    'data': {
-                        'rule_id': 1,
-                        'rule_type': 'block_rule_1'
-                    },
-                },
-                {
-                    'text': 'br_1_2',
-                    'icon': 'fa fa-cubes',
-                    'children': [],
-                    'data': {
-                        'rule_id': 2,
-                        'rule_type': 'block_rule_1'
-                    }
-                }
-            ],
-        },
-        {
-            'text': 'b2',
-            'icon': 'fa fa-folder-o',
-            'data': {
-                'rule_type': 'block_rule_2',
-                'is_root': true,
-            },
-            'state': {
-                'opened': true,
-            },
-            'children': [
-                {
-                    'text': 'br_2_1',
-                    'icon': 'fa fa-cubes',
-                    'children': [],
-                    'data': {
-                        'rule_type': 'block_rule_2',
-                        'rule_id': 3
-                    }
-                }
-            ],
-        },
-        {
-            'text': 'b3',
-            'icon': 'fa fa-folder-o',
-            'data': {
-                'rule_type': 'block_rule_3',
-                'is_root': true
-            },
-            // root can't be moved
-            'state': {
-                'opened': true, // is the node open
-            },
-            'children': [
-                {
-                    'text': 'br_3_1',
-                    'icon': 'fa fa-cubes',
-                    'children': [],
-                    'data': {
-                        'rule_type': 'block_rule_3',
-                        'rule_id': 4
-                    }
-                }
-            ],
-        },
-        {
-            'text': 'b4',
-            'icon': 'fa fa-folder-o',
-            'data': {
-                'rule_type': 'block_rule_4',
-                'is_root': true
-            },
-            // root can't be moved
-            'state': {
-                'opened': true, // is the node open
-            },
-            'children': [
-                {
-                    'text': 'br_4_1',
-                    'icon': 'fa fa-cubes',
-                    'children': [],
-                    'data': {
-                        'rule_type': 'block_rule_4',
-                        'rule_id': 5
-                    }
-                }
-            ],
-        }
-    ];
-    testData2: any = [
-        // 'Simple root node',
-        {
-            'text': 'd1',
-            // used for create rule
-            'icon': 'fa fa-folder-o',
-            'data': {
-                'rule_type': 'data_rule_1',
-                'is_root': true,
-            },
-            'children': [
-                {
-                    'text': 'd_1_1',
-                    'icon': 'fa fa-text-height',
-                    'data': {
-                        'rule_type': 'data_rule_1',
-                        'rule_id': 5
-                    }
-                },
-                {
-                    'text': 'd_1_2',
-                    'icon': 'fa fa-text-height',
-                    'data': {
-                        'rule_type': 'data_rule_1',
-                    }
-                }
-            ]
-        },
-        {
-            'text': 'd2',
-            'icon': 'fa fa-folder-o',
-            'data': {
-                'rule_type': 'data_rule_2',
-                'is_root': true,
-            },
-            'children': [
-                {
-                    'text': 'd_2_1',
-                    // used for editing and delete
-                    'icon': 'fa fa-text-height',
-                    'data': {
-                        'rule_type': 'data_rule_2',
-                        'rule_id': 6
-                    }
-                },
-                {
-                    'text': 'd_2_2',
-                    'icon': 'fa fa-text-height',
-                    'data': {
-                        'rule_type': 'data_rule_2',
-                        'rule_id': 7
-                    }
-                }
-            ]
-        },
-        {
-            'text': 'd3',
-            'icon': 'fa fa-folder-o',
-            'data': {
-                'type': 'data_rule_3',
-                'is_root': true,
-            },
-            'type': 'data_rule_3',
-            'children': [
-                {
-                    'text': 'd_3_1',
-                    'icon': 'fa fa-text-height',
-                    'data': {
-                        'rule_type': 'data_rule_3',
-                        'rule_id': 8
-                    }
-                },
-                {
-                    'text': 'd_3_2',
-                    'icon': 'fa fa-text-height',
-                    'data': {
-                        'rule_type': 'data_rule_3',
-                        'rule_id': 9,
-                    }
-                }
-            ],
-        }
-    ];
-    testData3: any = [
-        {
-            'text': 'test',
-            'icon': 'fa fa-tags fa-lg',
-            'data': {
-                'rule_type': 'policy_rule',
-                'is_root': true,
-            }
-        },
-
-    ];
     constructor(
         private router: Router,
         private activedRoute: ActivatedRoute,
         private httpClient: HttpClientComponent,
-        private modalService: BsModalService
+        private modalService: BsModalService,
+        public service: CollectionPolicyService,
     ) {
         let cPIdeTmp: any = this.activedRoute.snapshot.queryParams['id'];
         if (cPIdeTmp && typeof (cPIdeTmp) !== 'undefined') {
@@ -237,14 +50,11 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
         } else {
             this.router.navigate(['/index/']);
         }
+
     }
-    ngOnInit() {
-    }
+    ngOnInit() { }
     ngAfterViewInit() {
         this.nodeCustomizeAndRoot();
-        // this.blockTree(this.testData);
-        // this.dataTree(this.testData2);
-        // this.policyTree(this.testData3);
     }
     public getCPInfo(id: any) {
         this.apiPrefix = '/v1';
@@ -256,6 +66,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
                 if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data']) {
                         let data = res['data'];
+                        // console.log(data);
                         this.cPName = data['coll_policy_name'];
                         this.blockTreeData = data['block_rule_tree_json'];
                         this.dataTreeData = data['data_rule_tree_json'];
@@ -341,17 +152,18 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
         return true;
     }
     public policyMoveRule(operation, node, node_parent, node_position, more) {
+        // console.log(node, operation, more);
         if (node_parent.parent === null) {
             return false;
         }
         // block_rule can't be dragged to data_rule;
-        if (node['data']['rule_type'].indexOf('block_rule') !== -1
+        if (node['data']['rule_type'] && node['data']['rule_type'].indexOf('block_rule') !== -1
             && node_parent['data']['rule_type']
             && node_parent['data']['rule_type'].indexOf('data_rule') !== -1) {
             return false;
         }
         // data_rule be dragged to data
-        if (node['data']['rule_type'].indexOf('data_rule') !== -1
+        if (node['data']['rule_type'] && node['data']['rule_type'].indexOf('data_rule') !== -1
             && node_parent['data']['rule_type']
             && node_parent['data']['rule_type'].indexOf('data_rule') !== -1) {
             return false;
@@ -364,13 +176,50 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
     }
     // policy tree hightlight
     public getPlyTreeInfo() {
-        return $('#policyTree')
+        let tree = $('#policyTree')
             .jstree(true)
             .get_json('#', {
                 flat: false, no_state: true,
                 no_li_attr: true, no_a_attr: true,
                 no_data: false,
             });
+        return tree[0];
+    }
+    // check ruleId on policy tree
+    public findNode(tree: any, ruleId: any) {
+        let data = tree['data'];
+        if (_.has(data, 'rule_id')) {
+            if (data['rule_id'].toString() === ruleId.toString()) {
+                return true;
+            }
+        }
+        if (_.has(tree, 'children')) {
+            for (let child of tree['children']) {
+                if (child) {
+                    if (this.findNode(child, ruleId)) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    // check before saving policy tree
+    public checkPolicyTree(tree: any) {
+        let data = tree['data'];
+        if (_.has(data, 'rule_type')) {
+            if (data['rule_type'].indexOf('data_rule') !== -1) {
+                return true;
+            }
+        }
+        if (_.has(tree, 'children')) {
+            for (let child of tree['children']) {
+                if (child) {
+                    if (this.checkPolicyTree(child)) {
+                        return true;
+                    }
+                }
+            }
+        }
     }
     // highlight
     public hightLight(param: any) {
@@ -393,25 +242,30 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
             });
     }
     public savePlyTree() {
-        // let param = {
-        //     'coll_policy_id': this.cPId,
-        //     'tree': this.getPlyTreeInfo()[0],
-        //     'raw_data': $('#input-wrap').val()
-        // };
-        // this.apiPrefix = '/v1';
-        // let savePlytUrl = '/api_policy_tree/';
-        // this.httpClient.setUrl(this.apiPrefix);
-        // this.httpClient
-        // .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
-        //     if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-        //         alert('保存しました');
-        //         this.router.navigate(['/index/cliCPDetail'], { queryParams: { 'id': this.cPId } });
-        //     } else {
-        //         if (res['status'] && res['status']['message']) {
-        //             alert(res['status']['message']);
-        //         }
-        //     }
-        // });
+        // let tree = this.getPlyTreeInfo();
+        // if (this.checkPolicyTree(tree)) {
+        //     let param = {
+        //         'coll_policy_id': this.cPId,
+        //         'tree': tree,
+        //         'raw_data': $('#input-wrap').val()
+        //     };
+        //     this.apiPrefix = '/v1';
+        //     let savePlytUrl = '/api_policy_tree/';
+        //     this.httpClient.setUrl(this.apiPrefix);
+        //     this.httpClient
+        //         .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
+        //             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+        //                 alert('保存しました');
+        //                 this.router.navigate(['/index/cliCPDetail'], { queryParams: { 'id': this.cPId } });
+        //             } else {
+        //                 if (res['status'] && res['status']['message']) {
+        //                     alert(res['status']['message']);
+        //                 }
+        //             }
+        //         });
+        // } else {
+        //     alert('There is no dataRule on the policy tree');
+        // }
     }
     public blockTree(data: any) {
         let _t = this;
@@ -432,48 +286,44 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
             'root_node':
             [{
                 'html': `<button class="btn btn-xs btn-primary"
-                        style="margin-left:20px" type="button" >
-                            <i class="fa fa-plus-square"></i>&nbsp追加
+                        style="margin-left:10px" type="button" >
+                            <i class="fa fa-plus-square"></i>追加
                         </button>`,
                 'click': function (event) {
-                    let addBlockParam: any;
-                    let blockRuleType = event.data.node['data']['rule_type'];
+                    let addBlockParam: any = {};
+                    let node = event.data.node;
                     let actionType = 'create';
-                    addBlockParam = {
-                        'ruleType': blockRuleType,
-                        'actionType': actionType,
-                        'cPId': _t.cPId
-                    };
+                    addBlockParam['ruleType'] = node['data']['rule_type'];
+                    addBlockParam['actionType'] = 'create';
+                    addBlockParam['cPId'] = _t.cPId;
                     _t.blockRuleAction(addBlockParam);
-                    // console.log('block_add', addBlockParam);
                 }
             }],
             'node_customize': [{
                 'html': `<button class="btn btn-outline btn-info btn-xs"
                         sytle="margin-left:10px;margin-bottom:2px;
                         " type="button">
-                            <i class="fa fa-paste"></i> 編集
+                            <i class="fa fa-paste"></i>編集
                         </button>`,
                 'click': function (event) {
                     let node = event.data.node;
-                    let blockRuleType = event.data.node['data']['rule_type'];
-                    let blockRuleId = event.data.node['data']['rule_id'];
-                    let actionType = 'edit';
-                    let editBlockParam: any;
-                    editBlockParam = {
-                        'ruleType': blockRuleType,
-                        'actionType': actionType,
-                        'blockRuleId': blockRuleId,
-                        'cPId': _t.cPId
-                    };
+                    let editBlockParam: any = {};
+                    let tree = _t.getPlyTreeInfo();
+                    let id = node['data']['rule_id'];
+                    editBlockParam['ruleType'] = node['data']['rule_type'];
+                    editBlockParam['ruleId'] = id;
+                    editBlockParam['actionType'] = 'edit';
+                    editBlockParam['delFlg'] = _t.findNode(tree, id);
+                    editBlockParam['cPId'] = _t.cPId;
                     _t.blockRuleAction(editBlockParam);
                 }
             }]
-        }).bind('move_node.jstree', function (e, data) {
-        }).bind('activate_node.jstree', function (e, node) {
-            // console.log(node);
-            // show_detail(node);
         });
+        // .bind('move_node.jstree', function (e, data) {
+        // }).bind('activate_node.jstree', function (e, node) {
+        //     console.log(node);
+        //     show_detail(node);
+        // });
     }
     public dataTree(data: any) {
         let _t = this;
@@ -495,18 +345,15 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
             'root_node':
             [{
                 'html': `<button class="btn btn-xs btn-primary"
-                        style="margin-left:20px" type="button" >
-                            <i class="fa fa-plus-square"></i>&nbsp追加
+                        style="margin-left:10px" type="button" >
+                            <i class="fa fa-plus-square"></i>追加
                         </button>`,
                 'click': function (event) {
-                    let addDataParam: any;
-                    let dataRuleType = event.data.node['data']['rule_type'];
-                    let actionType = 'create';
-                    addDataParam = {
-                        'ruleType': dataRuleType,
-                        'actionType': actionType,
-                        'cPId': _t.cPId
-                    };
+                    let addDataParam: any = {};
+                    let node = event.data.node;
+                    addDataParam['ruleType'] = node['data']['rule_type'];
+                    addDataParam['actionType'] = 'create';
+                    addDataParam['cPId'] = _t.cPId;
                     _t.dataRuleAction(addDataParam);
                 }
             }],
@@ -518,21 +365,23 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
                         </button>`,
                 'click': function (event) {
                     let node = event.data.node;
-                    let dataRuleType = event.data.node['data']['rule_type'];
-                    let dataRuleId = event.data.node['data']['rule_id'];
-                    let actionType = 'edit';
-                    let editDataParam: any;
-                    editDataParam = {
-                        'ruleType': dataRuleType,
-                        'actionType': actionType,
-                        'dataRuleId': dataRuleId,
-                        'cPId': _t.cPId
-                    };
+                    let editDataParam: any = {};
+                    let tree = _t.getPlyTreeInfo();
+                    let id = node['data']['rule_id'];
+                    editDataParam['ruleType'] = node['data']['rule_type'];
+                    editDataParam['ruleId'] = id;
+                    editDataParam['actionType'] = 'edit';
+                    editDataParam['delFlg'] = _t.findNode(tree, id);
+                    editDataParam['cPId'] = _t.cPId;
                     _t.dataRuleAction(editDataParam);
                 }
             }]
-        }).bind('move_node.jstree', function (e, data) { })
-            .bind('activate_node.jstree', function (e, node) { });
+        });
+        // .bind('move_node.jstree', function (e, data) {
+        //     console.log('move_node.jstree', e, data);
+        // }).bind('activate_node.jstree', function (e, node) {
+        //     console.log('regreshsh', e, data);
+        // });
     }
     public policyTree(data: any) {
         let _t = this;
@@ -552,7 +401,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
             },
             'node_customize': [
                 {
-                    'html': `<button class="btn btn-outline btn-danger  btn-xs"
+                    'html': `<button class="btn btn-outline btn-danger btn-xs"
                                 sytle="margin-left:10px;margin-bottom:2px;"
                                 type="button">
                                 <i class="fa fa-minus-square"></i> 消除
@@ -568,18 +417,18 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
                                 <i class="fa fa-list"></i> ハイライト
                             </button>`,
                     'click': function (event) {
-                        let param = {
-                            'coll_policy_id': _t.cPId,
-                            'tree': _t.getPlyTreeInfo()[0],
-                            'tree_id': event.data.node['id'],
-                            'raw_data': $('#input-wrap').val()
-                        };
-                        // highlight;
-                        if (param.raw_data) {
-                            _t.hightLight(param);
-                        } else {
-                            alert('raw_data is null');
-                        }
+                        // let param = {
+                        //     'coll_policy_id': _t.cPId,
+                        //     'tree': _t.getPlyTreeInfo(),
+                        //     'tree_id': event.data.node['id'],
+                        //     'raw_data': $('#input-wrap').val()
+                        // };
+                        // // highlight;
+                        // if (param.raw_data) {
+                        //     _t.hightLight(param);
+                        // } else {
+                        //     alert('raw_data is null');
+                        // }
                     }
                 }
             ],
@@ -594,10 +443,42 @@ export class CLICPEditComponent implements OnInit, AfterViewInit {
     public blockRuleAction(sendInfo: any) {
         this.modalRef = this.modalService.show(CLIBlockComponent, this.modalConfig);
         this.modalRef.content.info = sendInfo;
+        let blockTree$ = this.modalService.onHidden.subscribe((res => {
+            // console.log('456', res);
+            if (res) {
+                $('#dataTree').jstree('destroy');
+                this.dataTree(res);
+            }
+            this.unsubscribe(blockTree$);
+        }));
     }
     public dataRuleAction(sendInfo: any) {
-        // this.bsModalRef = this.modalService.show(CLIdataComponent, this.modalConfig);
-        // this.bsModalRef.content.info = sendInfo;
+        this.modalRef = this.modalService.show(CLIDataComponent, this.modalConfig);
+        this.modalRef.content.info = sendInfo;
+        let dataTree$ = this.modalService.onHidden.subscribe((res => {
+            console.log('123');
+            if (res) {
+                $('#dataTree').jstree('destroy');
+                this.dataTree(res);
+            }
+            this.unsubscribe(dataTree$);
+        }));
     }
-    // detail haven't been completed
+    // cli collecton policy edit
+    public cPEdit() {
+        // let cPId = this.cPId;
+        // this.modalRef = this.modalService.show(CLICPEditPopComponent, this.modalConfig);
+        // this.modalRef.content.cPId = cPId;
+        // let cpName$ = this.modalService.onHidden.subscribe((res => {
+        //     if (res) {
+        //         this.cPName = res;
+        //     }
+        //     this.unsubscribe(cpName$);
+        // }));
+    }
+    ngOnDestroy(): void {
+    }
+    public unsubscribe(res: any) {
+        res.unsubscribe();
+    }
 }

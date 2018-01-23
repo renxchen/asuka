@@ -66,7 +66,9 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
             this.httpClient
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
                 .subscribe(res => {
-                    if (res['status']['status'].toString().toLowerCase() === 'true') {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    if (status && status['status'].toLowerCase() === 'true') {
                         // if (res['data']) {
                         //     let id = res['data']['coll_policy_id'];
                         //     this.router.navigate(['/index/snmpCPEdit'],
@@ -79,8 +81,10 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                             _t.router.navigate(['/index/']);
                         });
                     } else {
-                        if (res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                        if (msg === 'CP_NAME_DUPLICATE') {
                             this.uniqueFlg = false;
+                        } else {
+                            alert(msg);
                         }
                     }
                 });

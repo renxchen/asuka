@@ -1,6 +1,11 @@
-<div class="ibox-title">
+<div class="ibox-title clearfix">
     <!-- bind collection policy name -->
-    <h5>コレクションポリシー名：{{cPName}} </h5>
+    <h5>
+        コレクションポリシー名：<span>{{cPName}}</span>
+    </h5>
+    <button type="button" class="btn btn-info btn-outline btn-sm pull-right" (click)="cPEdit()">
+        <i class="fa fa-clipboard"></i> 編集
+    </button>
 </div>
 <div class="ibox-content text-center p-md" style="min-height:660px;">
     <!-- define role -->
