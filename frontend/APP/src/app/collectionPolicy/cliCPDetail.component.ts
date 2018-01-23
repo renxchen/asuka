@@ -112,16 +112,15 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
             },
             plugins: ['types', 'dnd', 'state', 'crrm', 'node_customize', 'root_node']
         }).bind('activate_node.jstree', function (e, data) {
-            return;
             // console.log(123);
             _t.ruleFlg = true;
-            if (data.node) {
-                let ruleData = data.node.data;
-                _t.ruleId = _.get(ruleData, 'rule_id');
-                _t.ruleType = _.get(ruleData, 'rule_type');
-                _t.getDataRule(_t.ruleId);
-                _t.ruleTypeName = _t.ruleNameFormatter(_t.ruleType);
-            }
+            // if (data.node) {
+            //     let ruleData = data.node.data;
+            //     _t.ruleId = _.get(ruleData, 'rule_id');
+            //     _t.ruleType = _.get(ruleData, 'rule_type');
+            //     _t.getDataRule(_t.ruleId);
+            //     _t.ruleTypeName = _t.ruleNameFormatter(_t.ruleType);
+            // }
         });
     }
     public ruleNameFormatter(name: any) {
@@ -187,7 +186,6 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         });
     }
     public naviCPEdit() {
-        return;
         // this.apiPrefix = '/v1';
         // let url = '/api_collection_policy/?policy_type=0';
         // this.httpClient.setUrl(this.apiPrefix);
@@ -195,7 +193,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         //     .toJson(this.httpClient.get(url + '?id=' + this.cPId))
         //     .subscribe(res => {
         //         if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-        this.router.navigate(['/index/cliCPEdit'], { queryParams: { 'id': this.cPId } });
+        // this.router.navigate(['/index/cliCPEdit'], { queryParams: { 'id': this.cPId } });
         //         } else {
         //             // check this cp occupation, add 'occupation' feedback
         //             if (res['status']['message'] && ['status']['message'] === 'occupation') {

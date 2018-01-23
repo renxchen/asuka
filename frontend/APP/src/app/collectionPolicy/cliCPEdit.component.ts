@@ -242,31 +242,30 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
     public savePlyTree() {
-        return;
-        let tree = this.getPlyTreeInfo();
-        if (this.checkPolicyTree(tree)) {
-            let param = {
-                'coll_policy_id': this.cPId,
-                'tree': tree,
-                'raw_data': $('#input-wrap').val()
-            };
-            this.apiPrefix = '/v1';
-            let savePlytUrl = '/api_policy_tree/';
-            this.httpClient.setUrl(this.apiPrefix);
-            this.httpClient
-                .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
-                    if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                        alert('保存しました');
-                        this.router.navigate(['/index/cliCPDetail'], { queryParams: { 'id': this.cPId } });
-                    } else {
-                        if (res['status'] && res['status']['message']) {
-                            alert(res['status']['message']);
-                        }
-                    }
-                });
-        } else {
-            alert('There is no dataRule on the policy tree');
-        }
+        // let tree = this.getPlyTreeInfo();
+        // if (this.checkPolicyTree(tree)) {
+        //     let param = {
+        //         'coll_policy_id': this.cPId,
+        //         'tree': tree,
+        //         'raw_data': $('#input-wrap').val()
+        //     };
+        //     this.apiPrefix = '/v1';
+        //     let savePlytUrl = '/api_policy_tree/';
+        //     this.httpClient.setUrl(this.apiPrefix);
+        //     this.httpClient
+        //         .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
+        //             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+        //                 alert('保存しました');
+        //                 this.router.navigate(['/index/cliCPDetail'], { queryParams: { 'id': this.cPId } });
+        //             } else {
+        //                 if (res['status'] && res['status']['message']) {
+        //                     alert(res['status']['message']);
+        //                 }
+        //             }
+        //         });
+        // } else {
+        //     alert('There is no dataRule on the policy tree');
+        // }
     }
     public blockTree(data: any) {
         let _t = this;
@@ -418,19 +417,18 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                                 <i class="fa fa-list"></i> ハイライト
                             </button>`,
                     'click': function (event) {
-                        return;
-                        let param = {
-                            'coll_policy_id': _t.cPId,
-                            'tree': _t.getPlyTreeInfo(),
-                            'tree_id': event.data.node['id'],
-                            'raw_data': $('#input-wrap').val()
-                        };
-                        // highlight;
-                        if (param.raw_data) {
-                            _t.hightLight(param);
-                        } else {
-                            alert('raw_data is null');
-                        }
+                        // let param = {
+                        //     'coll_policy_id': _t.cPId,
+                        //     'tree': _t.getPlyTreeInfo(),
+                        //     'tree_id': event.data.node['id'],
+                        //     'raw_data': $('#input-wrap').val()
+                        // };
+                        // // highlight;
+                        // if (param.raw_data) {
+                        //     _t.hightLight(param);
+                        // } else {
+                        //     alert('raw_data is null');
+                        // }
                     }
                 }
             ],
@@ -468,16 +466,15 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // cli collecton policy edit
     public cPEdit() {
-        return;
-        let cPId = this.cPId;
-        this.modalRef = this.modalService.show(CLICPEditPopComponent, this.modalConfig);
-        this.modalRef.content.cPId = cPId;
-        let cpName$ = this.modalService.onHidden.subscribe((res => {
-            if (res) {
-                this.cPName = res;
-            }
-            this.unsubscribe(cpName$);
-        }));
+        // let cPId = this.cPId;
+        // this.modalRef = this.modalService.show(CLICPEditPopComponent, this.modalConfig);
+        // this.modalRef.content.cPId = cPId;
+        // let cpName$ = this.modalService.onHidden.subscribe((res => {
+        //     if (res) {
+        //         this.cPName = res;
+        //     }
+        //     this.unsubscribe(cpName$);
+        // }));
     }
     ngOnDestroy(): void {
     }
