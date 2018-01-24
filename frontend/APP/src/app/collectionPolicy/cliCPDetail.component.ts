@@ -72,7 +72,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
     ngOnInit() {
     }
     ngAfterViewInit() {
-        this.drawPlyTree(this.treeData);
+        // this.drawPlyTree(this.treeData);
     }
     public getCPDetailInfo(id: any) {
         this.apiPrefix = '/v1';
@@ -112,15 +112,16 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
             },
             plugins: ['types', 'dnd', 'state', 'crrm', 'node_customize', 'root_node']
         }).bind('activate_node.jstree', function (e, data) {
-            // console.log(123);
+            console.log(123);
             _t.ruleFlg = true;
-            // if (data.node) {
-            //     let ruleData = data.node.data;
-            //     _t.ruleId = _.get(ruleData, 'rule_id');
-            //     _t.ruleType = _.get(ruleData, 'rule_type');
-            //     _t.getDataRule(_t.ruleId);
-            //     _t.ruleTypeName = _t.ruleNameFormatter(_t.ruleType);
-            // }
+            if (data.node) {
+                console.log(data.node);
+                let ruleData = data.node.data;
+                _t.ruleId = _.get(ruleData, 'rule_id');
+                _t.ruleType = _.get(ruleData, 'rule_type');
+                _t.getDataRule(_t.ruleId);
+                _t.ruleTypeName = _t.ruleNameFormatter(_t.ruleType);
+            }
         });
     }
     public ruleNameFormatter(name: any) {
