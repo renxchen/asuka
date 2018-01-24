@@ -46,16 +46,19 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             url: '/v1/api_collection_policy_group/',
             datatype: 'json',
             mtype: 'get',
-            colName: [
-                { label: 'No', hidden: true, name: 'coll_policy_id', index: 'coll_policy_id', search: false, key: true },
+            colModel: [
+                { label: 'No', hidden: true, name: 'policy_group_id', index: 'policy_group_id', search: false, key: true },
                 { label: 'コレクションポリシー名', name: 'name', index: 'name', width: 50, align: 'center', search: true },
-                { label: 'OS Type', name: 'ostype_name', index: 'ostype', width: 50, align: 'center', search: true },
                 { label: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true },
+                { label: 'OS Type', name: 'ostypeid', index: 'ostypeid', width: 50, align: 'center', search: true },
                 {
                     label: 'アクション', name: 'action', width: 50, align: 'center', search: false,
                     formatter: this.formatterBtn, resizable: false
                 }
             ],
+            loadComplete(res) {
+                console.log(res);
+            },
             gridComplete: function () {
                 _t.detailBtn();
                 _t.editBtn();
@@ -71,9 +74,9 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                     $('#cpgTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
                 }
             },
-            pager: '#cpPager',
+            pager: '#cpgPager',
             // postData: { 'policy_type': cPType },
-            rowNum: 10,
+            rowNum: 5,
             rowList: [5, 10, 15],
             autowidth: true,
             height: 340,
@@ -93,15 +96,15 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
     // btn formatter
     public formatterBtn(cellvalue, options, rowObject) {
         return '<button class="btn btn-xs btn-primary detail" id='
-            + rowObject['coll_policy_id'] + '><i class="fa fa-info-circle"></i> 確認</button>&nbsp;'
+            + rowObject['policy_group_id'] + '><i class="fa fa-info-circle"></i> 確認</button>&nbsp;'
             + '<button class="btn btn-xs btn-success edit" id='
-            + rowObject['coll_policy_id'] + '><i class="fa fa-pencil-square"></i> 編集</button>&nbsp;'
+            + rowObject['policy_group_id'] + '><i class="fa fa-pencil-square"></i> 編集</button>&nbsp;'
             + '<button class="btn btn-xs btn-warning delete" id='
-            + rowObject['coll_policy_id'] + '><i class="fa fa-minus-square"></i> 削除</button>';
+            + rowObject['policy_group_id'] + '><i class="fa fa-minus-square"></i> 削除</button>';
     }
     public checkCPGRun(id: any): any {
         this.apiPrefix = '/v1';
-        let url = 'api_collection_policy_group/?id=';
+        let url = '/api_collection_policy_group/?id=';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
             .toJson(this.httpClient.get(url + id)).subscribe(res => {
@@ -193,15 +196,15 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         });
     }
     public cpLogin() {
-        // this.modalRef = this.modalService.show(CPGActionComponent, this.modalConfig);
-        // this.modalRef.content.actionType = 'login';
-        // let cpgLogin$ = this.modalService.onHidden.subscribe(res => {
-        //     if (res) {
-        //         this.cpgTable$.GridUnload();
-        //         this.drawCPGTable();
-        //     }
-        //     // this.unsubscribe(cpgLogin$);
-        // });
+        this.modalRef = this.modalService.show(CPGActionComponent, this.modalConfig);
+        this.modalRef.content.actionType = 'login';
+        let cpgLogin$ = this.modalService.onHidden.subscribe(res => {
+            if (res) {
+                this.cpgTable$.GridUnload();
+                this.drawCPGTable();
+            }
+            // this.unsubscribe(cpgLogin$);
+        });
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
         this.modalRef = this.modalService.show(ModalComponent);
