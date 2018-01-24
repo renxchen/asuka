@@ -454,36 +454,36 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
     public blockRuleAction(sendInfo: any) {
         this.modalRef = this.modalService.show(CLIBlockComponent, this.modalConfig);
         this.modalRef.content.info = sendInfo;
-        let blockTree$ = this.modalService.onHidden.subscribe((res => {
+        let blockTree$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
                 $('#blockTree').jstree('destroy');
                 this.blockTree(res);
             }
             this.unsubscribe(blockTree$);
-        }));
+        });
     }
     public dataRuleAction(sendInfo: any) {
         this.modalRef = this.modalService.show(CLIDataComponent, this.modalConfig);
         this.modalRef.content.info = sendInfo;
-        let dataTree$ = this.modalService.onHidden.subscribe((res => {
+        let dataTree$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
                 $('#dataTree').jstree('destroy');
                 this.dataTree(res);
             }
             this.unsubscribe(dataTree$);
-        }));
+        });
     }
     // cli collecton policy edit
     public cPEdit() {
         // let cPId = this.cPId;
         // this.modalRef = this.modalService.show(CLICPEditPopComponent, this.modalConfig);
         // this.modalRef.content.cPId = cPId;
-        // let cpName$ = this.modalService.onHidden.subscribe((res => {
+        // let cpName$ = this.modalService.onHidden.subscribe(res => {
         //     if (res) {
         //         this.cPName = res;
         //     }
         //     this.unsubscribe(cpName$);
-        // }));
+        // });
     }
     ngOnDestroy(): void {
     }
