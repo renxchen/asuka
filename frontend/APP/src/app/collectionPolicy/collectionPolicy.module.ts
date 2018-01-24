@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../sharedModule/shared.module';
 import { CollectionPolicyService } from './collectionPolicy.service';
 import { CPViewComponent } from './cPView.component';
-import { CPGViewComponent } from './cPGView.component';
 import { CLICPLoginComponent } from './cliCPLogin.component';
 import { CLICPEditComponent } from './cliCPEdit.component';
 import { CLICPEditPopComponent } from './cliCPEditPop.component';
@@ -14,14 +13,22 @@ import { CLIDataComponent } from './cliData.component';
 import { SNMPCPLoginComponent } from './snmpCPLogin.component';
 import { SNMPCPDetailComponent } from './snmpCPDetail.component';
 import { SNMPCPEditComponent } from './snmpCPEdit.component';
+import { CPGViewComponent } from './cPGView.component';
+import { CPGLoginComponent } from './cPGLogin.component';
+import { CPGDetailComponent } from './cPGDetail.component';
+import { CPGEditComponent } from './cPGEdit.component';
+import { CPGActionComponent } from './cPGAction.component';
+
 
 @NgModule({
-    declarations: [CPViewComponent, CPGViewComponent,
-        CLICPLoginComponent, CLICPEditComponent,
-        CLICPDetailComponent, CLIBlockComponent,
-        CLICPEditPopComponent, CLIDataComponent,
-        SNMPCPLoginComponent, SNMPCPDetailComponent,
-        SNMPCPEditComponent],
+    declarations: [CPViewComponent, CLICPLoginComponent,
+        CLICPEditComponent, CLICPDetailComponent,
+        CLIBlockComponent, CLICPEditPopComponent,
+        CLIDataComponent, SNMPCPLoginComponent,
+        SNMPCPDetailComponent, SNMPCPEditComponent,
+        CPGViewComponent, CPGLoginComponent,
+        CPGDetailComponent, CPGEditComponent, CPGActionComponent
+    ],
     imports: [FormsModule, CommonModule, SharedModule],
     exports: [],
     providers: [CollectionPolicyService],
