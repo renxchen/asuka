@@ -42,6 +42,10 @@ def exception_handler(e):
         logger.info("ValidationError error when execute serializer.is_valid().")  ###Logger###
         data = {'message': str(e)}
         return api_return(data=eval(json.dumps(data)))
+    elif 'DoesNotExist' in repr(e):
+        logger.info("DoesNotExist error when execute db query.")  ###Logger###
+        data = {'message': str(e)}
+        return api_return(data=eval(json.dumps(data)))
     else:
         logger.info("Error or exception occurred. %s" % str(e))  ###Logger###
         data = {'message': "Error or exception occurred."}
