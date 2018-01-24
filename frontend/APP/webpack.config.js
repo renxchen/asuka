@@ -436,20 +436,20 @@ module.exports = {
       ],
       "minChunks": null
     }),
-    new CommonsChunkPlugin({
-      "name": [
-        "vendor"
-      ],
-      "minChunks": (module) => {
-                return module.resource
-                    && (module.resource.startsWith(nodeModules)
-                        || module.resource.startsWith(genDirNodeModules)
-                        || module.resource.startsWith(realNodeModules));
-            },
-      "chunks": [
-        "main"
-      ]
-    }),
+    // new CommonsChunkPlugin({
+    //   "name": [
+    //     "vendor"
+    //   ],
+    //   "minChunks": (module) => {
+    //             return module.resource
+    //                 && (module.resource.startsWith(nodeModules)
+    //                     || module.resource.startsWith(genDirNodeModules)
+    //                     || module.resource.startsWith(realNodeModules));
+    //         },
+    //   "chunks": [
+    //     "main"
+    //   ]
+    // }),
     new SourceMapDevToolPlugin({
       "filename": "[file].map[query]",
       "moduleFilenameTemplate": "[resource-path]",
@@ -493,7 +493,7 @@ module.exports = {
         '/v1/**': {
             // modify backend service
             "target": "http://10.79.148.107:1111",
-            // "target": "http://10.79.102.57:1111",
+            // "target": "http://10.79.96.83:1111",
             "secure": false,
             "changeOrigin": true
         }
