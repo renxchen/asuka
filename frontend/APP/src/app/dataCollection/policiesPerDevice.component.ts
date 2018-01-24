@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Router, ActivatedRoute } from '@angular/router';
-declare var $: any;
+declare let $: any;
 import * as _ from 'lodash';
 import {isUndefined} from "util";
 
@@ -13,7 +13,7 @@ import {isUndefined} from "util";
 
 export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
-    dd: string = '1';
+    // dd: string = '1';
     deviceNo: any;
     stopAll = '<button class="btn btn-xs btn-primary">全停止</button>';
     startAll = '<button class="btn btn-default">全解除</button>';
@@ -30,7 +30,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         {label: this.stopAll, name: 'action', width: 50, align: 'center', search: false,
         formatter: this.fomatterBtn, sortable: false, height: 50,}
     ];
-    deviceList: any =[];
+    deviceList: any = [];
     testData: any = [
         {policyNo: 10, device:'SSEU A', cpGroup: 'Cisco AER 基本監視', priority: '標準',
         policy: 'CPU監視  60分おき', action: 0, attr: {device: {rowspan: "3"}, cpGroup: {rowspan: "2"}, priority: {rowspan: "2"}}},
@@ -133,8 +133,8 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
     }
 
-    public arrtSetting(rowId, val, rawObject, cm) {
-        let attr = rawObject.attr[cm.name], result;
+    public arrtSetting(rowId, val, rowObject, cm) {
+        let attr = rowObject.attr[cm.name], result;
         if (attr.rowspan != "none") {
             result = ' rowspan=' + '"' + attr.rowspan + '"';
         } else {

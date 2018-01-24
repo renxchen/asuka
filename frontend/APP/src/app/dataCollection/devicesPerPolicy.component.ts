@@ -13,6 +13,9 @@ import * as _ from 'lodash';
 export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
 
     total: number;
+    policyNo: any;
+    policyList: any = [];
+
 
     dcModel: any = [
         {label: 'No', hidden: true, name: 'deviceNo', index: 'deviceNo'},
