@@ -99,11 +99,11 @@ class CollPolicyGroups(models.Model):
         db_table = 'coll_policy_groups'
 
     @property
-    def ostype_name(self):
+    def ostypeid_name(self):
         return self.ostype.name
 
     @property
-    def ostype_ostypeid(self):
+    def ostypeid_ostypeid(self):
         return self.ostype.ostypeid
 
 

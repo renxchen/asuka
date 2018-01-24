@@ -52,7 +52,7 @@ class CollPolicyGroupSerializer(serializers.ModelSerializer):
     # ostype_name = serializers.ReadOnlyField()
     class Meta:
         model = CollPolicyGroups
-        fields = ('policy_group_id', 'name', 'desc', 'ostypeid', 'ostype_name', 'ostype_ostypeid',)
+        fields = ('policy_group_id', 'name', 'desc', 'ostypeid', 'ostypeid_name', 'ostypeid_ostypeid',)
         # fields = '__all__'
 
     def create(self, validated_data):
@@ -61,7 +61,7 @@ class CollPolicyGroupSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.desc = validated_data.get('desc', instance.desc)
-        instance.ostype = validated_data.get('ostype', instance.ostype)
+        instance.ostype = validated_data.get('ostypeid', instance.ostypeid)
         instance.save()
         return instance
 
