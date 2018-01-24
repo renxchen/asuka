@@ -148,8 +148,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         this.deviceGroup = _.get(data, 'device_group_id').toString();
                         this.policyGroup = _.get(data, 'policy_group_id').toString();
 
-                        let spt = _.get(data, 'start_period_time').split('@')[1];
-                        let ept = _.get(data, 'end_period_time');
+                        let spt = _.get(data, 'start_period_time').split(' ')[1];
+                        let ept = _.get(data, 'end_period_time').split(' ')[1];
                         let sst = _.get(data, 'schedule_start_time');
                         let set = _.get(data, 'schedule_end_time');
                         this.startDateTime.setHours(parseInt(spt.split(':')[0]));
