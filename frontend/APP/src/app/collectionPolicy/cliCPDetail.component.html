@@ -54,7 +54,7 @@
                     <h5>
                         <i class="fa fa-lg fa-cubes" *ngIf="iconFlg"></i>
                         <i class="fa fa-lg fa-text-height" *ngIf="!iconFlg"></i>
-                        <span>{{ruleTypeName}}rule type name</span>
+                        <span>{{ruleTypeName}}</span>
                     </h5>
                 </div>
                 <div class="ibox-content">
@@ -65,7 +65,7 @@
                                     <strong>ルール名：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{name}}rule name</p>
+                                    <p class="confirm confirm-text">{{name}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -73,7 +73,7 @@
                                     <strong>概要：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-textarea">{{desc}}rule desc</p>
+                                    <p class="confirm confirm-textarea">{{desc}}</p>
                                 </div>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                                     <strong>基準文字列：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{markString}}mark_string</p>
+                                    <p class="confirm confirm-text">{{markString}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -92,11 +92,12 @@
                                     <strong>ブロック識別子名：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{keyStr}} key_str</p>
+                                    <p class="confirm confirm-text">{{keyStr}}</p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div>
+                                <div class="col-md-3"></div>
+                                <div class="col-md-9 col-xs-8">
                                     <input type="checkbox" id="isSerial" name="isSerial"
                                     [(ngModel)]="isSerial" >ブロック識別子に連番を付与
                                 </div>  
@@ -109,7 +110,7 @@
                                     <strong>基準文字列：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{markString}}mark_string</p>
+                                    <p class="confirm confirm-text">{{markString}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -117,7 +118,7 @@
                                     <strong>ブロック識別子名：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{keyStr}} key_str</p>
+                                    <p class="confirm confirm-text">{{keyStr}}r</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -125,7 +126,7 @@
                                     <strong>基準以下スタート行：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{startLnNum}} startlnNum</p>
+                                    <p class="confirm confirm-text">{{startLnNum}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -133,11 +134,12 @@
                                     <strong>基準以下エンド行：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{endLnNum}} startlnNum</p>
+                                    <p class="confirm confirm-text">{{endLnNum}}</p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div>
+                                <div class="col-md-3"></div>
+                                <div class="col-md-9 col-xs-8">
                                     <input type="checkbox" id="isSerial" name="isSerial"
                                     [(ngModel)]="isSerial" >ブロック識別子に連番を付与
                                 </div>  
@@ -150,7 +152,7 @@
                                     <strong>スタート文字列：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{markString}} markString</p>
+                                    <p class="confirm confirm-text">{{markString}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -158,11 +160,12 @@
                                     <strong>エンド文字列：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{endMrkStr}} markString</p>
+                                    <p class="confirm confirm-text">{{endMrkStr}}</p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div>
+                                <div class="col-md-3"></div>                                    
+                                <div class="col-md-9 col-xs-8">
                                     <input type="checkbox" id="isSerial" name="isSerial"
                                     [(ngModel)]="isInclude" >エンド文字列行を含まない:
                                 </div>  
@@ -172,7 +175,7 @@
                                     <strong>ブロック識別子：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{extractKey}} markString</p>
+                                    <p class="confirm confirm-text">{{extractKey}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -180,11 +183,12 @@
                                     <strong>ブロック識別子名：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{keyStr}} key_str</p>
+                                    <p class="confirm confirm-text">{{keyStr}}</p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div>
+                                <div class="col-md-3"></div>
+                                <div class="col-md-9 col-xs-8">
                                     <input type="checkbox" id="isSerial" name="isSerial"
                                     [(ngModel)]="isSerial" >ブロック識別子に連番を付与
                                 </div>  
@@ -197,7 +201,7 @@
                                     <strong>基準文字列：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{markString}}mark_string</p>
+                                    <p class="confirm confirm-text">{{markString}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -205,7 +209,7 @@
                                     <strong>ブロック識別子名：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{keyStr}} key_str</p>
+                                    <p class="confirm confirm-text">{{keyStr}}</p>
                                 </div>
                             </div>
                         </div>
@@ -216,7 +220,7 @@
                                     <strong>基準となる文字列:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{markString}}markString</p>
+                                    <p class="confirm confirm-text">{{markString}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -224,7 +228,7 @@
                                     <strong>切り分け文字:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{selSplitChar}}selSplitChar</p>
+                                    <p class="confirm confirm-text">{{selSplitChar}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -232,7 +236,7 @@
                                     <strong>基準文字列からの距離：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{xOffset}}xOffset</p>
+                                    <p class="confirm confirm-text">{{xOffset}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -240,7 +244,7 @@
                                     <strong>データ識別子名：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{keyStr}}keyStr</p>
+                                    <p class="confirm confirm-text">{{keyStr}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -248,7 +252,7 @@
                                     <strong>抽出するデータ（正規表現）:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{extractKey}}extractKey</p>
+                                    <p class="confirm confirm-text">{{extractKey}}</p>
                                 </div>
                             </div>
                         </div>
@@ -259,7 +263,7 @@
                                     <strong>基準となる文字列:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{markString}}markString</p>
+                                    <p class="confirm confirm-text">{{markString}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -267,7 +271,7 @@
                                     <strong>基準文字列からの距離:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{xOffset}}xOffset</p>
+                                    <p class="confirm confirm-text">{{xOffset}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -275,7 +279,7 @@
                                     <strong>切り分け文字:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{selSplitChar}}selSplitChar</p>
+                                    <p class="confirm confirm-text">{{selSplitChar}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -283,7 +287,7 @@
                                     <strong>先頭文字からの距離：:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{yOffset}}yOffset</p>
+                                    <p class="confirm confirm-text">{{yOffset}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -291,7 +295,7 @@
                                     <strong>データ識別子名：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{keyStr}}keyStr</p>
+                                    <p class="confirm confirm-text">{{keyStr}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -299,7 +303,7 @@
                                     <strong>抽出するデータ（正規表現）:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{extractKey}}extractKey</p>
+                                    <p class="confirm confirm-text">{{extractKey}}</p>
                                 </div>
                             </div>
                         </div>
@@ -310,7 +314,7 @@
                                     <strong>抽出するデータ（正規表現）：</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{extractKey}}extractKey</p>
+                                    <p class="confirm confirm-text">{{extractKey}}</p>
                                 </div>
                             </div>
                             <div class="row">
@@ -318,7 +322,7 @@
                                     <strong>データ識別子名:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{keyStr}}keyStr</p>
+                                    <p class="confirm confirm-text">{{keyStr}}</p>
                                 </div>
                             </div>
                         </div>
@@ -329,7 +333,7 @@
                                     <strong>データ識別子名:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{lineNums}}lineNums</p>
+                                    <p class="confirm confirm-text">{{lineNums}}</p>
                                 </div>
                             </div>
                         </div>
@@ -340,7 +344,7 @@
                                     <strong>データ識別子名:</strong>
                                 </div>
                                 <div class="col-md-9 col-xs-8">
-                                    <p class="confirm confirm-text">{{command}}command</p>
+                                    <p class="confirm confirm-text">{{command}}</p>
                                 </div>
                             </div>
                         </div>

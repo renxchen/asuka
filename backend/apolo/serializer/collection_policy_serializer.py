@@ -61,7 +61,7 @@ class CollPolicyGroupSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.desc = validated_data.get('desc', instance.desc)
-        instance.ostype = validated_data.get('ostypeid', instance.ostypeid)
+        instance.ostypeid = validated_data.get('ostypeid', instance.ostypeid)
         instance.save()
         return instance
 
@@ -76,7 +76,7 @@ class PolicyGroupSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.policys_groups_id = validated_data.get('policys_groups_id', instance.policys_groups_id)
-        instance.desc = validated_data.get('exec_interval', instance.exec_interval)
+        instance.exec_interval = validated_data.get('exec_interval', instance.exec_interval)
         instance.status = validated_data.get('status', instance.status)
         instance.history = validated_data.get('history', instance.history)
         instance.policy = validated_data.get('policy', instance.policy)

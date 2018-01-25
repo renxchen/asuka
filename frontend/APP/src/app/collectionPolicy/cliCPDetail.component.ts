@@ -112,10 +112,8 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
             },
             plugins: ['types', 'dnd', 'state', 'crrm', 'node_customize', 'root_node']
         }).bind('activate_node.jstree', function (e, data) {
-            console.log(123);
             _t.ruleFlg = true;
             if (data.node) {
-                console.log(data.node);
                 let ruleData = data.node.data;
                 _t.ruleId = _.get(ruleData, 'rule_id');
                 _t.ruleType = _.get(ruleData, 'rule_type');
@@ -153,7 +151,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
     }
     public commInfo(ruleId: any) {
         this.apiPrefix = '/v1';
-        let url = '/api_policy_tree_rule/?rule_id=' + ruleId;
+        let url = '/api_policy_tree_rule/?rule_id=' + ruleId + '&coll_policy_id=' + this.cPId;
         this.httpClient.setUrl(this.apiPrefix);
         return this.httpClient.toJson(this.httpClient.get(url));
     }
@@ -161,6 +159,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         this.commInfo(ruleId).subscribe(res => {
             let status = _.get(res, 'status');
             let data = _.get(res, 'data');
+            let msg = _.get(status, 'message');
             if (status && status['status'].toLowerCase() === 'true') {
                 if (data) {
                     this.name = _.get(data, 'name');
@@ -176,12 +175,8 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
                     this.xOffset = _.get(data, 'x_offset');
                     this.yOffset = _.get(data, 'y_offset');
                     this.lineNums = _.get(data, 'line_nums');
-                    // 后台定义该字段
-                    this.command = _.get(data, 'command');
                 } else {
-                    if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
-                    }
+                    alert(msg);
                 }
             }
         });
@@ -195,19 +190,19 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         //     .subscribe(res => {
         //         if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
         // this.router.navigate(['/index/cliCPEdit'], { queryParams: { 'id': this.cPId } });
+        //     } else {
+        //         // check this cp occupation, add 'occupation' feedback
+        //         if (res['status']['message'] && ['status']['message'] === 'occupation') {
+        //             this.modalMsg = 'This collection policy is being occupied';
+        //             this.closeMsg = 'close';
+        //             this.showAlertModal(this.modalMsg, this.closeMsg);
         //         } else {
-        //             // check this cp occupation, add 'occupation' feedback
-        //             if (res['status']['message'] && ['status']['message'] === 'occupation') {
-        //                 this.modalMsg = 'This collection policy is being occupied';
-        //                 this.closeMsg = 'close';
-        //                 this.showAlertModal(this.modalMsg, this.closeMsg);
-        //             } else {
-        //                 if (res['status'] && res['status']['message']) {
-        //                     alert(res['status']['message']);
-        //                 }
+        //             if (res['status'] && res['status']['message']) {
+        //                 alert(res['status']['message']);
         //             }
         //         }
-        //     });
+        //     }
+        // });
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
         this.modalRef = this.modalService.show(ModalComponent);
