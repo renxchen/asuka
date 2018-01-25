@@ -1,1 +1,126 @@
-<div>cpg action</div>
+<div class="modal-content">
+    <div class="modal-header">
+        <div class="modal-title">
+            <h3>コレクションポリシーグループ登録</h3>
+            <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+                <i aria-hidden="true" class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="form" novalidate="novalidate">
+            <div class="form-group">
+                <label for="name" class="col-sm-4 control-label" [ngClass]="{'text-warning': !nameFlg ||nameNotNull}">
+                    <i class="fa fa-asterisk text-danger" aria-hidden="true" title="必須項目"></i>
+                    コレクションポリシーグループ名:
+                </label>
+                <div class="col-sm-4" [ngClass]="{'has-warning': nameFlg===false||nameNotNull===false}">
+                    <input type="text" class="form-control" id="name" name="name" [(ngModel)]="name" placeholder="英数字のみ" maxlength="256" required=""
+                        aria-required="true" autocomplete="off">
+                </div>
+            </div>
+            <!-- 概要 -->
+            <div class="form-group">
+                <label for="des" class="col-sm-4 control-label">概要：</label>
+                <div class="col-sm-4">
+                    <textarea class="form-control" id="des" name="des" [(ngModel)]="des" maxlength="2000"></textarea>
+                </div>
+            </div>
+            <!-- ostype -->
+            <div class="form-group unuse_east">
+                <label for="osType" class="col-sm-4 control-label">
+                    <i class="fa fa-asterisk text-danger" aria-hidden="true" title="必須項目"></i>OS Type：
+                </label>
+                <div class="col-sm-4">
+                    <select class="form-control" [(ngModel)]="selectedOsType" id="osType" name="selectedOsType">
+                        <option *ngFor="let item of osType" value="{{item.ostypeid}}">{{item.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <!-- title_2 -->
+            <div class="col-sm-12 text-left" >
+                    <button class="btn btn-primary" id="more" (click)="add()">
+                        <i class="fa fa-plus-square"></i>
+                    </button>
+            </div>
+        <div class="more" *ngIf="moreType">
+                <div class="ibox-title2">
+                    <div class="col-sm-12 text-left"><b>対応コレクションポリシー追加</b></div>
+                </div>
+            <!-- select_コレクションポリシー名: -->
+            <div class="form-group">
+                <label for="one" class="col-sm-4 control-label">
+                    コレクションポリシー名:
+                </label>
+                <div class="col-sm-4 control-label">
+                    <select class="form-control" id="one" name="selectedone">
+                        <option value="null">[cli]Gin_test</option>
+                        <option *ngFor="let item of osType" value="{{item.ostypeid}}">{{item.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <!--取得間隔: -->
+            <div class="form-group">
+                <label for="get" class="col-sm-4 control-label">
+                    取得間隔:
+                </label>
+                <div class="col-sm-4">
+                    <select class="form-control" id="get" name="selectedget">
+                        <option value="null">1分</option>
+                        <option *ngFor="let item of get" value="{{item.getid}}">{{item.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <!-- 保存期间 -->
+            <div class="form-group">
+                <label for="save" class="col-sm-4 control-label">保存期間:
+                </label>
+                <div class="col-sm-4">
+                    <select name="selectedsave" id="save" class="form-control">
+                        <option value="1min">1min</option>
+                        <option *ngFor="let item of save" value="{{item.saveid}}">{{item.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <!-- 追加btn -->
+            <div class="form-group">
+                    <div class="col-sm-12 text-right">
+                        <button class="btn btn-xs btn-warning add" id="add" (click)="addbtn()" value="add">
+                            <i class="fa fa-pencil-square"></i>
+                            追加
+                        </button>
+                    </div>
+            </div>
+        </div>
+            <!-- alert -->
+            <div class="form-group" [ngClass]="{'hidden':msgFlg}">
+                <div class="col-sm-12 text-warning" [ngClass]="{'hidden':nameoneNotNull}">コレクションポリシー名は必須入力です。</div>
+                <div class="col-sm-12 text-warning" [ngClass]="{'hidden':nameoneFlg}">コレクションポリシー名は半角英数字のみで入力してください。</div>
+                <div class="col-sm-12 text-warning" [ngClass]="{'hidden':osTypeFlg}">OS Type required.</div>
+            </div>
+            
+            <!-- jqgrid-table -->
+            <div class="box" >
+                <table id="cpglogintable"></table>
+                <div id="cpgloginPager"></div>
+                
+            </div>  
+        </form>
+         
+    </div>
+    <div class="modal-footer">
+        <div class="form-group">
+            <!-- 取消/保存btn  -->
+            <div class="col-sm-12 text-right">
+                <button class="btn btn-primary" id="delete" (click)="bsModalRef.hide()">
+                    <i class="fa fa-minus-square"></i>
+                    キャンセル
+                </button>
+                <button class="btn btn-primary" id="save" (click)="cPGLogin()">
+                    <i class="fa fa-check-square-o"></i>
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

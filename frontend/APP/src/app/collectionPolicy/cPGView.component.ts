@@ -160,7 +160,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
     public deleteBtn() {
         let _t = this;
         _t.apiPrefix = '/v1';
-        let url = 'api_collection_policy_group/?id=';
+        let url = '/api_collection_policy_group/?id=';
         $('.delete').click(function (event) {
             event.stopPropagation();
             let id = $(event)[0].target.id;
@@ -171,6 +171,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 _t.httpClient
                     .toJson(_t.httpClient.delete(url + id))
                     .subscribe(res => {
+                        console.log(res);
                         let status = _.get(res, 'status');
                         let msg = _.get(status, 'message');
                         let data = _.get(res, 'data');
@@ -183,7 +184,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                             });
                         } else {
                             // check this cp occupation, add 'occupation' feedback
-                            if (msg && msg === 'occupation') {
+                            if (msg && msg === 'POLICY_GROUP_EXIST_IN_SCHEDULE') {
                                 this.modalMsg = 'This collection policy is being occupied';
                                 this.closeMsg = 'close';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
