@@ -9,16 +9,12 @@
 @desc:
 
 '''
-import json
-
-import time
 from rest_framework import viewsets
 
 from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
 from backend.apolo.models import Devices
 from backend.apolo.tools import views_helper, constants
 from backend.apolo.tools.views_helper import api_return
-import requests
 
 
 class DataCollectionByDeviceViewSet(viewsets.ViewSet):
@@ -46,7 +42,7 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         else:
-            response_json_data = self.__get_data_from_collection_server__()
+            response_json_data = Tool.get_data_from_collection_server()
             arry = []
             cp_group_line_rowspan_dict = dict()
             device_line_rowspan = 0
@@ -55,9 +51,9 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
                     device_line_rowspan +=1
                     cp_group_name = one_recoder['policy_group_name']
                     if cp_group_line_rowspan_dict.has_key(cp_group_name):
-                        cp_group_line_rowspan_dict = {cp_group_name: 1}
+                        cp_group_line_rowspan_dict[cp_group_name] += 1
                     else:
-                        cp_group_line_rowspan_dict[cp_group_name] = 1
+                        cp_group_line_rowspan_dict ={cp_group_name:1}
                     arry.append({
                         "valid_status": one_recoder['valid_status'],
                         'policyNo': one_recoder['coll_policy_id'],
@@ -96,12 +92,7 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
 
-    @staticmethod
-    def __get_data_from_collection_server__():
-        now_time = int(time.time())
-        json_data = json.dumps({"now_time": now_time, "item_type": -1})
-        response = requests.post(constants.DATA_COLLECTION_POST_URL, data=json_data)
-        return response.json()
+
 
     def put(self):
         pass

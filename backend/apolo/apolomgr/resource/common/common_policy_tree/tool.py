@@ -9,11 +9,23 @@
 @desc:
 
 '''
+import json
 import time
+
+import requests
+
 from backend.apolo.tools import constants
 
 
 class Tool(object):
+    @staticmethod
+    def set_rule_type(rule_type):
+        if rule_type>=5:
+            rule_type = rule_type - 4
+            return 'block_rule_{}'.format(rule_type)
+        else:
+            return 'data_rule_{}'.format(rule_type)
+
     @staticmethod
     def set_split_char(split_char_num=None):
 
@@ -54,16 +66,22 @@ class Tool(object):
     @staticmethod
     def split_data_schedule_time(data_schedule_time):
 
-        schedule_arry = data_schedule_time.split('@')
-        weeks = schedule_arry[0].split(';')
-        schedule_time = schedule_arry[1].split('-')
-        schedule_start_time = schedule_time[0]
-        schedule_end_time = schedule_time[1]
+        if data_schedule_time:
+            schedule_arry = data_schedule_time.split('@')
+            weeks = schedule_arry[0].split(';')
+            schedule_time = schedule_arry[1].split('-')
+            schedule_start_time = schedule_time[0]
+            schedule_end_time = schedule_time[1]
 
-        return {'weeks': weeks,
-                'schedule_start_time': schedule_start_time,
-                'schedule_end_time': schedule_end_time
-                }
+            return {'weeks': weeks,
+                    'schedule_start_time': schedule_start_time,
+                    'schedule_end_time': schedule_end_time
+                    }
+        else:
+            return {'weeks': [],
+                    'schedule_start_time': '00:00',
+                    'schedule_end_time': '00:00'
+                    }
 
     @staticmethod
     def priority_mapping(priority_key):
@@ -111,7 +129,24 @@ class Tool(object):
         else:
             return 'ERROR'
 
+    @staticmethod
+    def set_cp_status_mapping(cp_status_value):
+        if cp_status_value == constants.CP_STATUS_OFF_VALUE:
+            return constants.CP_STATUS_OFF_KEY
+        elif cp_status_value == constants.CP_STATUS_ON_VAULE:
+            return constants.CP_STATUS_ON_KEY
+        else:
+            return 'ERROR'
+
+    @staticmethod
+    def get_data_from_collection_server():
+        now_time = int(time.time())
+        print now_time
+        json_data = json.dumps({"now_time": now_time, "item_type": -1})
+        response = requests.post(constants.DATA_COLLECTION_POST_URL, data=json_data)
+        return response.json()
 
 if __name__ == '__main__':
     t = Tool()
+    t.get_data_from_collection_server()
 

@@ -35,7 +35,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
 
         # v1/api_data_collection/?page=1&rows=10&sidx=status&sord=desc
         # v1/api_data_collection/?page=1&rows=10&status=3
-        #  v1/api_data_collection/?id=1
+        # v1/api_data_collection/?id=1
         # search conditions
         # priority = views_helper.get_request_value(self.request, 'policy_type', 'GET')
         os_type = views_helper.get_request_value(self.request, 'ostype_name', 'GET')
@@ -55,8 +55,14 @@ class DataCollectionViewSet(viewsets.ViewSet):
                schedules_dict = SchedulesSerializer(schedules_obj).data
                data_schedule_time = Tool.split_data_schedule_time(schedules_dict['data_schedule_time'])
                schedules_dict.update(data_schedule_time)
-               schedules_dict['start_period_time'] = schedules_dict['start_period_time'].replace('@', ' ')
-               schedules_dict['end_period_time'] = schedules_dict['end_period_time'].replace('@', ' ')
+               if schedules_dict['start_period_time']:
+                   schedules_dict['start_period_time'] = schedules_dict['start_period_time'].replace('@', ' ')
+               else:
+                   schedules_dict['start_period_time'] =None
+               if schedules_dict['end_period_time']:
+                   schedules_dict['end_period_time'] = schedules_dict['end_period_time'].replace('@', ' ')
+               else:
+                   schedules_dict['end_period_time'] = None
                data = {
                    'data': schedules_dict,
                    'new_token': self.new_token,

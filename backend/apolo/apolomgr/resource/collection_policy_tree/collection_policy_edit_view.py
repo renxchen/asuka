@@ -15,6 +15,7 @@ from backend.apolo.models import CollPolicy, Ostype
 from backend.apolo.serializer.collection_policy_serializer import OstypeSerializer, \
     CollPolicyEditSerializer
 from backend.apolo.tools import views_helper, constants
+from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 
 
@@ -30,13 +31,14 @@ class CollectionPolicyEditViewSet(viewsets.ViewSet):
         coll_policy_id = views_helper.get_request_value(self.request, "coll_policy_id", "GET")
         obj = CollPolicy.objects.get(coll_policy_id=coll_policy_id)
         serializer = CollPolicyEditSerializer(obj)
-        ostype = Ostype.objects.all().values()
-        serializer_ostype = OstypeSerializer(ostype, many=True)
+        # ostype = Ostype.objects.all().values()
+        # serializer_ostype = OstypeSerializer(ostype, many=True)
         data = {
-            'data': {
-                'coll_policy': serializer.data,
-                'ostype': serializer_ostype.data
-            },
+            # 'data': {
+            #     'coll_policy': serializer.data,
+            #     'ostype': serializer_ostype.data
+            # },
+            'data': serializer.data,
             'new_token': self.new_token,
             constants.STATUS: {
                 constants.STATUS: constants.TRUE,
@@ -58,27 +60,33 @@ class CollectionPolicyEditViewSet(viewsets.ViewSet):
             'desc': desc,
             'ostype': ostype
         }
-        obj = CollPolicy.objects.get(coll_policy_id=coll_policy_id)
-        serializer = CollPolicyEditSerializer(instance=obj, data=coll_policy_update_data)
-        if serializer.is_valid():
-            serializer.save()
-            data = {
-                'data': serializer.data,
-                'new_token': self.new_token,
-                constants.STATUS: {
-                    constants.STATUS: constants.TRUE,
-                    constants.MESSAGE: constants.SUCCESS
-                }
-
-            }
-            return api_return(data=data)
-        else:
+        the_name_num = CollPolicy.objects.filter(name=name).count()
+        if the_name_num:
             data = {
                 'new_token': self.new_token,
                 constants.STATUS: {
                     constants.STATUS: constants.FALSE,
-                    constants.MESSAGE: constants.FAILED
+                    constants.MESSAGE: constants.CP_NAME_DUPLICATE
                 }
-
             }
             return api_return(data=data)
+        else:
+            obj = CollPolicy.objects.get(coll_policy_id=coll_policy_id)
+            serializer = CollPolicyEditSerializer(instance=obj, data=coll_policy_update_data)
+            try:
+                if serializer.is_valid():
+                    serializer.save()
+                    data = {
+                        'data': serializer.data,
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.TRUE,
+                            constants.MESSAGE: constants.SUCCESS
+                        }
+
+                    }
+                    return api_return(data=data)
+            except Exception as e:
+                print e
+                return exception_handler(e)
+
