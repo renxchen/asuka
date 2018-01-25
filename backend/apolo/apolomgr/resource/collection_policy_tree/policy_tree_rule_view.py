@@ -29,9 +29,10 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
 
     # get information of rules from db
-    # http://127.0.0.1:8000/v1/api_policy_tree_rule/?rule_id=1
+    # http://127.0.0.1:8000/v1/api_policy_tree_rule/?rule_id=1&coll_pollicy_id=1
 
     def get(self):
+
         try:
             coll_policy_id = views_helper.get_request_value(self.request, key='coll_policy_id', method_type='GET')
             rule_id = views_helper.get_request_value(self.request, key='rule_id', method_type='GET')
@@ -142,10 +143,12 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
                 serializer = CollPolicyCliRuleSerializer(instance=old_rule_obj, data=rule_data_dict)
                 if serializer.is_valid(Exception):
                     serializer.save()
+                    new_name= serializer.data['name']
                     policy_tree = Policy_tree(policy_tree_id)
                     rule_tree_tuple = policy_tree.get_rules_tree()
                     data = {
                         'data': {
+                            "new_name": new_name,
                             "block_rule_tree_json": rule_tree_tuple[0],
                             "data_rule_tree_json": rule_tree_tuple[1]
                         },

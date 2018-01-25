@@ -6,7 +6,7 @@
 #########################################
 # PATHS
 #########################################
-LOG_PATH = 'C:/J2EE/pyworkspace/apolo/backend/logs/logger_authentication.log'
+LOG_PATH = '/apolo/backend/logs/logger_authentication.log'
 
 #########################################
 # API token related define
@@ -100,13 +100,14 @@ RULE_DATA_VALID_ERROR = 'data valid error in saving the rule'  # ルールを追
 LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定義されていないです
 DB_EXCEPTION ='there is an db exception'
 RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
+CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 
 #########################################
 # data collection value setting
 #########################################
 SCHEDULE_STATUS_DEFAULT = 1
 ITEM_TABLE_STATUS_DEFAULT = 0
-ITEM_TYPE_CLE = 0  #cli
+ITEM_TYPE_CLI = 0  #cli
 ITEM_TYPE_SNMP = 1  # snmp
 VALUE_TYPE = {
     'INT': 0,
@@ -135,6 +136,11 @@ SCHEDULE_STATUS_ON_KEY = u'有効'
 SCHEDULE_STATUS_ON_VALUE = 1
 SCHEDULE_STATUS_OFF_KEY = u'無効'
 SCHEDULE_STATUS_OFF_VALUE = 0
+
+CP_STATUS_OFF_KEY = u'停止'
+CP_STATUS_OFF_VALUE = 0
+CP_STATUS_ON_KEY = u'取得中'
+CP_STATUS_ON_VAULE = 1
 
 #########################################
 # data collection Error Message

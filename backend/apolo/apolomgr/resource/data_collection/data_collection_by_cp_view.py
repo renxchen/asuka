@@ -11,6 +11,7 @@
 '''
 from rest_framework import viewsets
 
+from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
 from backend.apolo.models import CollPolicy
 from backend.apolo.tools import views_helper, constants
 from backend.apolo.tools.views_helper import api_return
@@ -41,4 +42,21 @@ class DataCollectionByCPViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         else:
-            pass
+            response_json_data = Tool.get_data_from_collection_server()
+            policy_dict = dict()
+            for one_recoder in response_json_data['items']:
+                if one_recoder['coll_policy_id'] == coll_policy_id:
+                    policy_name = one_recoder['policy_name']
+                    info = {
+                        'deviceNo': one_recoder['device_id'],
+                        'deviceName': one_recoder['device_name'],
+                        'policy': policy_name,
+                        'policyNo': one_recoder['coll_policy_id'],
+                        'status': Tool.set_cp_status_mapping(one_recoder['valid_status'])
+                    }
+                    if policy_dict.has_key(policy_name):
+                        policy_dict[policy_name].append(info)
+                    else:
+                        policy_dict[policy_name] = []
+
+            return api_return(data=policy_dict)
