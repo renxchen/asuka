@@ -3,7 +3,6 @@ import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Router, ActivatedRoute } from '@angular/router';
 declare let $: any;
 import * as _ from 'lodash';
-import {isUndefined} from "util";
 
 @Component({
     selector: 'policies-per-device',
@@ -15,8 +14,8 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
     // dd: string = '1';
     deviceNo: any;
-    stopAll = '<button class="btn btn-xs btn-primary">全停止</button>';
-    startAll = '<button class="btn btn-default">全解除</button>';
+    stopAll = '<button class="btn btn-xs btn-primary" id="stopAll">全停止</button>';
+    startAll = '<button class="btn btn-default" id="openAll">全解除</button>';
     dcModel: any = [
         {label: 'No', hidden: true, name: 'policyNo', index: 'policyNo'},
         {label: 'デバイス',  name: 'device', width: 30, align: 'center',
@@ -26,7 +25,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         {label: 'プライオリティー',  name: 'priority', width: 30,
             align: 'center', sortable: false, cellattr: this.arrtSetting,},
         {label: 'コレクションポリシー', name: 'policy', width: 50, align: 'center',
-            classes: 'policy', sortable: false,},
+            classes: 'policy', sortable: false,cellattr: this.renderCpColor },
         {label: this.stopAll, name: 'action', width: 50, align: 'center', search: false,
         formatter: this.fomatterBtn, sortable: false, height: 50,}
     ];
@@ -86,16 +85,16 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
     public setSelect(){
         let _this = this;
 
-
-
         $('#device').chosen({
             no_results_text: "検索結果ありません：",
             search_contains: true,
         }).change( function () {
             _this.deviceNo = $('#device').val();
             console.log('deviceNo',_this.deviceNo);
+            let newUrl = '/v1/api_data_collection/?id='+_this.deviceNo;
+            console.log(newUrl);
             $("#policiesTable").trigger("reloadGrid");
-
+            // $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
 
         }).val(this.deviceNo).trigger("chosen:updated");
 
@@ -143,6 +142,27 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         return result;
     }
 
+    renderCpColor(rowId, val, rowObject){
+        let status = rowObject['action'];
+        if (status == 1){
+            return 'style="color:blue"';
+        }
+    }
+
+    allAction(){
+        let _this = this;
+        $('#stopAll').click(function (even) {
+            console.log(even.target);
+            even.target.replace(_this.stopAll);
+        //     if(confirm('stop all policies?')){
+        //     alert('all stoped');
+        //     $('#jqgh_policiesTable_action').html(this.stopAll);
+        //
+        // }
+        });
+
+    }
+
     public stopPolicy(){
         $('.stop').click(function (event) {
             let id = $(event)[0].target.id;
@@ -182,8 +202,9 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         if(typeof(deviceId) == 'undefined'){
            return;
         }
+        let url = '/v1/api_data_collection/?id='+deviceId;
         $('#policiesTable').jqGrid({
-            // url: '/v1/api_data_collection/?id='+deviceId,
+            // url: url,
             // datatype: 'JSON',
             datatype: 'local',
             // mtype: 'get',
@@ -194,6 +215,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             loadComplete: function () {
                 _this.stopPolicy();
                 _this.renderTitleHeight();
+                _this.allAction();
             },
             rowNum: 10,
             // rowList: [10, 20, 30],
