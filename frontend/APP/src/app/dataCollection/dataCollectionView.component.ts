@@ -123,22 +123,13 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
     }
 
     public formatterTime(cellvalue, options, rowObject){
-        // let result = rowObject['start_period_time'];
-        return cellvalue.replace('@', ' ');
-        // return result;
+        if (cellvalue == null){
+            return '';
+        } else {
+            return cellvalue.replace('@', ' ');
+        }
+
     }
-    // public unFormatterTime(cellvalue, options, rowObject){
-    //     // let result = rowObject['start_period_time'];
-    //     // return cellvalue.replace(' ', '@');
-    //
-    // }
-
-    // public formatterEndTime(cellvalue, options, rowObject){
-    //     let result = rowObject['end_period_time'];
-    //     result = cellvalue.replace('@', ' ');
-    //     return result;
-    // }
-
     newDC() {
         // open modal
         this.modalRef = this.modalService.show(DataCollectionLoginComponent, this.modalConfig);

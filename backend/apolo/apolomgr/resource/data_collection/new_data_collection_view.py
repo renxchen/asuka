@@ -18,6 +18,7 @@ from backend.apolo.serializer.collection_policy_serializer import OstypeSerializ
 from backend.apolo.serializer.data_collection_serializer import CollPolicyGroupIDNameSerializer, \
     DeviceGroupIDNameSerializer, SchedulesAddSerializer, ItemsSerializer
 from backend.apolo.tools import views_helper, constants
+from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 
 
@@ -39,8 +40,9 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
         self.end_period_time = views_helper.get_request_value(self.request, "end_period_time", 'BODY')
         self.data_schedule_type = views_helper.get_request_value(self.request, "data_schedule_type", 'BODY')
         self.weeks = views_helper.get_request_value(self.request, "weeks", 'BODY')
-        self.schedule_start_time = views_helper.get_request_value(self.request, "schedule_start_time", 'BODY')
-        self.schedule_end_time = views_helper.get_request_value(self.request, "schedule_end_time", 'BODY')
+        # self.schedule_start_time = views_helper.get_request_value(self.request, "schedule_start_time", 'BODY')
+        # self.schedule_end_time = views_helper.get_request_value(self.request, "schedule_end_time", 'BODY')
+        self.data_schedule_time = views_helper.get_request_value(self.request, "data_schedule_time", 'BODY')
 
     @staticmethod
     def __get_ostype__():
@@ -91,7 +93,7 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
 
     def __insert_data_check__(self, devices, coll_policies):
 
-        select_sql = 'select  item_id,schedule_id from Items where'
+        select_sql = 'select item_id,schedule_id from Items where'
 
         for i in range(len(devices)):
             device_id = devices[i]
@@ -121,32 +123,31 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
 
     def __set_schedule_data__(self):
 
-        if self.weeks:
-            week_time = ';'.join(self.weeks)
-        else:
-            week_time = '1;2;3;4;5;6;7'
+        # if self.weeks:
+        #     week_time = ';'.join(self.weeks)
+        # else:
+        #     week_time = '1;2;3;4;5;6;7'
 
-        data_schedule_time = '{}@{}-{}'.format(week_time, self.schedule_start_time, self.schedule_end_time)
+        # data_schedule_time = '{}@{}-{}'.format(week_time, self.schedule_start_time, self.schedule_end_time)
         schedule_recode_data = {
             'valid_period_type': self.valid_period_type,
             'data_schedule_type': self.data_schedule_type,
-            'start_period_time': self.start_period_time.replace(' ', '@'),
-            'end_period_time': self.end_period_time.replace(' ', '@'),
-            'data_schedule_time': data_schedule_time,
+            'start_period_time': None,#self.start_period_time,
+            'end_period_time': None, #self.end_period_time,
+            'data_schedule_time': None,#self.data_schedule_time,
             'priority': self.priority,
             'status': constants.SCHEDULE_STATUS_DEFAULT,
             'policy_group': self.policy_group_id,
             'device_group': self.device_group_id,
             'ostype': self.ostype
         }
-
         return schedule_recode_data
 
     def __get_devices__(self):
         devices = DevicesGroups.objects.filter(group=self.device_group_id).values()
         devices_list = []
         for arry in devices:
-            devices_list.append(arry['devicegroup_id'])
+            devices_list.append(arry['device_id'])
         return devices_list
 
     def __get_coll_policies__(self):
@@ -154,7 +155,9 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
         query_set = PolicysGroups.objects.filter(policy_group=self.policy_group_id)
         policy_list = []
         for arry in query_set:
+            print arry.policys_groups_id
             data = {
+                'policys_groups_id': arry.policys_groups_id,
                 'coll_policy_id': arry.policy.coll_policy_id,
                 'item_type': arry.policy.policy_type,
                 'snmp_oid': arry.policy.snmp_oid,
@@ -176,8 +179,10 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
         items_arry = []
         for arry in coll_policies:
             coll_policy_id = arry['coll_policy_id']
+            policys_groups_id = arry['policys_groups_id']
             item_type = arry['policy_type']
             if item_type == constants.ITEM_TYPE_SNMP:
+                print 'snmp:{}'.format(coll_policy_id)
                 key_str = arry['snmp_oid']
                 value_type = arry['value_type']
                 data = {
@@ -187,14 +192,16 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                     'status': constants.ITEM_TABLE_STATUS_DEFAULT,
                     'last_exec_time': None,
                     'coll_policy': coll_policy_id,
-                    'coll_policy_rule_tree_treeid': None,
+                    'coll_policy_rule_tree_treeid':0,
                     'device': None,
-                    'schedule': schedule_id
+                    'schedule': schedule_id,
+                    'policys_groups':policys_groups_id
                 }
                 items_arry.append(data)
-            if item_type == constants.ITEM_TYPE_CLE:
+            if item_type == constants.ITEM_TYPE_CLI:
+                print 'cli:{}'.format(coll_policy_id)
                 leaf_query_set = CollPolicyRuleTree.objects.filter(coll_policy=coll_policy_id,
-                                                                   is_leaf=constants.LEAF_NODE_MARK)
+                                                                 is_leaf=constants.LEAF_NODE_MARK)
                 for leaf in leaf_query_set:
                     key_str = leaf.rule.key_str
                     value_type = leaf.rule.value_type
@@ -208,7 +215,8 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                         'coll_policy': coll_policy_id,
                         'coll_policy_rule_tree_treeid': tree_id,
                         'device': None,
-                        'schedule': schedule_id
+                        'schedule': schedule_id,
+                        'policys_groups': policys_groups_id
                     }
                     items_arry.append(data)
         return items_arry
@@ -237,7 +245,7 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                 serializer = SchedulesAddSerializer(data=schedule_data)
                 with transaction.atomic():
                     # insert data into schedule table
-                    if serializer.is_valid(Exception):
+                    if serializer.is_valid(raise_exception=BaseException):
                         serializer.save()
                         schedule_id = serializer.data['schedule_id']
                         item_list = self.__get_items_context__(schedule_id, coll_policy_list)
@@ -249,7 +257,7 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                                 policy_device_combinations.append(combination)
 
                         item_serializer = ItemsSerializer(data=policy_device_combinations, many=True)
-                        if item_serializer.is_valid(Exception):
+                        if item_serializer.is_valid(raise_exception=BaseException):
                             item_serializer.save()
                             data = {
                                 'new_token': self.new_token,
@@ -261,3 +269,5 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                             return api_return(data=data)
             except Exception as e:
                 print e
+                return exception_handler(e)
+

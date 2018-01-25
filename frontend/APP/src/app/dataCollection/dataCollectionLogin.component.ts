@@ -21,6 +21,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     // maxDate = new Date(2018, 10, 15);
     bsValue: Date = new Date();
     isTimeMeridian: boolean = false;
+    isValid: boolean;
 
     startDateTime: Date = new Date(2018, 0, 1, 0, 0);
     endDateTime: Date = new Date(2018, 0, 1, 23, 59);
@@ -46,18 +47,18 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     validPeriodTypes: any = [{id: 0, value:'期間なし'}, {id: 1, value: '期間あり'}];
 
     dataScheduleType: any;
-    dataScheduleTypes: any = [{id: 0, value:'常に取得'}, {id: 1, value: '取得停止'}, {id: 2, value: '周期取得'}];
+    dataScheduleTypes: any = [{id: 1, value:'常に取得'}, {id: 2, value: '取得停止'}, {id: 3, value: '周期取得'}];
     weekdays: any = [
-        {id: 1, value: '月', ifCheck: 'checked'},
-        {id: 2, value: '火', ifCheck: 'checked'},
-        {id: 3, value: '水', ifCheck: 'checked'},
-        {id: 4, value: '木', ifCheck: 'checked'},
-        {id: 5, value: '金', ifCheck: 'checked'},
+        {id: 1, value: '月', ifCheck: ''},
+        {id: 2, value: '火', ifCheck: ''},
+        {id: 3, value: '水', ifCheck: ''},
+        {id: 4, value: '木', ifCheck: ''},
+        {id: 5, value: '金', ifCheck: ''},
+        // {id: 5, value: '金', ifCheck: 'checked'},
         {id: 6, value: '土', ifCheck: ''},
         {id: 7, value: '日', ifCheck: ''}
     ];
 
-    // modalTitle:string;
     constructor(
         private router: Router,
         private activeRoute: ActivatedRoute,
@@ -72,16 +73,14 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         setTimeout(() => {
-           if(this.id == -1){
+            $('#validPeriod').hide();
+            $('#dataSchedule').hide();
+            if(this.id == -1){
                 this.getOsTypes();
                 this.setInitSelect();
                 $('button.btn-danger').hide();
-                $('#validPeriod').hide();
-                $('#dataSchedule').hide();
             } else {
-                this.getOsTypes();
-                //set init value for this id
-               // $('button.btn-primary').attr('disabled','disabled');
+                this.getDetailById(this.id);
             }
         },0);
     }
@@ -93,7 +92,9 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data']) {
                         this.osType = res['data'];
-                        this.selectedOsType = this.osType[0]['ostypeid'].toString();
+                        if(this.selectedOsType == null){
+                            this.selectedOsType = this.osType[0]['ostypeid'].toString();
+                        }
                         this.getGroups();
 
                     }
@@ -111,15 +112,12 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     // if (res['data']) {
-                        this.deviceGroups = res['device_groups'];
-                        this.policyGroups = res['cp_groups'];
-                        if (this.id == -1) {
-                            this.deviceGroup = this.deviceGroups[0]['group_id'].toString();
-                            this.policyGroup = '-1';
-                        } else {
-                            this.getDetailById(this.id);
-                        }
-
+                    this.deviceGroups = res['device_groups'];
+                    this.policyGroups = res['cp_groups'];
+                    if (this.id == -1) {
+                        this.deviceGroup = this.deviceGroups[0]['group_id'].toString();
+                        this.policyGroup = '-1';
+                    }
                     // }
                 } else {
                     if (res['status'] && res['status']['message']) {
@@ -133,40 +131,70 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     }
 
+    updateTime(hour:number, minute:number){
+        let d = new Date();
+        d.setHours(hour);
+        d.setMinutes(minute);
+        return d;
+    }
+
     getDetailById(id){
-        console.log("schedule id "+id);
         let url = '/api_data_collection/?id=' + id;
         this.httpClient.toJson(this.httpClient.get(url)).subscribe(res => {
             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    if (res['data']) {
-                        let data = res['data'];
-                        console.log(res.data);
-                        this.id = _.get(data, 'schedule_id');
-                        this.selectedOsType = _.get(data, 'ostype_id').toString();
-                        this.priority = _.get(data, 'priority');
-                        this.deviceGroup = _.get(data, 'device_group_id').toString();
-                        this.policyGroup = _.get(data, 'policy_group_id').toString();
+                if (res['data']) {
+                    let data = res['data'];
 
+                    let valid_period_type = _.get(data, 'valid_period_type');
+                    $('input[name="validPeriodType"][value="'+valid_period_type+'"]').attr('checked','checked');
+                    this.changeValidPeriodType(valid_period_type);
+                    let data_schedule_type = _.get(data, 'data_schedule_type');
+                    $('input[name="dataScheduleType"][value="'+data_schedule_type+'"]').attr('checked','checked');
+                    this.changeDataScheduleType(data_schedule_type);
+
+                    this.id = _.get(data, 'schedule_id');
+                    this.selectedOsType = _.get(data, 'ostype_id');
+                    this.priority = _.get(data, 'priority');
+                    this.deviceGroup = _.get(data, 'device_group_id');
+                    this.policyGroup = _.get(data, 'policy_group_id');
+                    this.getOsTypes();
+
+                    let start_period_time = _.get(data, 'start_period_time');
+                    let end_period_time = _.get(data, 'end_period_time');
+                    if(start_period_time != null && end_period_time != null){
+                        $('input[name="startDate"]').val(_.get(data, 'start_period_time').split(' ')[0]);
+                        $('input[name="endDate"]').val(_.get(data, 'end_period_time').split(' ')[0]);
+
+                        let spt = _.get(data, 'start_period_time').split(' ')[1];
+                        let ept = _.get(data, 'end_period_time').split(' ')[1];
+                        this.startDateTime = this.updateTime(parseInt(spt.split(':')[0]),parseInt(spt.split(':')[1]));
+                        this.endDateTime = this.updateTime(parseInt(ept.split(':')[0]),parseInt(ept.split(':')[1]));
                     }
-                } else {
-                    if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+
+                    let sst = _.get(data, 'schedule_start_time');
+                    let set = _.get(data, 'schedule_end_time');
+                    this.startTime = this.updateTime(parseInt(sst.split(':')[0]),parseInt(sst.split(':')[1]));
+                    this.endTime = this.updateTime(parseInt(set.split(':')[0]),parseInt(set.split(':')[1]));
+
+                    let weeks: any = _.get(data, 'weeks');
+                    for (let i=0; i< this.weekdays.length; i++){
+                        if (weeks.indexOf(this.weekdays[i]['id'].toString()) != -1){
+                            this.weekdays[i]['ifCheck'] = 'checked';
+                        }
                     }
                 }
-
-            // scheduleInfo['valid_period_type'] = this.validPeriodType.toString();
-            // scheduleInfo['start_period_time'] = startPeriodTime;
-            // scheduleInfo['end_period_time'] = endPeriodTime;
-            // scheduleInfo['data_schedule_type'] = this.dataScheduleType.toString();
-            // scheduleInfo['data_schedule_time'] = dataScheduleTime;
-
+            } else {
+                if (res['status'] && res['status']['message']) {
+                    alert(res['status']['message']);
+                }
+            }
         });
-        // console.log(result);
     }
 
     setInitSelect() {
-        $('input[value="0"]').attr('checked','checked');
-        this.dataScheduleType = 0;
+        $('input[name="validPeriodType"][value="0"]').attr('checked','checked');
+        $('input[name="dataScheduleType"][value="1"]').attr('checked','checked');
+        this.dataScheduleType = 1;
         this.validPeriodType = 0;
         this.priority = 0;
     }
@@ -186,7 +214,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     changeDataScheduleType(id: number){
         this.dataScheduleType = id;
-        if (id == 2){
+        if (id == 3){
             $('#dataSchedule').show();
         } else {
             $('#dataSchedule').hide();
@@ -199,7 +227,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         } else {
             this.weekdays[id-1]['ifCheck'] = 'checked';
         }
-
     }
 
     filledToTwoNumber(num){
@@ -228,9 +255,11 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 dataScheduleTime += this.weekdays[i]['id']+';';
             }
         }
-        dataScheduleTime = dataScheduleTime.substring(0,dataScheduleTime.length-1)+'@'+dataScheduleStartTime+'-'+dataScheduleEndTime;
+        if (dataScheduleTime != ''){
+            dataScheduleTime = dataScheduleTime.substring(0,dataScheduleTime.length-1)+'@'+dataScheduleStartTime+'-'+dataScheduleEndTime;
+        }
 
-        // let url = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
+
         if (this.doCheck()) {
             let scheduleInfo: any = {};
             let url = '/api_new_data_collection/';
@@ -251,48 +280,48 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             // return;
             if (this.id == -1){
                 this.httpClient
-                .toJson(this.httpClient.post(url, scheduleInfo))
-                .subscribe(res => {
-                    if (res['status']['status'].toString().toLowerCase() === 'true') {
-                        if (res['data']) {
-                            // let id = res['data']['coll_policy_id'];
-                            // this.router.navigate(['/index/cliCPEdit'],
-                            //     { queryParams: { 'id': id } });
+                    .toJson(this.httpClient.post(url, scheduleInfo))
+                    .subscribe(res => {
+                        if (res['status']['status'].toString().toLowerCase() === 'true') {
+                            if (res['data']) {
+                                // let id = res['data']['coll_policy_id'];
+                                // this.router.navigate(['/index/cliCPEdit'],
+                                //     { queryParams: { 'id': id } });
+                            }
+                        } else {
+                            // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                            //     this.uniqueFlg = false;
+                            // } else {
+                            //     alert(res['status']['message']);
+                            // }
                         }
-                    } else {
-                        // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
-                        //     this.uniqueFlg = false;
-                        // } else {
-                        //     alert(res['status']['message']);
-                        // }
-                    }
                 });
+                this.bsModalRef.hide();
             } else {
                 scheduleInfo['schedule_id'] = this.id.toString();
                 this.httpClient
-                .toJson(this.httpClient.put(url, scheduleInfo))
-                .subscribe(res => {
-                    if (res['status']['status'].toString().toLowerCase() === 'true') {
-                        if (res['data']) {
-                            // let id = res['data']['coll_policy_id'];
-                            // this.router.navigate(['/index/cliCPEdit'],
-                            //     { queryParams: { 'id': id } });
+                    .toJson(this.httpClient.put(url, scheduleInfo))
+                    .subscribe(res => {
+                        if (res['status']['status'].toString().toLowerCase() === 'true') {
+                            if (res['data']) {
+                                // let id = res['data']['coll_policy_id'];
+                                // this.router.navigate(['/index/cliCPEdit'],
+                                //     { queryParams: { 'id': id } });
+                            }
+                        } else {
+                            // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                            //     this.uniqueFlg = false;
+                            // } else {
+                            //     alert(res['status']['message']);
+                            // }
                         }
-                    } else {
-                        // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
-                        //     this.uniqueFlg = false;
-                        // } else {
-                        //     alert(res['status']['message']);
-                        // }
-                    }
                 });
+                this.bsModalRef.hide();
             }
-
-
         }
 
-
     }
+
     doCheck(){
         let flag: boolean = true;
         return flag;
@@ -308,6 +337,9 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     console.log('delete',res);
                 });
+            this.bsModalRef.hide();
+        } else {
+
         }
     }
 

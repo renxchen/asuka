@@ -48,7 +48,6 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
         }
     }
     ngOnInit() {
-        console.log('snmp');
         this.getOsType();
     }
     ngAfterViewInit() {
@@ -69,6 +68,10 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                         this.selectedRtnType = _.get(data, 'value_type');
                         this.selectedOsType = _.get(data, 'ostype');
                     }
+                } else {
+                    if (res['status'] && res['status']['message']) {
+                        alert(res['status']['message']);
+                    }
                 }
             });
     }
@@ -81,7 +84,6 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data']) {
                         this.osType = res['data'];
-                        let osTypeTmp = _.clone(res['data']);
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {

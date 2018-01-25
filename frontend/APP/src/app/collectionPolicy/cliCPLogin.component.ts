@@ -18,7 +18,6 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
     cliCommand: any;
     desc: any;
     selectedOsType: any;
-    regExp: string;
     nameFlg: Boolean = true;
     cmdFlg: Boolean = true;
     descFlg: Boolean = false;

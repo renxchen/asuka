@@ -88,7 +88,7 @@
                                bsDatepicker>
                         </div>
                         <div class="col-sm-4" style=" padding-right: 0px; padding-left: 0px;">
-                            <timepicker name="startDateTime" [(ngModel)]="startDateTime"
+                            <timepicker name="startDateTime" [(ngModel)]="startDateTime" (isValid)="isValid = $event"
                                         [showMeridian]="isTimeMeridian"[minuteStep]="1">
 
                             </timepicker>

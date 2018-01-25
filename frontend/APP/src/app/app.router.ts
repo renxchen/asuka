@@ -7,14 +7,21 @@ import { LoginComponent } from './login/login.component';
 import { IndexComponent } from './index/index.component';
 // collection policy
 import { CPViewComponent } from './collectionPolicy/cPView.component';
-import { CPGViewComponent } from './collectionPolicy/cPGView.component';
 import { CLICPLoginComponent } from './collectionPolicy/cliCPLogin.component';
 import { CLICPEditComponent } from './collectionPolicy/cliCPEdit.component';
+import { CLICPEditPopComponent } from './collectionPolicy/cliCPEditPop.component';
 import { CLICPDetailComponent } from './collectionPolicy/cliCPDetail.component';
 import { CLIBlockComponent } from './collectionPolicy/cliBlock.component';
+import { CLIDataComponent } from './collectionPolicy/cliData.component';
 import { SNMPCPLoginComponent } from './collectionPolicy/snmpCPLogin.component';
 import { SNMPCPDetailComponent } from './collectionPolicy/snmpCPDetail.component';
 import { SNMPCPEditComponent } from './collectionPolicy/snmpCPEdit.component';
+import { CPGViewComponent } from './collectionPolicy/cPGView.component';
+import { CPGLoginComponent } from './collectionPolicy/cPGLogin.component';
+import { CPGDetailComponent } from './collectionPolicy/cPGDetail.component';
+import { CPGEditComponent } from './collectionPolicy/cPGEdit.component';
+import { CPGActionComponent } from './collectionPolicy/cPGAction.component';
+
 // data collection
 import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
 import { PoliciesPerDeviceComponent } from './dataCollection/policiesPerDevice.component';
@@ -25,7 +32,7 @@ import { ActionPolicyViewComponent } from './actionPolicy/actionPolicyView.compo
 import { ActionPolicyLoginComponent } from './actionPolicy/actionPolicyLogin.component';
 import { DataTableViewComponent } from './actionPolicy/dataTableView.component';
 import { ActionPolicyHistoryComponent } from './actionPolicy/actionPolicyHistory.component';
-import { DataTableLoginComponent } from './actionPolicy/dataTableLogin.component'
+import { DataTableLoginComponent } from './actionPolicy/dataTableLogin.component';
 
 const routes: Routes = [
     {
@@ -168,9 +175,15 @@ const routes: Routes = [
 ];
 export const appRouting = RouterModule.forRoot(routes);
 export const entryComponentList: any[] = [
-    ModalComponent,
+ModalComponent,
     // collection policy
     CLIBlockComponent,
+    CLIDataComponent,
+    CLICPEditPopComponent,
+    CPGLoginComponent,
+    CPGDetailComponent,
+    CPGEditComponent,
+    CPGActionComponent,
     // data
     DataCollectionLoginComponent,
     DataTableLoginComponent,

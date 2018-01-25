@@ -1,13 +1,15 @@
-<div class="ibox-content" style="min-height:380px;">
+<div class="ibox-content" style="min-height:380px;display: none;">
     <div>
         <label>Device</label>
        <select id="device" name="device" style="width: 200px">
-            <option >device1</option>
-            <option >device2</option>
-            <option >device3</option>
-            <option >device4</option>
+           <option *ngFor="let item of deviceList" value="{{item.deviceNo}}">
+                {{item.name}}
+           </option>
+            <!--<option >device1</option>-->
+            <!--<option >device2</option>-->
+            <!--<option >device3</option>-->
+            <!--<option >device4</option>-->
         </select>
-        <input [(ngModel)]="deviceNo">
 
     </div>
     <div style="margin-top: 30px">

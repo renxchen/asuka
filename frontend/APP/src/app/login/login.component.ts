@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, AfterViewInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs/observable';
+import { Observable } from 'rxjs/Rx';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -17,7 +17,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         public httpClient: HttpClientComponent,
         public router: Router,
         private translate: TranslateService) {
-            translate.setDefaultLang('en');
+            translate.setDefaultLang('ja');
         }
     ngOnInit() {
         localStorage.setItem('requestFailed', '');

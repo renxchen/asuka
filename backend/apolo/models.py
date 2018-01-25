@@ -100,11 +100,7 @@ class CollPolicyGroups(models.Model):
 
     @property
     def ostype_name(self):
-        return self.ostype.name
-
-    @property
-    def ostype_ostypeid(self):
-        return self.ostype.ostypeid
+        return self.ostypeid.name
 
 
 class CollPolicyRuleTree(models.Model):
@@ -313,7 +309,8 @@ class Items(models.Model):
     # modify 1.17 add default value
     last_exec_time = models.IntegerField(blank=True, null=True, default=0)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
-    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING, db_column='coll_policy_rule_tree_treeid')
+    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
+                                                     db_column='coll_policy_rule_tree_treeid')
     device = models.ForeignKey(Devices, models.DO_NOTHING)
     schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
     # add 1.17
