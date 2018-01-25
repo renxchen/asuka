@@ -71,7 +71,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.blockTreeData = data['block_rule_tree_json'];
                         this.dataTreeData = data['data_rule_tree_json'];
                         this.ruleTreeData = data['policy_tree_json'];
-                        console.log('this.ruleTreeData', this.ruleTreeData);
+                        // console.log('this.ruleTreeData', this.ruleTreeData);
                         $('#input-wrap').html(data['cli_command_result']);
                         this.blockTree(this.blockTreeData);
                         this.dataTree(this.dataTreeData);
