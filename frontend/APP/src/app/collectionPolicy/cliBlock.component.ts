@@ -112,7 +112,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     this.isSerial = _.get(data, 'is_serial');
                     this.extractKey = _.get(data, 'extract_key');
                 }
-                if (res['rule_is_used'] && res['rule_is_used'] === true) {
+                if (res['rule_is_used'] || res['rule_is_used'].toLowerCase === true && this.info['delFlg']) {
                     this.delBtn = false;
                 } else {
                     this.delBtn = true;
@@ -250,7 +250,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     }
     public saveRule() {
         // this.apiPrefix = '/v1';
-        // let id = this.ruleId                            ;
+        // let id = this.ruleId;
         // let editUrl = '/api_policy_tree_rule/?rule_id=' + id;
         // let createUrl = '/api_policy_tree_rule/';
         // this.httpClient.setUrl(this.apiPrefix);
@@ -264,11 +264,12 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         //             let data = _.get(res, 'data');
         //             if (status && status['status'].toLowerCase() === 'true') {
         //                 if (data) {
-        //                     let blockTree: any = {};
-        //                     blockTree = _.get(data, 'block_rule_tree_json');
+        //                     let blockInfo: any = {};
+        //                     blockInfo['blockTree'] = _.get(data, 'block_rule_tree_json');
+        //                     // blockInfo['name'] = _.get(data, 'name');
         //                     alert('保存しました。');
         //                     this.bsModalRef.hide();
-        //                     this.modalService.setDismissReason(blockTree);
+        //                     this.modalService.setDismissReason(blockInfo);
         //                 }
         //             } else {
         //                 if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
@@ -290,11 +291,12 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         //             let data = _.get(res, 'data');
         //             if (status && status['status'].toLowerCase() === 'true') {
         //                 if (data) {
-        //                     let blockTree: any = {};
-        //                     blockTree = _.get(data, 'block_rule_tree_json');
+        //                     let blockInfo: any = {};
+        //                     blockInfo['blockTree'] = _.get(data, 'block_rule_tree_json');
+        //                     blockInfo['ruleName'] = _.get(data, 'new_name');
         //                     alert('編集しました。');
         //                     this.bsModalRef.hide();
-        //                     this.modalService.setDismissReason(blockTree);
+        //                     this.modalService.setDismissReason(blockInfo);
         //                 }
         //             } else {
         //                 if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {

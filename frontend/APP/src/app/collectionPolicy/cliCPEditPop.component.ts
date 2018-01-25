@@ -65,14 +65,14 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
     public getCPInfo(id: any) {
         this.apiPrefix = '/v1';
         // backend provide
-        let url = '/api_collection_policy/?coll_policy_id=' + this.cPId;
+        let url = '/api_collection_policy_edit_page/?coll_policy_id=' + this.cPId;
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
             .toJson(this.httpClient.get(url))
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    if (res['data'] && res['data'].length > 0) {
-                        let data = res['data'][0];
+                    if (res['data']) {
+                        let data = res['data'];
                         this.name = _.get(data, 'name');
                         this.desc = _.get(data, 'desc');
                         this.cliCommand = _.get(data, 'cli_command');
@@ -107,10 +107,11 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
         let cPInfo: any = {};
         this.apiPrefix = '/v1';
         // backend provide
-        let cPEditUrl = '/api_collection_policy/?coll_policy_id=' + this.cPId;
+        let cPEditUrl = '/api_collection_policy_edit_page/';
         if (this.doCheck()) {
-            cPInfo['name'] = this.name;
-            cPInfo['cli_command'] = this.cliCommand;
+            cPInfo['coll_policy_id'] = this.cPId;
+            cPInfo['coll_policy_name'] = this.name;
+            cPInfo['command'] = this.cliCommand;
             cPInfo['desc'] = this.desc;
             cPInfo['ostype'] = this.selectedOsType;
             this.httpClient.setUrl(this.apiPrefix);
@@ -119,11 +120,12 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    let data = _.get(status, 'data');
+                    let data = _.get(res, 'data');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         if (data) {
+                            console.log(data);
                             this.cPName = _.get(data, 'name');
-                            alert('保存しました。');
+                            alert('編集しました。');
                             this.modalRef.hide();
                             this.modalService.setDismissReason(this.cPName);
                         }
@@ -131,11 +133,10 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                         // this.closeMsg = '一覧へ戻る';
                         // this.showAlertModal(this.modalMsg, this.closeMsg);
                     } else {
-                        // check with backend
-                        if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                        if (msg && msg === 'CP_NAME_DUPLICATE') {
                             this.uniqueFlg = false;
                         } else {
-                            alert(res['status']['message']);
+                            alert(msg);
                         }
                     }
                 });
