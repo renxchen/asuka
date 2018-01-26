@@ -75,7 +75,6 @@ class PolicyGroupSerializer(serializers.ModelSerializer):
         return PolicysGroups.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.policys_groups_id = validated_data.get('policys_groups_id', instance.policys_groups_id)
         instance.exec_interval = validated_data.get('exec_interval', instance.exec_interval)
         instance.status = validated_data.get('status', instance.status)
         instance.history = validated_data.get('history', instance.history)
