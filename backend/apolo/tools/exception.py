@@ -50,6 +50,10 @@ def exception_handler(e):
         logger.info("AttributeError error when execute db query.")  ###Logger###
         data = {'message': str(e)}
         return api_return(data=eval(json.dumps(data)))
+    elif 'MultipleObjectsReturned' in repr(e):
+        logger.info("MultipleObjectsReturned error when execute db query.")  ###Logger###
+        data = {'message': str(e)}
+        return api_return(data=eval(json.dumps(data)))
     else:
         logger.info("Error or exception occurred. %s" % str(e))  ###Logger###
         data = {'message': "Error or exception occurred."}
