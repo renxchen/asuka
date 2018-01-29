@@ -49,21 +49,40 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
     @staticmethod
     def get_policy_group(**kwargs):
         try:
-            pg = PolicysGroups.objects.get(**kwargs)
+            pg = PolicysGroups.objects.filter(**kwargs)
             return pg
         except Exception, e:
             print traceback.format_exc(e)
             return exception_handler(e)
 
-    def del_policy_group(self, **kwargs):
+    def del_policy_group_and_coll_policy_group(self, **kwargs):
         try:
-            pg = self.get_policy_group(**kwargs)
-            if isinstance(pg, str):
-                if json.loads(pg)['message'] is not '':
-                    return False
+            queryset = self.get_cp_group(**kwargs)
+            if isinstance(queryset, str):
+                if json.loads(queryset)['message'] is not '':
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: json.loads(queryset)['message']
+                        }
+                    }
+                    return data
+            pgs = self.get_policy_group(**kwargs)
+            if isinstance(pgs, str):
+                if json.loads(pgs)['message'] is not '':
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: json.loads(pgs)['message']
+                        }
+                    }
+                    return data
             else:
-                return pg.delete()
-
+                pgs.delete()
+                queryset.delete()
+            return True
         except Exception, e:
             print traceback.format_exc(e)
             return exception_handler(e)
@@ -115,9 +134,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 queryset_pg = PolicysGroups.objects.filter(**{'policy_group_id': self.id})
                 serializer = CollPolicyGroupSerializer(queryset, many=True)
                 serializer_pg = PolicyGroupSerializer(queryset_pg, many=True)
-                verify_result = self.verify_column('get', self.id)
                 data = {
-                    'varify_info': verify_result,
                     'policys_groups_data': serializer_pg.data,
                     'new_token': self.new_token,
                     'policy_group_data': serializer.data,
@@ -126,6 +143,9 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                         constants.MESSAGE: constants.SUCCESS,
                     },
                 }
+                verify_result = self.get_schedule(**{'policy_group_id': self.id})
+                if verify_result is False:
+                    data[constants.STATUS][constants.MESSAGE] = constants.POLICY_GROUP_EXIST_IN_SCHEDULE
                 return api_return(data=data)
             field_relation_ships = {
                 'id': 'policy_group_id',
@@ -207,7 +227,6 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             with transaction.atomic():
                 cps = views_helper.get_request_value(self.request, 'cps', 'BODY')
                 kwargs = {'policy_group_id': self.id}
-                verify_info = self.verify_column('put', self.id)
                 queryset = self.get_cp_group(**kwargs)
                 if isinstance(queryset, str):
                     if json.loads(queryset)['message'] is not '':
@@ -229,7 +248,8 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 if serializer.is_valid(Exception):
                     serializer.save()
                     for per_cp in cps:
-                        queryset_related = self.get_policy_group(**{'policys_groups_id': per_cp['policys_groups_id']})
+                        queryset_related = PolicysGroups.objects.get(
+                            **{'policys_groups_id': int(per_cp['policys_groups_id'])})
                         serializer_related = PolicyGroupSerializer(queryset_related, data=per_cp)
                         if serializer_related.is_valid(Exception):
                             serializer_related.save()
@@ -248,47 +268,29 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
 
     def delete(self):
         try:
-            kwargs = {'policy_group_id': self.id}
-            verify_result = self.verify_column('delete', self.id)
-            if verify_result is False:
-                data = {
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.FALSE,
-                        constants.MESSAGE: constants.POLICY_GROUP_EXIST_IN_SCHEDULE
-                    }
-                }
-                return api_return(data=data)
-            queryset = self.get_cp_group(**kwargs)
-            if isinstance(queryset, str):
-                if json.loads(queryset)['message'] is not '':
+            with transaction.atomic():
+                kwargs = {'policy_group_id': self.id}
+                verify_result = self.get_schedule(**kwargs)
+                if verify_result is False:
                     data = {
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: json.loads(queryset)['message']
+                            constants.MESSAGE: constants.POLICY_GROUP_EXIST_IN_SCHEDULE
                         }
                     }
                     return api_return(data=data)
-            queryset.delete()
-            delete_return = self.del_policy_group(**kwargs)
-            if delete_return is False:
-                data = {
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.FALSE,
-                        constants.MESSAGE: constants.FAILED
+                data = self.del_policy_group_and_coll_policy_group(**kwargs)
+                if data is True:
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.TRUE,
+                            constants.MESSAGE: constants.SUCCESS
+                        }
                     }
-                }
                 return api_return(data=data)
-            data = {
-                'new_token': self.new_token,
-                constants.STATUS: {
-                    constants.STATUS: constants.TRUE,
-                    constants.MESSAGE: constants.SUCCESS
-                }
-            }
-            return api_return(data=data)
         except Exception, e:
+            transaction.rollback()
             print traceback.format_exc(e)
             return exception_handler(e)
