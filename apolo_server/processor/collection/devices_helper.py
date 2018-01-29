@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
 import copy
-from Pantheon.Venus.collection.db_help import get_all_rule, get_all_items_from_db
-from Pantheon.Venus.constants import DevicesConstants, CommonConstants, ParserConstants
+from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
+from apolo_server.processor.db_units.memcached_helper import RulesMemCacheDb, ItemMemCacheDb
 
 
 __version__ = '0.1'
@@ -62,7 +62,7 @@ def __item_type_mapping(item):
 
 
 def get_items(now_time, item_type):
-    items = get_all_items_from_db()
+    items = ItemMemCacheDb().get()
     items = [item for item in items if __filter_item_type(item, item_type)]
     return items
 
@@ -122,7 +122,7 @@ def get_devices(now_time, item_type):
     if item_type == CommonConstants.CLI_TYPE_CODE:
         rules = __add_rules()
         devices = [__merge_cli(item, other_param, rules) for item in devices.values()]
-        result['parser_params']['rules'] = rules
+        # result['parser_params']['rules'] = rules
         result['devices'] = devices
     else:
         devices = [__merge_snmp(item, other_param) for item in devices.values()]
@@ -206,7 +206,7 @@ def __add_param(items, param_keys):
 
 def __add_rules():
     tmp_rules = {}
-    all_rules = get_all_rule()
+    all_rules = RulesMemCacheDb().get()
     for rule in all_rules:
         tmp_rules[str(rule['ruleid'])] = rule
     return tmp_rules
@@ -405,5 +405,5 @@ def __add_items_valid_status(item, status):
 
 
 if __name__ == "__main__":
-    for i in get_valid_items(1513312116, -1):
+    for i in get_devices(1513312116, 1).items():
         print i

@@ -41,6 +41,7 @@ class CommonConstants(object):
     SNMP_TYPE_CODE = 1
     CLI_TYPE_CODE = 0
     ALL_TYPE_CODE = -1
+    MEM_CACHE_HOSTS = [('10.71.244.134:11211', 1), ]
 
 
 class TriggerConstants(object):
