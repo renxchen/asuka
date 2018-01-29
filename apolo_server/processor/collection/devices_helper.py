@@ -42,6 +42,9 @@ def __item_type_mapping(item):
         tmp_item['item_type'] = item['item_type']
         tmp_item['device_id'] = item['device__device_id']
         tmp_item['priority'] = item['schedule__priority']
+        tmp_item['device_name'] = item['device__hostname']
+        tmp_item['policy_name'] = item['coll_policy__name']
+        tmp_item['exec_interval'] = item['policys_groups__exec_interval']
         return tmp_item
 
     def wrapper_snmp(item):
@@ -183,7 +186,10 @@ def __merge_cli(items, param_keys, rules):
                 rule_id=item['coll_policy_rule_tree_treeid__rule_id'],
                 device_id=item['device__device_id'],
                 value_type=item['coll_policy_rule_tree_treeid__rule__value_type'],
-                block_path=__create_path(rules, item['coll_policy_rule_tree_treeid__rule_id_path'])
+                block_path=__create_path(rules, item['coll_policy_rule_tree_treeid__rule_id_path']),
+                device_name=item['device__hostname'],
+                policy_name=item['coll_policy__name'],
+                exec_interval=item['policys_groups__exec_interval']
             )
 
         )

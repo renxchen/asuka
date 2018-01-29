@@ -27,7 +27,7 @@ def get_all_items_from_db():
         "device__snmp_port",
         "device__snmp_community",
         "device__snmp_version",
-
+        "coll_policy__name",
         "coll_policy__cli_command",
         "coll_policy__snmp_oid",
         # "exec_interval",
