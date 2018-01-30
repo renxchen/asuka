@@ -40,12 +40,17 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
     ) {}
 
     ngOnInit() {
+        this.getPolicy();
         this.total = this.testData.length;
     }
 
     ngAfterViewInit() {
         this.setSelect();
         this.drawDPPTable();
+    }
+
+    getPolicy(){
+
     }
 
     public setSelect(){
@@ -78,26 +83,38 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
         _policy.html(_content2);
     }
 
-    public arrtSetting(rowId, val, rawObject, cm) {
-        let result;
-        if (rowId == 1){
-            result = 'rowspan=' + '"' + this.total + '"';
+    public arrtSetting(rowId, val, rowObject, cm) {
+        // let result;
+        // if (rowId == 1){
+        //     result = 'rowspan=' + '"' + this.total + '"';
+        // } else {
+        //     result = 'style="display:none"';
+        // }
+        // return result;
+        let attr = rowObject.attr[cm.name], result;
+        if (attr.rowspan != null) {
+            result = ' rowspan=' + '"' + attr.rowspan + '"';
         } else {
-            result = 'style="display:none"';
+            result = ' style="display:none"';
         }
         return result;
     }
 
     public drawDPPTable() {
         let _this = this;
+        let policyId = this.policyNo;
+        if(typeof(policyId) == 'undefined'){
+           return;
+        }
+        let url = '/v1/api_data_collection_policy/?policy_id='+policyId;
         $('#devicesTable').jqGrid({
-            // url: '/v1/api_data_collection/',
-            // datatype: 'JSON',
-            datatype: 'local',
-            // mtype: 'get',
+            url: url,
+            datatype: 'JSON',
+            // datatype: 'local',
+            mtype: 'get',
             colModel: this.dcModel,
             // postData: { '': '' },
-            data: this.testData,
+            // data: this.testData,
             // viewrecords: true,
             loadComplete: function () {
                 // _this.stopPolicy();
@@ -115,14 +132,14 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
             //     groupField : ['device']
             // },
             // pager: '#policiesPager',
-            // jsonReader: {
-            //     root: 'data',
-            //     page: 'current_page_num',
-            //     total: 'num_page',
-            //     records: 'total_num',
-            //     userData: 'status',
-            //     repeatitems: false,
-            // },
+            jsonReader: {
+                root: 'data',
+                page: 'current_page_num',
+                total: 'num_page',
+                records: 'total_num',
+                userData: 'status',
+                repeatitems: false,
+            },
         });
         $('#devicesTable').jqGrid('filterToolbar', {defaultSearch: 'cn'});
     }
