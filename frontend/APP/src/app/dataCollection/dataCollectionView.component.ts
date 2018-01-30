@@ -37,19 +37,19 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         {label: 'コレクションポリシーグループ名',  name: 'policy_group_name', width: 100, align: 'center'},
 
         // {label: '有効期間',  name: 'period_time', width: 60, align: 'center'},
-        {label: '開始日時',  name: 'start_period_time', width: 60, align: 'center',
+        {label: '開始日時',  name: 'start_period_time', width: 65, align: 'center',
         formatter: this.formatterTime,
             // unformat: this.unFormatterTime
         },
-        {label: '終了日時',  name: 'end_period_time', width: 60, align: 'center',
+        {label: '終了日時',  name: 'end_period_time', width: 65, align: 'center',
         formatter: this.formatterTime,
             // unformat: this.unFormatterTime
         },
-        {label: '取得方法', name: 'data_schedule_type', width: 50, align: 'center',
+        {label: '取得方法', name: 'data_schedule_type', width: 45, align: 'center',
         formatter: this.formatterScheduleType},
-        {label: 'ステータス', name: 'status', width: 50, align: 'center', classes: 'status',
+        {label: 'ステータス', name: 'status', width: 45, align: 'center', classes: 'status',
         formatter: this.formatterStatus},
-        {label: 'アクション', name: 'action', width: 50, align: 'center', search: false,
+        {label: 'アクション', name: 'action', width: 45, align: 'center', search: false,
         formatter: this.fomatterBtn
         }
     ];
@@ -124,7 +124,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
 
     public formatterTime(cellvalue, options, rowObject){
         if (cellvalue == null){
-            return '';
+            return '——';
         } else {
             return cellvalue.replace('@', ' ');
         }
