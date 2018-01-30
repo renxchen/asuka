@@ -1,17 +1,20 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit,Input } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Router, ActivatedRoute } from '@angular/router';
+// import { DevicesComponentsDirective } from './devicesComponents.directive';
 declare let $: any;
 import * as _ from 'lodash';
 
 @Component({
     selector: 'policies-per-device',
     templateUrl: 'policiesPerDevice.component.html',
-    styleUrls: ['dataCollection.component.less']
+    styleUrls: ['dataCollection.component.less'],
+    // directives: [DevicesComponentsDirective]
 })
 
 export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
+    apiPrefix: any = '/v1';
     // dd: string = '1';
     deviceNo: any;
     stopAll = '<button class="btn btn-xs btn-primary" id="stopAll">全停止</button>';
@@ -26,7 +29,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             align: 'center', sortable: false, cellattr: this.arrtSetting,},
         {label: 'コレクションポリシー', name: 'policy', width: 50, align: 'center',
             classes: 'policy', sortable: false,cellattr: this.renderCpColor },
-        {label: this.stopAll, name: 'action', width: 50, align: 'center', search: false,
+        {label: this.stopAll, name: 'valid_status', width: 50, align: 'center', search: false,
         formatter: this.fomatterBtn, sortable: false, height: 50,}
     ];
     deviceList: any = [];
@@ -51,50 +54,88 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
     ) {}
 
     ngOnInit() {
-        this.deviceList = [{deviceNo: 1, name: 'deivce1'},
-            {deviceNo: 2, name: 'deivce2'},
-            {deviceNo: 3, name: 'deivce3'},
-            {deviceNo: 4, name: 'deivce4'},];
-        this.deviceNo = this.route.snapshot.queryParams['id'];
-        console.log(this.deviceNo);
-        console.log(typeof(this.deviceNo));
+        this.httpClient.setUrl(this.apiPrefix);
+        this.getDevices();
+        // v1/api_data_collection_devices/
+        // this.deviceList = [{deviceNo: 1, name: 'deivce1'},
+        //     {deviceNo: 2, name: 'deivce2'},
+        //     {deviceNo: 3, name: 'deivce3'},
+        //     {deviceNo: 4, name: 'deivce4'},];
 
-        if(typeof(this.deviceNo) == 'undefined'){
-            console.log("ununun");
-            console.log(this.deviceList[0]['deviceNo']);
-            this.deviceNo = this.deviceList[0]['deviceNo'];
-            console.log('init,no=1 :',this.deviceNo);
-
-        }else {
-
-        }
-        console.log('bbb',this.deviceNo);
+        // console.log('bbb',this.deviceNo);
         // this.route.params.subscribe(params => {
         //     this.deviceNo = params['deviceNo'];
         // });
 
     }
 
+    // @Input()
+    //   set ready(isReady: boolean) {
+    //     if (isReady) this.setSelect();
+    //   }
+
     ngAfterViewInit() {
-        this.setSelect();
-        this.drawPPDTable();
 
 
     }
 
+
+    getDevices() {
+        let _t = this;
+        this.httpClient
+            .toJson(this.httpClient.get('/api_data_collection_devices/'))
+            .subscribe(res => {
+                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                    if (res['devices']) {
+
+                        this.deviceList = res['devices'];
+                        // console.log(this.deviceList);
+                        this.deviceNo = this.route.snapshot.queryParams['id'];
+                        // console.log(this.deviceNo);
+                        // console.log(typeof(this.deviceNo));
+
+                        if(typeof(this.deviceNo) == 'undefined'){
+                            // console.log("ununun");
+                            // console.log(this.deviceList[0]['device_id']);
+                            this.deviceNo = this.deviceList[0]['device_id'];
+                            // console.log('init,no=1 :',this.deviceNo);
+
+                        }
+                        this.drawPPDTable();
+
+                        setTimeout(function () {
+                            _t.setSelect();
+                        }, 0);
+
+
+                        // $('#device').chosen();
+
+
+                    }
+                } else {
+                    if (res['status'] && res['status']['message']) {
+                        alert(res['status']['message']);
+                    }
+                }
+            });
+    }
+
+
+
     public setSelect(){
         let _this = this;
-
+        // $("#device").chosen("destroy").init();
+        // jQuery Chosen.destroy();
         $('#device').chosen({
             no_results_text: "検索結果ありません：",
             search_contains: true,
         }).change( function () {
             _this.deviceNo = $('#device').val();
-            console.log('deviceNo',_this.deviceNo);
-            let newUrl = '/v1/api_data_collection/?id='+_this.deviceNo;
-            console.log(newUrl);
-            $("#policiesTable").trigger("reloadGrid");
-            // $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
+            // console.log('deviceNo',_this.deviceNo);
+            let newUrl = '/v1/api_data_collection_devices/?device_id='+_this.deviceNo;
+            // console.log(newUrl);
+            // $("#policiesTable").trigger("reloadGrid");
+            $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
 
         }).val(this.deviceNo).trigger("chosen:updated");
 
@@ -120,7 +161,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
     public fomatterBtn(cellvalue, options, rowObject) {
         // console.log(rowObject);
-        if (cellvalue == 1){
+        if (cellvalue == true){
             return '<button class="btn btn-xs btn-primary stop"' +
                 ' name="'+ rowObject["policy"] +'" id="'+ rowObject["policyNo"] + '">停止</button>';
         } else if (cellvalue == 0){
@@ -134,7 +175,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
     public arrtSetting(rowId, val, rowObject, cm) {
         let attr = rowObject.attr[cm.name], result;
-        if (attr.rowspan != "none") {
+        if (attr.rowspan != null) {
             result = ' rowspan=' + '"' + attr.rowspan + '"';
         } else {
             result = ' style="display:none"';
@@ -202,15 +243,15 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         if(typeof(deviceId) == 'undefined'){
            return;
         }
-        let url = '/v1/api_data_collection/?id='+deviceId;
+        let url = '/v1/api_data_collection_devices/?device_id='+deviceId;
         $('#policiesTable').jqGrid({
-            // url: url,
-            // datatype: 'JSON',
-            datatype: 'local',
-            // mtype: 'get',
+            url: url,
+            datatype: 'JSON',
+            // datatype: 'local',
+            mtype: 'get',
             colModel: this.dcModel,
             // postData: { '': '' },
-            data: this.testData,
+            // data: this.testData,
             // viewrecords: true,
             loadComplete: function () {
                 _this.stopPolicy();
@@ -229,14 +270,14 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             //     groupField : ['device']
             // },
             // pager: '#policiesPager',
-            // jsonReader: {
-            //     root: 'data',
-            //     page: 'current_page_num',
-            //     total: 'num_page',
-            //     records: 'total_num',
-            //     userData: 'status',
-            //     repeatitems: false,
-            // },
+            jsonReader: {
+                root: 'data',
+                page: 'current_page_num',
+                total: 'num_page',
+                records: 'total_num',
+                userData: 'status',
+                repeatitems: false,
+            },
         });
         // $('#policiesTable').jqGrid('filterToolbar', {defaultSearch: 'cn'});
     }

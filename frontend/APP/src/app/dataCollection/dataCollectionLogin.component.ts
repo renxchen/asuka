@@ -17,6 +17,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     apiPrefix: any = '/v1';
     title: string;
     id: number = -1;
+
     // minDate = new Date(2017, 5, 10);
     // maxDate = new Date(2018, 10, 15);
     bsValue: Date = new Date();
@@ -87,7 +88,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     getOsTypes() {
         this.httpClient
-            .toJson(this.httpClient.get('/api_new_data_collection/new/'))
+            .toJson(this.httpClient.get('/api_new_data_collection/'))
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data']) {
@@ -113,6 +114,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     // if (res['data']) {
                     this.deviceGroups = res['device_groups'];
+                    console.log(this.deviceGroups);
                     this.policyGroups = res['cp_groups'];
                     if (this.id == -1) {
                         this.deviceGroup = this.deviceGroups[0]['group_id'].toString();
@@ -238,13 +240,21 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     save() {
         let startDate = $('input[name="startDate"]').val();
-        let startPeriodTime = startDate+'@'
-            +this.filledToTwoNumber(this.startDateTime.getHours())+':'
-            +this.filledToTwoNumber(this.startDateTime.getMinutes());
+        let startPeriodTime = '';
+        if (startDate != ''){
+            startPeriodTime = startDate+'@'
+                +this.filledToTwoNumber(this.startDateTime.getHours())+':'
+                +this.filledToTwoNumber(this.startDateTime.getMinutes());
+        }
+
         let endDate = $('input[name="endDate"]').val();
-        let endPeriodTime = endDate+'@'
-            +this.filledToTwoNumber(this.endDateTime.getHours())+':'
-            +this.filledToTwoNumber(this.endDateTime.getMinutes());
+        let endPeriodTime = '';
+        if (endDate != ''){
+            endPeriodTime = endDate+'@'
+                +this.filledToTwoNumber(this.endDateTime.getHours())+':'
+                +this.filledToTwoNumber(this.endDateTime.getMinutes());
+        }
+
         let dataScheduleStartTime = this.filledToTwoNumber(this.startTime.getHours())
             +':'+this.filledToTwoNumber(this.startTime.getMinutes());
         let dataScheduleEndTime = this.filledToTwoNumber(this.endTime.getHours())
@@ -282,6 +292,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 this.httpClient
                     .toJson(this.httpClient.post(url, scheduleInfo))
                     .subscribe(res => {
+                        $('#dcTable').trigger("reloadGrid");
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
                             if (res['data']) {
                                 // let id = res['data']['coll_policy_id'];
@@ -289,11 +300,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                                 //     { queryParams: { 'id': id } });
                             }
                         } else {
-                            // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
-                            //     this.uniqueFlg = false;
-                            // } else {
-                            //     alert(res['status']['message']);
-                            // }
+                            alert(res['status']['message']);
                         }
                 });
                 this.bsModalRef.hide();
@@ -302,6 +309,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 this.httpClient
                     .toJson(this.httpClient.put(url, scheduleInfo))
                     .subscribe(res => {
+                        $('#dcTable').trigger("reloadGrid");
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
                             if (res['data']) {
                                 // let id = res['data']['coll_policy_id'];
@@ -336,7 +344,9 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 .toJson(this.httpClient.delete(url))
                 .subscribe(res => {
                     console.log('delete',res);
+                    alert(res['status']['status'].toString());
                 });
+            $('#dcTable').trigger("reloadGrid");
             this.bsModalRef.hide();
         } else {
 
