@@ -13,10 +13,10 @@ from tornado import web, ioloop, options
 from zmq.eventloop.ioloop import ZMQIOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 from threading import Thread
-from Pantheon.Venus.session_mgr import SessionManager
-from Pantheon.Venus.configurations import Configurations
+from apolo_server.processor.session_mgr import SessionManager
+from apolo_server.processor.configurations import Configurations
 # from collection.collection_help import get_collection_devices, get_items
-from Pantheon.Venus.collection.devices_helper import get_devices, get_valid_items
+from apolo_server.processor.collection.devices_helper import get_devices, get_valid_items
 
 
 class TaskDispatcher(Thread):

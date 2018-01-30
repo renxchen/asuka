@@ -10,7 +10,7 @@
 
 '''
 
-from rule import Policy
+from backend.apolo.apolomgr.resource.common.common_policy_tree.rule import Policy
 
 class Dispatch(object):
 
@@ -25,9 +25,7 @@ class Dispatch(object):
         self.rules = rules
         self.buffer_res = []
         self.work_follow = {}
-
         self.__set_instance__()
-
         self.set_work_follow()
 
     def __set_instance__(self):
@@ -38,6 +36,7 @@ class Dispatch(object):
         the_first_data['start_line'] = 0
         the_first_data['end_line'] = len(self.raw_data.split('\n'))-1
         self.instance = Policy(extract_policy=the_first_data)
+
 
     def dispatch(self, work_follow_num=0):
         work_follow_num += 1

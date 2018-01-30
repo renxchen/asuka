@@ -15,8 +15,8 @@ CLI_THREADPOOL_SIZE = 150
 SNMP_THREADPOOL_SIZE = 15
 GET_CLI_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
 GET_SNMP_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
-GET_DEVICES_SERVICE_URL = "http://10.71.244.134:7777/api/v1/getCollectionInfor"
-# GET_DEVICES_SERVICE_URL = "http://127.0.0.1:7777/api/v1/getCollectionInfor"
+# GET_DEVICES_SERVICE_URL = "http://10.71.244.134:7777/api/v1/getCollectionInfor"
+GET_DEVICES_SERVICE_URL = "http://127.0.0.1:7777/api/v1/getCollectionInfor"
 # PARSER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/parser"
 PARSER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/parser"
 # TRIGGER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/trigger"
@@ -142,10 +142,10 @@ def __get_cli_data(param):
     except Exception, e:
         raise ParserServiceException(str(e))
 
-    try:
-        send_trigger(param)
-    except Exception, e:
-        raise TriggerServiceException(str(e))
+    # try:
+    #     send_trigger(param)
+    # except Exception, e:
+    #     raise TriggerServiceException(str(e))
 
     return output
 
@@ -155,15 +155,17 @@ def send_handler_request_cli(param, output):
     param['start_time'] = output.get('start_time')
     param['end_time'] = output.get('end_time')
     param['item_type'] = CLI_TYPE_CODE
+    param['output'] = {}
     tmp_dict = {}
     for output in output.get('output'):
-        tmp_dict[str(output.get('command')).strip()] = output.get('output')
+        tmp_dict[str(output.get('command'))] = output.get('output')
     for item in param['items']:
         item['output'] = tmp_dict[str(item['command']).strip()]
     try:
         res = requests.post(__service_url, data=json.dumps(param), timeout=TIMEOUT)
     except Exception:
         raise ParserServiceException(LogMessage.CRITICAL_SERVICE_TIMEOUT)
+
     status_code = res.status_code
     if status_code == 200:
         response = json.loads(str(res.text))
@@ -194,9 +196,9 @@ def cli_main():
     try:
         devices = get_devices(param)
         items = []
-        for i in devices['output']['devices']:
-            items.extend(i['items'])
-            i['parser_params'] = devices['output']['parser_params']
+        # for i in devices['output']['devices']:
+        #     items.extend(i['items'])
+        #     i['parser_params'] = devices['output']['parser_params']
         devices = map(__add_param, devices['output']['devices'])
         if len(devices) == 0:
             cli_logger.debug(LogMessage.DEBUG_NO_DEVICE_RUNNING_AT_TIME)
@@ -242,7 +244,6 @@ def send_handler_request_snmp(param, output):
     param['start_time'] = output.get('start_time')
     param['end_time'] = output.get('end_time')
     param['item_type'] = SNMP_TYPE_CODE
-
     tmp_dict = {}
     for output in output['output']:
         tmp_dict[str(output['oid']).strip()] = output['output']
