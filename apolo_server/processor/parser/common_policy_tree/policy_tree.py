@@ -23,6 +23,7 @@
 import json
 from collections import OrderedDict
 
+from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
 from backend.apolo.db_utils.db_opt import DBOpt
 from backend.apolo.tools import constants
 
@@ -57,55 +58,127 @@ class Rule_Tree(object):
         self.block_rule_type_one = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.BLOCK_RULE_TREE_KIND_ONE_NAME,
-            'rule_id': 0,
+            'data': {
+                'rule_id': 0,
+                'is_root': True,
+                'rule_type': 'block_rule_1'
+            },
+            'state': {
+                'opened': True,
+            },
             'children': []
         }
+
         self.block_rule_type_two = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.BLOCK_RULE_TREE_KIND_TWO_NAME,
-            'rule_id': 0,
+            'data': {
+                'rule_id': 0,
+                'is_root': True,
+                'rule_type': 'block_rule_2'
+            },
+            'state': {
+                'opened': True,
+            },
             'children': []
         }
         self.block_rule_type_three = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.BLOCK_RULE_TREE_KIND_THREE_NAME,
-            'rule_id': 0,
+            'data': {
+                'rule_id': 0,
+                'is_root': True,
+                'rule_type': 'block_rule_3'
+            },
+            'state': {
+                'opened': True,
+            },
             'children': []
         }
         self.block_rule_type_four = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.BLOCK_RULE_TREE_KIND_FOUR_NAME,
-            'rule_id': 0,
+            'data': {
+                'rule_id': 0,
+                'is_root': True,
+                'rule_type': 'block_rule_4'
+            },
+            'state': {
+                'opened': True,
+            },
             'children': []
         }
         self.data_rule_type_one = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.DATA_RULE_TREE_KIND_ONE_NAME,
-            'rule_id': 0,
+            'data': {
+                'rule_id': 0,
+                'is_root': True,
+                'rule_type': 'data_rule_1'
+            },
+            'state': {
+                'opened': True,
+            },
             'children': []
         }
         self.data_rule_type_two = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.DATA_RULE_TREE_KIND_TWO_NAME,
-            'rule_id': 0,
+            'data': {
+                'rule_id': 0,
+                'is_root': True,
+                'rule_type': 'data_rule_2'
+            },
+            'state': {
+                'opened': True,
+            },
             'children': []
         }
         self.data_rule_type_three = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.DATA_RULE_TREE_KIND_THREE_NAME,
-            'rule_id': 0,
+            'data': {
+                'rule_id': 0,
+                'is_root': True,
+                'rule_type': 'data_rule_3'
+            },
+            'state': {
+                'opened': True,
+            },
             'children': []
         }
         self.data_rule_type_four = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.DATA_RULE_TREE_KIND_FOUR_NAME,
-            'rule_id': 0,
+            'data': {
+                'rule_id': 0,
+                'is_root': True,
+                'rule_type': 'data_rule_4'
+            },
+            'state': {
+                'opened': True,
+            },
+            'children': []
+        }
+        self.data_rule_type_five = {
+            'icon': constants.RULE_NODE_ICON,
+            'text': constants.DATA_RULE_TREE_KIND_FIVE_NAME,
+            'data': {
+                'rule_id': 0,
+                'is_root': True,
+                'rule_type': 'data_rule_5'
+            },
+            'state': {
+                'opened': True,
+            },
             'children': []
         }
 
     def toReturn(self):
-        block_rule_list = [self.block_rule_type_one, self.block_rule_type_two, self.block_rule_type_three]
-        data_rule_list = [self.data_rule_type_one, self.data_rule_type_two, self.data_rule_type_three]
+        block_rule_list = [self.block_rule_type_one, self.block_rule_type_two, self.block_rule_type_three,
+                           self.block_rule_type_four]
+        data_rule_list = [self.data_rule_type_one, self.data_rule_type_two,
+                          self.data_rule_type_three, self.data_rule_type_four, self.data_rule_type_five]
         return block_rule_list, data_rule_list
 
 
@@ -119,21 +192,27 @@ class Policy_tree(DBOpt):
     # input :all rule node list in the policy tree
     # output :json data of tree
     def get_policy_tree(self):
-
-        policy_name = self.get_policy_tree_from_db(self.coll_policy_id).name
-        root = {'id': 'j1',
-                'text': policy_name,
-                'icon': constants.POLICY_TREE_ROOT_ICON,
+        root = {
+            'id': 'j1',
+            'text': constants.COLLECTION_POLICY_TREE_NAME,
+            'icon': constants.POLICY_TREE_ROOT_ICON,
+            'data': {
+                'rule_type':'',
                 'rule_id': 0,
-                'children': []
-                }
+                'is_root': True,
+            },
+            'state': {
+                'opened': True,
+            },
+            'children': []
+        }
         node_list = self.__get_node_list__()
         return self.__get_nodes__(node_list, 0, root)
 
     # get all the nodes in the coll_policy_tree
     def __get_node_list__(self):
 
-        policy_tree_query_set =self.get_tree_detail_from_db(self.coll_policy_id)
+        policy_tree_query_set = self.get_tree_detail_from_db(self.coll_policy_id)
         node_array = []
         for item in policy_tree_query_set:
             rule = item.rule
@@ -153,16 +232,6 @@ class Policy_tree(DBOpt):
             node_array.append(policy_tree_node)
         return node_array
 
-    # # get all the rules of the coll_policy
-    # def __get_rule_list__(self):
-    #
-    #     rules_query_set = None
-    #     try:
-    #         rules_query_set = CollPolicyCliRule.objects.filter(coll_policy=self.coll_policy_id)
-    #     except Exception as e:
-    #         print e.message
-    #     return rules_query_set
-
     def get_rules_tree(self):
 
         rule_list = self.get_many_rules_detail_from_db(self.coll_policy_id)
@@ -172,41 +241,43 @@ class Policy_tree(DBOpt):
             r = {
                 'icon': '',
                 'text': rule.name,
-                'rule_id': rule.ruleid,
-                'rule_type': '',
+                'data': {
+                    'rule_id': rule.ruleid,
+                    'rule_type': ''
+                },
                 'children': []
             }
             if rule.rule_type == 1:
                 r['icon'] = constants.DATA_NODE_ICON
-                r['rule_type'] = 'D'
+                r['data']['rule_type'] = 'data_rule_1'
                 rule_tree.data_rule_type_one['children'].append(r)
             elif rule.rule_type == 2:
                 r['icon'] = constants.DATA_NODE_ICON
-                r['rule_type'] = 'D'
+                r['data']['rule_type'] = 'data_rule_2'
                 rule_tree.data_rule_type_two['children'].append(r)
             elif rule.rule_type == 3:
                 r['icon'] = constants.DATA_NODE_ICON
-                r['rule_type'] = 'D'
+                r['data']['rule_type'] = 'data_rule_3'
                 rule_tree.data_rule_type_three['children'].append(r)
             elif rule.rule_type == 4:
                 r['icon'] = constants.DATA_NODE_ICON
-                r['rule_type'] = 'D'
+                r['data']['rule_type'] = 'data_rule_4'
                 rule_tree.data_rule_type_four['children'].append(r)
             elif rule.rule_type == 5:
                 r['icon'] = constants.BLOCK_NODE_ICON
-                r['rule_type'] = 'B'
+                r['data']['rule_type'] = 'block_rule_1'
                 rule_tree.block_rule_type_one['children'].append(r)
             elif rule.rule_type == 6:
                 r['icon'] = constants.BLOCK_NODE_ICON
-                r['rule_type'] = 'B'
+                r['data']['rule_type'] = 'block_rule_2'
                 rule_tree.block_rule_type_two['children'].append(r)
             elif rule.rule_type == 7:
                 r['icon'] = constants.BLOCK_NODE_ICON
-                r['rule_type'] = 'B'
+                r['data']['rule_type'] = 'block_rule_3'
                 rule_tree.block_rule_type_three['children'].append(r)
             elif rule.rule_type == 8:
                 r['icon'] = constants.BLOCK_NODE_ICON
-                r['rule_type'] = 'B'
+                r['data']['rule_type'] = 'block_rule_4'
                 rule_tree.block_rule_type_four['children'].append(r)
             else:
                 err_having = True
@@ -232,7 +303,10 @@ class Policy_tree(DBOpt):
                 d = {'id': 'j1-{}'.format(node_num),
                      'text': node.rule_name,
                      'icon': '',
-                     'rule_id': node.rule_id,
+                     'data': {
+                         'rule_type': Tool.set_rule_type(node.rule_type),
+                         'rule_id': node.rule_id
+                     },
                      'children': []
                      }
                 if node.is_leaf and node.rule_type < 5:
@@ -260,12 +334,12 @@ class Policy_tree(DBOpt):
 
             ptn = Policy_tree_node()
             ptn.tree_id = tree_dict['id']
-            ptn.rule_id = tree_dict['rule_id']
+            ptn.rule_id = tree_dict['data']['rule_id']
             if rules:
                 ptn.rule_id_path = rules
-                rules = '{}_{}'.format(rules, tree_dict['rule_id'])
+                rules = '{}_{}'.format(rules, tree_dict['data']['rule_id'])
             else:
-                rules = str(tree_dict['rule_id'])
+                rules = str(tree_dict['data']['rule_id'])
             ptn.is_leaf = False
             ptn.level = deep
             ptn.parent_tree_id = parent_tree_id
@@ -279,7 +353,7 @@ class Policy_tree(DBOpt):
             # leaf node
             ptn = Policy_tree_node()
             ptn.tree_id = tree_dict['id']
-            ptn.rule_id = tree_dict['rule_id']
+            ptn.rule_id = tree_dict['data']['rule_id']
             ptn.is_leaf = True
             ptn.level = deep
             ptn.coll_policy_id = self.coll_policy_id
@@ -296,7 +370,7 @@ class Policy_tree(DBOpt):
     def find_node(self, tree_dict, rule_id):
 
         if tree_dict.has_key('rule_id'):
-            if tree_dict['rule_id'] == rule_id:
+            if tree_dict['data']['rule_id'] == rule_id:
                 return True
         if tree_dict.has_key('children'):
             for my_item in tree_dict['children']:

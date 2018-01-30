@@ -3,6 +3,7 @@ import time
 import copy
 from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
 from apolo_server.processor.db_units.memcached_helper import RulesMemCacheDb, ItemMemCacheDb
+from apolo_server.processor.db_units.db_helper import DeviceDbHelp
 
 
 __version__ = '0.1'
@@ -61,14 +62,16 @@ def __item_type_mapping(item):
     return result
 
 
-def get_items(now_time, item_type):
-    items = ItemMemCacheDb().get()
+def get_items(item_type):
+    # with ItemMemCacheDb() as item:
+    #     items = item.update()
+    items = DeviceDbHelp.get_all_items_from_db()
     items = [item for item in items if __filter_item_type(item, item_type)]
     return items
 
 
 def get_valid_items(now_time, item_type):
-    items = get_items(now_time, item_type)
+    items = get_items(item_type)
     items = valid_items(now_time, items)
     items = map(__item_type_mapping, items)
     return items
@@ -79,18 +82,22 @@ def valid_items(now_time, items):
        filter by item interval
        combine each item with now_time stamp
        """
-    items = [item for item in items if __check_item_interval(item, now_time)]
+    for item in items:
+        __check_item_interval(item, now_time)
+        __check_period_time(item, now_time)
+        __check_schedule_time(item, now_time)
 
-    """
-    filter by valid period type
-    combine each item with now_time stamp
-    """
-    items = [item for item in items if __check_period_time(item, now_time)]
-    """
-    filter by schedule time type
-    combine each item with now_time stamp
-    """
-    items = [item for item in items if __check_schedule_time(item, now_time)]
+    # items = [item for item in items if __check_item_interval(item, now_time)]
+    # """
+    # filter by valid period type
+    # combine each item with now_time stamp
+    # """
+    # items = [item for item in items if __check_period_time(item, now_time)]
+    # """
+    # filter by schedule time type
+    # combine each item with now_time stamp
+    # """
+    # items = [item for item in items if __check_schedule_time(item, now_time)]
 
     """
     filter device's priority, hard coding
@@ -110,19 +117,17 @@ def valid_items(now_time, items):
 
 def get_devices(now_time, item_type):
     result = {
-        "parser_params": {},
+        # "parser_params": {},
         "devices": []
     }
-    items = get_items(now_time, item_type)
+    items = get_items(item_type)
     items = valid_items(now_time, items)
     # items = __create_test_devices(items)
     items = [item for item in items if item.get('valid_status')]
     devices = __merge_device(items)
     other_param = []
     if item_type == CommonConstants.CLI_TYPE_CODE:
-        rules = __add_rules()
-        devices = [__merge_cli(item, other_param, rules) for item in devices.values()]
-        # result['parser_params']['rules'] = rules
+        devices = [__merge_cli(item, other_param) for item in devices.values()]
         result['devices'] = devices
     else:
         devices = [__merge_snmp(item, other_param) for item in devices.values()]
@@ -160,7 +165,7 @@ def __merge_snmp(items, param_keys):
     return result
 
 
-def __merge_cli(items, param_keys, rules):
+def __merge_cli(items, param_keys):
     result = dict()
     if len(items) == 0:
         return []
@@ -174,8 +179,8 @@ def __merge_cli(items, param_keys, rules):
     result['items'] = []
     result.update(__add_param(items[0], param_keys))
     for item in items:
-
         result["commands"].append(item['coll_policy__cli_command'])
+        # result['items'].append(item['item_id'])
         result['items'].append(
             dict(
                 item_id=item['item_id'],
@@ -186,7 +191,8 @@ def __merge_cli(items, param_keys, rules):
                 rule_id=item['coll_policy_rule_tree_treeid__rule_id'],
                 device_id=item['device__device_id'],
                 value_type=item['coll_policy_rule_tree_treeid__rule__value_type'],
-                block_path=__create_path(rules, item['coll_policy_rule_tree_treeid__rule_id_path']),
+                # block_path=__create_path(rules, item['coll_policy_rule_tree_treeid__rule_id_path']),
+                block_path=item['coll_policy_rule_tree_treeid__rule_id_path'],
                 device_name=item['device__hostname'],
                 policy_name=item['coll_policy__name'],
                 exec_interval=item['policys_groups__exec_interval']
@@ -206,7 +212,8 @@ def __add_param(items, param_keys):
 
 def __add_rules():
     tmp_rules = {}
-    all_rules = RulesMemCacheDb().get()
+    with RulesMemCacheDb() as rules:
+        all_rules = rules.update()
     for rule in all_rules:
         tmp_rules[str(rule['ruleid'])] = rule
     return tmp_rules
@@ -229,6 +236,7 @@ def __filter_item_type(item, item_type):
     :param item_type: 0: cli 1 snmp -1 all
     :return: True or False
     """
+
     if item['item_type'] == item_type:
         return True
     elif item_type == CommonConstants.ALL_TYPE_CODE:
@@ -405,5 +413,5 @@ def __add_items_valid_status(item, status):
 
 
 if __name__ == "__main__":
-    for i in get_devices(1513312116, 1).items():
+    for i in get_devices(1517281147, 0).items():
         print i

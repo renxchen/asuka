@@ -1,7 +1,9 @@
-from dispatch import Dispatch
-from Pantheon.Venus.constants import ParserConstants, CommonConstants
-from tool import Tool
-from db_help import bulk_save_result
+from apolo_server.processor.parser.common_policy_tree.dispatch import Dispatch
+from apolo_server.processor.constants import ParserConstants, CommonConstants
+from apolo_server.processor.parser.common_policy_tree.tool import Tool
+from apolo_server.processor.db_units.memcached_helper import ItemMemCacheDb, RulesMemCacheDb
+from apolo_server.processor.db_units.db_helper import ParserDbHelp
+# from db_help import bulk_save_result
 import json
 
 
@@ -12,9 +14,10 @@ class Parser(object):
         pass
 
     def get_param_from_request(self, param):
-        self.parser_params['rules'] = param['parser_params']['rules']
-        self.parser_params['items'] = param['items'] if "items" in param else []
-        # self.parser_params['task_timestamp'] = param['task_timestamp'] if "task_timestamp" in param else 0
+        with RulesMemCacheDb() as rules:
+            rules = rules.get()
+        self.parser_params['rules'] = rules
+        self.parser_params['items'] = param['items']
         for item in self.parser_params['items']:
             item['task_timestamp'] = param['task_timestamp'] if "task_timestamp" in param else 0
 
@@ -30,7 +33,7 @@ class SNMPParser(Parser):
         super(SNMPParser, self).__init__(param)
 
     def handle(self):
-        bulk_save_result(self.parser_params['items'], CommonConstants.SNMP_TYPE_CODE)
+        ParserDbHelp.bulk_save_result(self.parser_params['items'], CommonConstants.SNMP_TYPE_CODE)
         pass
 
 
@@ -43,24 +46,28 @@ class CliParser(Parser):
         rules = {}
         result = []
 
-        for rule in self.parser_params['rules'].values():
+        for rule in self.parser_params['rules']:
             tmp = tool.get_rule_value(rule)
             rules[str(rule['ruleid'])] = tmp
 
         for item in self.parser_params['items']:
-
-            rule_path = CliParser.__split_path(item['tree_path'], item['rule_id'])
+            rule_path = CliParser.__split_path(item['tree_path'],
+                                               item['rule_id'])
             raw_data = item['output']
 
+            if raw_data is None:
+                continue
             p = Dispatch(rule_path, rules, raw_data)
 
             p.dispatch()
             arry = p.get_result()
-            if len(arry) == 0:
-                continue
+            for i in arry:
+                print i
+            print 123
             item['value'] = arry[-1][0]
+            print item
             result.append(item)
-        bulk_save_result(result, CommonConstants.CLI_TYPE_CODE)
+        ParserDbHelp.bulk_save_result(result, CommonConstants.CLI_TYPE_CODE)
 
     @staticmethod
     def __split_path(path, rule_id):

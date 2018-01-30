@@ -1,5 +1,5 @@
 from db_help import get_history
-from Pantheon.Venus.constants import TriggerConstants, CommonConstants
+from apolo_server.processor.constants import TriggerConstants, CommonConstants
 import importlib
 import time
 
@@ -57,9 +57,7 @@ def get_function_value(function):
         function_name = function_pattern % "Last"
     function_module = getattr(this_module, function_name)
     instance = function_module()
-    time.clock()
     value = instance.get_value(function.item, function_param)
-    print time.clock()
     return {function_id: value}
 
 if __name__ == "__main__":

@@ -1,17 +1,31 @@
 import memcache
 import logging
+import time
 from apolo_server.processor.constants import CommonConstants
 from db_helper import DeviceDbHelp
 
 
 class MemCacheBase(object):
-    def __init__(self):
-        self._mc = memcache.Client(CommonConstants.MEM_CACHE_HOSTS, debug=True)
+    def __init__(self, timeout=2):
         self.AUTO_SAVE_CACHE = True
         self.key = None
+        self.timeout = timeout
         pass
 
+    def __enter__(self):
+        self._connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._disconnect_all()
+        return self
+
+    def _connect(self):
+        self._mc = memcache.Client(CommonConstants.MEM_CACHE_HOSTS, debug=True)
+
     def get(self):
+        # if self.AUTO_UPDATE_LATEST or auto_update_latest:
+        #     self.delete()
         data = self._mc.get(self.key)
         if data:
             logging.debug("Get data from memory cache")
@@ -24,9 +38,10 @@ class MemCacheBase(object):
     def set(self, value):
         self._mc.set(self.key, value)
 
-    def _update(self):
+    def update(self):
         data = self.do_get()
-        self._set(data)
+        self.set(data)
+        return data
 
     def do_get(self):
         pass
@@ -34,6 +49,12 @@ class MemCacheBase(object):
 
     def flush_all(self):
         self._mc.flush_all()
+
+    def delete(self):
+        self._mc.delete(self.key)
+
+    def _disconnect_all(self):
+        self._mc.disconnect_all()
 
 
 class ItemMemCacheDb(MemCacheBase):
@@ -58,10 +79,12 @@ class RulesMemCacheDb(MemCacheBase):
         return result
 
 if __name__ == "__main__":
-    item = RulesMemCacheDb()
+    with RulesMemCacheDb() as item:
+        print item.get()
+
     # item.flush_all()
-    for i in item._get():
-        print i
+    # for i in item._get():
+    #     print i
 
 
 

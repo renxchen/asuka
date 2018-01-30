@@ -1,6 +1,6 @@
 from db_help import get_functions_by_device_policy, get_latest_event, save_events, get_functions_by_item_id
 from function_helper import get_function_value
-from Pantheon.Venus.constants import TriggerConstants
+from apolo_server.processor.constants import TriggerConstants
 import re
 import time
 
@@ -82,7 +82,9 @@ def save_event(events):
 
 if __name__ == "__main__":
     import cProfile
+    time.clock()
     test = [{"item_id": 4}]
     bulk_trigger(test, 123)
+    print time.clock()
     # cProfile.run("bulk_trigger(test, 123)")
     # print eval("None > 1")

@@ -1,8 +1,8 @@
 import importlib
 import time
-from Pantheon.Venus.db_units.db_units import *
-from Pantheon.Venus.db_units.models import Items, Functions, TriggerDetail, Mapping, Event
-from Pantheon.Venus.constants import TriggerConstants
+from apolo_server.processor.db_units.db_units import *
+from apolo_server.processor.db_units.models import Items, Functions, TriggerDetail, Mapping, Event
+from apolo_server.processor.constants import TriggerConstants
 
 
 def get_items_by_device_policy(device_id, policy_id):
