@@ -7,7 +7,10 @@
 # PATHS
 #########################################
 LOG_PATH = '/apolo/backend/logs/logger_authentication.log'
-
+#########################################
+# API token related define
+#########################################
+DEBUG_FLAG = False
 #########################################
 # API token related define
 #########################################
@@ -50,6 +53,7 @@ USER_LOGOUT_SUCCESSFUL = "User logout successful."
 COLLECTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 DATA_TABLE_NAME_DUPLICATE = 'DATA_TABLE_NAME_DUPLICATE'
 POLICY_GROUP_EXIST_IN_SCHEDULE = 'POLICY_GROUP_EXIST_IN_SCHEDULE'
+OSTYPE_EXIST_IN_SCHEDULE = 'OSTYPE_EXIST_IN_SCHEDULE'
 #########################################
 # API log or exception define
 #########################################

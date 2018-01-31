@@ -34,7 +34,7 @@ def get_search_conditions(request, field_relation_ships, query_data, search_fiel
                 # Q(Name__contains=sqlstr) , Q(MUser__username__contains=sqlstr)
                 # each_q = Q(value + '__icontains' + '=' + query_data[value])
                 # search_conditions.append(each_q)
-                if field =='priority':
+                if field == 'priority':
                     search_conditions[field_relation_ships[value] + '__in'] = query_data[field]
                 elif field == 'data_schedule_type':
                     search_conditions[field_relation_ships[value] + '__in'] = query_data[field]
@@ -92,9 +92,14 @@ def get_request_post(request, key):
 
 def get_request_body(request, key):
     body = request.body
-    if key in body:
-        return json.loads(body).get(key)
-    return ''
+    try:
+        if key in body:
+            return json.loads(body).get(key)
+        return ''
+    except Exception, e:
+        if key in body:
+            return eval(body)[key]
+        return ''
 
 
 def api_return(status=200, data=''):
