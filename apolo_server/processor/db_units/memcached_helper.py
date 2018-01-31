@@ -57,6 +57,22 @@ class MemCacheBase(object):
         self._mc.disconnect_all()
 
 
+class LastCheckTimeMemCache(MemCacheBase):
+    def __init__(self):
+        super(ItemMemCacheDb, self).__init__()
+        self.key = "Last_Check_Time"
+
+    def get(self, schedule_id):
+        data = self._mc.get(self.key)
+        if data:
+            logging.debug("Get data from memory cache")
+        else:
+            data = self.do_get()
+            if self.AUTO_SAVE_CACHE:
+                self.set(data)
+        return data
+
+
 class ItemMemCacheDb(MemCacheBase):
     def __init__(self):
         super(ItemMemCacheDb, self).__init__()

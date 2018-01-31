@@ -1,64 +1,105 @@
-from db_help import get_history
-from apolo_server.processor.constants import TriggerConstants, CommonConstants
-import importlib
-import time
+from apolo_server.processor.constants import TriggerConstants
+import re
 
 
 class FunctionException(Exception):
-    def __init__(self, message):
-        self.__str = message
+    def __init__(self, msg):
+        self.msg = msg
+        pass
 
     def __str__(self):
-        return self.__str
+        return self.msg
 
 
 class FunctionBase(object):
     def __init__(self):
         pass
 
-    def get_history(self, item):
-        return get_history(item.item_id, CommonConstants.VALUE_TYPE_MAPPING.get(item.value_type),
-                           CommonConstants.ITEM_TYPE_MAPPING.get(item.item_type))
+    def __call__(self, *args, **kwargs):
+        return self._do_get(*args, **kwargs)
 
-    def get_value(self, item, param):
+    def _do_get(self, param):
         pass
 
+    def __str__(self):
+        return self.__class__.__name__
 
-class LastFunction(FunctionBase):
-    """
-    Last function, get last value according to function param
-    :return:last(function_param) value
-    """
+
+class Max(FunctionBase):
     def __init__(self):
-        super(LastFunction, self).__init__()
+        super(Max, self).__init__()
+
+    def _do_get(self, item_id, times=10):
+        # TODO: add Max function
         pass
 
-    def get_value(self, item, param):
-        history = self.get_history(item)
-        history = history[::-1]
-        last_param = int(param)
-        if len(history) - 1 < last_param:
-            raise FunctionException("History data not exist for last %d" % last_param)
-        return history[last_param]
+
+class Min(FunctionBase):
+    def __init__(self):
+        super(Min, self).__init__()
+
+    def _do_get(self, item_id, times=10):
+        # TODO: add Min function
+        pass
 
 
-def get_function_value(function):
-    """
-    :param function: function object
-    :return:{function_id: function value}
-    """
-    time.clock()
-    function_pattern = "%sFunction"
-    function_name = function_pattern % function.function
-    function_param = function.parameter
-    function_id = function.function_id
-    this_module = importlib.import_module(TriggerConstants.TRIGGER_BASE_PATH + '.function_helper')
-    if hasattr(this_module, function_name) is False:
-        function_name = function_pattern % "Last"
-    function_module = getattr(this_module, function_name)
-    instance = function_module()
-    value = instance.get_value(function.item, function_param)
-    return {function_id: value}
+class Ave(FunctionBase):
+
+    def __init__(self):
+        super(Ave, self).__init__()
+
+    def _do_get(self, item_id, times=10):
+        # TODO: add Ave function
+        pass
+
+
+class Hex2Dec(FunctionBase):
+    def __init__(self):
+        super(Hex2Dec, self).__init__()
+
+    def _do_get(self, number):
+        try:
+            return int(number, 16)
+        except Exception, e:
+            raise FunctionException("Hex2Dec has error param")
+
+
+class Last(FunctionBase):
+    def __init__(self):
+        super(Last, self).__init__()
+
+    def _do_get(self, item_id,  num):
+        # TODO: add Last function
+        pass
+
+
+def parser_expression(expression):
+    return_str_pattern = "LAST(%s, %s)"
+    last_pattern = "(\d+)\((\d+)\)"
+    result = re.search(last_pattern, expression)
+    return_str = ""
+    if result:
+        item_id = result.groups()[0]
+        num = result.groups()[1]
+        return return_str_pattern % (item_id, num)
+    else:
+        raise FunctionException("Last Function format error")
+
+
+def handle_expression(expression):
+    expression = parser_expression(expression)
+    # function_mapping =
+    MAX = Max()
+    MIN = Min()
+    AVE = Ave()
+    HEX2DEC = Hex2Dec()
+    LAST = Last()
+    eval(expression)
 
 if __name__ == "__main__":
-    pass
+    # handle_expression("HEX2DEC(AVE())")
+    # print parser_expression("11(10)")
+    test = Hex2Dec()
+    print test("A10")
+
+

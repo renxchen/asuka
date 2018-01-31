@@ -147,6 +147,11 @@ class ParserDbHelp(DbHelp):
         table = getattr(db_module, table_name)
         return table
 
+class TriggerDbHelp(DbHelp):
+    def __init__(self):
+        pass
 
+    # @staticmethod
+    # def get_last_value():
 if __name__ == "__main__":
     print DeviceDbHelp.get_all_items_from_db()
