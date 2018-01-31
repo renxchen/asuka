@@ -5,13 +5,16 @@ from backend.apolo.tools import constants
 import logging
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
+import os
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+script_dir = os.path.split(os.path.realpath(__file__))[0]
+log_path = os.path.join(os.path.dirname(os.path.dirname(script_dir)), constants.LOG_PATH)
 formatter = Formatter(
     fmt='%(asctime)s - %(name)s - %(levelname)s - %(thread)d - %(filename)s - %(threadName)s - %(funcName)s - %(message)s',
     datefmt='%Y/%m/%d %p %I:%M:%S')
-file_handler = TimedRotatingFileHandler(constants.LOG_PATH, when="D", interval=1, backupCount=5)
+file_handler = TimedRotatingFileHandler(log_path, when="D", interval=1, backupCount=5)
 file_handler.level = logging.INFO
 file_handler.formatter = formatter
 logger.addHandler(file_handler)
