@@ -13,6 +13,7 @@ from backend.apolo.apolomgr.resource.action_policy_table import data_table_step3
 from backend.apolo.apolomgr.resource.common import common_views
 from backend.apolo.apolomgr.resource.data_collection import data_collection_view, new_data_collection_view, \
     data_collection_by_device_view, data_collection_by_cp_view
+from backend.apolo.apolomgr.resource.device import ostype_views
 from backend.apolo.apolomgr.resource.login import authentication
 from backend.apolo.apolomgr.resource.login.authentication import auth_if_refresh_required
 
@@ -180,3 +181,10 @@ def api_data_collection_by_cp(request):
     resource_object = data_collection_by_cp_view.DataCollectionByCPViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
 
+
+@api_view(['POST', "GET", "DELETE", "PUT"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_device_ostype(request):
+    resource_object = ostype_views.OsTypeViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))

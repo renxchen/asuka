@@ -87,20 +87,22 @@ class PolicyGroupSerializer(serializers.ModelSerializer):
 class OstypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ostype
-        fields = ('ostypeid', 'name',)
+        fields = ('ostypeid', 'name', 'log_fail_judges', 'status', 'snmp_timeout', 'telnet_timeout', 'telnet_prompt',
+                  'start_default_commands', 'end_default_commands', 'desc')
 
-        # def create(self, validated_data):
-        #     return Ostype.objects.create(**validated_data)
-        #
-        # def update(self, instance, validated_data):
-        #     instance.name = validated_data.get('name', instance.name)
-        #     instance.log_fail_judges = validated_data.get('log_fail_judges', instance.log_fail_judges)
-        #     instance.status = validated_data.get('status', instance.status)
-        #     instance.snmp_timeout = validated_data.get('snmp_timeout', instance.snmp_timeout)
-        #     instance.telnet_timeout = validated_data.get('telnet_timeout', instance.telnet_timeout)
-        #     instance.telnet_prompt = validated_data.get('telnet_prompt', instance.telnet_prompt)
-        #     instance.start_default_commands = validated_data.get('start_default_commands', instance.start_default_commands)
-        #     instance.end_default_commands = validated_data.get('end_default_commands', instance.end_default_commands)
-        #     instance.desc = validated_data.get('desc', instance.desc)
-        #     instance.save()
-        #     return instance
+    def create(self, validated_data):
+        return Ostype.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.log_fail_judges = validated_data.get('log_fail_judges', instance.log_fail_judges)
+        instance.status = validated_data.get('status', instance.status)
+        instance.snmp_timeout = validated_data.get('snmp_timeout', instance.snmp_timeout)
+        instance.telnet_timeout = validated_data.get('telnet_timeout', instance.telnet_timeout)
+        instance.telnet_prompt = validated_data.get('telnet_prompt', instance.telnet_prompt)
+        instance.start_default_commands = validated_data.get('start_default_commands',
+                                                             instance.start_default_commands)
+        instance.end_default_commands = validated_data.get('end_default_commands', instance.end_default_commands)
+        instance.desc = validated_data.get('desc', instance.desc)
+        instance.save()
+        return instance
