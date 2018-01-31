@@ -254,10 +254,14 @@ def __check_item_interval(item, now_time):
     """
     exec_interval = item["policys_groups__exec_interval"]
     last_exec_time = item['last_exec_time']
-    if now_time / exec_interval == last_exec_time / exec_interval:
-        return False
-    else:
+    if now_time - last_exec_time >= exec_interval:
         return True
+    else:
+        return False
+    # if now_time / exec_interval == last_exec_time / exec_interval:
+    #     return False
+    # else:
+    #     return True
 
 
 @deco_item

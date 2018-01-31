@@ -56,6 +56,7 @@ class TriggerConstants(object):
     TRIGGER_CLOSE = 1
     TRIGGER_VALUE = 1
     NORMAL_VALUE = 0
+    FUNCTION_LIST = ["Hex2Dec", "Ave", "Max", "Min", "A", "B"]
 
 
 class ParserConstants(object):

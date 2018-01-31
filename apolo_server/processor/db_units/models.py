@@ -6,7 +6,6 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from __future__ import unicode_literals
-
 from django.db import models
 
 
@@ -58,7 +57,7 @@ class CollPolicyCliRule(models.Model):
     name = models.CharField(max_length=30, blank=True, null=True)
     key_str = models.CharField(max_length=30, blank=True, null=True)
     mark_string = models.CharField(max_length=256, blank=True, null=True)
-    split_char = models.IntegerField(blank=True, null=True)
+    split_char = models.CharField(max_length=256, blank=True, null=True)
     extract_key = models.CharField(max_length=30, blank=True, null=True)
     x_offset = models.IntegerField(blank=True, null=True)
     y_offset = models.IntegerField(blank=True, null=True)
@@ -415,8 +414,12 @@ class Triggers(models.Model):
     trigger_type = models.IntegerField(blank=True, null=True)
     trigger_limit_nums = models.IntegerField(blank=True, null=True)
     condition = models.IntegerField(blank=True, null=True)
-
+    expression = models.CharField(max_length=255, blank=True, null=True)
+    columnA = models.CharField(max_length=255, blank=True, null=True)
+    columnB = models.CharField(max_length=255, blank=True, null=True)
     class Meta:
         # managed = False
         db_table = 'triggers'
         app_label = "db_units"
+
+

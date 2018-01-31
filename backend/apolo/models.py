@@ -67,7 +67,7 @@ class CollPolicyCliRule(models.Model):
     name = models.CharField(max_length=30, blank=True, null=True)
     key_str = models.CharField(max_length=30, blank=True, null=True)
     mark_string = models.CharField(max_length=256, blank=True, null=True)
-    split_char = models.IntegerField(blank=True, null=True)
+    split_char = models.CharField(max_length=256, blank=True, null=True)
     extract_key = models.CharField(max_length=30, blank=True, null=True)
     x_offset = models.IntegerField(blank=True, null=True)
     y_offset = models.IntegerField(blank=True, null=True)
@@ -424,6 +424,14 @@ class Triggers(models.Model):
     trigger_limit_nums = models.IntegerField(blank=True, null=True)
     condition = models.IntegerField(blank=True, null=True)
 
+    expression = models.CharField(max_length=255, blank=True, null=True)
+    columnA = models.CharField(max_length=255, blank=True, null=True)
+    columnB = models.CharField(max_length=255, blank=True, null=True)
     class Meta:
         # managed = False
         db_table = 'triggers'
+
+
+if __name__ == "__main__":
+    trigger = Triggers.objects.all()
+    print trigger
