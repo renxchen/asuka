@@ -27,7 +27,7 @@
                     優先度:
                 </label>
                 <div class="col-sm-6" >
-                    <select class="form-control" [(ngModel)]="priority"
+                    <select class="form-control" [(ngModel)]="priority" (change)="changePriority()"
                             id="priority" name="priority">
                         <option *ngFor="let item of priorities" value="{{item.id}}">
                             {{item.value}}
@@ -55,9 +55,9 @@
                     コレクション<br>ポリシーグループ:
                 </label>
                 <div class="col-sm-6" >
-                    <select class="form-control" [(ngModel)]="policyGroup"
+                    <select class="form-control" [(ngModel)]="policyGroup" (change)="changeCPG()"
                             id="policyGroup" name="policyGroup">
-                        <option value="-1">全機能OFF</option>
+                        <!--<option value="-1">全機能OFF</option>-->
                         <option *ngFor="let item of policyGroups" value="{{item.policy_group_id}}">
                             {{item.name}}
                         </option>
@@ -70,7 +70,7 @@
                     有効期間:
                 </label>
                 <div class="col-sm-3" *ngFor="let item of validPeriodTypes">
-                    <input  type="radio" name="validPeriodType" value="{{item.id}}"
+                    <input type="radio" name="validPeriodType" value="{{item.id}}"
                     (click)="changeValidPeriodType(item.id)">
                     {{item.value}}
                 </div>
@@ -87,9 +87,9 @@
                                #dps="bsDatepicker"
                                bsDatepicker>
                         </div>
-                        <div class="col-sm-4" style=" padding-right: 0px; padding-left: 0px;">
-                            <timepicker name="startDateTime" [(ngModel)]="startDateTime" (isValid)="isValid = $event"
-                                        [showMeridian]="isTimeMeridian"[minuteStep]="1">
+                        <div class="col-sm-4 down-place" style=" padding-right: 0px; padding-left: 0px;">
+                            <timepicker name="startDateTime" [(ngModel)]="startDateTime" [readonlyInput]="isEnabled"
+                                        [showMeridian]="isTimeMeridian" [minuteStep]="1">
 
                             </timepicker>
                         </div>
@@ -106,8 +106,8 @@
                                #dpe="bsDatepicker"
                                bsDatepicker>
                         </div>
-                        <div class="col-sm-4" style=" padding-right: 0px; padding-left: 0px;">
-                            <timepicker name="endDateTime" [(ngModel)]="endDateTime"
+                        <div class="col-sm-4 down-place" style=" padding-right: 0px; padding-left: 0px;">
+                            <timepicker name="endDateTime" [(ngModel)]="endDateTime" [readonlyInput]="isEnabled"
                                             [showMeridian]="isTimeMeridian" [minuteStep]="1">
 
                             </timepicker>
@@ -146,8 +146,8 @@
                         <div class="col-sm-2" style="margin-bottom: 5px; margin-top: 30px; padding-right: 0px; padding-left: 0px;">
                             開始時間:
                         </div>
-                        <div class="col-sm-10" >
-                            <timepicker name="startTime" [(ngModel)]="startTime"
+                        <div class="col-sm-10 down-place" >
+                            <timepicker name="startTime" [(ngModel)]="startTime" [readonlyInput]="isEnabled"
                                         [showMeridian]="isTimeMeridian" [minuteStep]="1">
 
                             </timepicker>
@@ -155,9 +155,9 @@
                         <div class="col-sm-2" style="margin-bottom: 5px; margin-top: 30px; padding-right: 0px; padding-left: 0px;">
                             終了時間:
                         </div>
-                        <div class="col-sm-10" >
-                           <timepicker name="endTime" [(ngModel)]="endTime"
-                                        [showMeridian]="isTimeMeridian"[minuteStep]="1">
+                        <div class="col-sm-10 down-place" >
+                           <timepicker name="endTime" [(ngModel)]="endTime" [readonlyInput]="isEnabled"
+                                        [showMeridian]="isTimeMeridian" [minuteStep]="1">
 
                             </timepicker>
                         </div>
