@@ -30,6 +30,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     startTime: Date = new Date(2018, 1, 1, 0, 0);
     endTime: Date = new Date(2018, 1, 1, 23, 59);
 
+    isEnabled: boolean = false;
+
     // bsRangeValue: any = [new Date(2017, 7, 4), new Date(2017, 7, 20)];
 
     selectedOsType: string;
@@ -42,9 +44,9 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     deviceGroups: any = [];
 
     policyGroup: any;
-    policyGroups:any = [];
+    policyGroups: any = [];
 
-    validPeriodType:any;
+    validPeriodType: any;
     validPeriodTypes: any = [{id: 0, value:'期間なし'}, {id: 1, value: '期間あり'}];
 
     dataScheduleType: any;
@@ -114,11 +116,10 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     // if (res['data']) {
                     this.deviceGroups = res['device_groups'];
-                    console.log(this.deviceGroups);
                     this.policyGroups = res['cp_groups'];
                     if (this.id == -1) {
                         this.deviceGroup = this.deviceGroups[0]['group_id'].toString();
-                        this.policyGroup = '-1';
+                        this.policyGroup = this.policyGroups[0]['policy_group_id'].toString();
                     }
                     // }
                 } else {
@@ -131,6 +132,31 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         // this.policyGroups = [{id: 0, name: 'cpg 1'}, {id:1, name: 'cpg 2'}];
 
 
+    }
+
+    changePriority(){
+        if (this.priority == 1 && this.policyGroups[0]['policy_group_id'] != -1) {
+            this.policyGroups.unshift({policy_group_id:-1, name: '全機能OFF'});
+        } else if(this.priority == 0 && this.policyGroups[0]['policy_group_id'] == -1) {
+            this.policyGroups.shift();
+            $('input[name="dataScheduleType"][value="2"]').attr('disabled', false);
+            if (this.policyGroup == -1) {
+                this.policyGroup = this.policyGroups[0]['policy_group_id'].toString();
+            }
+        }
+    }
+
+    changeCPG(){
+        if (this.policyGroup == -1) {
+            $('input[name="dataScheduleType"][value="2"]').attr('disabled', true).prop('checked', false);
+            if (this.dataScheduleType == 2) {
+                this.dataScheduleType = 1;
+                $('input[name="dataScheduleType"][value="1"]').prop('checked', true);
+                console.log(this.dataScheduleType);
+            }
+        } else {
+            $('input[name="dataScheduleType"][value="2"]').attr('disabled', false);
+        }
     }
 
     updateTime(hour:number, minute:number){
@@ -160,6 +186,22 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     this.deviceGroup = _.get(data, 'device_group_id');
                     this.policyGroup = _.get(data, 'policy_group_id');
                     this.getOsTypes();
+
+                    let isLock = _.get(data, '');
+                    isLock = true;
+                    if (isLock) {
+                        this.setOsDgPg(true);
+                    } else {
+                        this.setOsDgPg(false);
+                    }
+
+                    let isProcessing = _.get(data, '');
+                    isProcessing = true;
+                    if (isProcessing) {
+                        this.setSchedule(true);
+                    } else {
+                        this.setSchedule(false);
+                    }
 
                     let start_period_time = _.get(data, 'start_period_time');
                     let end_period_time = _.get(data, 'end_period_time');
@@ -194,11 +236,33 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     }
 
     setInitSelect() {
-        $('input[name="validPeriodType"][value="0"]').attr('checked','checked');
-        $('input[name="dataScheduleType"][value="1"]').attr('checked','checked');
+        $('input[name="validPeriodType"][value="0"]').prop('checked', true);
+        $('input[name="dataScheduleType"][value="1"]').prop('checked', true);
         this.dataScheduleType = 1;
         this.validPeriodType = 0;
         this.priority = 0;
+
+    }
+
+    setOsDgPg(flag: boolean){
+        $('#osType').prop('disabled', flag);
+        $('#deviceGroup').prop('disabled', flag);
+        $('#policyGroup').prop('disabled', flag);
+    }
+
+    setSchedule(flag: boolean){
+        $('#priority').prop('disabled', flag);
+        $('input[name="validPeriodType"]').prop('disabled', flag);
+        $('input[name="startDate"]').prop('disabled', flag);
+        $('input[name="endDate"]').prop('disabled', flag);
+        if (flag) {
+            this.isEnabled = flag;
+            $('div.down-place').css('margin-top', '25px');
+            if(this.dataScheduleType == 1){
+                $('input[name="dataScheduleType"][value="3"]').prop('disabled', flag);
+            }
+        }
+        $('input[name="weekday"]').prop('disabled', flag);
     }
 
     changeOsType() {
@@ -207,6 +271,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     changeValidPeriodType(id: number){
         this.validPeriodType = id;
+        console.log(this.validPeriodType);
         if (id == 1){
             $('#validPeriod').show();
         } else {
@@ -216,6 +281,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     changeDataScheduleType(id: number){
         this.dataScheduleType = id;
+        console.log(this.dataScheduleType);
         if (id == 3){
             $('#dataSchedule').show();
         } else {
@@ -269,8 +335,13 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             dataScheduleTime = dataScheduleTime.substring(0,dataScheduleTime.length-1)+'@'+dataScheduleStartTime+'-'+dataScheduleEndTime;
         }
 
+        let checkResult = this.doCheck(startDate, endDate, startPeriodTime, endPeriodTime,
+                        dataScheduleTime, dataScheduleStartTime, dataScheduleEndTime);
+        let flag = checkResult['flag'];
+        let message = checkResult['result'];
 
-        if (this.doCheck()) {
+
+        if (flag) {
             let scheduleInfo: any = {};
             let url = '/api_new_data_collection/';
 
@@ -287,6 +358,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             scheduleInfo['weeks'] = '';
 
             console.log(scheduleInfo);
+            alert(flag);
             // return;
             if (this.id == -1){
                 this.httpClient
@@ -326,13 +398,38 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 });
                 this.bsModalRef.hide();
             }
+        } else {
+            alert(message);
         }
 
     }
 
-    doCheck(){
+    doCheck(startDate, endDate, startPeriodTime, endPeriodTime,
+            dataScheduleTime, dataScheduleStartTime, dataScheduleEndTime){
+        let result: any = {};
         let flag: boolean = true;
-        return flag;
+        let message: string = '';
+        // check date and time when valid period type is 1 (with period)
+        if (this.validPeriodType == 1) {
+            if(startDate == "" || endDate == ""){
+                message = "Please set period date."
+            }
+            // check date all selected; format right; start<=end
+            // if same date, check start time < end time
+        }
+        // check if any days has been select when data schedule type is 3 (periodic collection)
+        if (this.dataScheduleType == 3) {
+            if (dataScheduleTime == ''){
+                flag = false;
+                message = 'periodic collection with no weekday selected!'
+            } else {
+
+            }
+        }
+
+        result['flag'] = flag;
+        result['message'] = message;
+        return result;
 
     }
 
