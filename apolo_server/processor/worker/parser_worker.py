@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from worker_base import WorkerBase, main
-from Pantheon.Venus.parser.common_policy_tree.parser_help import parser_main
+from apolo_server.processor.parser.parser_helper import parser_main
+from apolo_server.processor.trigger.trigger_helper import TriggerHelp
+import logging
 import json
 __version__ = 0.1
 __author__ = 'Rubick <haonchen@cisco.com>'
 
 
 class Parser(WorkerBase):
-    name = "parser"
+    name = "parser_trigger"
     channels = 'parser'
     threads = 20
 
@@ -16,8 +18,9 @@ class Parser(WorkerBase):
         try:
             params = task['params']
             item_type = params['item_type']
-            parser_main(item_type=item_type, params=params)
-            # devices_info = get_items(now_time, item_type)
+            items, timestamp = parser_main(item_type=item_type, params=params)
+            trigger = TriggerHelp(items, logger)
+            trigger.trigger(task_timestamp=timestamp)
             result = dict(
                 task_id=task_id,
                 status="success",
@@ -29,6 +32,7 @@ class Parser(WorkerBase):
                 status="fail",
                 message=str(e)
             )
+            logger.error(str(e))
         return result
 
 
