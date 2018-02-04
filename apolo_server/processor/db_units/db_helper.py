@@ -1,6 +1,8 @@
 from db_units import *
-from models import Items, CollPolicyCliRule
+from models import Items, CollPolicyCliRule, TriggerDetail, Event, CollPolicyGroups
+import models
 from apolo_server.processor.constants import CommonConstants, TriggerConstants
+from apolo_server.processor.units import TriggerException
 import importlib
 import time
 
@@ -75,7 +77,7 @@ class ParserDbHelp(DbHelp):
         for result in results:
             value_type = result['value_type']
             keys = ParserDbHelp.get_history_table(CommonConstants.VALUE_TYPE_MAPPING.get(value_type),
-                                     CommonConstants.ITEM_TYPE_MAPPING.get(item_type))
+                                                  CommonConstants.ITEM_TYPE_MAPPING.get(item_type))
             if keys in data.keys():
                 pass
             else:
@@ -147,11 +149,99 @@ class ParserDbHelp(DbHelp):
         table = getattr(db_module, table_name)
         return table
 
+
 class TriggerDbHelp(DbHelp):
     def __init__(self):
         pass
 
-    # @staticmethod
-    # def get_last_value():
+    @staticmethod
+    def __get_table_module(policy_type, value_type):
+        base_db_format = "History%s%s"
+        table_name = base_db_format % (policy_type, value_type)
+        # db_module = importlib.import_module(TriggerConstants.TRIGGER_DB_MODULES)
+        if hasattr(models, table_name) is False:
+            raise Exception("%s table isn't exist" % table_name)
+        table = getattr(models, table_name)
+        return table
+
+    @staticmethod
+    def get_last_value(item_id, policy_type, value_type, param):
+        table = TriggerDbHelp.__get_table_module(policy_type, value_type)
+        last_param = int(param) + 1
+        if last_param == 1:
+            obj = table.objects.filter(**{"item_id": item_id}).order_by("-clock", "-ns").first()
+        else:
+            objs = table.objects.filter(**{"item_id": item_id}).order_by("-clock", "-ns")[:last_param]
+
+            if len(objs) < param:
+                raise TriggerException("History data not exist for last %d" % last_param)
+            else:
+                obj = objs[last_param - 1]
+        return obj
+
+    @staticmethod
+    def get_last_range_value(item_id, policy_type, value_type, param):
+        table = TriggerDbHelp.__get_table_module(policy_type, value_type)
+        last_param = int(param) + 1
+        objs = table.objects.filter(**{"item_id": item_id}).order_by("-clock", "-ns")
+        if len(objs) < param:
+            raise TriggerException("History data not exist for last %d" % last_param)
+        else:
+            obj = objs[:last_param]
+        return obj
+
+    @staticmethod
+    def get_triggers(devices_id):
+        triggers = []
+        for device_id in devices_id:
+            triggers.extend(TriggerDetail.objects.filter(**{"device_id": device_id, "status": 1}))
+        return triggers
+
+    @staticmethod
+    def get_triggers_by_item_id(items_id):
+        """
+        search triggers by different expression pattern
+        :param items_id:
+        :return:
+        """
+        value_compare_pattern = "'\\\{%item_id\\\}|" \
+                                "[%item_id\\\[[0-9]+\\\]|" \
+                                "%item_id\\\([0-9]+\\\)|" \
+                                "Fail\\\(%item_id\\\)'"
+        sql = "SELECT * FROM trigger_detail where expression REGEXP  %s and status=1" % value_compare_pattern
+        triggers = []
+        for item_id in items_id:
+            tmp_sql = sql.replace("%item_id", str(item_id))
+            tmp = TriggerDetail.objects.raw(tmp_sql)
+            triggers.extend(tmp)
+        return triggers
+
+    @staticmethod
+    def get_latest_event(source, object_id):
+        latest_event = Event.objects.filter(**{"source": source, "objectid": object_id}).order_by('clock').values(
+            "number")
+        return latest_event
+
+    @staticmethod
+    def save_events(events):
+        tmp = []
+        for event in events:
+            tmp.append(
+                Event(
+                    source=event[0],
+                    objectid=event[1],
+                    number=event[2],
+                    clock=event[3],
+                    value=event[4]
+                )
+            )
+        Event.objects.bulk_create(tmp)
+
 if __name__ == "__main__":
-    print DeviceDbHelp.get_all_items_from_db()
+    time.clock()
+    # TriggerDbHelp.get_last_value(4, "Cli", "Str", 1)
+    # print TriggerDbHelp.get_trigger(1)[0].expression
+    # print time.clock()
+    # instance = CollPolicyGroups()
+    for i in TriggerDbHelp.get_triggers_by_item_id(['4', '1']):
+        print i

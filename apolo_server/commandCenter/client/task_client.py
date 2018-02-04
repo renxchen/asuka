@@ -74,8 +74,10 @@ def log_factory(**kwargs):
     logger.setLevel(log_level)
     fh = logging.FileHandler(DEFAULT_LOG_FILE_PATH)
     fh.setLevel(log_level)
+
     ch = logging.StreamHandler()
     ch.setLevel(log_level)
+
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     fh.setFormatter(formatter)
     ch.setFormatter(formatter)
@@ -123,12 +125,14 @@ def send_trigger(param):
 def __get_cli_data(param):
     __base_url = GET_CLI_DATA_SERVICE_URL
     __url = __base_url % 'cli'
+
     try:
         res = requests.post(__url, data=json.dumps(param), timeout=TIMEOUT)
     except requests.exceptions.ConnectionError:
         raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_CONNECT_ERROR)
     except requests.exceptions.ReadTimeout:
         raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_TIMEOUT)
+
     status_code = res.status_code
     if status_code == 200:
         output = json.loads(res.text)
@@ -316,4 +320,4 @@ if __name__ == "__main__":
     cli_main()
     # snmp_main()
     end_time = int(time.time())
-    print end_time - now_time
+    # print end_time - now_time

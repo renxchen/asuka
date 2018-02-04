@@ -12,8 +12,8 @@ __author__ = 'Rubick <haonchen@cisco.com>'
 
 def __create_test_devices(template):
     test_devices = []
-    for i in range(68):
-        for k in range(101, 116):
+    for i in range(2):
+        for k in range(100, 102):
             tmp = copy.copy(template[0])
             tmp['device__ip'] = "192.168.100.%d" % k
             tmp['device__device_id'] = i*15 + k
@@ -190,7 +190,8 @@ def __merge_cli(items, param_keys):
                 command=item['coll_policy__cli_command'],
                 rule_id=item['coll_policy_rule_tree_treeid__rule_id'],
                 device_id=item['device__device_id'],
-                value_type=item['coll_policy_rule_tree_treeid__rule__value_type'],
+                value_type=item['value_type'],
+                policy_type=item['item_type'],
                 # block_path=__create_path(rules, item['coll_policy_rule_tree_treeid__rule_id_path']),
                 block_path=item['coll_policy_rule_tree_treeid__rule_id_path'],
                 device_name=item['device__hostname'],
