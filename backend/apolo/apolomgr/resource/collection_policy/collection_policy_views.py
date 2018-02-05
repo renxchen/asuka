@@ -1,5 +1,5 @@
 #!
-#!/usr/bin/env python
+# !/usr/bin/env python
 
 """
 
@@ -21,6 +21,7 @@ from backend.apolo.tools import constants
 from backend.apolo.tools import views_helper
 import traceback
 from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree
+from django.db import transaction
 
 
 class CollPolicyViewSet(viewsets.ViewSet):
@@ -54,15 +55,19 @@ class CollPolicyViewSet(viewsets.ViewSet):
     @staticmethod
     def get_cp_from_item(**kwargs):
         try:
-            return Items.objects.get(**kwargs)
-        except Items.DoesNotExist:
+            return Items.objects.filter(**kwargs)
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return False
 
     @staticmethod
     def get_cp_from_policys_groups(**kwargs):
         try:
-            return PolicysGroups.objects.get(**kwargs)
-        except PolicysGroups.DoesNotExist:
+            return PolicysGroups.objects.filter(**kwargs)
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return False
 
     def get(self):
@@ -76,7 +81,8 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 try:
                     pt_data = pt.get_policy_tree()
                 except Exception, e:
-                    print traceback.format_exc()
+                    if constants.DEBUG_FLAG:
+                        print traceback.format_exc(e)
                     exception_handler(e)
                 data = {
                     'data': serializer.data,
@@ -131,136 +137,167 @@ class CollPolicyViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     def post(self):
         try:
-            data = {
-                'name': self.name,
-                'desc': self.desc,
-                'cli_command': self.cli_command,
-                'ostype': self.ostype,
-                'snmp_oid': self.snmp_oid,
-                'policy_type': self.policy_type,
-            }
-            if self.name is not '':
-                get_name_from_cp = self.get_cp(**{'name': self.name})
-                if get_name_from_cp is not False:
+            with transaction.atomic():
+                data = {
+                    'name': self.name,
+                    'desc': self.desc,
+                    'cli_command': self.cli_command,
+                    'ostype': self.ostype,
+                    'snmp_oid': self.snmp_oid,
+                    'policy_type': self.policy_type,
+                }
+                if self.name is not '':
+                    get_name_from_cp = self.get_cp(**{'name': self.name})
+                    if get_name_from_cp is not False:
+                        data = {
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.COLLECTION_POLICY_NAME_DUPLICATE
+                            }
+                        }
+                        return api_return(data=data)
+                if int(self.policy_type) == 1:
+                    data['value_type'] = self.value_type
+                serializer = CollPolicySerializer(data=data)
+                if serializer.is_valid():
+                    serializer.save()
                     data = {
+                        'data': serializer.data,
+                        'new_token': self.new_token,
                         constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLLECTION_POLICY_NAME_DUPLICATE
+                            constants.STATUS: constants.TRUE,
+                            constants.MESSAGE: constants.SUCCESS
                         }
                     }
                     return api_return(data=data)
-            if int(self.policy_type) == 1:
-                data['value_type'] = self.value_type
-            serializer = CollPolicySerializer(data=data)
-            if serializer.is_valid():
-                serializer.save()
-                data = {
-                    'data': serializer.data,
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.TRUE,
-                        constants.MESSAGE: constants.SUCCESS
+                else:
+                    data = {
+                        constants.MESSAGE: serializer.errors,
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.FAILED
+                        }
                     }
-                }
-                return api_return(data=data)
-            else:
-                data = {
-                    constants.MESSAGE: serializer.errors,
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.FALSE,
-                        constants.MESSAGE: constants.FAILED
-                    }
-                }
-                return api_return(data=data)
+                    return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            transaction.rollback()
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     def put(self):
         try:
-            kwargs = {'coll_policy_id': self.id}
-            queryset = self.get_cp(**kwargs)
-            data = {
-                'name': self.name,
-                'desc': self.desc,
-                'ostype': self.ostype,
-                'snmp_oid': self.snmp_oid,
-                'value_type': self.value_type,
-            }
-            if queryset is False:
-                message = 'There is no result for current query.'
+            with transaction.atomic():
+                kwargs = {'coll_policy_id': self.id}
+                queryset = self.get_cp(**kwargs)
                 data = {
-                    'data': message,
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.FALSE,
-                        constants.MESSAGE: constants.FAILED
-                    }
+                    'name': self.name,
+                    'desc': self.desc,
+                    'ostype': self.ostype,
+                    'snmp_oid': self.snmp_oid,
+                    'value_type': self.value_type,
                 }
-                return api_return(data=data)
-            serializer = CollPolicySerializer(queryset, data=data)
-            if serializer.is_valid():
-                serializer.save()
-                data = {
-                    'data': serializer.data,
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.TRUE,
-                        constants.MESSAGE: constants.SUCCESS
+                if queryset is False:
+                    message = 'There is no result for current query.'
+                    data = {
+                        'data': message,
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.FAILED
+                        }
                     }
-                }
-                return api_return(data=data)
-            else:
-                data = {
-                    constants.MESSAGE: serializer.errors,
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.FALSE,
-                        constants.MESSAGE: constants.FAILED
+                    return api_return(data=data)
+                serializer = CollPolicySerializer(queryset, data=data)
+                if serializer.is_valid():
+                    serializer.save()
+                    data = {
+                        'data': serializer.data,
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.TRUE,
+                            constants.MESSAGE: constants.SUCCESS
+                        }
                     }
-                }
-                return api_return(data=data)
+                    return api_return(data=data)
+                else:
+                    data = {
+                        constants.MESSAGE: serializer.errors,
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.FAILED
+                        }
+                    }
+                    return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            transaction.rollback()
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     def delete(self):
         try:
-            kwargs = {'coll_policy_id': self.id}
-            collection_policy_in_cp = self.get_cp(**kwargs)
-            collection_policy_in_items = self.get_cp_from_item(**kwargs)
-            if collection_policy_in_cp is False:
-                message = 'There is no result for current query.'
-                data = {
-                    'data': message,
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.FALSE,
-                        constants.MESSAGE: constants.FAILED
-                    }
-                }
-                return api_return(data=data)
-            if collection_policy_in_items is False:
+            with transaction.atomic():
+                kwargs = {'coll_policy_id': self.id}
+                collection_policy_in_cp = self.get_cp(**kwargs)
+                collection_policy_in_items = self.get_cp_from_item(**kwargs)
                 pg = self.get_cp_from_policys_groups(**{'policy_id': self.id})
-                if pg is not False:
+                if collection_policy_in_cp is False:
+                    message = 'There is no result in CollPolicy table with id %s.' % self.id
+                    data = {
+                        'data': message,
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.FAILED
+                        }
+                    }
+                    return api_return(data=data)
+                elif len(collection_policy_in_items) > 0:
+                    message = 'Collection policy exists in Items table with id %s.' % self.id
+                    data = {
+                        'data': message,
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.COLL_POLICY_EXIST_IN_ITEM
+                        }
+                    }
+                    return api_return(data=data)
+                elif len(pg) > 0:
+                    message = 'Collection policy exists in PolicysGroups table with id %s.' % self.id
+                    data = {
+                        'data': message,
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.COLL_POLICY_EXIST_POLICYS_GROUPS
+                        }
+                    }
+                    return api_return(data=data)
+                else:
                     # delete cp in policys_groups table
                     pg.delete()
-                # delete cp in coll_policy table
-                collection_policy_in_cp.delete()
-                data = {
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.TRUE,
-                        constants.MESSAGE: constants.SUCCESS
+                    # delete cp in coll_policy table
+                    collection_policy_in_cp.delete()
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.TRUE,
+                            constants.MESSAGE: constants.SUCCESS
+                        }
                     }
-                }
-                return api_return(data=data)
+                    return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            transaction.rollback()
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
