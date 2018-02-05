@@ -15,10 +15,10 @@ CLI_THREADPOOL_SIZE = 150
 SNMP_THREADPOOL_SIZE = 15
 GET_CLI_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
 GET_SNMP_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
-# GET_DEVICES_SERVICE_URL = "http://10.71.244.134:7777/api/v1/getCollectionInfor"
-GET_DEVICES_SERVICE_URL = "http://127.0.0.1:7777/api/v1/getCollectionInfor"
-# PARSER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/parser"
-PARSER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/parser"
+GET_DEVICES_SERVICE_URL = "http://10.71.244.134:7777/api/v1/getCollectionInfor"
+# GET_DEVICES_SERVICE_URL = "http://127.0.0.1:7777/api/v1/getCollectionInfor"
+PARSER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/parser"
+# PARSER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/parser"
 # TRIGGER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/trigger"
 TRIGGER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/trigger"
 
@@ -250,9 +250,10 @@ def send_handler_request_snmp(param, output):
     param['item_type'] = SNMP_TYPE_CODE
     tmp_dict = {}
     for output in output['output']:
-        tmp_dict[str(output['oid']).strip()] = output['output']
+        tmp_dict[str(output['oid']).strip()] = output['value']
     for item in param['items']:
         item['output'] = tmp_dict[str(item['oid']).strip()]
+
     try:
         res = requests.post(__service_url, data=json.dumps(param), timeout=TIMEOUT)
     except Exception:
@@ -284,7 +285,7 @@ def snmp_main():
     devices = []
     try:
         devices = get_devices(param)
-        devices = map(__add_param, devices['devices'])
+        devices = map(__add_param, devices['output']['devices'])
         if len(devices) == 0:
             snmp_logger.debug(LogMessage.DEBUG_NO_DEVICE_RUNNING_AT_TIME)
         pool = ThreadPool(SNMP_THREADPOOL_SIZE)
@@ -317,7 +318,7 @@ if __name__ == "__main__":
     cli_device_logger = log_factory(log_name="Cli_Device")
     cli_trigger_logger = log_factory(log_name="Cli_Trigger")
     cli_logger = log_factory(log_name="Cli")
-    cli_main()
-    # snmp_main()
+    # cli_main()
+    snmp_main()
     end_time = int(time.time())
     # print end_time - now_time

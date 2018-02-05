@@ -158,7 +158,8 @@ def __merge_snmp(items, param_keys):
                 policy_id=item['coll_policy_id'],
                 oid=item['coll_policy__snmp_oid'],
                 device_id=item['device__device_id'],
-                value_type=item['coll_policy__value_type']
+                value_type=item['coll_policy__value_type'],
+                policy_type=item['item_type']
             )
 
         )

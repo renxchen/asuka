@@ -1,1 +1,3 @@
 2018-02-04 21:00:38,930 - parser_trigger-11476-0017 - ERROR - global name 'devices' is not defined
+2018-02-05 15:39:33,437 - parser_trigger-11996-0003 - ERROR - 'policy_type'
+2018-02-05 15:49:09,059 - parser_trigger-16240-0000 - ERROR - 'NoneType' object has no attribute '__getitem__'

@@ -99,9 +99,9 @@ def parser_main(item_type, params):
 
 
 if __name__ == "__main__":
-    with open("test_cli_param.json") as f:
+    with open("test_snmp_param.json") as f:
         test_cli_param = json.loads(f.read())
-    items, timestamp = parser_main(item_type=0, params=test_cli_param)
+    items, timestamp = parser_main(item_type=1, params=test_cli_param)
     trigger = TriggerHelp(items, logging)
     trigger.trigger(task_timestamp=123)
     # cli_handle = CliParser(test_cli_param)
