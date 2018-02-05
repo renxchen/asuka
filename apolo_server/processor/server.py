@@ -139,7 +139,7 @@ class ValidableHandle(web.RequestHandler):
         except Exception, e:
             result = dict(
                 status="success",
-                items=[],
+                items=0,
                 message=str(e)
             )
 
