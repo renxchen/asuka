@@ -8,7 +8,7 @@
 #########################################
 LOG_PATH = 'logs/system_logger.log'
 #########################################
-# API token related define
+# API Debug Flag
 #########################################
 DEBUG_FLAG = False
 #########################################
@@ -51,8 +51,11 @@ USER_AND_PASSWD_INCORRECT = "User or password is incorrect."
 USER_DISABLED = "User is disabled."
 USER_LOGOUT_SUCCESSFUL = "User logout successful."
 COLLECTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
+ACTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 DATA_TABLE_NAME_DUPLICATE = 'DATA_TABLE_NAME_DUPLICATE'
-POLICY_GROUP_EXIST_IN_SCHEDULE = 'POLICY_GROUP_EXIST_IN_SCHEDULE'
+COLL_POLICY_GROUP_EXIST_IN_SCHEDULE = 'COLL_POLICY_GROUP_EXIST_IN_SCHEDULE'
+COLL_POLICY_EXIST_IN_ITEM = 'COLL_POLICY_EXIST_IN_ITEM'
+COLL_POLICY_EXIST_POLICYS_GROUPS = 'COLL_POLICY_EXIST_POLICYS_GROUPS'
 OSTYPE_EXIST_IN_SCHEDULE = 'OSTYPE_EXIST_IN_SCHEDULE'
 #########################################
 # API log or exception define

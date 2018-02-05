@@ -69,7 +69,7 @@ class CollPolicyGroupSerializer(serializers.ModelSerializer):
 class PolicyGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = PolicysGroups
-        fields = ('policys_groups_id', 'exec_interval', 'status', 'history', 'policy', 'policy_group')
+        fields = ('policys_groups_id', 'exec_interval', 'status', 'history', 'policy', 'policy_group', 'policy_name')
 
     def create(self, validated_data):
         return PolicysGroups.objects.create(**validated_data)

@@ -363,6 +363,10 @@ class PolicysGroups(models.Model):
         # managed = False
         db_table = 'policys_groups'
 
+    @property
+    def policy_name(self):
+        return self.policy.name
+
 
 class Schedules(models.Model):
     schedule_id = models.AutoField(primary_key=True)
