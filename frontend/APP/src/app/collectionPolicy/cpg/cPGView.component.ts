@@ -1,20 +1,21 @@
 import { Component, OnInit, AfterViewInit, ComponentFactory } from '@angular/core';
-import { HttpClientComponent } from '../../components/utils/httpClient';
+import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Router } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { ModalComponent } from '../../components/modal/modal.component';
+import { ModalComponent } from '../../../components/modal/modal.component';
 import { CPGDetailComponent } from './cPGDetail.component';
 import { CPGActionComponent } from './cPGAction.component';
 import { CPGEditComponent } from './cPGEdit.component';
 import { CPGLoginComponent } from './cPGLogin.component';
+import { Subscription } from 'rxjs/Rx';
 import * as _ from 'lodash';
 declare var $: any;
 
 @Component({
     selector: 'cpg-view',
     templateUrl: 'cPGView.component.html',
-    styleUrls: ['collectionPolicy.component.less']
+    styleUrls: ['.././collectionPolicy.component.less']
 })
 export class CPGViewComponent implements OnInit, AfterViewInit {
     cpgTable$: any;
@@ -22,7 +23,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
     closeMsg: any;
     modalMsg: any;
     modalRef: BsModalRef;
-    cpgInfo: any;
     modalConfig = {
         animated: true,
         keyboard: false,
@@ -42,7 +42,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
     }
     public drawCPGTable() {
         let _t = this;
-        $('#cpgTable').jqGrid({
+        this.cpgTable$ = $('#cpgTable').jqGrid({
             url: '/v1/api_collection_policy_group/',
             datatype: 'json',
             mtype: 'get',
@@ -56,9 +56,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                     formatter: this.formatterBtn, resizable: false
                 }
             ],
-            loadComplete(res) {
-                console.log(res);
-            },
             gridComplete: function () {
                 _t.detailBtn();
                 _t.editBtn();
@@ -75,7 +72,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 }
             },
             pager: '#cpgPager',
-            // postData: { 'policy_type': cPType },
             rowNum: 5,
             rowList: [5, 10, 15],
             autowidth: true,
@@ -83,7 +79,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             viewrecords: false,
             emptyrecords: 'There is no data to display',
             jsonReader: {
-                root: 'data',
+                root: 'data.data',
                 page: 'current_page_num',
                 total: 'num_page',
                 records: 'total_num',
@@ -110,50 +106,61 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             .toJson(this.httpClient.get(url + id)).subscribe(res => {
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
-                let data = _.get(res, 'data');
+                let groupData = _.get(res, 'policy_group_data');
+                let groupsData = _.get(res, 'policys_groups_data');
+                let data: any = {};
                 if (status && status['status'].toLowerCase() === 'true') {
-                    if (data) {
-                        return data;
+                    console.log('wertyu');
+                    if (groupData) {
+                        data['groupData'] = groupData;
                     }
-                } else {
-                    if (msg && msg === 'occupation') {
-                        this.modalMsg = 'This collection policy is being occupied';
-                        this.closeMsg = 'close';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
-                        return '';
+                    if (groupsData) {
+                        data['groupsData'] = groupsData;
                     }
+                    if (msg === 'POLICY_GROUP_EXIST_IN_SCHEDULE') {
+                        data['operation'] = false;
+                    } else {
+                        data['operation'] = true;
+                    }
+                    console.log('data', data);
                 }
-                return '';
+                return data;
             });
     }
     public detailBtn() {
         let _t = this;
+        _t.apiPrefix = '/v1';
+        let url = '/api_collection_policy_group/?id=';
         $('.detail').click(function (event) {
             let id = $(event)[0].target.id;
-            if (id && _t.checkCPGRun(id) !== '') {
-                _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
-                _t.modalRef.content.cpgInfo = _t.checkCPGRun(id);
-                this.modalRef.content.actionType = 'edit';
-                this.modalRef.content.id = id;
+            if (id) {
+                _t.router.navigate(['/index/cPGDetail'],
+                { queryParams: { 'id': id } });
+                // _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
+                // _t.modalRef.content.actionType = 'detail';
+                // _t.modalRef.content.id = id;
             }
         });
     }
     public editBtn() {
         let _t = this;
+        _t.apiPrefix = '/v1';
+        let url = '/api_collection_policy_group/?id=';
         $('.edit').click(function (event) {
             let id = $(event)[0].target.id;
-            if (id && _t.checkCPGRun(id) !== '') {
-                _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
-                _t.modalRef.content.cpgInfo = _t.checkCPGRun(id);
-                this.modalRef.content.actionType = 'edit';
-                let cpgEdit$ = _t.modalService.onHidden.subscribe(res => {
-                    if (res) {
-                        _t.cpgTable$.GridUnload();
-                        _t.drawCPGTable();
-                    }
-                    // this used as modal;
-                    this.unsubscribe(cpgEdit$);
-                });
+            if (id) {
+                _t.router.navigate(['/index/cPGEdit'],
+                { queryParams: { 'id': id } });
+                // _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
+                // _t.modalRef.content.id = id;
+                // _t.modalRef.content.actionType = 'edit';
+                // let cpgEdit$ = _t.modalService.onHidden.subscribe(o => {
+                //     if (o) {
+                //         _t.cpgTable$.GridUnload();
+                //         _t.drawCPGTable();
+                //     }
+                //     _t.unsubscribe(cpgEdit$);
+                // });
             }
         });
     }
@@ -171,14 +178,13 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 _t.httpClient
                     .toJson(_t.httpClient.delete(url + id))
                     .subscribe(res => {
-                        console.log(res);
                         let status = _.get(res, 'status');
                         let msg = _.get(status, 'message');
                         let data = _.get(res, 'data');
                         if (status && status['status'].toLowerCase() === 'true') {
-                            this.modalMsg = '削除に成功しました。';
-                            this.closeMsg = '閉じる';
-                            _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            _t.modalMsg = '削除に成功しました。';
+                            _t.closeMsg = '閉じる';
+                            _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                             $('#modalButton').on('click', function () {
                                 $('#cpgTable').jqGrid().trigger('reloadGrid');
                             });
@@ -197,19 +203,22 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         });
     }
     public cpLogin() {
-        this.modalRef = this.modalService.show(CPGActionComponent, this.modalConfig);
-        this.modalRef.content.actionType = 'login';
+        this.modalRef = this.modalService.show(CPGLoginComponent, this.modalConfig);
+        this.modalRef.content.actionType = 'create';
         let cpgLogin$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
                 this.cpgTable$.GridUnload();
                 this.drawCPGTable();
             }
-            // this.unsubscribe(cpgLogin$);
+            this.unsubscribe(cpgLogin$);
         });
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    public unsubscribe(res: any) {
+        res.unsubscribe();
     }
 }

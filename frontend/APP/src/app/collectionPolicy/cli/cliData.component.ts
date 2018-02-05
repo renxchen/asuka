@@ -1,15 +1,15 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
-import { HttpClientComponent } from '../../components/utils/httpClient';
-import { Validator } from '../../components/validation/validation';
-import { CollectionPolicyService } from './collectionPolicy.service';
+import { HttpClientComponent } from '../../../components/utils/httpClient';
+import { Validator } from '../../../components/validation/validation';
+import { CollectionPolicyService } from '.././collectionPolicy.service';
 import { Subject } from 'rxjs/Subject';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
 @Component({
     selector: 'cli-data',
-    templateUrl: './cliData.component.html',
-    styleUrls: ['./collectionPolicy.component.less']
+    templateUrl: 'cliData.component.html',
+    styleUrls: ['.././collectionPolicy.component.less']
 })
 export class CLIDataComponent implements OnInit, AfterViewInit {
     data: any;
@@ -29,6 +29,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     extractKey: any;
     lineNums: any;
     selectedRtnType: any;
+    otherChar: any;
     // Flg
     nameNotNull: Boolean = true;
     nameFlg: Boolean = true;
@@ -47,6 +48,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     yOffsetFlg: Boolean = true;
     extKeyNotNull: Boolean = true;
     delBtn: Boolean = false;
+    otherCharFlg: Boolean = true;
     constructor(
         private httpClient: HttpClientComponent,
         private bsModalRef: BsModalRef,
@@ -54,7 +56,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         public service: CollectionPolicyService) {
     }
     ngOnInit() {
-        this.selSplitChar = '0';
+        this.selSplitChar = '4';
         this.xOffset = 0;
         this.yOffset = 0;
         this.selectedRtnType = '1';
@@ -100,6 +102,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                     // this.lineNums = _.get(data, 'line_nums');
                     this.extractKey = _.get(data, 'extract_key');
                     this.selectedRtnType = _.get(data, 'value_type');
+                    this.otherChar = _.get(data, 'other_char');
                 }
             }
             if (res['rule_is_used'] || res['rule_is_used'] === true && this.info['delFlg']) {
@@ -120,10 +123,17 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         this.xOffsetFlg = Number.isInteger(this.xOffset);
+        if (this.selSplitChar === '3') {
+            if (this.otherChar) {
+                this.otherCharFlg = true;
+            } else {
+                this.otherChar = false;
+            }
+        }
         // this.yOffsetFlg = Number.isInteger(this.yOffset);
         if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull && this.xOffsetFlg) {
+            && this.mrkStrNotNull && this.xOffsetFlg && this.otherCharFlg) {
             return true;
         } else {
             return false;
@@ -141,9 +151,16 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         this.xOffsetFlg = Number.isInteger(this.xOffset);
         this.yOffsetFlg = Number.isInteger(this.yOffset);
+        if (this.selSplitChar === '3') {
+            if (this.otherChar) {
+                this.otherCharFlg = true;
+            } else {
+                this.otherCharFlg = false;
+            }
+        }
         if (this.nameNotNull && this.nameFlg && this.yOffsetFlg
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull && this.xOffsetFlg) {
+            && this.mrkStrNotNull && this.xOffsetFlg && this.otherCharFlg) {
             return true;
         } else {
             return false;
@@ -215,6 +232,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                 rule_info['x_offset'] = this.xOffset;
                 rule_info['extract_key'] = this.extractKey;
                 rule_info['value_type'] = this.selectedRtnType;
+                rule_info['other_char'] = this.otherChar;
                 console.log('rule_info', rule_info);
                 sendRuleInfo['rule_info'] = rule_info;
                 return sendRuleInfo;
@@ -233,7 +251,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                 rule_info['y_offset'] = this.yOffset;
                 rule_info['extract_key'] = this.extractKey;
                 rule_info['value_type'] = this.selectedRtnType;
-                console.log(rule_info);
+                rule_info['other_char'] = this.otherChar;
                 sendRuleInfo['rule_info'] = rule_info;
                 return sendRuleInfo;
             }
@@ -276,93 +294,94 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         return '';
     }
     public saveRule() {
-        // this.apiPrefix = '/v1';
-        // let id = this.ruleId;
-        // let editUrl = '/api_policy_tree_rule/?rule_id=' + id;
-        // let createUrl = '/api_policy_tree_rule/';
-        // this.httpClient.setUrl(this.apiPrefix);
-        // let sendInfo = this.dataRulePrepare();
-        // // console.log('sendInfo', sendInfo);
-        // if (this.actionType === 'create' && sendInfo !== '') {
-        //     this.httpClient
-        //         .toJson(this.httpClient.post(createUrl, sendInfo))
-        //         .subscribe(res => {
-        //             // console.log(res);
-        //             let status = _.get(res, 'status');
-        //             let msg = _.get(status, 'message');
-        //             let data = _.get(res, 'data');
-        //             if (status && status['status'].toLowerCase() === 'true') {
-        //                 if (data) {
-        //                     let dataInfo: any = {};
-        //                     dataInfo['dataTree'] = _.get(data, 'data_rule_tree_json');
-        //                     alert('保存しました。');
-        //                     this.bsModalRef.hide();
-        //                     this.modalService.setDismissReason(dataInfo);
-        //                 }
-        //             } else {
-        //                 if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
-        //                     this.uniqueFlg = false;
-        //                 } else if (msg && msg === 'key_str duplicatoin') {
-        //                     this.keyUnqFlg = false;
-        //                 } else {
-        //                     alert(msg);
-        //                 }
-        //             }
-        //         });
+        this.apiPrefix = '/v1';
+        let id = this.ruleId;
+        let editUrl = '/api_policy_tree_rule/?rule_id=' + id;
+        let createUrl = '/api_policy_tree_rule/';
+        this.httpClient.setUrl(this.apiPrefix);
+        let sendInfo = this.dataRulePrepare();
+        console.log('save', sendInfo);
+        // console.log('sendInfo', sendInfo);
+        if (this.actionType === 'create' && sendInfo !== '') {
+            this.httpClient
+                .toJson(this.httpClient.post(createUrl, sendInfo))
+                .subscribe(res => {
+                    // console.log(res);
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(res, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data) {
+                            let dataInfo: any = {};
+                            dataInfo['dataTree'] = _.get(data, 'data_rule_tree_json');
+                            alert('保存しました。');
+                            this.bsModalRef.hide();
+                            this.modalService.setDismissReason(dataInfo);
+                        }
+                    } else {
+                        if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
+                            this.uniqueFlg = false;
+                        } else if (msg && msg === 'key_str duplicatoin') {
+                            this.keyUnqFlg = false;
+                        } else {
+                            alert(msg);
+                        }
+                    }
+                });
 
-        // } else if (this.actionType === 'edit' && sendInfo !== '') {
-        //     this.httpClient
-        //         .toJson(this.httpClient.put(editUrl, sendInfo))
-        //         .subscribe(res => {
-        //             // console.log(res);
-        //             let status = _.get(res, 'status');
-        //             let msg = _.get(status, 'message');
-        //             let data = _.get(res, 'data');
-        //             if (status && status['status'].toLowerCase() === 'true') {
-        //                 if (data) {
-        //                     let dataInfo: any = {};
-        //                     dataInfo['dataTree'] = _.get(data, 'data_rule_tree_json');
-        //                     dataInfo['ruleName'] = _.get(data, 'new_name');
-        //                     alert('編集しました。');
-        //                     this.bsModalRef.hide();
-        //                     this.modalService.setDismissReason(dataInfo);
-        //                 }
-        //             } else {
-        //                 // backendInfo: data valid error in saving the rule; the same name rule is existence
-        //                 if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
-        //                     this.uniqueFlg = false;
-        //                 } else if (msg && msg === 'key_str duplicatoin') {
-        //                     // 后台未做check
-        //                     this.keyUnqFlg = false;
-        //                 } else {
-        //                     alert(msg);
-        //                 }
-        //             }
-        //         });
-        // }
+        } else if (this.actionType === 'edit' && sendInfo !== '') {
+            this.httpClient
+                .toJson(this.httpClient.put(editUrl, sendInfo))
+                .subscribe(res => {
+                    // console.log(res);
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(res, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data) {
+                            let dataInfo: any = {};
+                            dataInfo['dataTree'] = _.get(data, 'data_rule_tree_json');
+                            dataInfo['ruleName'] = _.get(data, 'new_name');
+                            alert('編集しました。');
+                            this.bsModalRef.hide();
+                            this.modalService.setDismissReason(dataInfo);
+                        }
+                    } else {
+                        // backendInfo: data valid error in saving the rule; the same name rule is existence
+                        if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
+                            this.uniqueFlg = false;
+                        } else if (msg && msg === 'key_str duplicatoin') {
+                            // 后台未做check
+                            this.keyUnqFlg = false;
+                        } else {
+                            alert(msg);
+                        }
+                    }
+                });
+        }
     }
     public deleteRule() {
-        // let alt = confirm('このルールを削除します。よろしいですか？');
-        // this.apiPrefix = '/v1';
-        // let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;
-        // if (alt) {
-        //     this.httpClient
-        //         .toJson(this.httpClient.delete(delUrl)).subscribe(res => {
-        //             let status = _.get(res, 'status');
-        //             let msg = _.get(status, 'message');
-        //             let data = _.get(res, 'data');
-        //             if (status && status['status'].toLowerCase() === 'true') {
-        //                 if (data) {
-        //                     let dataTree: any = {};
-        //                     dataTree = _.get(data, 'data_rule_tree_json');
-        //                     alert('削除しました。');
-        //                     this.bsModalRef.hide();
-        //                     this.modalService.setDismissReason(dataTree);
-        //                 }
-        //             } else {
-        //                 alert(msg);
-        //             }
-        //         });
-        // }
+        let alt = confirm('このルールを削除します。よろしいですか？');
+        this.apiPrefix = '/v1';
+        let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;
+        if (alt) {
+            this.httpClient
+                .toJson(this.httpClient.delete(delUrl)).subscribe(res => {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(res, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data) {
+                            let dataTree: any = {};
+                            dataTree = _.get(data, 'data_rule_tree_json');
+                            alert('削除しました。');
+                            this.bsModalRef.hide();
+                            this.modalService.setDismissReason(dataTree);
+                        }
+                    } else {
+                        alert(msg);
+                    }
+                });
+        }
     }
 }

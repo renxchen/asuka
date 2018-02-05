@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { HttpClientComponent } from '../../components/utils/httpClient';
-import { ModalComponent } from '../../components/modal/modal.component';
+import { HttpClientComponent } from '../../../components/utils/httpClient';
+import { ModalComponent } from '../../../components/modal/modal.component';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
@@ -9,8 +9,8 @@ declare var $: any;
 
 @Component({
     selector: 'cli-detail',
-    templateUrl: './cliCPDetail.component.html',
-    styleUrls: ['./collectionPolicy.component.less']
+    templateUrl: 'cliCPDetail.component.html',
+    styleUrls: ['.././collectionPolicy.component.less']
 })
 export class CLICPDetailComponent implements OnInit, AfterViewInit {
     cPId: any;
@@ -45,6 +45,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
     isSerial: any;
     ruleFlg: Boolean = false;
     iconFlg: boolean;
+    otherChar: any;
     treeData: any = [
         {
             'text': 'data_rule_3_subscription',
@@ -162,6 +163,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
             let msg = _.get(status, 'message');
             if (status && status['status'].toLowerCase() === 'true') {
                 if (data) {
+                    console.log('detail', data);
                     this.name = _.get(data, 'name');
                     this.desc = _.get(data, 'desc');
                     this.markString = _.get(data, 'mark_string');
@@ -171,15 +173,30 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
                     this.endMrkStr = _.get(data, 'end_mark_string');
                     this.isInclude = _.get(data, 'is_include');
                     this.isSerial = _.get(data, 'is_serial');
-                    this.selSplitChar = _.get(data, 'split_char');
+                    this.otherChar = _.get(data, 'other_char');
                     this.xOffset = _.get(data, 'x_offset');
                     this.yOffset = _.get(data, 'y_offset');
                     this.lineNums = _.get(data, 'line_nums');
+                    this.extractKey = _.get(data, 'extract_key');
+                    this.selSplitChar = this.splitCharFomatter(_.get(data, 'split_char'));
                 } else {
                     alert(msg);
                 }
             }
         });
+    }
+    public splitCharFomatter(char: any) {
+        if (char && char.toString() === '4') {
+            console.log('ch', char);
+            return 'スペース';
+        } else if (char && char.toString() === '1') {
+            return 'カンマ';
+        } else if (char && char.toString() === '2') {
+            return 'スラッシュ';
+        } else if (char && char.toString() === '3') {
+            console.log(6666);
+            return this.otherChar;
+        }
     }
     public naviCPEdit() {
         // this.apiPrefix = '/v1';
@@ -189,7 +206,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         //     .toJson(this.httpClient.get(url + '?id=' + this.cPId))
         //     .subscribe(res => {
         //         if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-        // this.router.navigate(['/index/cliCPEdit'], { queryParams: { 'id': this.cPId } });
+        this.router.navigate(['/index/clicpedit'], { queryParams: { 'id': this.cPId } });
         //     } else {
         //         // check this cp occupation, add 'occupation' feedback
         //         if (res['status']['message'] && ['status']['message'] === 'occupation') {
