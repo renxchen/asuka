@@ -42,11 +42,16 @@
                             切り分け文字:
                         </label>
                         <select class="form-control" [(ngModel)]="selSplitChar" id="selSplitChar" name="selSplitChar">
-                            <option value="0">スペース</option>
+                            <option value="4">スペース</option>
                             <option value="1">カンマ</option>
                             <option value="2">スラッシュ</option>
-                            <option value="3">その他（正規表現）</option>
+                            <option value="3">その他</option>
                         </select>
+                        <span *ngIf="selSplitChar=='3'" [ngClass]="{'has-warning': !otherCharFlg}">
+                            <input type="text" class="form-control" id="extractKey"
+                            name="otherChar" [(ngModel)]="otherChar" maxlength="256"
+                            placeholder="正規表現で記述可能" required="" aria-required="true">
+                        </span>
                     </div>
                     <div class="form-group" [ngClass]="{'has-warning': !xOffsetFlg}">
                         <label for="xOffset" [ngClass]="{'text-warning': !xOffsetFlg}">
@@ -96,34 +101,41 @@
                         name="markString" [(ngModel)]="markString" maxlength="256"
                         placeholder="正規表現で記述可能" required="" aria-required="true">
                     </div>
-                    <div class="form-group" [ngClass]="{'has-warning': !xOffsetFlg}">
-                        <label for="xOffset" [ngClass]="{'text-warning': !xOffsetFlg}">
+                    <div class="form-group" [ngClass]="{'has-warning': !yOffsetFlg}">
+                        <label for="yOffset" [ngClass]="{'text-warning': !yOffsetFlg}">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             基準文字列からの距離：
                         </label>
-                        <input type="number" class="form-control" id="xOffset" name="xOffset"
-                        [(ngModel)]="xOffset" value="0" required="">
-                    </div>
+                        <input type="number" class="form-control" id="yOffset" name="yOffset"
+                        [(ngModel)]="yOffset" value="0" required="">
+                    </div>     
+                    
                     <div class="form-group">
                         <label for="splitChar">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             切り分け文字:
                         </label>
                         <select class="form-control" [(ngModel)]="selSplitChar" id="selSplitChar" name="selSplitChar">
-                            <option value="0">スペース</option>
+                            <option value="4">スペース</option>
                             <option value="1">カンマ</option>
                             <option value="2">スラッシュ</option>
-                            <option value="3">その他（正規表現）</option>
+                            <option value="3">その他</option>
                         </select>
+                        <span *ngIf="selSplitChar=='3'" [ngClass]="{'has-warning': !otherCharFlg}">
+                            <input type="text" class="form-control" id="extractKey"
+                            name="otherChar" [(ngModel)]="otherChar" maxlength="256"
+                            placeholder="正規表現で記述可能" required="" aria-required="true">
+                        </span>
                     </div>
-                    <div class="form-group" [ngClass]="{'has-warning': !yOffsetFlg}">
-                        <label for="yOffset" [ngClass]="{'text-warning': !yOffsetFlg}">
+                    <!-- sdfghjkl -->
+                    <div class="form-group" [ngClass]="{'has-warning': !xOffsetFlg}">
+                        <label for="xOffset" [ngClass]="{'text-warning': !xOffsetFlg}">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             先頭文字からの距離：
                         </label>
-                        <input type="number" class="form-control" id="yOffset" name="yOffset"
-                        [(ngModel)]="yOffset" value="0" required="">
-                    </div>                      
+                        <input type="number" class="form-control" id="xOffset" name="xOffset"
+                        [(ngModel)]="xOffset" value="0" required="">
+                    </div>               
                     <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
                         <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
@@ -247,6 +259,7 @@
                   <!-- <div class="col-sm-12 text-warning" *ngIf='!extractKeyNotNull'>データ識別子名は必須入力です。</div> -->
                   <div class="col-sm-12 text-warning" *ngIf='!xOffsetFlg'>xOffsetFlg: int needed</div>
                   <div class="col-sm-12 text-warning" *ngIf='!yOffsetFlg'>yOffsetFlg: int needed</div>
+                  <div class="col-sm-12 text-warning" *ngIf="selSplitChar=='3'&&!otherCharFlg">その他は必須入力です</div>
               </div>
       </form>
       <!-- <div class="form-group"> -->

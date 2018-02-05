@@ -1,12 +1,12 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { HttpClientComponent } from '../../components/utils/httpClient';
+import { HttpClientComponent } from '../../../components/utils/httpClient';
 import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 @Component({
     selector: 'snmp-detail',
     templateUrl: 'snmpCPDetail.component.html',
-    styleUrls: ['collectionPolicy.component.less']
+    styleUrls: ['.././collectionPolicy.component.less']
 })
 
 export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
@@ -74,6 +74,6 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
             });
     }
     public navSNMPEdit() {
-        this.router.navigate(['/index/snmpCPEdit'], { queryParams: { 'id': this.cPId } });
+        this.router.navigate(['/index/snmpcpedit'], { queryParams: { 'id': this.cPId } });
     }
 }

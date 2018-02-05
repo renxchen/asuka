@@ -1,16 +1,16 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { HttpClientComponent } from '../../components/utils/httpClient';
+import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
-import { ModalComponent } from '../../components/modal/modal.component';
-import { Validator } from '../../components/validation/validation';
+import { ModalComponent } from '../../../components/modal/modal.component';
+import { Validator } from '../../../components/validation/validation';
 import * as _ from 'lodash';
 
 @Component({
     selector: 'snmp-login',
     templateUrl: 'snmpCPLogin.component.html',
-    styleUrls: ['collectionPolicy.component.less']
+    styleUrls: ['.././collectionPolicy.component.less']
 })
 
 export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
@@ -71,7 +71,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                     if (status && status['status'].toLowerCase() === 'true') {
                         // if (res['data']) {
                         //     let id = res['data']['coll_policy_id'];
-                        //     this.router.navigate(['/index/snmpCPEdit'],
+                        //     this.router.navigate(['/index/snmpcpedit'],
                         //     { queryParams: {'id' : id }});
                         // }
                         this.modalMsg = '保存しました。';
@@ -97,7 +97,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    if (res['data']) {
+                    if (res['data'] && res['data'].length > 0) {
                         this.osType = res['data'];
                         let osTypeTmp = _.clone(res['data']);
                         this.selectedOsType = res['data'][0]['ostypeid'].toString();
@@ -132,7 +132,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         $('a[id ="labelParent"]').click(function () {
             let r = confirm('作業中の内容は破棄されます。よろしいですか？');
             if (r) {
-                _t.router.navigate(['/index/cPView/']);
+                _t.router.navigate(['/index/cpview/']);
             }
         });
     }

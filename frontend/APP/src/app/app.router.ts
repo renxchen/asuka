@@ -7,20 +7,22 @@ import { LoginComponent } from './login/login.component';
 import { IndexComponent } from './index/index.component';
 // collection policy
 import { CPViewComponent } from './collectionPolicy/cPView.component';
-import { CLICPLoginComponent } from './collectionPolicy/cliCPLogin.component';
-import { CLICPEditComponent } from './collectionPolicy/cliCPEdit.component';
-import { CLICPEditPopComponent } from './collectionPolicy/cliCPEditPop.component';
-import { CLICPDetailComponent } from './collectionPolicy/cliCPDetail.component';
-import { CLIBlockComponent } from './collectionPolicy/cliBlock.component';
-import { CLIDataComponent } from './collectionPolicy/cliData.component';
-import { SNMPCPLoginComponent } from './collectionPolicy/snmpCPLogin.component';
-import { SNMPCPDetailComponent } from './collectionPolicy/snmpCPDetail.component';
-import { SNMPCPEditComponent } from './collectionPolicy/snmpCPEdit.component';
-import { CPGViewComponent } from './collectionPolicy/cPGView.component';
-import { CPGLoginComponent } from './collectionPolicy/cPGLogin.component';
-import { CPGDetailComponent } from './collectionPolicy/cPGDetail.component';
-import { CPGEditComponent } from './collectionPolicy/cPGEdit.component';
-import { CPGActionComponent } from './collectionPolicy/cPGAction.component';
+import { CLICPLoginComponent } from './collectionPolicy/cli/cliCPLogin.component';
+import { CLICPEditComponent } from './collectionPolicy/cli/cliCPEdit.component';
+import { CLICPEditPopComponent } from './collectionPolicy/cli/cliCPEditPop.component';
+import { CLICPDetailComponent } from './collectionPolicy/cli/cliCPDetail.component';
+import { CLIBlockComponent } from './collectionPolicy/cli/cliBlock.component';
+import { CLIDataComponent } from './collectionPolicy/cli/cliData.component';
+
+import { SNMPCPLoginComponent } from './collectionPolicy/snmp/snmpCPLogin.component';
+import { SNMPCPDetailComponent } from './collectionPolicy/snmp/snmpCPDetail.component';
+import { SNMPCPEditComponent } from './collectionPolicy/snmp/snmpCPEdit.component';
+
+import { CPGViewComponent } from './collectionPolicy/cpg/cPGView.component';
+import { CPGLoginComponent } from './collectionPolicy/cpg/cPGLogin.component';
+import { CPGDetailComponent } from './collectionPolicy/cpg/cPGDetail.component';
+import { CPGEditComponent } from './collectionPolicy/cpg/cPGEdit.component';
+import { CPGActionComponent } from './collectionPolicy/cpg/cPGAction.component';
 
 // data collection
 import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
@@ -58,7 +60,7 @@ const routes: Routes = [
           },
           // collection policy
           {
-            path: 'cPView',
+            path: 'cpview',
             component: CPViewComponent,
             data: {
               parentTitle: 'コレクションポリシー',
@@ -66,7 +68,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'cPGView',
+            path: 'cpgview',
             component: CPGViewComponent,
             data: {
               parentTitle: 'コレクションポリシー',
@@ -74,7 +76,23 @@ const routes: Routes = [
             }
           },
           {
-            path: 'cliCPLogin',
+            path: 'cpgdetail',
+            component: CPGDetailComponent,
+            data: {
+              parentTitle: 'コレクションポリシーグループ',
+              title: 'コレクションポリシーグループ確認'
+            }
+          },
+          {
+            path: 'cpgedit',
+            component: CPGEditComponent,
+            data: {
+              parentTitle: 'コレクションポリシーグループ',
+              title: 'コレクションポリシーグループ編集'
+            }
+          },
+          {
+            path: 'clicplogin',
             component: CLICPLoginComponent,
             data: {
               parentTitle: 'コレクションポリシー',
@@ -82,7 +100,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'cliCPEdit',
+            path: 'clicpedit',
             component: CLICPEditComponent,
             data: {
               parentTitle: 'コレクションポリシー',
@@ -90,7 +108,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'cliCPDetail',
+            path: 'clicpdetail',
             component: CLICPDetailComponent,
             data: {
               parentTitle: 'コレクションポリシー',
@@ -98,7 +116,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'snmpCPLogin',
+            path: 'snmpcplogin',
             component: SNMPCPLoginComponent,
             data: {
               parentTitle: 'コレクションポリシー',
@@ -106,7 +124,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'snmpCPDetail',
+            path: 'snmpcpdetail',
             component: SNMPCPDetailComponent,
             data: {
               parentTitle: 'コレクションポリシー',
@@ -114,7 +132,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'snmpCPEdit',
+            path: 'snmpcpedit',
             component: SNMPCPEditComponent,
             data: {
               parentTitle: 'コレクションポリシー',
@@ -181,8 +199,6 @@ ModalComponent,
     CLIDataComponent,
     CLICPEditPopComponent,
     CPGLoginComponent,
-    CPGDetailComponent,
-    CPGEditComponent,
     CPGActionComponent,
     // data
     DataCollectionLoginComponent,
