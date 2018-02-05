@@ -279,7 +279,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLL_POLICY_EXIST_POLICYS_GROUPS
+                            constants.MESSAGE: constants.COLL_POLICY_EXIST_IN_POLICYS_GROUPS
                         }
                     }
                     return api_return(data=data)
