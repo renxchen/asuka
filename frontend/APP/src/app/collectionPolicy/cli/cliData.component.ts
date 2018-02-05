@@ -105,7 +105,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                     this.otherChar = _.get(data, 'other_char');
                 }
             }
-            if (res['rule_is_used'] || res['rule_is_used'] === true && this.info['delFlg']) {
+            if (res['rule_is_used'] || res['rule_is_used'].toLowerCase() === 'true' && this.info['delFlg']) {
                 this.delBtn = false;
             } else {
                 this.delBtn = true;
@@ -221,7 +221,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         let rule_info: any = {};
         if (this.ruleType === 'data_rule_1') {
             if (this.dataRuleACheck()) {
-                console.log('b1');
+                // console.log('b1');
                 rule_info['coll_policy'] = this.cpId;
                 rule_info['rule_type'] = this.ruleType;
                 rule_info['name'] = this.name;
@@ -233,7 +233,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                 rule_info['extract_key'] = this.extractKey;
                 rule_info['value_type'] = this.selectedRtnType;
                 rule_info['other_char'] = this.otherChar;
-                console.log('rule_info', rule_info);
+                // console.log('rule_info', rule_info);
                 sendRuleInfo['rule_info'] = rule_info;
                 return sendRuleInfo;
             }
@@ -265,7 +265,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                 rule_info['key_str'] = this.keyStr;
                 rule_info['value_type'] = this.selectedRtnType;
                 sendRuleInfo['rule_info'] = rule_info;
-                console.log('da3', sendRuleInfo);
+                // console.log('da3', sendRuleInfo);
                 return sendRuleInfo;
             }
         } else if (this.ruleType === 'data_rule_4') {
@@ -300,7 +300,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         let createUrl = '/api_policy_tree_rule/';
         this.httpClient.setUrl(this.apiPrefix);
         let sendInfo = this.dataRulePrepare();
-        console.log('save', sendInfo);
         // console.log('sendInfo', sendInfo);
         if (this.actionType === 'create' && sendInfo !== '') {
             this.httpClient

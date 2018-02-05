@@ -110,7 +110,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 let groupsData = _.get(res, 'policys_groups_data');
                 let data: any = {};
                 if (status && status['status'].toLowerCase() === 'true') {
-                    console.log('wertyu');
                     if (groupData) {
                         data['groupData'] = groupData;
                     }
@@ -122,7 +121,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                     } else {
                         data['operation'] = true;
                     }
-                    console.log('data', data);
                 }
                 return data;
             });
@@ -134,7 +132,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         $('.detail').click(function (event) {
             let id = $(event)[0].target.id;
             if (id) {
-                _t.router.navigate(['/index/cPGDetail'],
+                _t.router.navigate(['/index/cpgdetail'],
                 { queryParams: { 'id': id } });
                 // _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
                 // _t.modalRef.content.actionType = 'detail';
@@ -149,7 +147,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         $('.edit').click(function (event) {
             let id = $(event)[0].target.id;
             if (id) {
-                _t.router.navigate(['/index/cPGEdit'],
+                _t.router.navigate(['/index/cpgedit'],
                 { queryParams: { 'id': id } });
                 // _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
                 // _t.modalRef.content.id = id;

@@ -14,7 +14,7 @@
                             <div class="col-sm-4" [ngClass]="{'has-warning': !nameFlg||!nameNotNull}">
                                 <input type="text" class="form-control" id="name" name="name" [(ngModel)]="name" 
                                 placeholder="英数字のみ" maxlength="256" required=""
-                                    aria-required="true" autocomplete="off">
+                                aria-required="true" autocomplete="off">
                             </div>
                         </div>
                         <!-- 概要 -->
@@ -32,7 +32,7 @@
                             </label>
                             <div class="col-sm-4">
                                 <select class="form-control" [(ngModel)]="selectedOsType" id="osType" name="selectedOsType"
-                                [ngClass]="{'disabled':!osFlg}">
+                                [disabled]="!osFlg">
                                     <option *ngFor="let item of osType" value="{{item.ostypeid}}">{{item.name}}</option>
                                 </select>
                             </div>
@@ -56,7 +56,7 @@
                                     <div class="col-sm-4 control-label">
                                         <select class="form-control" id="selCPName" name="selCPName" 
                                         [(ngModel)]="selCPName" (change)="cpNamecChange(selCPName)"
-                                        [ngClass]="{'disabled':!cpNameFlg}">
+                                        [disabled]="!cpNameFlg">
                                             <option value="null">Please choose CP name </option>                            
                                             <option *ngFor="let cpName of cpNames" value="{{cpName.coll_policy_id}}">
                                                 {{cpName.name}}
@@ -72,7 +72,7 @@
                                     <div class="col-sm-4">
                                         <select class="form-control" id="execInterval" name="selExecInterval"
                                         [(ngModel)]="selExecInterval" (change)="execIntervalChange(selExecInterval)"
-                                        [ngClass]="{'disabled':!exeFlg}">
+                                        [disabled]="!exeFlg">
                                             <option value="null">Please choose monitor time </option>
                                             <option value="1" *ngIf="cliFlg">1分</option>
                                             <option value="2">5分</option>

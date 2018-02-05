@@ -69,6 +69,7 @@ export class CPGEditComponent implements OnInit {
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
             .toJson(this.httpClient.get(url + id)).subscribe(res => {
+                console.log('res',res);
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
                 let data = _.get(res, 'data');
@@ -205,7 +206,7 @@ export class CPGEditComponent implements OnInit {
             cpInfo['status'] = '0';
             cpInfo['policy_group'] = this.cPGId;
             cpInfo['policy_policy_type'] = cpName.type;
-            console.log('cpInfo', cpInfo);
+            // console.log('cpInfo', cpInfo);
             this.cpList.push(cpInfo);
             this.cpgActionGrid$.GridUnload();
             this.moreInfoTable(this.cpList);
@@ -328,10 +329,10 @@ export class CPGEditComponent implements OnInit {
         let groups: any = {};
         if (this.doCheck()) {
             groups['cps'] = this.cpList;
-            console.log(this.cpList, groups);
+            // console.log(this.cpList, groups);
             let url = '/api_collection_policy_group/?name='
                 + this.name + '&ostype=' + this.selectedOsType + '&desc=' + this.desc;
-            console.log(url + '---' + groups);
+            // console.log(url + '---' + groups);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post(url, groups))

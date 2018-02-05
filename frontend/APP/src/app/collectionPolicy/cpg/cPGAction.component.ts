@@ -99,7 +99,7 @@ export class CPGActionComponent implements OnInit, AfterViewInit {
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
             .toJson(this.httpClient.get(url + id)).subscribe(res => {
-                console.log('edit', res);
+                // console.log('edit', res);
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
                 let groupData: any[] = _.get(res, 'policy_group_data');
@@ -118,7 +118,6 @@ export class CPGActionComponent implements OnInit, AfterViewInit {
                     }
                     if (groupsData) {
                         this.cpList = groupsData;
-                        console.log('this.gro', this.cpList);
                         this.moreInfoTable(this.cpList);
                         // this.moreInfoTable(this.testData);
                     }
@@ -131,7 +130,6 @@ export class CPGActionComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_get_collection_policy_name/'))
             .subscribe(res => {
-                console.log(res);
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         this.cpNames = res['data'];
@@ -200,7 +198,6 @@ export class CPGActionComponent implements OnInit, AfterViewInit {
                         let id = $(e.target).closest('tr')[0].id, isChecked = $(e.target).is(':checked') ? 1 : 0;
                         alert(id);
                         let cpList: any = _t.cpList;
-                        console.log(cpList);
                         for (let j = 0; j < cpList.length; j++) {
                             if (cpList[j].collection_policy_id.toString() === id) {
                                 cpList[j].status = isChecked;
@@ -228,7 +225,6 @@ export class CPGActionComponent implements OnInit, AfterViewInit {
         let _t = this;
         $('.delete').click(function (event) {
             let cpList: any = _t.cpList;
-            console.log('del', cpList);
             let id = $(event)[0].target.id;
             for (let i = 0; i < cpList.length; i++) {
                 if (cpList[i].policy_name.toString() === id) {
@@ -245,7 +241,6 @@ export class CPGActionComponent implements OnInit, AfterViewInit {
         this.moreFlg = true;
     }
     public addMoreInfo() {
-        console.log(this.cpList);
         let cpInfo: any = {};
         let cpList = this.cpList;
         for (let i = 0; i < cpList.length; i++) {
@@ -278,10 +273,10 @@ export class CPGActionComponent implements OnInit, AfterViewInit {
         let groups: any = {};
         if (this.doCheck()) {
             groups['cps'] = this.cpList;
-            console.log(this.cpList, groups);
+            // console.log(this.cpList, groups);
             let url = '/api_collection_policy_group/?name='
                 + this.name + '&ostype=' + this.selectedOsType + '&desc=' + this.desc;
-            console.log(url + '---' + groups);
+            // console.log(url + '---' + groups);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post(url, groups))

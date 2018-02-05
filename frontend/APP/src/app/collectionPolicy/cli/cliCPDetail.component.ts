@@ -163,7 +163,6 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
             let msg = _.get(status, 'message');
             if (status && status['status'].toLowerCase() === 'true') {
                 if (data) {
-                    console.log('detail', data);
                     this.name = _.get(data, 'name');
                     this.desc = _.get(data, 'desc');
                     this.markString = _.get(data, 'mark_string');
@@ -187,14 +186,12 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
     }
     public splitCharFomatter(char: any) {
         if (char && char.toString() === '4') {
-            console.log('ch', char);
             return 'スペース';
         } else if (char && char.toString() === '1') {
             return 'カンマ';
         } else if (char && char.toString() === '2') {
             return 'スラッシュ';
         } else if (char && char.toString() === '3') {
-            console.log(6666);
             return this.otherChar;
         }
     }

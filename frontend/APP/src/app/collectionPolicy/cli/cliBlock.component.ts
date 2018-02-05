@@ -112,7 +112,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     this.isSerial = _.get(data, 'is_serial');
                     this.extractKey = _.get(data, 'extract_key');
                 }
-                if (res['rule_is_used'] || res['rule_is_used'].toLowerCase === true && this.info['delFlg']) {
+                if (res['rule_is_used'] || res['rule_is_used'].toLowerCase() === 'true' && this.info['delFlg']) {
                     this.delBtn = false;
                 } else {
                     this.delBtn = true;
@@ -232,7 +232,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                 rule_info['is_serial'] = this.typeFomatter(this.isSerial);
                 rule_info['is_include'] = this.typeFomatter(this.isInclude);
                 sendRuleInfo['rule_info'] = rule_info;
-                console.log('sendRule', sendRuleInfo);
+                // console.log('sendRule', sendRuleInfo);
                 return sendRuleInfo;
             }
         } else if (this.ruleType === 'block_rule_4') {

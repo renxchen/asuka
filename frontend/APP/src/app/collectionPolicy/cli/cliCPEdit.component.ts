@@ -71,9 +71,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.blockTreeData = data['block_rule_tree_json'];
                         this.dataTreeData = data['data_rule_tree_json'];
                         this.ruleTreeData = data['policy_tree_json'];
-                        console.log('this.blockTreeData', this.blockTreeData);
-                        console.log('this.dataTreeData', this.dataTreeData);
-                        console.log('this.ruleTreeData', this.ruleTreeData);
                         $('#input-wrap').html(data['cli_command_result']);
                         this.blockTree(this.blockTreeData);
                         this.dataTree(this.dataTreeData);
@@ -211,7 +208,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
     // check before saving policy tree
     public checkPolicyTree() {
         let tree = this.plyTreeFlat();
-        console.log('tree', tree);
         if (tree.length > 1) {
             for (let i = 0; i < tree.length; i++) {
                 let data = tree[i]['data'];
@@ -412,7 +408,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                                 <i class="fa fa-minus-square"></i> 消除
                             </button>`,
                     'click': function (event) {
-                        console.log(event, event.data.node.id);
                         $('#policyTree').jstree(`delete_node`, event.data.node.id);
                     }
                 },

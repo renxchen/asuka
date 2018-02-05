@@ -123,7 +123,6 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                     let data = _.get(res, 'data');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         if (data) {
-                            console.log(data);
                             this.cPName = _.get(data, 'name');
                             alert('編集しました。');
                             this.modalRef.hide();

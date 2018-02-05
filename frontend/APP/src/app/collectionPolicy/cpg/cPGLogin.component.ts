@@ -168,7 +168,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             cpInfo['status'] = '0';
             cpInfo['policy_group'] = this.cPGId;
             cpInfo['policy_policy_type'] = cpName.type;
-            console.log('cpInfo', cpInfo);
+            // console.log('cpInfo', cpInfo);
             this.cpList.push(cpInfo);
             this.cpgActionGrid$.GridUnload();
             this.moreInfoTable(this.cpList);
@@ -291,10 +291,10 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         let groups: any = {};
         if (this.doCheck()) {
             groups['cps'] = this.cpList;
-            console.log(this.cpList, groups);
+            // console.log(this.cpList, groups);
             let url = '/api_collection_policy_group/?name='
                 + this.name + '&ostype=' + this.selectedOsType + '&desc=' + this.desc;
-            console.log(url + '---' + groups);
+            // console.log(url + '---' + groups);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post(url, groups))

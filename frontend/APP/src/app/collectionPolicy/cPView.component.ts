@@ -117,10 +117,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         $('.detail').click(function (event) {
             let id = $(event)[0].target.id;
             if (_t.cPType === '0') {
-                _t.router.navigate(['/index/cliCPDetail'],
+                _t.router.navigate(['/index/clicpdetail'],
                     { queryParams: { 'id': id } });
             } else {
-                _t.router.navigate(['/index/snmpCPDetail'],
+                _t.router.navigate(['/index/snmpcpdetail'],
                     { queryParams: { 'id': id } });
             }
         });
@@ -137,10 +137,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             //     .subscribe(res => {
             //         if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
             if (_t.cPType === '0') {
-                _t.router.navigate(['/index/cliCPEdit'],
+                _t.router.navigate(['/index/clicpedit'],
                     { queryParams: { 'id': id } });
             } else {
-                _t.router.navigate(['/index/snmpCPEdit'],
+                _t.router.navigate(['/index/snmpcpedit'],
                     { queryParams: { 'id': id } });
             }
             // } else {
