@@ -205,7 +205,7 @@ class TriggerDbHelp(DbHelp):
         :return:
         """
         value_compare_pattern = "'\\\{%item_id\\\}|" \
-                                "[%item_id\\\[[0-9]+\\\]|" \
+                                "%item_id\\\[[0-9]+\\\]|" \
                                 "%item_id\\\([0-9]+\\\)|" \
                                 "Fail\\\(%item_id\\\)'"
         sql = "SELECT * FROM trigger_detail where expression REGEXP  %s and status=1" % value_compare_pattern
