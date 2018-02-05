@@ -397,7 +397,6 @@ class TriggerDetail(models.Model):
     status = models.IntegerField(blank=True, null=True)
     trigger = models.ForeignKey('Triggers', models.DO_NOTHING)
     expression_view = models.CharField(max_length=255, blank=True, null=True)
-    device = models.ForeignKey(Devices, models.DO_NOTHING)
     class Meta:
         # managed = False
         db_table = 'trigger_detail'

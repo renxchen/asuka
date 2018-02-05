@@ -60,4 +60,4 @@ class SNMPWorker(WorkerBase):
         return result
 
 
-main(SNMPWorker)
+# main(SNMPWorker)

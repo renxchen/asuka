@@ -1,0 +1,14 @@
+2018-02-04 21:00:37,193 - Cli - INFO - Cli Task 1517749237 Begin
+2018-02-04 21:00:38,974 - Cli_Parser - ERROR - Parser fail: global name 'devices' is not defined
+2018-02-04 21:00:38,974 - Cli - INFO - Cli Task 1517749237 End
+2018-02-04 21:00:38,976 - Cli - INFO - Total device task: 1
+2018-02-04 21:01:45,976 - Cli - INFO - Cli Task 1517749305 Begin
+2018-02-04 21:01:47,671 - Cli - INFO - Cli Task 1517749305 End
+2018-02-04 21:01:47,671 - Cli - INFO - Total device task: 1
+2018-02-04 21:01:58,430 - Cli - INFO - Cli Task 1517749318 Begin
+2018-02-04 21:02:00,114 - Cli - INFO - Cli Task 1517749318 End
+2018-02-04 21:02:00,114 - Cli - INFO - Total device task: 1
+2018-02-05 14:26:32,913 - Cli - INFO - Cli Task 1517811992 Begin
+2018-02-05 14:26:34,394 - Cli_Device - ERROR - Connect Service Error
+2018-02-05 14:26:34,394 - Cli - INFO - Cli Task 1517811992 End
+2018-02-05 14:26:34,395 - Cli - INFO - Total device task: 1
