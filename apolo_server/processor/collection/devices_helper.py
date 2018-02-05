@@ -10,6 +10,41 @@ __version__ = '0.1'
 __author__ = 'Rubick <haonchen@cisco.com>'
 
 
+class Valid(object):
+    def __init__(self, now_time):
+        self.items = valid_items(now_time, get_items(CommonConstants.ALL_TYPE_CODE))
+
+    def valid(self, *args, **kwargs):
+        pass
+
+
+class DeviceValid(Valid):
+    def __init__(self, now_time):
+        super(DeviceValid, self).__init__(now_time)
+
+    def valid(self, device_id):
+        devices = [item for item in self.items if item["device__device_id"] == int(device_id)]
+        return len(devices)
+
+
+class PolicyValid(Valid):
+    def __init__(self, now_time):
+        super(PolicyValid, self).__init__(now_time)
+
+    def valid(self, coll_policy_id):
+        devices = [item for item in self.items if item["coll_policy_id"] == int(coll_policy_id)]
+        return len(devices)
+
+
+class PolicyGroupValid(Valid):
+    def __init__(self, now_time):
+        super(PolicyGroupValid, self).__init__(now_time)
+
+    def valid(self, policys_groups__policy_group_id):
+        devices = [item for item in self.items if item["policys_groups__policy_group_id"] == int(policys_groups__policy_group_id)]
+        return len(devices)
+
+
 def __create_test_devices(template):
     test_devices = []
     for i in range(2):
@@ -419,5 +454,12 @@ def __add_items_valid_status(item, status):
 
 
 if __name__ == "__main__":
-    for i in get_devices(1517281147, 0).items():
-        print i
+    # for i in get_devices(1517281147, 0).items():
+    #     print i
+    # device_valid = DeviceValid(1517281147)
+    # print device_valid.valid(1)
+    # device_valid = PolicyGroupValid(1517281147)
+    # print device_valid.valid(2)
+    # device_valid = PolicyValid(1517281147)
+    # print device_valid.valid(2)
+    pass

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 __version__ = '0.1'
 __author__ = 'Rubick <haonchen@cisco.com>'
-
-
 import json
 import time
 import Queue
@@ -17,6 +15,7 @@ from apolo_server.processor.session_mgr import SessionManager
 from apolo_server.processor.configurations import Configurations
 # from collection.collection_help import get_collection_devices, get_items
 from apolo_server.processor.collection.devices_helper import get_devices, get_valid_items
+from apolo_server.processor.collection.devices_helper import PolicyGroupValid, PolicyValid
 
 
 class TaskDispatcher(Thread):
@@ -87,7 +86,6 @@ class DevicesApiHandle(web.RequestHandler):
         self.finish()
 
 
-
 class ItemsApiHandle(web.RequestHandler):
     @web.asynchronous
     def post(self, *args, **kwargs):
@@ -101,6 +99,41 @@ class ItemsApiHandle(web.RequestHandler):
             result = dict(
                 status="success",
                 items=items,
+                message=""
+            )
+        except Exception, e:
+            result = dict(
+                status="success",
+                items=[],
+                message=str(e)
+            )
+
+        self.write(json.dumps(result))
+        self.finish()
+
+
+class ValidableHandle(web.RequestHandler):
+    @web.asynchronous
+    def post(self, *args, **kwargs):
+        try:
+            data = json.loads(self.request.body)
+            now_time = data["now_time"]
+            param_type = data["param_type"]
+            param = data['param']
+            # other_param = param["other_param"] if "other_param" in param else []
+            valid = None
+            if param_type == 0:
+                valid = PolicyGroupValid(now_time)
+            if param_type == 1:
+                valid = PolicyValid(now_time)
+
+            if valid is None:
+                raise Exception("No support this param type")
+            value = valid.valid(param)
+
+            result = dict(
+                status="success",
+                items=value,
                 message=""
             )
         except Exception, e:
@@ -268,7 +301,9 @@ if __name__ == '__main__':
                      (r'/api/v1/getCollectionInfor/?(.*)', DevicesApiHandle),
                      (r'/api/v1/parser/?(.*)', ParserApiHandle),
                      (r'/api/v1/trigger/?(.*)', TriggerApiHandle),
-                     (r'/api/v1/getItems/?(.*)', ItemsApiHandle)],
+                     (r'/api/v1/getItems/?(.*)', ItemsApiHandle),
+                     (r'/api/v1/valid/?(.*)', ValidableHandle)
+                     ],
                     autoreload=True).listen(port)
     try:
         ioloop.IOLoop.instance().start()
