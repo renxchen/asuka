@@ -69,7 +69,6 @@ export class CPGEditComponent implements OnInit {
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
             .toJson(this.httpClient.get(url + id)).subscribe(res => {
-                console.log('res',res);
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
                 let data = _.get(res, 'data');
@@ -328,20 +327,24 @@ export class CPGEditComponent implements OnInit {
         this.apiPrefix = '/v1';
         let groups: any = {};
         if (this.doCheck()) {
+            groups['id'] = this.cPGId;
             groups['cps'] = this.cpList;
+            groups['name'] = this.name;
+            groups['ostype'] = this.selectedOsType;
+            groups['desc'] = this.desc;
             // console.log(this.cpList, groups);
-            let url = '/api_collection_policy_group/?name='
-                + this.name + '&ostype=' + this.selectedOsType + '&desc=' + this.desc;
+            let url = '/api_collection_policy_group/';
             // console.log(url + '---' + groups);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
-                .toJson(this.httpClient.post(url, groups))
+                .toJson(this.httpClient.put(url, groups))
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'msg');
                     if (status && status['status'].toLowerCase() === 'true') {
-                        alert('保存しました。');
-                        this.router.navigate(['/inde/cpgview/']);
+                        console.log(res);
+                        alert('編集しました。');
+                        this.router.navigate(['/index/cpgview/']);
                     } else {
                         if (msg) {
                             alert(msg);
