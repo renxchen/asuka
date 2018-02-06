@@ -1,7 +1,7 @@
 import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CollectionPolicyService } from './collectionPolicy.service';
-import { HttpClientComponent } from '../../components/utils/httpClient';
+import { CollectionPolicyService } from '.././collectionPolicy.service';
+import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { CLICPEditPopComponent } from './cliCPEditPop.component';
 import { CLIBlockComponent } from './cliBlock.component';
 import { CLIDataComponent } from './cliData.component';
@@ -15,7 +15,7 @@ declare var $: any;
 @Component({
     selector: 'cli-edit',
     templateUrl: 'cliCPEdit.component.html',
-    styleUrls: ['collectionPolicy.component.less'],
+    styleUrls: ['.././collectionPolicy.component.less'],
     providers: [CollectionPolicyService]
 })
 
@@ -71,7 +71,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                         this.blockTreeData = data['block_rule_tree_json'];
                         this.dataTreeData = data['data_rule_tree_json'];
                         this.ruleTreeData = data['policy_tree_json'];
-                        // console.log('this.ruleTreeData', this.ruleTreeData);
                         $('#input-wrap').html(data['cli_command_result']);
                         this.blockTree(this.blockTreeData);
                         this.dataTree(this.dataTreeData);
@@ -241,30 +240,30 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
     public savePlyTree() {
-        // console.log(this.getPlyTreeInfo());
-        // if (this.checkPolicyTree()) {
-        //     let param = {
-        //         'coll_policy_id': this.cPId,
-        //         'tree': this.getPlyTreeInfo(),
-        //         'raw_data': $('#input-wrap').val()
-        //     };
-        //     this.apiPrefix = '/v1';
-        //     let savePlytUrl = '/api_policy_tree/';
-        //     this.httpClient.setUrl(this.apiPrefix);
-        //     this.httpClient
-        //         .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
-        //             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-        //                 alert('保存しました');
-        //                 this.router.navigate(['/index/cliCPDetail'], { queryParams: { 'id': this.cPId } });
-        //             } else {
-        //                 if (res['status'] && res['status']['message']) {
-        //                     alert(res['status']['message']);
-        //                 }
-        //             }
-        //         });
-        // } else {
-        //     alert('Can not save policy tree without data_rule');
-        // }
+        let tree = this.getPlyTreeInfo();
+        if (tree && this.cPId) {
+            let param = {
+                'coll_policy_id': this.cPId,
+                'tree': this.getPlyTreeInfo(),
+                'raw_data': $('#input-wrap').val()
+            };
+            this.apiPrefix = '/v1';
+            let savePlytUrl = '/api_policy_tree/';
+            this.httpClient.setUrl(this.apiPrefix);
+            this.httpClient
+                .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        alert('保存しました');
+                        this.router.navigate(['/index/clicpdetail'], { queryParams: { 'id': this.cPId } });
+                    } else {
+                        if (msg) {
+                            alert(msg);
+                        }
+                    }
+                });
+        }
     }
     public blockTree(data: any) {
         let _t = this;
@@ -396,7 +395,8 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 'data': data,
             },
             'plugins': ['type', 'dnd', 'crrm', 'node_customize', 'state'],
-            'type': { 'opened': true },
+            'state': { 'opened': true },
+            'expand_selected_onload': true,
             'dnd': {
                 'is_draggable': function (node) {
                     return _t.moveNodeRule(node);
@@ -420,18 +420,18 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                                 <i class="fa fa-list"></i> ハイライト
                             </button>`,
                     'click': function (event) {
-                        // let param = {
-                        //     'coll_policy_id': _t.cPId,
-                        //     'tree': _t.getPlyTreeInfo(),
-                        //     'tree_id': event.data.node['id'],
-                        //     'raw_data': $('#input-wrap').val()
-                        // };
-                        // // highlight;
-                        // if (param.raw_data) {
-                        //     _t.hightLight(param);
-                        // } else {
-                        //     alert('raw_data is null');
-                        // }
+                        let param = {
+                            'coll_policy_id': _t.cPId,
+                            'tree': _t.getPlyTreeInfo(),
+                            'tree_id': event.data.node['id'],
+                            'raw_data': $('#input-wrap').val()
+                        };
+                        // highlight;
+                        if (param.raw_data) {
+                            _t.hightLight(param);
+                        } else {
+                            alert('raw_data is null');
+                        }
                     }
                 }
             ],
@@ -442,6 +442,8 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 data.node.data = $.extend(true, data.node.data, data.original.data);
             })
             .bind('activate_node.jstree', function (e, node) {
+            }).on('select_node.jstree', function (e, data) {
+
             });
     }
     public blockRuleAction(sendInfo: any) {
@@ -454,7 +456,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 let nodes = sendInfo.node;
                 let text = _.get(res, 'ruleName');
                 this.blockTree(tree);
-                if (nodes.length > 0 && text) {
+                if (nodes && nodes.length > 0 && text) {
                     _.each(nodes, function (node) {
                         $('#policyTree').jstree('rename_node', node, text);
                     });
@@ -475,7 +477,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 let nodes = sendInfo.node;
                 let text = _.get(res, 'ruleName');
                 this.dataTree(tree);
-                if (nodes.length > 0 && text) {
+                if (nodes && nodes.length > 0 && text) {
                     _.each(nodes, function (node) {
                         $('#policyTree').jstree('rename_node', node, text);
                     });
@@ -486,15 +488,15 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // cli collecton policy edit
     public cPEdit() {
-        // let cPId = this.cPId;
-        // this.modalRef = this.modalService.show(CLICPEditPopComponent, this.modalConfig);
-        // this.modalRef.content.cPId = cPId;
-        // let cpName$ = this.modalService.onHidden.subscribe(res => {
-        //     if (res) {
-        //         this.cPName = res;
-        //     }
-        //     this.unsubscribe(cpName$);
-        // });
+        let cPId = this.cPId;
+        this.modalRef = this.modalService.show(CLICPEditPopComponent, this.modalConfig);
+        this.modalRef.content.cPId = cPId;
+        let cpName$ = this.modalService.onHidden.subscribe(res => {
+            if (res) {
+                this.cPName = res;
+            }
+            this.unsubscribe(cpName$);
+        });
     }
     ngOnDestroy(): void {
     }

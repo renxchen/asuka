@@ -117,10 +117,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         $('.detail').click(function (event) {
             let id = $(event)[0].target.id;
             if (_t.cPType === '0') {
-                _t.router.navigate(['/index/cliCPDetail'],
+                _t.router.navigate(['/index/clicpdetail'],
                     { queryParams: { 'id': id } });
             } else {
-                _t.router.navigate(['/index/snmpCPDetail'],
+                _t.router.navigate(['/index/snmpcpdetail'],
                     { queryParams: { 'id': id } });
             }
         });
@@ -137,10 +137,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             //     .subscribe(res => {
             //         if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
             if (_t.cPType === '0') {
-                _t.router.navigate(['/index/cliCPEdit'],
+                _t.router.navigate(['/index/clicpedit'],
                     { queryParams: { 'id': id } });
             } else {
-                _t.router.navigate(['/index/snmpCPEdit'],
+                _t.router.navigate(['/index/snmpcpedit'],
                     { queryParams: { 'id': id } });
             }
             // } else {
@@ -175,7 +175,11 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.httpClient
                     .toJson(_t.httpClient.delete(url + '?id=' + id))
                     .subscribe(res => {
-                        if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                        console.log('res', res);
+                        let status = _.get(res, 'status');
+                        let msg: any = _.get(status, 'message');
+                        let data = _.get(res, 'data');
+                        if (status && status['status'].toLowerCase() === 'true') {
                             this.modalMsg = '削除に成功しました。';
                             this.closeMsg = '閉じる';
                             _t.showAlertModal(this.modalMsg, this.closeMsg);
@@ -184,8 +188,12 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                             });
                         } else {
                             // check this cp occupation, add 'occupation' feedback
-                            if (res['status'] && ['status']['message'] === 'occupation') {
-                                this.modalMsg = 'This collection policy is being occupied';
+                            if (msg && msg === 'COLL_POLICY_EXIST_IN_ITEM'
+                                || msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS'
+                                || msg === 'COLL_POLICY_EXIST_IN_POLICYS_SCHEDULE') {
+                                let msgTmp = msg.split('_IN_')[1].toLowerCase();
+                                console.log(msg, msgTmp);
+                                this.modalMsg = 'This collection policy exists in ' + msgTmp;
                                 this.closeMsg = 'close';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
                             } else {
@@ -200,10 +208,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
     }
     public cpLogin() {
         if (this.cPType === '0') {
-            this.router.navigate(['/index/cliCPLogin'],
+            this.router.navigate(['/index/clicplogin'],
                 { queryParams: { 'cPType': parseInt(this.cPType, 0) } });
         } else {
-            this.router.navigate(['/index/snmpCPLogin'],
+            this.router.navigate(['/index/snmpcplogin'],
                 { queryParams: { 'cPType': parseInt(this.cPType, 0) } });
         }
     }

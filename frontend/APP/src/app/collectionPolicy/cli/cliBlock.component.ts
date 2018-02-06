@@ -1,14 +1,14 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
-import { HttpClientComponent } from '../../components/utils/httpClient';
-import { Validator } from '../../components/validation/validation';
-import { CollectionPolicyService } from './collectionPolicy.service';
+import { HttpClientComponent } from '../../../components/utils/httpClient';
+import { Validator } from '../../../components/validation/validation';
+import { CollectionPolicyService } from '.././collectionPolicy.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import * as _ from 'lodash';
 @Component({
     selector: 'cli-block',
-    templateUrl: './cliBlock.component.html',
-    styleUrls: ['./collectionPolicy.component.less']
+    templateUrl: 'cliBlock.component.html',
+    styleUrls: ['.././collectionPolicy.component.less']
 })
 
 export class CLIBlockComponent implements OnInit, AfterViewInit {
@@ -112,7 +112,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     this.isSerial = _.get(data, 'is_serial');
                     this.extractKey = _.get(data, 'extract_key');
                 }
-                if (res['rule_is_used'] || res['rule_is_used'].toLowerCase === true && this.info['delFlg']) {
+                if (res['rule_is_used'] || res['rule_is_used'].toLowerCase() === 'true' && this.info['delFlg']) {
                     this.delBtn = false;
                 } else {
                     this.delBtn = true;
@@ -227,11 +227,12 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                 rule_info['mark_string'] = this.markString;
                 rule_info['end_mark_string'] = this.endMrkStr;
                 // same as marktring
-                rule_info['extractKey'] = this.extractKey;
+                rule_info['extract_key'] = this.extractKey;
                 rule_info['key_str'] = this.keyStr;
                 rule_info['is_serial'] = this.typeFomatter(this.isSerial);
                 rule_info['is_include'] = this.typeFomatter(this.isInclude);
                 sendRuleInfo['rule_info'] = rule_info;
+                // console.log('sendRule', sendRuleInfo);
                 return sendRuleInfo;
             }
         } else if (this.ruleType === 'block_rule_4') {
@@ -249,89 +250,89 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         return '';
     }
     public saveRule() {
-        // this.apiPrefix = '/v1';
-        // let id = this.ruleId;
-        // let editUrl = '/api_policy_tree_rule/?rule_id=' + id;
-        // let createUrl = '/api_policy_tree_rule/';
-        // this.httpClient.setUrl(this.apiPrefix);
-        // let sendInfo = this.blockRulePrepare();
-        // if (this.actionType === 'create' && sendInfo !== '') {
-        //     this.httpClient
-        //         .toJson(this.httpClient.post(createUrl, sendInfo))
-        //         .subscribe(res => {
-        //             let status = _.get(res, 'status');
-        //             let msg = _.get(status, 'message');
-        //             let data = _.get(res, 'data');
-        //             if (status && status['status'].toLowerCase() === 'true') {
-        //                 if (data) {
-        //                     let blockInfo: any = {};
-        //                     blockInfo['blockTree'] = _.get(data, 'block_rule_tree_json');
-        //                     // blockInfo['name'] = _.get(data, 'name');
-        //                     alert('保存しました。');
-        //                     this.bsModalRef.hide();
-        //                     this.modalService.setDismissReason(blockInfo);
-        //                 }
-        //             } else {
-        //                 if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
-        //                     this.uniqueFlg = false;
-        //                 } else if (msg && msg === 'KEY_STR RULE_NAME_IS_EXISTENCE') {
-        //                     this.keyUnqFlg = false;
-        //                 } else {
-        //                     alert(msg);
-        //                 }
-        //             }
-        //         });
+        this.apiPrefix = '/v1';
+        let id = this.ruleId;
+        let editUrl = '/api_policy_tree_rule/?rule_id=' + id;
+        let createUrl = '/api_policy_tree_rule/';
+        this.httpClient.setUrl(this.apiPrefix);
+        let sendInfo = this.blockRulePrepare();
+        if (this.actionType === 'create' && sendInfo !== '') {
+            this.httpClient
+                .toJson(this.httpClient.post(createUrl, sendInfo))
+                .subscribe(res => {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(res, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data) {
+                            let blockInfo: any = {};
+                            blockInfo['blockTree'] = _.get(data, 'block_rule_tree_json');
+                            // blockInfo['name'] = _.get(data, 'name');
+                            alert('保存しました。');
+                            this.bsModalRef.hide();
+                            this.modalService.setDismissReason(blockInfo);
+                        }
+                    } else {
+                        if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
+                            this.uniqueFlg = false;
+                        } else if (msg && msg === 'KEY_STR RULE_NAME_IS_EXISTENCE') {
+                            this.keyUnqFlg = false;
+                        } else {
+                            alert(msg);
+                        }
+                    }
+                });
 
-        // } else if (this.actionType === 'edit' && sendInfo !== '') {
-        //     this.httpClient
-        //         .toJson(this.httpClient.put(editUrl, sendInfo))
-        //         .subscribe(res => {
-        //             let status = _.get(res, 'status');
-        //             let msg = _.get(status, 'message');
-        //             let data = _.get(res, 'data');
-        //             if (status && status['status'].toLowerCase() === 'true') {
-        //                 if (data) {
-        //                     let blockInfo: any = {};
-        //                     blockInfo['blockTree'] = _.get(data, 'block_rule_tree_json');
-        //                     blockInfo['ruleName'] = _.get(data, 'new_name');
-        //                     alert('編集しました。');
-        //                     this.bsModalRef.hide();
-        //                     this.modalService.setDismissReason(blockInfo);
-        //                 }
-        //             } else {
-        //                 if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
-        //                     this.uniqueFlg = false;
-        //                 } else if (msg && msg === 'key_str duplicatoin') {
-        //                     this.keyUnqFlg = false;
-        //                 } else {
-        //                     alert(msg);
-        //                 }
-        //             }
-        //         });
-        // }
+        } else if (this.actionType === 'edit' && sendInfo !== '') {
+            this.httpClient
+                .toJson(this.httpClient.put(editUrl, sendInfo))
+                .subscribe(res => {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(res, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data) {
+                            let blockInfo: any = {};
+                            blockInfo['blockTree'] = _.get(data, 'block_rule_tree_json');
+                            blockInfo['ruleName'] = _.get(data, 'new_name');
+                            alert('編集しました。');
+                            this.bsModalRef.hide();
+                            this.modalService.setDismissReason(blockInfo);
+                        }
+                    } else {
+                        if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
+                            this.uniqueFlg = false;
+                        } else if (msg && msg === 'key_str duplicatoin') {
+                            this.keyUnqFlg = false;
+                        } else {
+                            alert(msg);
+                        }
+                    }
+                });
+        }
     }
     public deleteRule() {
-        // let alt = confirm('このルールを削除します。よろしいですか？');
-        // this.apiPrefix = '/v1';
-        // let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;
-        // if (alt) {
-        //     this.httpClient
-        //         .toJson(this.httpClient.delete(delUrl)).subscribe(res => {
-        //             let status = _.get(res, 'status');
-        //             let msg = _.get(status, 'message');
-        //             let data = _.get(res, 'data');
-        //             if (status && status['status'].toLowerCase() === 'true') {
-        //                 if (data) {
-        //                     let blockTree: any = {};
-        //                     blockTree = _.get(data, 'block_rule_tree_json');
-        //                     alert('削除しました。');
-        //                     this.bsModalRef.hide();
-        //                     this.modalService.setDismissReason(blockTree);
-        //                 }
-        //             } else {
-        //                 alert(msg);
-        //             }
-        //         });
-        // }
+        let alt = confirm('このルールを削除します。よろしいですか？');
+        this.apiPrefix = '/v1';
+        let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;
+        if (alt) {
+            this.httpClient
+                .toJson(this.httpClient.delete(delUrl)).subscribe(res => {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(res, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data) {
+                            let blockTree: any = {};
+                            blockTree = _.get(data, 'block_rule_tree_json');
+                            alert('削除しました。');
+                            this.bsModalRef.hide();
+                            this.modalService.setDismissReason(blockTree);
+                        }
+                    } else {
+                        alert(msg);
+                    }
+                });
+        }
     }
 }
