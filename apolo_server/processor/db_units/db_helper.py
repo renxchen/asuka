@@ -5,10 +5,26 @@ from apolo_server.processor.constants import CommonConstants, TriggerConstants
 from apolo_server.processor.units import TriggerException
 import importlib
 import time
+from django.db import connection
+from django.db.utils import OperationalError
+
+
+def is_connection_usable(func):
+    def wrapper(*args, **kwargs):
+        result = None
+        try:
+            result = func(*args, **kwargs)
+            result[0]
+        except OperationalError:
+            connection.close()
+            result = func(*args, **kwargs)
+        return result
+    return wrapper
 
 
 class DbHelp(object):
     def __init__(self):
+
         pass
 
 
@@ -17,6 +33,7 @@ class DeviceDbHelp(DbHelp):
         pass
 
     @staticmethod
+    @is_connection_usable
     def get_all_items_from_db():
         items = Items.objects.filter(
             **{"policys_groups__status": 1, "status": 1, "schedule__status": 1}).order_by(
@@ -62,6 +79,7 @@ class DeviceDbHelp(DbHelp):
         return items
 
     @staticmethod
+    @is_connection_usable
     def get_all_rule():
         rules = CollPolicyCliRule.objects.filter(**{}).values()
         return rules
@@ -72,6 +90,7 @@ class ParserDbHelp(DbHelp):
         pass
 
     @staticmethod
+    @is_connection_usable
     def bulk_save_result(results, item_type):
         data = {}
         for result in results:
@@ -89,6 +108,7 @@ class ParserDbHelp(DbHelp):
             ParserDbHelp.__save_snmp_bulk(data)
 
     @staticmethod
+    @is_connection_usable
     def __save_cli_bulk(result):
         base_time = time.time()
         clock = int(base_time)
@@ -111,6 +131,7 @@ class ParserDbHelp(DbHelp):
             table.objects.bulk_create(tmp)
 
     @staticmethod
+    @is_connection_usable
     def __save_snmp_bulk(result):
         base_time = time.time()
         clock = int(base_time)
@@ -132,6 +153,7 @@ class ParserDbHelp(DbHelp):
             table.objects.bulk_create(tmp)
 
     @staticmethod
+    @is_connection_usable
     def get_history_table(value_type, policy_type):
         """
         Search history data from db by given item id and value type
@@ -152,9 +174,11 @@ class ParserDbHelp(DbHelp):
 
 class TriggerDbHelp(DbHelp):
     def __init__(self):
+        super(self, TriggerDbHelp).__init__()
         pass
 
     @staticmethod
+    @is_connection_usable
     def __get_table_module(policy_type, value_type):
         base_db_format = "History%s%s"
         table_name = base_db_format % (policy_type, value_type)
@@ -165,6 +189,7 @@ class TriggerDbHelp(DbHelp):
         return table
 
     @staticmethod
+    @is_connection_usable
     def get_last_value(item_id, policy_type, value_type, param):
         table = TriggerDbHelp.__get_table_module(policy_type, value_type)
         last_param = int(param) + 1
@@ -180,6 +205,7 @@ class TriggerDbHelp(DbHelp):
         return obj
 
     @staticmethod
+    @is_connection_usable
     def get_last_range_value(item_id, policy_type, value_type, param):
         table = TriggerDbHelp.__get_table_module(policy_type, value_type)
         last_param = int(param) + 1
@@ -191,13 +217,16 @@ class TriggerDbHelp(DbHelp):
         return obj
 
     @staticmethod
+    @is_connection_usable
     def get_triggers(devices_id):
         triggers = []
         for device_id in devices_id:
             triggers.extend(TriggerDetail.objects.filter(**{"device_id": device_id, "status": 1}))
         return triggers
 
+
     @staticmethod
+    @is_connection_usable
     def get_triggers_by_item_id(items_id):
         """
         search triggers by different expression pattern
@@ -217,12 +246,14 @@ class TriggerDbHelp(DbHelp):
         return triggers
 
     @staticmethod
+    @is_connection_usable
     def get_latest_event(source, object_id):
         latest_event = Event.objects.filter(**{"source": source, "objectid": object_id}).order_by('clock').values(
             "number")
         return latest_event
 
     @staticmethod
+    @is_connection_usable
     def save_events(events):
         tmp = []
         for event in events:
