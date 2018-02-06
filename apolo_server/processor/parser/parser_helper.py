@@ -53,7 +53,6 @@ class CliParser(Parser):
         for rule in self.parser_params['rules']:
             tmp = tool.get_rule_value(rule)
             rules[str(rule['ruleid'])] = tmp
-
         for item in self.parser_params['items']:
             rule_path = CliParser.__split_path(item['tree_path'],
                                                item['rule_id'])
@@ -99,11 +98,11 @@ def parser_main(item_type, params):
 
 
 if __name__ == "__main__":
-    with open("test_snmp_param.json") as f:
+    with open("test_cli_param.json") as f:
         test_cli_param = json.loads(f.read())
-    items, timestamp = parser_main(item_type=1, params=test_cli_param)
-    trigger = TriggerHelp(items, logging)
-    trigger.trigger(task_timestamp=123)
+    items, timestamp = parser_main(item_type=0, params=test_cli_param)
+    # trigger = TriggerHelp(items, logging)
+    # trigger.trigger(task_timestamp=123)
     # cli_handle = CliParser(test_cli_param)
     # cli_handle.handle()
     # with open("test_snmp_param.json") as f:

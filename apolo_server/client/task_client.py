@@ -15,10 +15,10 @@ CLI_THREADPOOL_SIZE = 150
 SNMP_THREADPOOL_SIZE = 15
 GET_CLI_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
 GET_SNMP_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
-GET_DEVICES_SERVICE_URL = "http://10.71.244.134:7777/api/v1/getCollectionInfor"
-# GET_DEVICES_SERVICE_URL = "http://127.0.0.1:7777/api/v1/getCollectionInfor"
-PARSER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/parser"
-# PARSER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/parser"
+# GET_DEVICES_SERVICE_URL = "http://10.71.244.134:7777/api/v1/getCollectionInfor"
+GET_DEVICES_SERVICE_URL = "http://127.0.0.1:7777/api/v1/getCollectionInfor"
+# PARSER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/parser"
+PARSER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/parser"
 # TRIGGER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/trigger"
 TRIGGER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/trigger"
 
@@ -132,7 +132,6 @@ def __get_cli_data(param):
         raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_CONNECT_ERROR)
     except requests.exceptions.ReadTimeout:
         raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_TIMEOUT)
-
     status_code = res.status_code
     if status_code == 200:
         output = json.loads(res.text)
@@ -165,11 +164,11 @@ def send_handler_request_cli(param, output):
         tmp_dict[str(output.get('command'))] = output.get('output')
     for item in param['items']:
         item['output'] = tmp_dict[str(item['command']).strip()]
-    try:
-        res = requests.post(__service_url, data=json.dumps(param), timeout=TIMEOUT)
-    except Exception:
-        raise ParserServiceException(LogMessage.CRITICAL_SERVICE_TIMEOUT)
-
+    # try:
+    #     res = requests.post(__service_url, data=json.dumps(param), timeout=TIMEOUT)
+    # except Exception:
+    #     raise ParserServiceException(LogMessage.CRITICAL_SERVICE_TIMEOUT)
+    res = requests.post(__service_url, data=json.dumps(param), timeout=TIMEOUT)
     status_code = res.status_code
     if status_code == 200:
         response = json.loads(str(res.text))
@@ -318,7 +317,7 @@ if __name__ == "__main__":
     cli_device_logger = log_factory(log_name="Cli_Device")
     cli_trigger_logger = log_factory(log_name="Cli_Trigger")
     cli_logger = log_factory(log_name="Cli")
-    # cli_main()
-    snmp_main()
+    cli_main()
+    # snmp_main()
     end_time = int(time.time())
-    # print end_time - now_time
+    print end_time - now_time

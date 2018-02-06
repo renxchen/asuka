@@ -47,8 +47,8 @@ class PolicyGroupValid(Valid):
 
 def __create_test_devices(template):
     test_devices = []
-    for i in range(2):
-        for k in range(100, 102):
+    for i in range(68):
+        for k in range(101, 116):
             tmp = copy.copy(template[0])
             tmp['device__ip'] = "192.168.100.%d" % k
             tmp['device__device_id'] = i*15 + k
@@ -108,6 +108,7 @@ def get_items(item_type):
 def get_valid_items(now_time, item_type):
     items = get_items(item_type)
     items = valid_items(now_time, items)
+
     items = map(__item_type_mapping, items)
     return items
 
@@ -155,10 +156,11 @@ def get_devices(now_time, item_type):
         # "parser_params": {},
         "devices": []
     }
+    __add_rules()
     items = get_items(item_type)
     items = valid_items(now_time, items)
-    # items = __create_test_devices(items)
     items = [item for item in items if item.get('valid_status')]
+    items = __create_test_devices(items)
     devices = __merge_device(items)
     other_param = []
     if item_type == CommonConstants.CLI_TYPE_CODE:
@@ -250,9 +252,7 @@ def __add_param(items, param_keys):
 def __add_rules():
     tmp_rules = {}
     with RulesMemCacheDb() as rules:
-        all_rules = rules.update()
-    for rule in all_rules:
-        tmp_rules[str(rule['ruleid'])] = rule
+        rules.update()
     return tmp_rules
 
 
@@ -454,8 +454,8 @@ def __add_items_valid_status(item, status):
 
 
 if __name__ == "__main__":
-    # for i in get_devices(1517281147, 0).items():
-    #     print i
+    for i in get_devices(1517281147, 0).items():
+        print i
     # device_valid = DeviceValid(1517281147)
     # print device_valid.valid(1)
     # device_valid = PolicyGroupValid(1517281147)
