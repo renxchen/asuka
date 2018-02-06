@@ -252,12 +252,14 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
-                    if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    if (status && status['status'].toLowerCase() === 'true') {
                         alert('保存しました');
                         this.router.navigate(['/index/clicpdetail'], { queryParams: { 'id': this.cPId } });
                     } else {
-                        if (res['status'] && res['status']['message']) {
-                            alert(res['status']['message']);
+                        if (msg) {
+                            alert(msg);
                         }
                     }
                 });
