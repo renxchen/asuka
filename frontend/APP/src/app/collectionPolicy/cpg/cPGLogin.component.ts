@@ -291,9 +291,11 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         let groups: any = {};
         if (this.doCheck()) {
             groups['cps'] = this.cpList;
-            // console.log(this.cpList, groups);
-            let url = '/api_collection_policy_group/?name='
-                + this.name + '&ostype=' + this.selectedOsType + '&desc=' + this.desc;
+            groups['name'] = this.name;
+            groups['ostype'] = this.selectedOsType;
+            groups['desc'] = this.desc;
+             // console.log(this.cpList, groups);
+            let url = '/api_collection_policy_group/';
             // console.log(url + '---' + groups);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
