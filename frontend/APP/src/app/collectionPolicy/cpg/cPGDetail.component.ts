@@ -151,7 +151,7 @@ export class CPGDetailComponent implements OnInit {
             pager: '#cPGPager',
             rowNum: 5,
             rowList: [5, 10, 15],
-            width: 700,
+            width: 840,
             height: 150,
             viewrecords: true,
             emptyrecords: 'Nothing to display',

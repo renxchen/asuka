@@ -21,7 +21,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
     osType: any;
     selectedOsType: any;
     desc: any;
-    moreFlg: Boolean = true;
+    // moreFlg: Boolean = true;
     addFlg: Boolean = true;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
