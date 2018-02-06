@@ -229,11 +229,11 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
         if front_data.has_key('split_char'):
 
-            if front_data['split_char'] == '4':
+            if int(front_data['split_char']) == 4:
                 rule_data_dict['split_char'] = '@space@'
-            elif front_data['split_char'] =='1':
+            elif int(front_data['split_char']) == 1:
                 rule_data_dict['split_char'] = ','
-            elif front_data['split_char'] =='2':
+            elif int(front_data['split_char']) == 2:
                 rule_data_dict['split_char'] = '/'
             else:
                 rule_data_dict['split_char'] = front_data['other_char']

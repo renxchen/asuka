@@ -238,7 +238,7 @@ class Render(Tool, DBOpt):
             else:
                 html_data_list.append(all_data[k])
         html_data = "\n".join(html_data_list)
-        return '<pre>{}</pre>'.format(html_data)
+        return html_data
 
 
     def __get_rule_from_db__(self, rule_id):
