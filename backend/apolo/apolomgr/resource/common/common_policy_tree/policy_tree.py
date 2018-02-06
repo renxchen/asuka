@@ -193,7 +193,7 @@ class Policy_tree(DBOpt):
     # output :json data of tree
     def get_policy_tree(self):
         root = {
-            'id': 'j1',
+            # 'id': 'j1',
             'text': constants.COLLECTION_POLICY_TREE_NAME,
             'icon': constants.POLICY_TREE_ROOT_ICON,
             'data': {
@@ -300,12 +300,15 @@ class Policy_tree(DBOpt):
 
             if node.parent_tree_id == parent_node_id:
                 node_num += 1
-                d = {'id': 'j1-{}'.format(node_num),
+                d = {#'id': 'j1-{}'.format(node_num),
                      'text': node.rule_name,
                      'icon': '',
                      'data': {
                          'rule_type': Tool.set_rule_type(node.rule_type),
                          'rule_id': node.rule_id
+                     },
+                     'state': {
+                        'opened': True,
                      },
                      'children': []
                      }
@@ -377,68 +380,3 @@ class Policy_tree(DBOpt):
                 if self.find_node(my_item, rule_id):
                     return True
 
-
-# test code
-if __name__ == '__main__':
-    test_tree = """{
-                       "id": "j1-2",
-                       "text": "b1",
-                       "icon": "icon1",
-                       "rule_id":"",
-                       "children": [
-                           {
-                               "id": "j3-2",
-                               "text": "b2",
-                               "icon": "icon2",
-                               "rule_id": 2,
-                               "children": [
-                                   {
-                                       "id": "j3-3",
-                                       "text": "d1",
-                                       "icon": "icon3",
-                                       "rule_id":4,
-                                       "children": []
-                                   },
-                                   {
-                                       "id": "j3-4",
-                                       "text": "d2",
-                                       "icon": "icon4",
-                                       "rule_id": 1000054,
-                                       "children": []
-                                   },
-                                   {
-                                       "id": "j3-5",
-                                       "text": "d3",
-                                       "icon": "icon5",
-                                       "rule_id": 1000055,
-                                       "children": []
-                                   }
-                               ]
-                           }
-                       ]
-                   }"""
-    nodes = []
-    # test_arry =[[17, 0, 0, 1, 1, 'testb1', 5], [18, 17, 1, 2, 2, 'testb2', 6], [19, 17, 1, 2, 3, 'testb2', 7], [20, 17, 1, 2, 2, 'testd1', 7]]
-    # for item in test_arry:
-    #     pn = Policy_tree_node()
-    #     pn.tree_id = item[0]
-    #     pn.parent_tree_id = item[1]
-    #     if item[2] ==1:
-    #         pn.is_leaf = True
-    #     pn.level = item[3]
-    #     pn.rule_id = item[4]
-    #     pn.rule_name = item[5]
-    #     pn.rule_type = item[6]
-    #     nodes.append(pn)
-    dict = json.loads(test_tree)
-    ptn = Policy_tree(1)
-    k = ptn.find_node(dict, 2)
-    if k:
-        print k
-    else:
-        print False
-        # print ptn.create_policy_tree('test', nodes)
-
-        # tp = ptn.create_rule_tree(nodes)
-        # print tp[0]
-        # print tp[1]

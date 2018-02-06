@@ -25,7 +25,7 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
 
     def get(self):
         # http: // 127.0.0.1:8000/v1/api_data_collection_devices/?device_id = 1
-        device_id = int(views_helper.get_request_value(self.request, 'device_id', 'GET'))
+        device_id = views_helper.get_request_value(self.request, 'device_id', 'GET')
         # load devices list,init action
         if not device_id:
             devices_list = Devices.objects.values('device_id', 'hostname')
@@ -46,41 +46,69 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
             arry = []
             cp_group_line_rowspan_dict = dict()
             device_line_rowspan = 0
+            #device_id = 1
+            table_dict = dict()
             for one_recoder in response_json_data['items']:
                 if one_recoder['device_id'] == device_id:
-                    device_line_rowspan +=1
+                    device_line_rowspan += 1
                     cp_group_name = one_recoder['policy_group_name']
                     if cp_group_line_rowspan_dict.has_key(cp_group_name):
                         cp_group_line_rowspan_dict[cp_group_name] += 1
                     else:
-                        cp_group_line_rowspan_dict ={cp_group_name:1}
-                    arry.append({
-                        "valid_status": one_recoder['valid_status'],
-                        'policyNo': one_recoder['coll_policy_id'],
-                        'device': one_recoder['device_name'],
-                        'cpGroup': cp_group_name,
-                        'priority': Tool.set_priority_mapping(one_recoder['priority']),
-                        'policy': '{} {}'.format(one_recoder['policy_name'], one_recoder['exec_interval']),
-                        'attr': {
-                            'device': {
-                                'rowspan': None
-                            },
-                            'cpGroup': {
-                                'rowspan': None
-                            },
-                            'priority': {
-                                'rowspan': None
-                            }
-                        }
-                    })
-            if len(arry) >0:
-                arry[0]['attr']['device']['rowspan'] = device_line_rowspan
-                for item in arry:
-                    cp_group_name = item['cpGroup']
-                    if cp_group_line_rowspan_dict.has_key(cp_group_name):
-                        item['attr']['cpGroup']['rowspan'] = cp_group_line_rowspan_dict[cp_group_name]
-                        item['attr']['priority']['rowspan'] = cp_group_line_rowspan_dict[cp_group_name]
-                        del cp_group_line_rowspan_dict[cp_group_name]
+                        cp_group_line_rowspan_dict.update({cp_group_name: 1})
+
+                    if table_dict.has_key(cp_group_name):
+                        table_dict[cp_group_name].append(
+                            {
+                                "valid_status": one_recoder['valid_status'],
+                                'policyNo': one_recoder['coll_policy_id'],
+                                'cpGroup': cp_group_name,
+                                'device': one_recoder['device_name'],
+                                'priority': Tool.set_priority_mapping(one_recoder['priority']),
+                                'policy': '{} {}'.format(one_recoder['policy_name'], one_recoder['exec_interval']),
+                                'attr': {
+                                    'device': {
+                                        'rowspan': None
+                                    },
+                                    'cpGroup': {
+                                        'rowspan': None
+                                    },
+                                    'priority': {
+                                        'rowspan': None
+                                    }
+                                }
+                            })
+                    else:
+                        table_dict[cp_group_name] = [{
+                                "valid_status": one_recoder['valid_status'],
+                                'policyNo': one_recoder['coll_policy_id'],
+                                'cpGroup': cp_group_name,
+                                'device': one_recoder['device_name'],
+                                'priority': Tool.set_priority_mapping(one_recoder['priority']),
+                                'policy': '{} {}'.format(one_recoder['policy_name'], one_recoder['exec_interval']),
+                                'attr': {
+                                    'device': {
+                                        'rowspan': None
+                                    },
+                                    'cpGroup': {
+                                        'rowspan': None
+                                    },
+                                    'priority': {
+                                        'rowspan': None
+                                    }
+                                }
+                            }]
+            is_the_first_device = True
+            for k, v in table_dict.items():
+                for recoder in v:
+                    if is_the_first_device:
+                        is_the_first_device = False
+                        recoder['attr']['device']['rowspan'] = device_line_rowspan
+                    if cp_group_line_rowspan_dict.has_key(k):
+                        recoder['attr']['cpGroup']['rowspan'] = cp_group_line_rowspan_dict[k]
+                        recoder['attr']['priority']['rowspan'] = cp_group_line_rowspan_dict[k]
+                        del cp_group_line_rowspan_dict[k]
+                    arry.append(recoder)
 
             data = {
                 'data': arry,
@@ -91,8 +119,6 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
                 }
             }
             return api_return(data=data)
-
-
 
     def put(self):
         pass
