@@ -11,7 +11,7 @@
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             コレクションポリシー名：
                         </label>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <input type="text" class="form-control" id="name"  name="name" 
                             [(ngModel)]="name" placeholder="英数字のみ" maxlength="256"
                              required="" autocomplete="off" disabled>
@@ -19,7 +19,7 @@
                     </div>
                     <div class="form-group">
                         <label for="desc" class="col-sm-4 control-label">概要：</label>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <textarea class="form-control" id="desc" name="desc"
                             [(ngModel)]="desc" maxlength="2000" disabled></textarea>
                         </div>
@@ -29,7 +29,7 @@
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             OID値：
                         </label>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <input type="text" class="form-control" id="snmpOid" name="snmpOid" required=""
                             [(ngModel)]="snmpOid" maxlength="256" placeholder="数字とドットのみ"  disabled>
                         </div>
@@ -38,7 +38,7 @@
                         <label for="returnType" class="col-sm-4 control-label">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
                         </label>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <select class="form-control" [(ngModel)]="selectedRtnType"
                             id="returnType" name="returnType" disabled>
                                 <option value="1">Int</option>
@@ -52,20 +52,20 @@
                         <label for="osType" class="col-sm-4 control-label">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>OS Type:
                         </label>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                                 <select class="form-control" [(ngModel)]="selectedOsType" id="osType" name="osType" disabled>
                                 <option *ngFor="let item of osType"
                                 value="{{item.ostypeid}}">{{item.name}}</option>
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                    <div class="col-sm-12 text-right">
-                        <button type="button" class="btn btn-success" (click)="navSNMPEdit()">
-                            <i class="fa fa-pencil-square"></i>
-                            編集
-                        </button>
-                    </div>
+                    <div class="form-group" style="margin-top:20px">
+                        <div class="col-sm-10 text-right">
+                            <button type="button" class="btn btn-success" (click)="navSNMPEdit()">
+                                <i class="fa fa-pencil-square"></i>
+                                編集
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
