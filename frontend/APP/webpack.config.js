@@ -493,7 +493,7 @@ module.exports = {
         '/v1/**': {
             // modify backend service
             // "target": "http://10.79.148.107:1111",
-            "target": "http://10.75.233.158:1111",
+            "target": "http://10.71.244.134:8087",
             "secure": false,
             "changeOrigin": true
         }
