@@ -157,7 +157,6 @@ class ParserDbHelp(DbHelp):
         return True
 
     @staticmethod
-    @is_connection_usable
     def get_history_table(value_type, policy_type):
         """
         Search history data from db by given item id and value type

@@ -15,10 +15,10 @@ CLI_THREADPOOL_SIZE = 150
 SNMP_THREADPOOL_SIZE = 15
 GET_CLI_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
 GET_SNMP_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
-# GET_DEVICES_SERVICE_URL = "http://10.71.244.134:7777/api/v1/getCollectionInfor"
-GET_DEVICES_SERVICE_URL = "http://127.0.0.1:7777/api/v1/getCollectionInfor"
-# PARSER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/parser"
-PARSER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/parser"
+GET_DEVICES_SERVICE_URL = "http://10.71.244.134:7777/api/v1/getCollectionInfor"
+# GET_DEVICES_SERVICE_URL = "http://127.0.0.1:7777/api/v1/getCollectionInfor"
+PARSER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/parser"
+# PARSER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/parser"
 # TRIGGER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/trigger"
 TRIGGER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/trigger"
 
