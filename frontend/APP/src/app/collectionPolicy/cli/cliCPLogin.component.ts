@@ -45,13 +45,14 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
     public cPLogin() {
         let cPInfo: any = {};
         this.apiPrefix = '/v1';
-        let cPLoginUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
-        let cPEditUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
+        let cPLoginUrl = '/api_collection_policy/';
+        let cPEditUrl = '/api_collection_policy/';
         if (this.doCheck()) {
             cPInfo['name'] = this.name;
             cPInfo['cli_command'] = this.cliCommand;
             cPInfo['desc'] = this.desc;
             cPInfo['ostype'] = this.selectedOsType;
+            cPInfo['policy_type'] = this.cPType;
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))

@@ -188,12 +188,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                             });
                         } else {
                             // check this cp occupation, add 'occupation' feedback
-                            if (msg && msg === 'COLL_POLICY_EXIST_IN_ITEM'
-                                || msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS'
-                                || msg === 'COLL_POLICY_EXIST_IN_POLICYS_SCHEDULE') {
-                                let msgTmp = msg.split('_IN_')[1].toLowerCase();
-                                console.log(msg, msgTmp);
-                                this.modalMsg = 'This collection policy exists in ' + msgTmp;
+                            if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
+                                // let msgTmp = msg.split('_IN_')[1].toLowerCase();
+                                // console.log(msg, msgTmp);
+                                this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
                                 this.closeMsg = 'close';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
                             } else {
