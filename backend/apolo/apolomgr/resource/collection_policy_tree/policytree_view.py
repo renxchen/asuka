@@ -95,8 +95,8 @@ class PolicyTreeViewSet(viewsets.ViewSet):
         self.coll_policy_id = views_helper.get_request_value(self.request, 'coll_policy_id', 'BODY')
         self.tree = views_helper.get_request_value(self.request, 'tree', 'BODY')
         self.raw_data = views_helper.get_request_value(self.request, 'raw_data', 'BODY')
-
         try:
+
             tree_is_exits = CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id)
             with transaction.atomic():
                 if tree_is_exits:
@@ -127,9 +127,10 @@ class PolicyTreeViewSet(viewsets.ViewSet):
                 policy_tree = Policy_tree(self.coll_policy_id)
                 policy_tree.get_all_nodes(self.tree)
                 obj = policy_tree.all_nodes
-                data = self.__save_the_policy_tree__(nodes_dict=obj)
+                data = self.__save_the_policy_tree(nodes_dict=obj)
                 return api_return(data=data)
         except Exception as e:
+            print e
             data = {
                 'data': '',
                 'new_token': self.new_token,
@@ -140,7 +141,7 @@ class PolicyTreeViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
 
-    def __save_the_policy_tree__(self, nodes_dict):
+    def __save_the_policy_tree(self, nodes_dict):
 
         add_result = {}
         # insert  the tree node information into db
@@ -190,4 +191,21 @@ class PolicyTreeViewSet(viewsets.ViewSet):
             }
         }
         return data
+
+    def __check_the_node_is_leaf(self, tree_dict):
+
+        rule_type = 0
+        if tree_dict['data']['rule_type']:
+           rule_type = int(tree_dict['data']['rule_type'].split('_')[2])
+        if tree_dict.has_key('children'):
+            if len(tree_dict['children']) > 0:
+                for children in tree_dict['children']:
+                    self.__check_the_node_is_leaf(children)
+            else:
+                if 0 < rule_type < 5:
+                     return True
+                else:
+                     return False
+
+
 

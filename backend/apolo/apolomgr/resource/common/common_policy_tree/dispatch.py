@@ -29,12 +29,12 @@ class Dispatch(object):
         self.set_work_follow()
 
     def __set_instance__(self):
-
         the_first_data = self.rules[self.path[0]]
         # set the init data
         the_first_data['data'] = self.raw_data
         the_first_data['start_line'] = 0
         the_first_data['end_line'] = len(self.raw_data.split('\n'))-1
+        the_first_data['block_path'] = ''
         self.instance = Policy(extract_policy=the_first_data)
 
 
@@ -53,6 +53,7 @@ class Dispatch(object):
                     input_dict['deep'] = work_follow_num
                     input_dict['start_line'] = pre['start_line']
                     input_dict['end_line'] = pre['end_line']
+                    input_dict['block_path'] = pre['block_path']
                     setattr(self.instance, 'extract_policy', input_dict)
                     self.dispatch(work_follow_num)
         else:
@@ -62,13 +63,13 @@ class Dispatch(object):
         work_follow_num = 1
         for rule_id in self.path:
             if self.rules[rule_id]['rule_type'] ==1:
-                self.work_follow.update({work_follow_num: "x_offset_space_extract"})
+                self.work_follow.update({work_follow_num: "x_offset_extract"})
             elif self.rules[rule_id]['rule_type'] ==2:
-                self.work_follow.update({work_follow_num: "y_offset_space_extract"})
+                self.work_follow.update({work_follow_num: "y_offset_extract"})
             elif self.rules[rule_id]['rule_type'] == 3:
                 self.work_follow.update({work_follow_num: "regexp_extract"})
             elif self.rules[rule_id]['rule_type'] == 4:
-                self.work_follow .update({work_follow_num: "expect_line_or_all_extract"})
+                self.work_follow .update({work_follow_num: "expect_line_extract"})
             elif self.rules[rule_id]['rule_type'] ==5:
                 self.work_follow.update({work_follow_num: "extract_block_by_indent"})
             elif self.rules[rule_id]['rule_type'] ==6:

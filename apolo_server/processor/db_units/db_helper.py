@@ -14,7 +14,8 @@ def is_connection_usable(func):
         result = None
         try:
             result = func(*args, **kwargs)
-            result[0]
+            if len(result) > 0:
+                result[0]
         except OperationalError:
             connection.close()
             result = func(*args, **kwargs)
@@ -118,17 +119,19 @@ class ParserDbHelp(DbHelp):
             for data in result[table]:
                 value = data['value']['extract_data']
                 if len(value) == 0:
-                    value = None
-                block_path = data['block_path']
+                    value = [None]
+                block_path = str(data['value']['block_path'])
                 item_id = data['item_id']
                 tmp.append(table(
-                    value=value,
+                    value=value[0],
                     ns=clock,
                     clock=data['task_timestamp'],
                     item_id=item_id,
                     block_path=block_path
                 ))
+
             table.objects.bulk_create(tmp)
+        return True
 
     @staticmethod
     @is_connection_usable
@@ -151,6 +154,7 @@ class ParserDbHelp(DbHelp):
                     item_id=item_id
                 ))
             table.objects.bulk_create(tmp)
+        return True
 
     @staticmethod
     @is_connection_usable
