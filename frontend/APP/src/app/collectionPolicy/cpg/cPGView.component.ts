@@ -187,9 +187,9 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                                 $('#cpgTable').jqGrid().trigger('reloadGrid');
                             });
                         } else {
-                            // check this cp occupation, add 'occupation' feedback
+                            // check this cp occupation
                             if (msg && msg === 'POLICY_GROUP_EXIST_IN_SCHEDULE') {
-                                this.modalMsg = 'This collection policy is being occupied';
+                                this.modalMsg = 'Can not been delete when policy group exits in schedule';
                                 this.closeMsg = 'close';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
                             } else {

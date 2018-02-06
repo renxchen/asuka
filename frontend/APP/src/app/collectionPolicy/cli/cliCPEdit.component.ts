@@ -258,7 +258,10 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                         alert('保存しました');
                         this.router.navigate(['/index/clicpdetail'], { queryParams: { 'id': this.cPId } });
                     } else {
-                        if (msg) {
+                        // confim with yuanyang
+                        if (msg && msg === 'LEAF_IS_BLOCK_RULE') {
+                            alert('leaf node must be data rule');
+                        } else {
                             alert(msg);
                         }
                     }
