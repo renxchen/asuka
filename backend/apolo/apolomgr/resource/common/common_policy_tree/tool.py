@@ -26,6 +26,7 @@ class Tool(object):
         else:
             return 'data_rule_{}'.format(rule_type)
 
+
     @staticmethod
     def set_split_char(split_char_num=None):
 

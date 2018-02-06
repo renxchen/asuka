@@ -197,7 +197,7 @@ class Policy_tree(DBOpt):
             'text': constants.COLLECTION_POLICY_TREE_NAME,
             'icon': constants.POLICY_TREE_ROOT_ICON,
             'data': {
-                'rule_type':'',
+                'rule_type': '',
                 'rule_id': 0,
                 'is_root': True,
             },
