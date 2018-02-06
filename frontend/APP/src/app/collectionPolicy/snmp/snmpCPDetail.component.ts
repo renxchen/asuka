@@ -43,14 +43,21 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get(url))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    if (res['data'] && res['data'].length > 0) {
-                        let data = res['data'][0];
-                        this.name = _.get(data, 'name');
-                        this.desc = _.get(data, 'desc');
-                        this.snmpOid = _.get(data, 'snmp_oid');
-                        this.selectedRtnType = _.get(data, 'value_type');
-                        this.selectedOsType = _.get(data, 'ostype');
+                let status = _.get(res, 'status');
+                let msg = _.get(status, 'message');
+                let data = _.get(res, 'data');
+                let snmpData: any = _.get(data, 'data');
+                if (status && status['status'].toLowerCase() === 'true') {
+                    if (snmpData && snmpData.length > 0) {
+                        this.name = _.get(snmpData[0], 'name');
+                        this.desc = _.get(snmpData[0], 'desc');
+                        this.snmpOid = _.get(snmpData[0], 'snmp_oid');
+                        this.selectedRtnType = _.get(snmpData[0], 'value_type');
+                        this.selectedOsType = _.get(snmpData[0], 'ostype');
+                    }
+                } else {
+                    if (msg) {
+                        alert(msg);
                     }
                 }
             });

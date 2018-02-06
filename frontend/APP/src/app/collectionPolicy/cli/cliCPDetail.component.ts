@@ -82,13 +82,16 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get(url))
             .subscribe(res => {
+                let status = _.get(res, 'status');
+                let msg = _.get(status, 'message');
+                let data = _.get(res, 'data');
+                let cliData: any = _.get(data, 'data');
                 if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
-                    if (res['data'] && res['data'].length > 0) {
-                        let data = res['data'][0];
-                        this.cpName = _.get(data, 'name');
-                        this.osType = _.get(data, 'ostype_name');
-                        this.cliCommand = _.get(data, 'cli_command');
-                        this.cpDesc = _.get(data, 'desc');
+                    if (cliData && cliData.length > 0) {
+                        this.cpName = _.get(cliData[0], 'name');
+                        this.osType = _.get(cliData[0], 'ostype_name');
+                        this.cliCommand = _.get(cliData[0], 'cli_command');
+                        this.cpDesc = _.get(cliData[0], 'desc');
                         if (res['policy_tree']) {
                             let policy = res['policy_tree'];
                             let tree = _.get(policy, 'children');
