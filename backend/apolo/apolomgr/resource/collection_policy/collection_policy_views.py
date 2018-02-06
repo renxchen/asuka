@@ -1,4 +1,4 @@
-#!
+# encoding=utf-8
 # !/usr/bin/env python
 
 """
@@ -11,7 +11,8 @@
 
 """
 from backend.apolo.serializer.collection_policy_serializer import CollPolicySerializer
-from backend.apolo.models import CollPolicy, Items, PolicysGroups
+from backend.apolo.models import CollPolicy, Items, PolicysGroups, CollPolicyGroups, CollPolicyRuleTree, \
+    CollPolicyCliRule
 from rest_framework import viewsets
 from django.utils.translation import gettext
 from django.core.paginator import Paginator
@@ -22,6 +23,9 @@ from backend.apolo.tools import views_helper
 import traceback
 from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree
 from django.db import transaction
+import time
+import requests
+import simplejson as json
 
 
 class CollPolicyViewSet(viewsets.ViewSet):
@@ -31,19 +35,38 @@ class CollPolicyViewSet(viewsets.ViewSet):
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         self.page_from = views_helper.get_request_value(self.request, 'page', 'GET')
         self.max_size_per_page = views_helper.get_request_value(self.request, 'rows', 'GET')
-        self.id = views_helper.get_request_value(self.request, 'id', 'GET')
-        self.policy_type = views_helper.get_request_value(self.request, 'policy_type', 'GET')
         method = 'GET'
-        if request.method.lower() == 'get':
+        if request.method.lower() == 'get' or request.method.lower() == 'delete':
             method = 'GET'
         if request.method.lower() == 'post' or request.method.lower() == 'put':
             method = 'BODY'
+        self.policy_type = views_helper.get_request_value(self.request, 'policy_type', method)
+        self.id = views_helper.get_request_value(self.request, 'id', method)
         self.name = views_helper.get_request_value(self.request, 'name', method)
         self.ostype = views_helper.get_request_value(self.request, 'ostype', method)
         self.cli_command = views_helper.get_request_value(self.request, 'cli_command', method)
         self.desc = views_helper.get_request_value(self.request, 'desc', method)
         self.snmp_oid = views_helper.get_request_value(self.request, 'snmp_oid', method)
         self.value_type = views_helper.get_request_value(self.request, 'value_type', method)
+        self.execute_ing = True
+        # verify execute_ing status
+        self.get_execute_ing()
+
+    def get_execute_ing(self):
+        # {
+        #     "now_time": 1513312116,
+        #     "param": 2,
+        #     "param_type": 0  # 0: group 1: policy
+        # }
+        req_body = {'now_time': time.time(), 'param': self.id, 'param_type': 0}
+        url = "http://%s:%s/api/v1/valid" % ('10.71.244.134', '7777')
+        headers = {'content-type': 'application/json'}
+        resp = requests.post(url=url, data=json.dumps(req_body), headers=headers)
+        if 200 <= resp.status_code <= 299:
+            resp_body = json.loads(resp.text)
+            item = resp_body.get('items')
+            if item == 0:
+                self.execute_ing = False
 
     @staticmethod
     def get_cp(**kwargs):
@@ -70,10 +93,53 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 print traceback.format_exc(e)
             return False
 
+    @staticmethod
+    def get_tree_from_coll_policy_rule_tree(**kwargs):
+        try:
+            return CollPolicyRuleTree.objects.filter(**kwargs)
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return False
+
+    @staticmethod
+    def get_tree_from_coll_policy_cli_rule(**kwargs):
+        try:
+            return CollPolicyCliRule.objects.filter(**kwargs)
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return False
+
+    def verify_column(self, id, method='GET'):
+        """
+        verify column
+        :return: False: modify reject, True: modify or shown permit
+        """
+        try:
+            if id is not '':
+                cp = CollPolicy.objects.get(coll_policy_id=int(id))
+                cpg = CollPolicyGroups.objects.filter(**{'ostypeid': int(cp.ostype_id)})
+                verify_result = {
+                    'ostype': True,
+                    'snmp_oid': True,
+                    'execute_ing': self.execute_ing,
+                }
+                if len(cpg) > 0:
+                    verify_result['ostype'] = False
+                if self.execute_ing:
+                    verify_result['snmp_oid'] = False
+                return verify_result
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
+
     def get(self):
         try:
             if self.id is not '':
                 queryset = CollPolicy.objects.filter(**{'coll_policy_id': self.id})
+                verify_result = self.verify_column(self.id)
                 serializer = CollPolicySerializer(queryset, many=True)
                 # get tree information
                 pt_data = {}
@@ -85,13 +151,16 @@ class CollPolicyViewSet(viewsets.ViewSet):
                         print traceback.format_exc(e)
                     exception_handler(e)
                 data = {
-                    'data': serializer.data,
+                    'data': {
+                        'data': serializer.data,
+                        'verify_result': verify_result,
+                    },
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.TRUE,
                         constants.MESSAGE: constants.SUCCESS
                     },
-                    'policy_tree': pt_data
+                    'policy_tree': pt_data,
                 }
                 return api_return(data=data)
             field_relation_ships = {
@@ -123,7 +192,9 @@ class CollPolicyViewSet(viewsets.ViewSet):
             paginator = Paginator(serializer.data, int(self.max_size_per_page))
             contacts = paginator.page(int(self.page_from))
             data = {
-                'data': contacts.object_list,
+                'data': {
+                    'data': contacts.object_list,
+                },
                 'new_token': self.new_token,
                 'num_page': paginator.num_pages,
                 'page_range': list(paginator.page_range),
@@ -165,24 +236,16 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 if int(self.policy_type) == 1:
                     data['value_type'] = self.value_type
                 serializer = CollPolicySerializer(data=data)
-                if serializer.is_valid():
+                if serializer.is_valid(Exception):
                     serializer.save()
                     data = {
-                        'data': serializer.data,
+                        'data': {
+                            'data': serializer.data,
+                        },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
                             constants.MESSAGE: constants.SUCCESS
-                        }
-                    }
-                    return api_return(data=data)
-                else:
-                    data = {
-                        constants.MESSAGE: serializer.errors,
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.FAILED
                         }
                     }
                     return api_return(data=data)
@@ -205,9 +268,11 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     'value_type': self.value_type,
                 }
                 if queryset is False:
-                    message = 'There is no result for current query.'
+                    message = 'There is no result in CollPolicy table with id %s.' % self.id
                     data = {
-                        'data': message,
+                        'data': {
+                            'data': message
+                        },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
@@ -216,24 +281,16 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     }
                     return api_return(data=data)
                 serializer = CollPolicySerializer(queryset, data=data)
-                if serializer.is_valid():
+                if serializer.is_valid(Exception):
                     serializer.save()
                     data = {
-                        'data': serializer.data,
+                        'data': {
+                            'data': serializer.data,
+                        },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
                             constants.MESSAGE: constants.SUCCESS
-                        }
-                    }
-                    return api_return(data=data)
-                else:
-                    data = {
-                        constants.MESSAGE: serializer.errors,
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.FAILED
                         }
                     }
                     return api_return(data=data)
@@ -248,34 +305,15 @@ class CollPolicyViewSet(viewsets.ViewSet):
             with transaction.atomic():
                 kwargs = {'coll_policy_id': self.id}
                 collection_policy_in_cp = self.get_cp(**kwargs)
-                collection_policy_in_items = self.get_cp_from_item(**kwargs)
+                cp_rule_tree = self.get_tree_from_coll_policy_rule_tree(**kwargs)
+                cp_cli_rule = self.get_tree_from_coll_policy_cli_rule(**kwargs)
                 pg = self.get_cp_from_policys_groups(**{'policy_id': self.id})
-                if collection_policy_in_cp is False:
-                    message = 'There is no result in CollPolicy table with id %s.' % self.id
+                if self.execute_ing:
+                    message = 'Collection policy is running in system with id %s.' % self.id
                     data = {
-                        'data': message,
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.FAILED
-                        }
-                    }
-                    return api_return(data=data)
-                elif len(collection_policy_in_items) > 0:
-                    message = 'Collection policy exists in Items table with id %s.' % self.id
-                    data = {
-                        'data': message,
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLL_POLICY_EXIST_IN_ITEM
-                        }
-                    }
-                    return api_return(data=data)
-                elif len(pg) > 0:
-                    message = 'Collection policy exists in PolicysGroups table with id %s.' % self.id
-                    data = {
-                        'data': message,
+                        'data': {
+                            'data': message
+                        },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
@@ -283,19 +321,48 @@ class CollPolicyViewSet(viewsets.ViewSet):
                         }
                     }
                     return api_return(data=data)
-                else:
-                    # delete cp in policys_groups table
-                    pg.delete()
-                    # delete cp in coll_policy table
-                    collection_policy_in_cp.delete()
+                if collection_policy_in_cp is False:
+                    message = 'There is no result in CollPolicy table with id %s.' % self.id
                     data = {
+                        'data': {
+                            'data': message
+                        },
                         'new_token': self.new_token,
                         constants.STATUS: {
-                            constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.FAILED
                         }
                     }
                     return api_return(data=data)
+                if len(pg) > 0:
+                    message = 'Collection policy exists in PolicysGroups table with id %s.' % self.id
+                    data = {
+                        'data': {
+                            'data': message
+                        },
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.COLL_POLICY_EXIST_IN_POLICYS_GROUPS
+                        }
+                    }
+                    return api_return(data=data)
+                # delete cp in policys_groups table
+                pg.delete()
+                # delete cp in coll_policy_rule_tree table
+                cp_rule_tree.delete()
+                # delete cp in coll_policy_cli_rule table
+                cp_cli_rule.delete()
+                # delete cp in coll_policy table
+                collection_policy_in_cp.delete()
+                data = {
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.TRUE,
+                        constants.MESSAGE: constants.SUCCESS
+                    }
+                }
+                return api_return(data=data)
         except Exception, e:
             transaction.rollback()
             if constants.DEBUG_FLAG:
