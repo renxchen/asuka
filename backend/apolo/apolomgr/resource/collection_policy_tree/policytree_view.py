@@ -95,39 +95,48 @@ class PolicyTreeViewSet(viewsets.ViewSet):
         self.coll_policy_id = views_helper.get_request_value(self.request, 'coll_policy_id', 'BODY')
         self.tree = views_helper.get_request_value(self.request, 'tree', 'BODY')
         self.raw_data = views_helper.get_request_value(self.request, 'raw_data', 'BODY')
-
         try:
-            tree_is_exits = CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id)
-            with transaction.atomic():
-                if tree_is_exits:
-                    # check the policy is exits in the item tables
-                    items_list = Items.objects.filter(coll_policy=self.coll_policy_id)
-                    if len(items_list) > 0:
-                        data = {
-                            'data': '',
-                            'new_token': self.new_token,
-                            constants.STATUS: {
-                                constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: constants.POLICY_IS_APPLIED
+            if self.__check_the_node_is_leaf(self.tree):
+                tree_is_exits = CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id)
+                with transaction.atomic():
+                    if tree_is_exits:
+                        # check the policy is exits in the item tables
+                        items_list = Items.objects.filter(coll_policy=self.coll_policy_id)
+                        if len(items_list) > 0:
+                            data = {
+                                'data': '',
+                                'new_token': self.new_token,
+                                constants.STATUS: {
+                                    constants.STATUS: constants.FALSE,
+                                    constants.MESSAGE: constants.POLICY_IS_APPLIED
+                                }
                             }
-                        }
-                        return api_return(data=data)
-                    else:
-                        # del the old policy tree
-                        CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id).delete()
+                            return api_return(data=data)
+                        else:
+                            # del the old policy tree
+                            CollPolicyRuleTree.objects.filter(coll_policy=self.coll_policy_id).delete()
 
 
-                # save the new policy
-                # update cli_command_result into coll_policy table
-                coll_policy = CollPolicy.objects.get(pk=self.coll_policy_id)
-                if self.raw_data:
-                    coll_policy.cli_command_result = self.raw_data
-                    coll_policy.save()
-                    # select all nodes of the policy tree
-                policy_tree = Policy_tree(self.coll_policy_id)
-                policy_tree.get_all_nodes(self.tree)
-                obj = policy_tree.all_nodes
-                data = self.__save_the_policy_tree__(nodes_dict=obj)
+                    # save the new policy
+                    # update cli_command_result into coll_policy table
+                    coll_policy = CollPolicy.objects.get(pk=self.coll_policy_id)
+                    if self.raw_data:
+                        coll_policy.cli_command_result = self.raw_data
+                        coll_policy.save()
+                        # select all nodes of the policy tree
+                    policy_tree = Policy_tree(self.coll_policy_id)
+                    policy_tree.get_all_nodes(self.tree)
+                    obj = policy_tree.all_nodes
+                    data = self.__save_the_policy_tree(nodes_dict=obj)
+                    return api_return(data=data)
+            else:
+                data = {
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.LEAF_IS_BLOCK_RULE
+                    }
+                }
                 return api_return(data=data)
         except Exception as e:
             data = {
@@ -140,7 +149,7 @@ class PolicyTreeViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
 
-    def __save_the_policy_tree__(self, nodes_dict):
+    def __save_the_policy_tree(self, nodes_dict):
 
         add_result = {}
         # insert  the tree node information into db
@@ -190,4 +199,18 @@ class PolicyTreeViewSet(viewsets.ViewSet):
             }
         }
         return data
+
+    def __check_the_node_is_leaf(self, tree_dict):
+
+        if tree_dict.has_key('children'):
+            if len(tree_dict) > 0:
+                for children in tree_dict['children']:
+                    self.__check_the_node_is_leaf(children)
+            else:
+                if int(tree_dict['data']['rule_type']) < 5:
+                     return True
+                else:
+                     return False
+
+
 

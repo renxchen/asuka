@@ -109,6 +109,7 @@ LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定
 DB_EXCEPTION ='there is an db exception'
 RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
 CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
+NO_ITEMS_IN_GROUP = 'no items in group,please check the group'
 
 #########################################
 # data collection value setting
@@ -134,11 +135,11 @@ PRIORITY_URGENT_LEVEL_VALUE = 2
 PRIORITY_URGENT_LEVEL_KEY = u'緊急'
 
 SCHEDULE_TYPE_OFTEN_KEY = u'常に取得'
-SCHEDULE_TYPE_OFTEN_VALUE = 1
+SCHEDULE_TYPE_OFTEN_VALUE = 0
 SCHEDULE_TYPE_STOP_KEY = u'取得停止'
-SCHEDULE_TYPE_STOP_VALUE = 2
+SCHEDULE_TYPE_STOP_VALUE = 1
 SCHEDULE_TYPE_PERIOD_KEY = u'周期取得'
-SCHEDULE_TYPE_PERIOD_VALUE = 3
+SCHEDULE_TYPE_PERIOD_VALUE = 2
 
 SCHEDULE_STATUS_ON_KEY = u'有効'
 SCHEDULE_STATUS_ON_VALUE = 1
@@ -158,4 +159,20 @@ POLICY_DEVICE_COMBINATION = 'the combination of policy and device  is used'
 CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
 CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
 DATA_COLLECTION_POST_URL ='http://10.71.244.134:7777/api/v1/getItems'
+
+#########################################
+# render
+#########################################
+REPLACE_START_MARK ='@start@'
+REPLACE_END_MARK = '@end@'
+MARK_STRING_HTML_FONT_START ='<font color="blue">'
+HTML_FONT_END ='</font>'
+EXTRACT_DATA_HTML_FONT_START = '<font color="green"><u>'
+EXTRACT_DATA_HTML_FONT_END ='</u></font>'
+EXTRACT_LINE_NUM = '<font color="blue">all <font color="green"><u>{}</u></font>lines:</font>'
+OFFSET_ERROR = 'Offset is too long'
+NO_EXTRACT_LINE_NUM = 'no lines'
+BLOCK_START_HTML_FONT_START = '<font color="red">'
+LINE_NUM_MSG_REPLACE = '@##@'
+LEAF_IS_BLOCK_RULE = 'LEAF_IS_BLOCK_RULE'
 

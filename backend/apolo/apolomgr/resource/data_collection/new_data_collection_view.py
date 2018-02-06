@@ -94,7 +94,6 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
     def __insert_data_check__(self, devices, coll_policies):
 
         select_sql = 'select item_id,schedule_id from Items where'
-
         for i in range(len(devices)):
             device_id = devices[i]
             for j in range(len(coll_policies)):
@@ -103,7 +102,7 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                     select_sql += ' (coll_policy_id = {} and device_id = {})'.format(coll_policy_id, device_id)
                 else:
                     select_sql += ' (coll_policy_id = {} and device_id = {}) or '.format(coll_policy_id, device_id)
-
+        print select_sql
         query_list = list(Items.objects.raw(select_sql))
         schedule_id_dict = {}
         if len(query_list):
@@ -111,12 +110,11 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                 if not schedule_id_dict.has_key(sid.schedule_id):
                     schedule_id_dict[sid.schedule_id] = 1
             schedule_id_list = schedule_id_dict.keys()
-            query_set = Schedules.objects.exclude(schedule_id__in=schedule_id_list).values('priority').distinct()
+            query_set = Schedules.objects.filter(schedule_id__in=schedule_id_list).values('priority').distinct()
             priorityIsEqual = True
             for item in query_set:
-                if self.priority == item['priority']:
+                if int(self.priority) == int(item['priority']):
                     priorityIsEqual = False
-
             return priorityIsEqual
         else:
             return True
@@ -129,12 +127,19 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
         #     week_time = '1;2;3;4;5;6;7'
 
         # data_schedule_time = '{}@{}-{}'.format(week_time, self.schedule_start_time, self.schedule_end_time)
+        if self.data_schedule_time =='':
+            self.data_schedule_time = None
+        if self.start_period_time =='':
+            self.start_period_time=None
+        if self.end_period_time =='':
+            self.end_period_time=None
+
         schedule_recode_data = {
             'valid_period_type': self.valid_period_type,
             'data_schedule_type': self.data_schedule_type,
-            'start_period_time': None,#self.start_period_time,
-            'end_period_time': None, #self.end_period_time,
-            'data_schedule_time': None,#self.data_schedule_time,
+            'start_period_time': self.start_period_time,
+            'end_period_time': self.end_period_time,
+            'data_schedule_time': self.data_schedule_time,
             'priority': self.priority,
             'status': constants.SCHEDULE_STATUS_DEFAULT,
             'policy_group': self.policy_group_id,
@@ -155,7 +160,7 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
         query_set = PolicysGroups.objects.filter(policy_group=self.policy_group_id)
         policy_list = []
         for arry in query_set:
-            print arry.policys_groups_id
+
             data = {
                 'policys_groups_id': arry.policys_groups_id,
                 'coll_policy_id': arry.policy.coll_policy_id,
@@ -182,7 +187,7 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
             policys_groups_id = arry['policys_groups_id']
             item_type = arry['policy_type']
             if item_type == constants.ITEM_TYPE_SNMP:
-                print 'snmp:{}'.format(coll_policy_id)
+
                 key_str = arry['snmp_oid']
                 value_type = arry['value_type']
                 data = {
@@ -192,14 +197,14 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                     'status': constants.ITEM_TABLE_STATUS_DEFAULT,
                     'last_exec_time': None,
                     'coll_policy': coll_policy_id,
-                    'coll_policy_rule_tree_treeid':0,
+                    'coll_policy_rule_tree_treeid':None,
                     'device': None,
                     'schedule': schedule_id,
                     'policys_groups':policys_groups_id
                 }
                 items_arry.append(data)
             if item_type == constants.ITEM_TYPE_CLI:
-                print 'cli:{}'.format(coll_policy_id)
+
                 leaf_query_set = CollPolicyRuleTree.objects.filter(coll_policy=coll_policy_id,
                                                                  is_leaf=constants.LEAF_NODE_MARK)
                 for leaf in leaf_query_set:
@@ -227,47 +232,58 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
         devices_list = self.__get_devices__()
         # get coll_policies
         coll_policy_list = self.__get_coll_policies__()
-        # data check
-        if not self.__insert_data_check__(devices_list, coll_policy_list):
+        # check the device nums in the devices group and policy nums in policy group
+        if len(devices_list)==0 or len(coll_policy_list)==0:
             data = {
                 'new_token': self.new_token,
                 constants.STATUS: {
                     constants.STATUS: constants.FALSE,
-                    constants.MESSAGE: constants.POLICY_DEVICE_COMBINATION  # can not insert
+                    constants.MESSAGE: constants.NO_ITEMS_IN_GROUP  # can not insert
                 }
             }
             return api_return(data=data)
         else:
-            try:
-                # ready
-                # get tree_id and rule_id of the collection policy tree
-                schedule_data = self.__set_schedule_data__()
-                serializer = SchedulesAddSerializer(data=schedule_data)
-                with transaction.atomic():
-                    # insert data into schedule table
-                    if serializer.is_valid(raise_exception=BaseException):
-                        serializer.save()
-                        schedule_id = serializer.data['schedule_id']
-                        item_list = self.__get_items_context__(schedule_id, coll_policy_list)
-                        policy_device_combinations = []
-                        for device_id in devices_list:
-                            for item in item_list:
-                                item['device'] = device_id
-                                combination = item.copy()
-                                policy_device_combinations.append(combination)
+            # data check
+            if not self.__insert_data_check__(devices_list, coll_policy_list):
+                data = {
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.POLICY_DEVICE_COMBINATION  # can not insert
+                    }
+                }
+                return api_return(data=data)
+            else:
+                try:
+                    # ready
+                    # get tree_id and rule_id of the collection policy tree
+                    schedule_data = self.__set_schedule_data__()
+                    serializer = SchedulesAddSerializer(data=schedule_data)
+                    with transaction.atomic():
+                        # insert data into schedule table
+                        if serializer.is_valid(raise_exception=BaseException):
+                            serializer.save()
+                            schedule_id = serializer.data['schedule_id']
+                            item_list = self.__get_items_context__(schedule_id, coll_policy_list)
+                            policy_device_combinations = []
+                            for device_id in devices_list:
+                                for item in item_list:
+                                    item['device'] = device_id
+                                    combination = item.copy()
+                                    policy_device_combinations.append(combination)
 
-                        item_serializer = ItemsSerializer(data=policy_device_combinations, many=True)
-                        if item_serializer.is_valid(raise_exception=BaseException):
-                            item_serializer.save()
-                            data = {
-                                'new_token': self.new_token,
-                                constants.STATUS: {
-                                    constants.STATUS: constants.TRUE,
-                                    constants.MESSAGE: constants.SUCCESS
+                            item_serializer = ItemsSerializer(data=policy_device_combinations, many=True)
+                            if item_serializer.is_valid(raise_exception=BaseException):
+                                item_serializer.save()
+                                data = {
+                                    'new_token': self.new_token,
+                                    constants.STATUS: {
+                                        constants.STATUS: constants.TRUE,
+                                        constants.MESSAGE: constants.SUCCESS
+                                    }
                                 }
-                            }
-                            return api_return(data=data)
-            except Exception as e:
-                print e
-                return exception_handler(e)
+                                return api_return(data=data)
+                except Exception as e:
+                    print e
+                    return exception_handler(e)
 

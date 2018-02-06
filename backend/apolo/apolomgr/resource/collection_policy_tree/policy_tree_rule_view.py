@@ -37,14 +37,30 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             coll_policy_id = views_helper.get_request_value(self.request, key='coll_policy_id', method_type='GET')
             rule_id = views_helper.get_request_value(self.request, key='rule_id', method_type='GET')
             query_set = CollPolicyRuleTree.objects.filter(rule=rule_id, coll_policy=coll_policy_id)
-            is_used = True
+            is_used = False
             if len(query_set) > 0:
-                is_used = False
+                is_used = True
             rule_info = CollPolicyCliRule.objects.get(ruleid=rule_id)
-            serializer = CollPolicyCliRuleSerializer(rule_info)
+            result_dict = CollPolicyCliRuleSerializer(rule_info).data
+            split_char = result_dict['split_char']
+            if split_char:
+                if split_char == '@space@':
+                    result_dict['split_char'] = 4
+                    result_dict['other_char'] =None
+                elif split_char == ',':
+                    result_dict['split_char'] = 1
+                    result_dict['other_char'] = None
+
+                elif split_char == '/':
+                    result_dict['split_char'] = 2
+                    result_dict['other_char'] = None
+                else:
+                    result_dict['split_char'] = 3
+                    result_dict['other_char'] = split_char
+
             data = {
                 'rule_is_used': is_used,
-                'data': serializer.data,
+                'data': result_dict,
                 'new_token': self.new_token,
                 constants.STATUS: {
                     constants.STATUS: constants.TRUE,
@@ -116,6 +132,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
     # 3 get all rules of tree ,and return the information to front
     def put(self):
         try:
+
             # http://127.0.0.1:8000/v1/api_policy_tree_rule/?rule_id=1
             # check before delete rule
             rule_id = views_helper.get_request_value(self.request, 'rule_id', 'GET')
@@ -211,7 +228,15 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             rule_data_dict['mark_string'] = None
 
         if front_data.has_key('split_char'):
-            rule_data_dict['split_char'] = front_data['split_char']
+
+            if front_data['split_char'] == '4':
+                rule_data_dict['split_char'] = '@space@'
+            elif front_data['split_char'] =='1':
+                rule_data_dict['split_char'] = ','
+            elif front_data['split_char'] =='2':
+                rule_data_dict['split_char'] = '/'
+            else:
+                rule_data_dict['split_char'] = front_data['other_char']
         else:
             rule_data_dict['split_char'] = None
 
@@ -283,11 +308,15 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         if front_data.has_key('extract_key'):
             rule_data_dict['extract_key'] = front_data['extract_key']
         else:
-            rule_data_dict['extract_key'] = None
+            if rule_data_dict['rule_type'] >4:
+                rule_data_dict['extract_key'] = None
+            else:
+                rule_data_dict['extract_key'] = '.*'
 
         if front_data.has_key('value_type'):
             rule_data_dict['value_type'] = front_data['value_type']
         else:
             rule_data_dict['value_type'] = None
 
+        print rule_data_dict
         return rule_data_dict

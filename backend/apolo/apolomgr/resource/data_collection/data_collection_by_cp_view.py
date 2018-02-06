@@ -24,11 +24,11 @@ class DataCollectionByCPViewSet(viewsets.ViewSet):
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
 
     def get(self):
-        coll_policy_id = views_helper.get_request_value(self.request, "coll_policy_id", "GET")
+        coll_policy_id = views_helper.get_request_value(self.request, "policy_id", "GET")
 
         if not coll_policy_id:
             # load all coll_policy
-            coll_policy_list = CollPolicy.objects.values('coll_policy_id', 'name')
+            coll_policy_list = CollPolicy.objects.values('policy_id', 'name')
             arry = []
             for item in coll_policy_list:
                 arry.append(item)
@@ -42,21 +42,33 @@ class DataCollectionByCPViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         else:
+            coll_policy_id =3
             response_json_data = Tool.get_data_from_collection_server()
-            policy_dict = dict()
+            arry = []
             for one_recoder in response_json_data['items']:
                 if one_recoder['coll_policy_id'] == coll_policy_id:
                     policy_name = one_recoder['policy_name']
                     info = {
                         'deviceNo': one_recoder['device_id'],
-                        'deviceName': one_recoder['device_name'],
+                        'device': one_recoder['device_name'],
                         'policy': policy_name,
                         'policyNo': one_recoder['coll_policy_id'],
-                        'status': Tool.set_cp_status_mapping(one_recoder['valid_status'])
+                        'status': Tool.set_cp_status_mapping(one_recoder['valid_status']),
+                        'attr': {
+                            'policy': {
+                                'rowspan': None
+                            }
+                        }
                     }
-                    if policy_dict.has_key(policy_name):
-                        policy_dict[policy_name].append(info)
-                    else:
-                        policy_dict[policy_name] = []
+                    arry.append(info)
 
-            return api_return(data=policy_dict)
+            arry[0]['attr']['policy']['rowspan']= len(arry)
+            data = {
+                'data': arry,
+                'new_token': self.new_token,
+                constants.STATUS: {
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.SUCCESS
+                }
+            }
+            return api_return(data=data)

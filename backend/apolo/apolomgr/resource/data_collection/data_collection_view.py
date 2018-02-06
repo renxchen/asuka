@@ -126,7 +126,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
     def put(self):
         # load data
         schedule_id = views_helper.get_request_value(self.request, 'id', 'GET')
-        if not self.__update_recode_check__(schedule_id):
+        if not self.__update_recode_check(schedule_id):
             data = {
                 'new_token': self.new_token,
                 constants.STATUS: {
@@ -142,7 +142,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
     def delete(self):
         # v1/api_data_collection/?id=1
         schedule_id = views_helper.get_request_value(self.request, 'id', 'GET')
-        if not self.__delete_recode_check__(schedule_id):
+        if not self.__delete_recode_check(schedule_id):
             data = {
                 'new_token': self.new_token,
                 constants.STATUS: {
@@ -172,14 +172,30 @@ class DataCollectionViewSet(viewsets.ViewSet):
                 return exception_handler(e)
 
     @staticmethod
-    def __update_recode_check__(schedule_id):
+    def __update_recode_check(schedule_id):
         print schedule_id
         return True
 
+
+    def __delete_recode_check(self, schedule_id):
+        if self.__check_is_lock(schedule_id):
+            return False
+        else:
+            return False
+
+    def __check_is_lock(self, schedule_id):
+        self.__get_items_list(schedule_id)
+
+    def __check_is_Processing(self, schedule_id):
+         pass
+
     @staticmethod
-    def __delete_recode_check__(schedule_id):
-        print schedule_id
-        return True
+    def __get_items_list(schedule_id):
+        queryset = Items.objects.filter(schedule=schedule_id).values('item_id')
+        arry = []
+        for item in queryset:
+            arry.append(item['item_id'])
+        return arry
 
 
 
