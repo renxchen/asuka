@@ -11,7 +11,7 @@ class TriggerHelp(object):
         self.items = items
 
     def trigger(self, task_timestamp):
-        triggers = TriggerDbHelp.get_triggers_by_item_id(self.items.keys())
+        triggers = TriggerDbHelp().get_triggers_by_item_id(self.items.keys())
         events = []
         items = self.items
         MAX, MIN, AVG, HEX2DEC, LAST, LASTRANGE = Max(), Min(), Avg(), Hex2Dec(), Last(), LastRange()
@@ -36,7 +36,7 @@ class TriggerHelp(object):
         tmp = []
         for event in events:
             trigger_instance = event[0]
-            instance = TriggerDbHelp.get_latest_event(TriggerConstants.TRIGGER_EVENT_SOURCE, trigger_instance.trigger_id)
+            instance = TriggerDbHelp().get_latest_event(TriggerConstants.TRIGGER_EVENT_SOURCE, trigger_instance.trigger_id)
             if len(instance) == 0:
                 latest_number = 0
             else:
@@ -51,4 +51,4 @@ class TriggerHelp(object):
                 latest_number = 0
             tmp.append(
                 [TriggerConstants.TRIGGER_EVENT_SOURCE, trigger_instance.trigger_id, latest_number, event[2], value])
-        TriggerDbHelp.save_events(tmp)
+        TriggerDbHelp().save_events(tmp)

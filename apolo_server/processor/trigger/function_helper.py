@@ -79,7 +79,7 @@ class Last(FunctionBase):
         super(Last, self).__init__()
 
     def _do_get(self, item,  num):
-        value = TriggerDbHelp.get_last_value(item['item_id'], item['policy_type'], item['value_type'], num).value
+        value = TriggerDbHelp().get_last_value(item['item_id'], item['policy_type'], item['value_type'], num).value
         return value
 
 
@@ -88,7 +88,7 @@ class LastRange(FunctionBase):
         super(LastRange, self).__init__()
 
     def _do_get(self, item, num):
-        history = TriggerDbHelp.get_last_range_value(item['item_id'], item['policy_type'], item['value_type'], num)
+        history = TriggerDbHelp().get_last_range_value(item['item_id'], item['policy_type'], item['value_type'], num)
         value = [h.value for h in history]
         return value
 
