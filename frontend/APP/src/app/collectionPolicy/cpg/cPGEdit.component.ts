@@ -294,7 +294,7 @@ export class CPGEditComponent implements OnInit {
             pager: '#cPGPager',
             rowNum: 5,
             rowList: [5, 10, 15],
-            width: 736,
+            width: 840,
             height: 100,
             viewrecords: true,
             emptyrecords: 'Nothing to display',
