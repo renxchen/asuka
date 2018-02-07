@@ -69,8 +69,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-                 os.path.join(BASE_DIR, "templates"),
-                 ],
+            os.path.join(BASE_DIR, "templates"),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,7 +92,7 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'PyMysqlPool.mysql.connector.django',
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         # 'NAME': "tmp",
@@ -103,8 +103,16 @@ DATABASES = {
         # 'HOST': '10.71.244.134',
         # "USER": "webday2",
         "USER": "root",
-        "PASSWORD": "1234"
-        # "PASSWORD": "apolo"
+        "PASSWORD": "1234",
+        # "PASSWORD": "apolo",
+        "OPTIONS": {
+            'autocommit': True,
+            'pool': {
+                "use": 0,
+                "size": 100,
+                "name": "local",
+            }
+        }
     }
 }
 

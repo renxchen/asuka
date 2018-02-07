@@ -3,7 +3,6 @@ from apolo_server.processor.constants import ParserConstants, CommonConstants
 from apolo_server.processor.parser.common_policy_tree.tool import Tool
 from apolo_server.processor.db_units.memcached_helper import ItemMemCacheDb, RulesMemCacheDb
 from apolo_server.processor.db_units.db_helper import ParserDbHelp
-from apolo_server.processor.trigger.trigger_helper import TriggerHelp
 import json
 import logging
 
@@ -37,7 +36,7 @@ class SNMPParser(Parser):
         super(SNMPParser, self).__init__(param)
 
     def handle(self):
-        ParserDbHelp.bulk_save_result(self.parser_params['items'], CommonConstants.SNMP_TYPE_CODE)
+        ParserDbHelp().bulk_save_result(self.parser_params['items'], CommonConstants.SNMP_TYPE_CODE)
         pass
 
 
@@ -59,12 +58,13 @@ class CliParser(Parser):
             raw_data = item['output']
             if raw_data is None:
                 continue
+
             p = Dispatch(rule_path, rules, raw_data)
             p.dispatch()
             arry = p.get_result()
             item['value'] = arry[-1][0]
             result.append(item)
-        ParserDbHelp.bulk_save_result(result, CommonConstants.CLI_TYPE_CODE)
+        ParserDbHelp().bulk_save_result(result, CommonConstants.CLI_TYPE_CODE)
 
     @staticmethod
     def __split_path(path, rule_id):
