@@ -57,17 +57,20 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
             this.httpClient
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
                 .subscribe(res => {
-                    if (res['status']['status'].toString().toLowerCase() === 'true') {
-                        if (res['data']) {
-                            let id = res['data']['coll_policy_id'];
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(res, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data && data['data']) {
+                            let id = _.get(data['data'], 'coll_policy_id');
                             this.router.navigate(['/index/clicpedit'],
                                 { queryParams: { 'id': id } });
                         }
                     } else {
-                        if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                        if (msg && msg === 'CP_NAME_DUPLICATE') {
                             this.uniqueFlg = false;
                         } else {
-                            alert(res['status']['message']);
+                            alert(msg);
                         }
                     }
                 });

@@ -12,14 +12,14 @@
                 <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                 コレクションポリシー名：
             </label>
-                <div class="col-sm-4" [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}">
+                <div class="col-sm-7" [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}">
                     <input type="text" class="form-control" id="name" name="name" [(ngModel)]="name" placeholder="英数字のみ" maxlength="256" required=""
                         autocomplete="off">
                 </div>
             </div>
             <div class="form-group">
                 <label for="desc" class="col-sm-4 control-label" [ngClass]="{'text-warning': descFlg}">概要：</label>
-                <div class="col-sm-4">
+                <div class="col-sm-7">
                     <textarea class="form-control" id="desc" name="desc" [ngClass]="{'has-warning': descFlg}"
                     [(ngModel)]="desc" maxlength="2000"></textarea>
                 </div>
@@ -30,7 +30,7 @@
                 <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                 実行コマンド:
                 </label>
-                <div class="col-sm-4" [ngClass]="{'has-warning': !cmdFlg||!cmdNotNull}">
+                <div class="col-sm-7" [ngClass]="{'has-warning': !cmdFlg||!cmdNotNull}">
                     <input type="text" class="form-control" id="cliCommand" name="cliCommand"
                     [(ngModel)]="cliCommand" placeholder="英数字のみ" maxlength="256"
                         autocomplete="off" required="">
@@ -40,7 +40,7 @@
                 <label for="osType" class="col-sm-4 control-label">
                 <i class="fa fa-asterisk text-danger" title="必須項目"></i>OS Type：
             </label>
-                <div class="col-sm-4">
+                <div class="col-sm-7">
                     <select class="form-control" [(ngModel)]="selectedOsType" id="osType" name="selectedOsType">
                     <option *ngFor="let item of osType" value="{{item.ostypeid}}">{{item.name}}</option>
                 </select>
@@ -59,7 +59,7 @@
     </div>
     <div class="modal-footer">
         <div class="form-group">
-            <div class="col-sm-12 text-right">
+            <div class="col-sm-11 text-right">
                 <button class="btn btn-primary" id="add" (click)="cPEdit()">
                     <i class="fa fa-check-square-o"></i>
                     保存する

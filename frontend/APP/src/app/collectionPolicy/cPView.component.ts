@@ -101,7 +101,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             viewrecords: false,
             emptyrecords: 'There is no data to display',
             jsonReader: {
-                root: 'data',
+                root: 'data.data',
                 page: 'current_page_num',
                 total: 'num_page',
                 records: 'total_num',
