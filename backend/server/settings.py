@@ -227,6 +227,104 @@ JWT_AUTH = {
     'JWT_AUTH_COOKIE': None,
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(levelname)s]- %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+        },
+        'default': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 10,
+            'formatter': 'standard',
+        },
+        'apolo_handler_error': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 10,
+            'formatter': 'standard',
+        },
+        'apolo_handler_warning': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 10,
+            'formatter': 'standard',
+        },
+        'apolo_handler_debug': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 10,
+            'formatter': 'standard',
+        },
+        'apolo_handler_info': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 10,
+            'formatter': 'standard',
+        },
+
+    },
+    'loggers': {
+        'apolo.console': {
+            'handlers': ['console', 'default'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        'apolo.info': {
+            'handlers': ["apolo_handler_info"],
+            'level': 'INFO',
+            'propagate': False
+        },
+        'apolo.default': {
+            'handlers': ['default'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        'apolo.error': {
+            'handlers': ["apolo_handler_error"],
+            'level': 'ERROR',
+            'propagate': False
+        },
+        'apolo.warning': {
+            'handlers': ["apolo_handler_warning"],
+            'level': 'WARNING',
+            'propagate': False
+        },
+        'apolo.debug': {
+            'handlers': ["apolo_handler_debug"],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+    }
+}
+
 # IMPORT_STRINGS = (
 #     'JWT_ENCODE_HANDLER',
 #     'JWT_DECODE_HANDLER',
