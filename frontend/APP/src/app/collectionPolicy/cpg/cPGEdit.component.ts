@@ -136,18 +136,22 @@ export class CPGEditComponent implements OnInit {
     }
     public deleteBtn() {
         let _t = this;
-        $('.delete').click(function (event) {
-            let cpList: any = _t.cpList;
-            let id = $(event)[0].target.id;
-            for (let i = 0; i < cpList.length; i++) {
-                if (cpList[i].policy.toString() === id) {
-                    cpList.splice(i, 1);
-                    _t.cpgActionGrid$.GridUnload();
-                    _t.moreInfoTable(cpList);
+        if (this.exeFlg && this.cpNameFlg) {
+            $('.delete').click(function (event) {
+                let cpList: any = _t.cpList;
+                let id = $(event)[0].target.id;
+                for (let i = 0; i < cpList.length; i++) {
+                    if (cpList[i].policy.toString() === id) {
+                        cpList.splice(i, 1);
+                        _t.cpgActionGrid$.GridUnload();
+                        _t.moreInfoTable(cpList);
+                    }
                 }
-            }
-            _t.cpList = cpList;
-        });
+                _t.cpList = cpList;
+            });
+        } else {
+            alert('can not be deleted when policy is used');
+        }
     }
     public execIntervalChange(selExecInterval: any) {
         if (selExecInterval === '1') {
@@ -290,7 +294,7 @@ export class CPGEditComponent implements OnInit {
             pager: '#cPGPager',
             rowNum: 5,
             rowList: [5, 10, 15],
-            width: 736,
+            width: 840,
             height: 100,
             viewrecords: true,
             emptyrecords: 'Nothing to display',

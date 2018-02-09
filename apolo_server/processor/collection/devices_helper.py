@@ -158,9 +158,11 @@ def get_devices(now_time, item_type):
     }
     __add_rules()
     items = get_items(item_type)
+
     items = valid_items(now_time, items)
     items = [item for item in items if item.get('valid_status')]
     items = __create_test_devices(items)
+
     devices = __merge_device(items)
     other_param = []
     if item_type == CommonConstants.CLI_TYPE_CODE:

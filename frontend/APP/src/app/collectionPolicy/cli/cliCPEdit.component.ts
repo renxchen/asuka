@@ -48,7 +48,9 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         if (cPIdeTmp && typeof (cPIdeTmp) !== 'undefined') {
             this.cPId = cPIdeTmp;
             this.getCPInfo(this.cPId);
+            console.log(this.cPId);
         } else {
+            console.log('tmp', cPIdeTmp);
             this.router.navigate(['/index/']);
         }
 
@@ -258,7 +260,10 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                         alert('保存しました');
                         this.router.navigate(['/index/clicpdetail'], { queryParams: { 'id': this.cPId } });
                     } else {
-                        if (msg) {
+                        // confim with yuanyang
+                        if (msg && msg === 'LEAF_IS_BLOCK_RULE') {
+                            alert('leaf node must be data rule');
+                        } else {
                             alert(msg);
                         }
                     }

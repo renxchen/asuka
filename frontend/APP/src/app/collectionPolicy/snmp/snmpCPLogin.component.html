@@ -12,7 +12,7 @@
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             コレクションポリシー名：
                         </label>
-                        <div class="col-sm-4" [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}">
+                        <div class="col-sm-6" [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}">
                             <input type="text" class="form-control" id="name"  name="name" 
                             [(ngModel)]="name" placeholder="英数字のみ" maxlength="256"
                              required="" autocomplete="off">
@@ -20,7 +20,7 @@
                     </div>
                     <div class="form-group">
                         <label for="desc" class="col-sm-4 control-label" [ngClass]="{'text-warning': descFlg}">概要：</label>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <textarea class="form-control" id="desc" name="desc" [ngClass]="{'has-warning': descFlg}"
                             [(ngModel)]="desc" maxlength="2000"></textarea>
                         </div>
@@ -31,7 +31,7 @@
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             OID値：
                         </label>
-                        <div class="col-sm-4" [ngClass]="{'has-warning': !oidFlg||!oidNotNull}">
+                        <div class="col-sm-6" [ngClass]="{'has-warning': !oidFlg||!oidNotNull}">
                             <input type="text" class="form-control" id="snmpOid" name="snmpOid" 
                             [(ngModel)]="snmpOid" maxlength="256" placeholder="数字とドットのみ" required="">
                         </div>
@@ -40,7 +40,7 @@
                         <label for="returnType" class="col-sm-4 control-label">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
                         </label>
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                                 <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType">
                                 <option value="1">Int</option>
                                 <option value="2">Float</option>
@@ -54,7 +54,7 @@
                             [ngClass]="{'text-warning': osTypeFlg=== false}">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>OS Type:
                         </label>
-                        <div class="col-sm-4" [ngClass]="{'has-warning': osTypeFlg=== false}">
+                        <div class="col-sm-6" [ngClass]="{'has-warning': osTypeFlg=== false}">
                                 <select class="form-control" [(ngModel)]="selectedOsType" id="osType" name="osType">
                                 <option *ngFor="let item of osType"
                                 value="{{item.ostypeid}}">{{item.name}}</option>
@@ -70,13 +70,13 @@
                         <div class="col-sm-12 text-warning" *ngIf="oidNotNull&&!oidFlg">OID値は半角数字とドットのみで入力してください。</div>
                         <div class="col-sm-12 text-warning" *ngIf="descFlg">Warning:Description can not include Chinese.</div>                        
                     </div>
-                    <div class="form-group">
-                    <div class="col-sm-12 text-right">
-                        <button  class="btn btn-primary" id="add" (click)="cPLogin()">
-                            <i class="fa fa-check-square-o"></i>
-                            保存する
-                        </button>
-                    </div>
+                    <div class="form-group" style="margin-top:20px">
+                        <div class="col-sm-10 text-right">
+                            <button  class="btn btn-primary" id="add" (click)="cPLogin()">
+                                <i class="fa fa-check-square-o"></i>
+                                保存する
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>

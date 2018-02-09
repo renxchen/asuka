@@ -21,7 +21,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
     osType: any;
     selectedOsType: any;
     desc: any;
-    moreFlg: Boolean = true;
+    // moreFlg: Boolean = true;
     addFlg: Boolean = true;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
@@ -253,7 +253,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             pager: '#cPGPager',
             rowNum: 5,
             rowList: [5, 10, 15],
-            width: 736,
+            width: 720,
             height: 100,
             viewrecords: true,
             emptyrecords: 'Nothing to display',

@@ -55,33 +55,33 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         let _t = this;
         let cPInfo: any = {};
         this.apiPrefix = '/v1';
-        let cPLoginUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
+        let cPLoginUrl = '/api_collection_policy/';
         if (this.doCheck()) {
             cPInfo['name'] = this.name;
             cPInfo['snmp_oid'] = this.snmpOid;
             cPInfo['value_type'] = this.selectedRtnType;
             cPInfo['desc'] = this.desc;
             cPInfo['ostype'] = this.selectedOsType;
+            cPInfo['policy_type'] = this.cPType;
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
                 .subscribe(res => {
+                    //
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    if (status && status['status'].toLowerCase() === 'true') {
-                        // if (res['data']) {
-                        //     let id = res['data']['coll_policy_id'];
-                        //     this.router.navigate(['/index/snmpcpedit'],
-                        //     { queryParams: {'id' : id }});
-                        // }
-                        this.modalMsg = '保存しました。';
-                        this.closeMsg = '一覧へ戻る';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
-                        $('#modalButton').on('click', function () {
-                            _t.router.navigate(['/index/']);
-                        });
+                    let data = _.get(res, 'data');
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
+                        if (data && data['data']) {
+                            this.modalMsg = '保存しました。';
+                            this.closeMsg = '一覧へ戻る';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                            $('#modalButton').on('click', function () {
+                                _t.router.navigate(['/index/']);
+                            });
+                        }
                     } else {
-                        if (msg === 'CP_NAME_DUPLICATE') {
+                        if (msg && msg === 'CP_NAME_DUPLICATE') {
                             this.uniqueFlg = false;
                         } else {
                             alert(msg);

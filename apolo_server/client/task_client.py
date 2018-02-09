@@ -3,7 +3,7 @@ import requests
 import json
 import time
 from multiprocessing.dummy import Pool as ThreadPool
-TIMEOUT = 60
+TIMEOUT = 300
 DEFAULT_LOG_FILE_PATH = "log.log"
 DEFAULT_LOG_LEVEL = logging.INFO
 BASE_CLI_METHOD = "telnet"
@@ -140,10 +140,7 @@ def __get_cli_data(param):
     if output['status'] != "success":
         cli_collection_logger.error(LogMessage.ERROR_COLLECTION % (str(output['ip']), str(output['message'])))
         return
-    try:
-        send_handler_request_cli(param, output)
-    except Exception, e:
-        raise ParserServiceException(str(e))
+    send_handler_request_cli(param, output)
 
     # try:
     #     send_trigger(param)
@@ -174,8 +171,8 @@ def send_handler_request_cli(param, output):
         response = json.loads(str(res.text))
     else:
         raise ParserServiceException(str(res.text))
-    if response['status'] != "success":
-        raise ParserServiceException(LogMessage.CRITICAL_PARSER_ERROR % response['message'])
+    # if response['status'] != "success":
+    #     raise ParserServiceException(LogMessage.CRITICAL_PARSER_ERROR % response['message'])
 
 
 def cli_main():

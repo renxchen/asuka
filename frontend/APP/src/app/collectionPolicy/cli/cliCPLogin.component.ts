@@ -45,28 +45,32 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
     public cPLogin() {
         let cPInfo: any = {};
         this.apiPrefix = '/v1';
-        let cPLoginUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
-        let cPEditUrl = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
+        let cPLoginUrl = '/api_collection_policy/';
+        let cPEditUrl = '/api_collection_policy/';
         if (this.doCheck()) {
             cPInfo['name'] = this.name;
             cPInfo['cli_command'] = this.cliCommand;
             cPInfo['desc'] = this.desc;
             cPInfo['ostype'] = this.selectedOsType;
+            cPInfo['policy_type'] = this.cPType;
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
                 .subscribe(res => {
-                    if (res['status']['status'].toString().toLowerCase() === 'true') {
-                        if (res['data']) {
-                            let id = res['data']['coll_policy_id'];
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    let data = _.get(res, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (data && data['data']) {
+                            let id = _.get(data['data'], 'coll_policy_id');
                             this.router.navigate(['/index/clicpedit'],
                                 { queryParams: { 'id': id } });
                         }
                     } else {
-                        if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                        if (msg && msg === 'CP_NAME_DUPLICATE') {
                             this.uniqueFlg = false;
                         } else {
-                            alert(res['status']['message']);
+                            alert(msg);
                         }
                     }
                 });
