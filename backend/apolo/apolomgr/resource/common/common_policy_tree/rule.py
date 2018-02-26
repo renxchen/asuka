@@ -11,6 +11,8 @@
 
 '''
 import re
+
+from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
 from backend.apolo.tools import constants
 
 
@@ -42,7 +44,11 @@ class Policy(object):
         self.block_end_offset = self.extract_policy['block_end_offset']
         self.is_serial = self.extract_policy['is_serial']
         self.basic_c = self.extract_policy['basic_characters']
-        self.extract_regexp = self.extract_policy['extract_regexp']
+        if self.rule_type <5:
+            if not self.extract_policy['extract_regexp']:
+                self.extract_regexp = '.*'
+            else:
+                self.extract_regexp = self.extract_policy['extract_regexp']
         # raw data of target block
         if self.deep >0 and self.rule_type >4:
             self.start_line +=1
@@ -335,6 +341,7 @@ class Policy(object):
                         msg = constants.NO_MATCH_EXTRACT_DATA_REGEXP
 
                 if i == basic_character_line_num and not basic_character_find_flag:
+                    self.render_b_c = r'{}'.format(Tool.repalce_escape_char(self.render_b_c))
                     pattern = re.compile(self.render_b_c)
                     m = re.search(pattern, arry[j])
                     if m is not None:
@@ -486,7 +493,8 @@ class Policy(object):
                         'block_start_characters': start_string,
                         'identifier_line_num': block_start_line_num,
                         'block_path': self.__set_block_path__(identifier),
-                        'deep': self.deep
+                        'deep': self.deep,
+                        'rule_type': 5
                         # 'extract_data': '\n'.join(self.data_list[block_start_line_num: block_end_line_num+1])
                     }
                     result.append(res_dict)
@@ -517,7 +525,8 @@ class Policy(object):
                 'block_start_characters': start_string,
                 'identifier_line_num': block_start_line_num,
                 'block_path': self.__set_block_path__(identifier),
-                'deep': self.deep
+                'deep': self.deep,
+                'rule_type': 5
                 # 'extract_data': '\n'.join(self.data_list[block_start_line_num:block_end_line_num+1])
             }
             result.append(res_dict)
@@ -566,7 +575,8 @@ class Policy(object):
                         'block_start_characters': start_string,
                         'identifier_line_num': identifier_line_num,
                         'block_path': self.__set_block_path__(identifier),
-                        'deep': self.deep
+                        'deep': self.deep,
+                        'rule_type': 6
                         # 'extract_data': '\n'.join(self.data_list[block_start_line_num: block_end_line_num+1])
                     }
                     result.append(res_dict)
@@ -612,7 +622,8 @@ class Policy(object):
                         'identifier_line_num': identifier_line_num,
                         'block_path': '{},{}'.format(self.block_path, identifier),
                         'is_include': self.is_include_end_characters,
-                        'deep': self.deep
+                        'deep': self.deep,
+                        'rule_type': 7
                         # 'extract_data': '\n'.join(self.data_list[block_start_line_num:block_end_line_num + 1])
                     }
                     result.append(res_dict)
@@ -647,13 +658,14 @@ class Policy(object):
                 'identifier_line_num': identifier_line_num,
                 'block_path': self.__set_block_path__(identifier),
                 'is_include': self.is_include_end_characters,
-                'deep': self.deep
+                'deep': self.deep,
+                'rule_type': 7
                 # 'extract_data': '\n'.join(self.data_list[block_start_line_num:block_end_line_num + 1])
             }
             result.append(res_dict)
         return result
 
-    def extract_block_by_regular(self):
+    def extract_block_by_regular_bk(self):
         self.__set_input__()
         basic_pattern = self.basic_c
         block_start_line_num = 0
@@ -701,5 +713,32 @@ class Policy(object):
             }
             result.append(res_dict)
 
+        return result
+
+    def extract_block_by_regular(self):
+        self.__set_input__()
+        basic_pattern = self.basic_c
+        line_count = 0
+        result = []
+        for one_line in self.raw_data_list:
+            basic_pattern_match = re.search(basic_pattern, one_line)
+            if basic_pattern_match:
+                match_string = basic_pattern_match.group()
+                line_num = self.start_line + line_count
+                match_context = line_num, match_string
+                block_start_line_num = self.start_line + line_count
+                block_end_line_num = block_start_line_num
+                res_dict = {
+                    'start_line': block_start_line_num,
+                    'end_line': block_end_line_num,
+                    'block_start_characters': self.basic_c,
+                    'deep': self.deep,
+                    'block_path': self.__set_block_path__(self.basic_c),
+                    'reg_match_context': match_context,
+                    'rule_type': 8
+                    # 'extract_data': '\n'.join(self.data_list[block_start_line_num:block_end_line_num + 1])
+                }
+                result.append(res_dict)
+            line_count += 1
         return result
 

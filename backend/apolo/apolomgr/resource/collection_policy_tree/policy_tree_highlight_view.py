@@ -39,9 +39,9 @@ class PolicyTreeHighLightViewSet(viewsets.ViewSet):
         try:
             render = Render(**request_dict)
             html_data = render.render()
-            f = open(r'C:\Users\yangyuan\Desktop\D2\apolo\ntt W\text1.html', 'w')
-            f.write(html_data)
-            f.close()
+            # f = open(r'C:\Users\yangyuan\Desktop\D2\apolo\ntt W\text1.html', 'w')
+            # f.write(html_data)
+            # f.close()
             data = {
                 'data': html_data,
                 'new_token': self.new_token,

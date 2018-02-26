@@ -18,7 +18,7 @@ class SchedulesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedules
         fields = ('schedule_id', 'valid_period_type', 'data_schedule_type', 'start_period_time',
-                  'end_period_time', 'period_time', 'data_schedule_time', 'priority', 'status',
+                  'end_period_time', 'period_time', 'data_schedule_time', 'priority', 'schedules_is_valid',
                   'policy_group_name', 'policy_group_id', 'device_group_name', 'device_group_id',
                   'ostype_id', 'ostype_name',)
 
