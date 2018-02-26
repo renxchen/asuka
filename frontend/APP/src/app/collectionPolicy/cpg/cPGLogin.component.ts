@@ -10,7 +10,7 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'cpg-login',
-    templateUrl: 'cPGLogin.component.html',
+    templateUrl: './cPGLogin.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 export class CPGLoginComponent implements OnInit, AfterViewInit {

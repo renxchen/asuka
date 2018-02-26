@@ -8,7 +8,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
 @Component({
     selector: 'cli-data',
-    templateUrl: 'cliData.component.html',
+    templateUrl: './cliData.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 export class CLIDataComponent implements OnInit, AfterViewInit {
@@ -105,7 +105,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                     this.otherChar = _.get(data, 'other_char');
                 }
             }
-            if (res['rule_is_used'] || res['rule_is_used'].toLowerCase() === 'true' && this.info['delFlg']) {
+            if (res['rule_is_used'] || res['rule_is_used'].toString().toLowerCase() === 'true' && this.info['delFlg']) {
                 this.delBtn = false;
             } else {
                 this.delBtn = true;
@@ -372,7 +372,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                     if (status && status['status'].toLowerCase() === 'true') {
                         if (data) {
                             let dataTree: any = {};
-                            dataTree = _.get(data, 'data_rule_tree_json');
+                            dataTree['dataTree'] = _.get(data, 'data_rule_tree_json');
                             alert('削除しました。');
                             this.bsModalRef.hide();
                             this.modalService.setDismissReason(dataTree);

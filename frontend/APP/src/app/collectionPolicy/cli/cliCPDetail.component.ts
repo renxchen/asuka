@@ -9,7 +9,7 @@ declare var $: any;
 
 @Component({
     selector: 'cli-detail',
-    templateUrl: 'cliCPDetail.component.html',
+    templateUrl: './cliCPDetail.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 export class CLICPDetailComponent implements OnInit, AfterViewInit {

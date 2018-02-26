@@ -8,7 +8,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
 @Component({
     selector: 'cliCP-pop',
-    templateUrl: 'cliCPEditPop.component.html',
+    templateUrl: './cliCPEditPop.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 

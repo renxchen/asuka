@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'cli-login',
-    templateUrl: 'cliCPLogin.component.html',
+    templateUrl: './cliCPLogin.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 
