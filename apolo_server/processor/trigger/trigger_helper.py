@@ -3,6 +3,9 @@ from apolo_server.processor.db_units.db_helper import TriggerDbHelp
 from apolo_server.processor.trigger.function_helper import Max, Min, Avg, Hex2Dec, Last, LastRange, handle_expression, \
     _create_item
 from apolo_server.processor.units import FunctionException
+import logging
+import time
+from multiprocessing.dummy import Pool as ThreadPool
 
 
 class TriggerHelp(object):
@@ -19,6 +22,7 @@ class TriggerHelp(object):
             trigger.expression = handle_expression(trigger.expression)
             try:
                 trigger_status = eval(trigger.expression)
+                # trigger_status = 0
             except FunctionException, e:
                 self.logger.error(str(e))
             events.append([trigger.trigger, trigger_status, task_timestamp])
@@ -37,10 +41,10 @@ class TriggerHelp(object):
         for event in events:
             trigger_instance = event[0]
             instance = TriggerDbHelp().get_latest_event(TriggerConstants.TRIGGER_EVENT_SOURCE, trigger_instance.trigger_id)
-            if len(instance) == 0:
+            if instance is None:
                 latest_number = 0
             else:
-                latest_number = instance[len(instance) - 1]['number']
+                latest_number = instance.number
             if event[1]:
                 latest_number = 0
                 value = TriggerConstants.NORMAL_VALUE
@@ -52,3 +56,24 @@ class TriggerHelp(object):
             tmp.append(
                 [TriggerConstants.TRIGGER_EVENT_SOURCE, trigger_instance.trigger_id, latest_number, event[2], value])
         TriggerDbHelp().save_events(tmp)
+
+
+def __test():
+    items = {4: {
+        "item_id": 4,
+        "value_type": "Int",
+        "policy_type": "Cli"
+    }}
+    timestamp = int(time.time())
+    trigger = TriggerHelp(items, logging)
+    trigger.trigger(task_timestamp=timestamp)
+
+if __name__ == "__main__":
+    # pool = ThreadPool(20)
+    # t1 = time.clock()
+    # for i in range(0, 1):
+    #     pool.apply_async(__test)
+    # pool.close()
+    # pool.join()
+    # print time.clock() - t1
+    __test()

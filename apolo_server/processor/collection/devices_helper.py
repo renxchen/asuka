@@ -108,7 +108,6 @@ def get_items(item_type):
 def get_valid_items(now_time, item_type):
     items = get_items(item_type)
     items = valid_items(now_time, items)
-
     items = map(__item_type_mapping, items)
     return items
 
@@ -456,7 +455,7 @@ def __add_items_valid_status(item, status):
 
 
 if __name__ == "__main__":
-    for i in get_devices(1517281147, 0).items():
+    for i in get_devices(1519612244, 0).items():
         print i
     # device_valid = DeviceValid(1517281147)
     # print device_valid.valid(1)

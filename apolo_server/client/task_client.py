@@ -3,6 +3,7 @@ import requests
 import json
 import time
 from multiprocessing.dummy import Pool as ThreadPool
+import threading
 TIMEOUT = 300
 DEFAULT_LOG_FILE_PATH = "log.log"
 DEFAULT_LOG_LEVEL = logging.INFO
@@ -11,7 +12,7 @@ BASE_CLI_PLATFORM = 'ios'
 BASE_SNMP_METHOD = "bulk_get"
 CLI_TYPE_CODE = 0
 SNMP_TYPE_CODE = 1
-CLI_THREADPOOL_SIZE = 150
+CLI_THREADPOOL_SIZE = 20
 SNMP_THREADPOOL_SIZE = 15
 GET_CLI_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
 GET_SNMP_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
@@ -88,6 +89,7 @@ def log_factory(**kwargs):
 
 def get_devices(param):
     __service_url = GET_DEVICES_SERVICE_URL
+    print json.dumps(param, indent=2)
     try:
         res = requests.post(__service_url, data=json.dumps(param), timeout=TIMEOUT)
     except requests.exceptions.ConnectionError:
@@ -95,6 +97,7 @@ def get_devices(param):
     except requests.exceptions.ReadTimeout:
         raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_TIMEOUT)
     status_code = res.status_code
+
     if status_code == 200:
         devices = json.loads(str(res.text))
     else:
@@ -125,7 +128,6 @@ def send_trigger(param):
 def __get_cli_data(param):
     __base_url = GET_CLI_DATA_SERVICE_URL
     __url = __base_url % 'cli'
-
     try:
         res = requests.post(__url, data=json.dumps(param), timeout=TIMEOUT)
     except requests.exceptions.ConnectionError:
@@ -195,6 +197,7 @@ def cli_main():
     )
     try:
         devices = get_devices(param)
+
         items = []
         # for i in devices['output']['devices']:
         #     items.extend(i['items'])
@@ -203,7 +206,9 @@ def cli_main():
         if len(devices) == 0:
             cli_logger.debug(LogMessage.DEBUG_NO_DEVICE_RUNNING_AT_TIME)
         pool = ThreadPool(CLI_THREADPOOL_SIZE)
-        pool.map(__get_cli_data, devices)
+        for device in devices:
+            pool.apply_async(__get_cli_data, args=(device, ))
+        # pool.map(__get_cli_data, devices)
         pool.close()
         pool.join()
     except DeviceServiceExceptions, e:
