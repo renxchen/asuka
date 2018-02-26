@@ -9,7 +9,7 @@ declare var $: any;
 import * as _ from 'lodash';
 @Component({
     selector: 'cpg-action',
-    templateUrl: 'cPGAction.component.html',
+    templateUrl: './cPGAction.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 export class CPGActionComponent implements OnInit, AfterViewInit {

@@ -15,6 +15,7 @@ import { BreadCrumbModule } from '../components/breadCrumb/bread-crumb.module';
 import { ModModule } from '../components/modal/modal.module';
 import { LoginComponentModule } from './login/login.module';
 import { IndexComponentModule } from './index/index.module';
+import { DeviceModule } from './device/device.module';
 import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.module';
 import { DataCollectionComponentModule } from './dataCollection/dataCollection.module';
 import { ActionPolicyComponentModule } from './actionPolicy/actionPolicy.module';
@@ -46,12 +47,10 @@ export function HttpLoaderFactory(http: HttpClient) {
         SharedModule,
         HClientModule,
         BreadCrumbModule,
-        LoginComponentModule,
-        IndexComponentModule,
+        DeviceModule,
         CPViewComponentModule,
         LoginComponentModule,
         IndexComponentModule,
-        CPViewComponentModule,
         DataCollectionComponentModule,
         ActionPolicyComponentModule,
         BreadCrumbModule,

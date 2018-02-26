@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 declare var $: any;
 @Component({
     selector: 'cp-view',
-    templateUrl: 'cPView.component.html',
+    templateUrl: './cPView.component.html',
     styleUrls: ['collectionPolicy.component.less']
 })
 export class CPViewComponent implements OnInit, AfterViewInit {
@@ -153,7 +153,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             //     this.closeMsg = 'close';
             //     _t.showAlertModal(this.modalMsg, this.closeMsg);
             // } else {
-            //     if (res['status'] && res['status']['message']) {
+            //     if (res['status'] && fres['status']['message']) {
             //         alert(res['status']['message']);
             //     }
             // }

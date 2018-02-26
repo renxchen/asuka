@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { TranslateService } from '@ngx-translate/core';
 @Component({
     selector: 'snmp-detail',
-    templateUrl: 'snmpCPDetail.component.html',
+    templateUrl: './snmpCPDetail.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 

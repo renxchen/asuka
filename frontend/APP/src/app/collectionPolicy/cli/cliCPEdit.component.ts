@@ -14,7 +14,7 @@ declare var $: any;
 
 @Component({
     selector: 'cli-edit',
-    templateUrl: 'cliCPEdit.component.html',
+    templateUrl: './cliCPEdit.component.html',
     styleUrls: ['.././collectionPolicy.component.less'],
     providers: [CollectionPolicyService]
 })
@@ -48,9 +48,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         if (cPIdeTmp && typeof (cPIdeTmp) !== 'undefined') {
             this.cPId = cPIdeTmp;
             this.getCPInfo(this.cPId);
-            console.log(this.cPId);
         } else {
-            console.log('tmp', cPIdeTmp);
             this.router.navigate(['/index/']);
         }
 
@@ -456,6 +454,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.modalRef.content.info = sendInfo;
         let blockTree$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
+                console.log(res);
                 $('#blockTree').jstree('destroy');
                 let tree = _.get(res, 'blockTree');
                 let nodes = sendInfo.node;
@@ -477,6 +476,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         // 获取blockTree上的text
         let dataTree$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
+                console.log('resData', res);
                 $('#dataTree').jstree('destroy');
                 let tree = _.get(res, 'dataTree');
                 let nodes = sendInfo.node;

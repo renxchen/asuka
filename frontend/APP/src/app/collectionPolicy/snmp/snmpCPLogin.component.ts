@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 
 @Component({
     selector: 'snmp-login',
-    templateUrl: 'snmpCPLogin.component.html',
+    templateUrl: './snmpCPLogin.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 
