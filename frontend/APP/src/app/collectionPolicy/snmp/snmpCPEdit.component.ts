@@ -9,7 +9,7 @@ import { Validator } from '../../../components/validation/validation';
 import * as _ from 'lodash';
 @Component({
     selector: 'snmp-edit',
-    templateUrl: 'snmpCPEdit.component.html',
+    templateUrl: './snmpCPEdit.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 

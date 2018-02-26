@@ -7,7 +7,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import * as _ from 'lodash';
 @Component({
     selector: 'cli-block',
-    templateUrl: 'cliBlock.component.html',
+    templateUrl: './cliBlock.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 
@@ -112,7 +112,8 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     this.isSerial = _.get(data, 'is_serial');
                     this.extractKey = _.get(data, 'extract_key');
                 }
-                if (res['rule_is_used'] || res['rule_is_used'].toLowerCase() === 'true' && this.info['delFlg']) {
+                console.log(res['rule_is_used']);
+                if (res['rule_is_used'] || res['rule_is_used'].toString().toLowerCase() === 'true' && this.info['delFlg']) {
                     this.delBtn = false;
                 } else {
                     this.delBtn = true;
@@ -324,7 +325,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     if (status && status['status'].toLowerCase() === 'true') {
                         if (data) {
                             let blockTree: any = {};
-                            blockTree = _.get(data, 'block_rule_tree_json');
+                            blockTree['blockTree'] = _.get(data, 'block_rule_tree_json');
                             alert('削除しました。');
                             this.bsModalRef.hide();
                             this.modalService.setDismissReason(blockTree);

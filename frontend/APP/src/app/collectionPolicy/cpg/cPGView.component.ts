@@ -14,7 +14,7 @@ declare var $: any;
 
 @Component({
     selector: 'cpg-view',
-    templateUrl: 'cPGView.component.html',
+    templateUrl: './cPGView.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 export class CPGViewComponent implements OnInit, AfterViewInit {

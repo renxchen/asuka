@@ -5,6 +5,10 @@ import { ModalComponent } from '../components/modal/modal.component';
 import { LoginComponent } from './login/login.component';
 // index
 import { IndexComponent } from './index/index.component';
+// device
+import { DeviceGroupComponent} from './device/deviceGroup/deviceGroup.component';
+import { GroupLoginComponent} from './device/deviceGroup/groupLogin.component';
+import { GroupEditComponent} from './device/deviceGroup/groupEdit.component';
 // collection policy
 import { CPViewComponent } from './collectionPolicy/cPView.component';
 import { CLICPLoginComponent } from './collectionPolicy/cli/cliCPLogin.component';
@@ -57,6 +61,15 @@ const routes: Routes = [
               parentTitle: 'コレクションポリシー',
               title: 'コレクションポリシー一覧',
             }
+          },
+          // device
+          {
+              path: 'devicegroup',
+              component: DeviceGroupComponent,
+              data: {
+                parentTitle: 'デバイス',
+                title: 'デバイスグループ閲覧',
+              }
           },
           // collection policy
           {
@@ -194,6 +207,9 @@ const routes: Routes = [
 export const appRouting = RouterModule.forRoot(routes);
 export const entryComponentList: any[] = [
 ModalComponent,
+    // device
+    GroupLoginComponent,
+    GroupEditComponent,
     // collection policy
     CLIBlockComponent,
     CLIDataComponent,

@@ -19,7 +19,6 @@ import { CPGDetailComponent } from './cpg/cPGDetail.component';
 import { CPGEditComponent } from './cpg/cPGEdit.component';
 import { CPGActionComponent } from './cpg/cPGAction.component';
 
-
 @NgModule({
     declarations: [CPViewComponent, CLICPLoginComponent,
         CLICPEditComponent, CLICPDetailComponent,

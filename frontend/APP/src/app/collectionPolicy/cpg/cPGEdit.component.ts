@@ -10,7 +10,7 @@ declare var $: any;
 
 @Component({
     selector: 'cpg-edit',
-    templateUrl: 'cPGEdit.component.html',
+    templateUrl: './cPGEdit.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
 export class CPGEditComponent implements OnInit {
