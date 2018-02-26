@@ -3,9 +3,13 @@ from apolo_server.processor.constants import ParserConstants, CommonConstants
 from apolo_server.processor.parser.common_policy_tree.tool import Tool
 from apolo_server.processor.db_units.memcached_helper import ItemMemCacheDb, RulesMemCacheDb
 from apolo_server.processor.db_units.db_helper import ParserDbHelp
+from multiprocessing.dummy import Pool as ThreadPool
+import threading
 import json
+import os
 import logging
-
+import time
+import thread
 
 class Parser(object):
     def __init__(self, param):
@@ -78,6 +82,7 @@ class CliParser(Parser):
 
 
 def parser_main(item_type, params):
+
     def __wrapper(items):
         result = {}
         for item in items:
@@ -98,9 +103,16 @@ def parser_main(item_type, params):
 
 
 if __name__ == "__main__":
+    time.clock()
     with open("test_cli_param.json") as f:
         test_cli_param = json.loads(f.read())
-    items, timestamp = parser_main(item_type=0, params=test_cli_param)
+    # items, timestamp = parser_main(item_type=0, params=test_cli_param)
+
+    pool = ThreadPool(20)
+    for i in range(0, 1000):
+        pool.apply_async(parser_main, args=(0, test_cli_param))
+    pool.close()
+    pool.join()
     # trigger = TriggerHelp(items, logging)
     # trigger.trigger(task_timestamp=123)
     # cli_handle = CliParser(test_cli_param)

@@ -59,10 +59,10 @@ class WorkerBase(Thread):
                     # deal with task by handler, and get result
                     task = json.loads(task_str)
                     start_time = time.strftime('%Y-%m-%d %H:%M:%S')
-                    global counter_loc
-                    if counter_lock.acquire():
-                        result = self.handler(task_id, task, self.logger)
-                        counter_lock.release()
+                    # global counter_loc
+                    # if counter_lock.acquire():
+                    result = self.handler(task_id, task, self.logger)
+                        # counter_lock.release()
                     end_time = time.strftime('%Y-%m-%d %H:%M:%S')
                     result.update(dict(start_time=start_time, end_time=end_time))
                     # push result to server
