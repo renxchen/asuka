@@ -27,7 +27,8 @@ class MemCacheBase(object):
         # if self.AUTO_UPDATE_LATEST or auto_update_latest:
         #     self.delete()
         data = self._mc.get(self.key)
-        if data:
+        if data is not None:
+            print 1
             logging.debug("Get data from memory cache")
         else:
             data = self.do_get()
@@ -94,10 +95,22 @@ class RulesMemCacheDb(MemCacheBase):
         result = [rule for rule in rules]
         return result
 
-if __name__ == "__main__":
-    with RulesMemCacheDb() as item:
-        print item.get()
 
+class TaskRunningMemCacheDb(MemCacheBase):
+    def __init__(self):
+        super(TaskRunningMemCacheDb, self).__init__()
+        self.key = "Task_Running_Status"
+
+    def do_get(self):
+        return False
+
+
+if __name__ == "__main__":
+    # with RulesMemCacheDb() as item:
+    #     print item.get()
+
+    with TaskRunningMemCacheDb() as cache:
+        print cache.get()
     # item.flush_all()
     # for i in item._get():
     #     print i
