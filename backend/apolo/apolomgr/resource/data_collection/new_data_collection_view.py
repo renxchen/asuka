@@ -102,7 +102,6 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                     select_sql += ' (coll_policy_id = {} and device_id = {})'.format(coll_policy_id, device_id)
                 else:
                     select_sql += ' (coll_policy_id = {} and device_id = {}) or '.format(coll_policy_id, device_id)
-        print select_sql
         query_list = list(Items.objects.raw(select_sql))
         schedule_id_dict = {}
         if len(query_list):

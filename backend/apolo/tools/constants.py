@@ -159,7 +159,7 @@ POLICY_DEVICE_COMBINATION = 'the combination of policy and device  is used'
 CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
 CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
 DATA_COLLECTION_POST_URL ='http://10.71.244.134:7777/api/v1/getItems'
-
+POLICY_POST_URL = 'POST：http://10.71.244.134:7777/api/v1/valid'
 #########################################
 # render
 #########################################
@@ -175,4 +175,5 @@ NO_EXTRACT_LINE_NUM = 'no lines'
 BLOCK_START_HTML_FONT_START = '<font color="red">'
 LINE_NUM_MSG_REPLACE = '@##@'
 LEAF_IS_BLOCK_RULE = 'LEAF_IS_BLOCK_RULE'
+POLICY_TREE_IS_GROUPED = 'policy tree is grouped'
 

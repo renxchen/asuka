@@ -16,7 +16,7 @@ from django.db import transaction
 from rest_framework import viewsets
 
 from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
-from backend.apolo.models import Schedules, Items
+from backend.apolo.models import Schedules, Items, DataTableItems
 from backend.apolo.serializer.data_collection_serializer import SchedulesSerializer
 from backend.apolo.tools import views_helper, constants
 from backend.apolo.tools.exception import exception_handler
@@ -63,9 +63,15 @@ class DataCollectionViewSet(viewsets.ViewSet):
                    schedules_dict['end_period_time'] = schedules_dict['end_period_time'].replace('@', ' ')
                else:
                    schedules_dict['end_period_time'] = None
+
+               item_list = self.__get_items_list(schedule_id)
+               is_processing = self.__check_is_Processing(item_list)
+               is_lock = self.__check_is_lock(item_list)
                data = {
                    'data': schedules_dict,
                    'new_token': self.new_token,
+                   'isProcessing': is_processing,
+                   'isLock': is_lock,
                    constants.STATUS: {
                        constants.STATUS: constants.TRUE,
                        constants.MESSAGE: constants.SUCCESS
@@ -80,12 +86,10 @@ class DataCollectionViewSet(viewsets.ViewSet):
                 'start_period_time': 'start_period_time',
                 'end_period_time': 'end_period_time',
                 'policy_group': 'policy_group__name',
-                'device_group': 'device_group__name',
-                'status': 'status'
+                'device_group': 'device_group__name'
             }
             query_data = {
                 'priority': Tool.priority_mapping(priority),
-                'status': Tool.schedule_status_mapping(status),
                 'data_schedule_type': Tool.schedule_type_mapping(data_schedule_type),
                 'start_period_time': start_period_time.replace(' ', '@'),
                 'end_period_time': end_period_time.replace(' ', '@'),
@@ -94,16 +98,26 @@ class DataCollectionViewSet(viewsets.ViewSet):
                 'device_group__name': device_group
             }
             search_fields = ['priority', 'ostype', 'device_group', 'policy_group', 'start_period_time',
-                             'end_period_time', 'data_schedule_type', 'status']
+                             'end_period_time', 'data_schedule_type']
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                           query_data, search_fields)
+
             total_num = len(Schedules.objects.all())
             if search_conditions:
                 queryset = Schedules.objects.filter(**search_conditions).order_by(*sorts)
             else:
                 queryset = Schedules.objects.all().order_by(*sorts)
             serializer = SchedulesSerializer(queryset, many=True)
-            paginator = Paginator(serializer.data, int(self.max_size_per_page))
+            # filter status
+            result_list = []
+            if status:
+                schedule_status = Tool.schedule_status_mapping(status)
+                for schedule_item in serializer.data:
+                    if schedule_item['schedules_is_valid'] in schedule_status:
+                        result_list.append(schedule_item)
+                paginator = Paginator(result_list, int(self.max_size_per_page))
+            else:
+                paginator = Paginator(serializer.data, int(self.max_size_per_page))
             contacts = paginator.page(int(self.page_from))
             data = {
                 'data': contacts.object_list,
@@ -142,34 +156,23 @@ class DataCollectionViewSet(viewsets.ViewSet):
     def delete(self):
         # v1/api_data_collection/?id=1
         schedule_id = views_helper.get_request_value(self.request, 'id', 'GET')
-        if not self.__delete_recode_check(schedule_id):
-            data = {
-                'new_token': self.new_token,
-                constants.STATUS: {
-                    constants.STATUS: constants.FALSE,
-                    constants.MESSAGE: constants.CAN_NOT_DELETE_SCHEDULE_MESSAGE  # can not delete
-                }
-            }
-            return api_return(data=data)
-        else:
-
-            try:
-                with transaction.atomic():
-                    # delete items table
-                    # delete schedule table
-                    Items.objects.filter(schedule_id=schedule_id).delete()
-                    Schedules.objects.get(schedule_id=schedule_id).delete()
-                    data = {
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
-                        }
+        try:
+            with transaction.atomic():
+                # delete items table
+                # delete schedule table
+                Items.objects.filter(schedule_id=schedule_id).delete()
+                Schedules.objects.get(schedule_id=schedule_id).delete()
+                data = {
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.TRUE,
+                        constants.MESSAGE: constants.SUCCESS
                     }
-                    return api_return(data=data)
-            except Exception as e:
-                print traceback.format_exc(e)
-                return exception_handler(e)
+                }
+                return api_return(data=data)
+        except Exception as e:
+            print traceback.format_exc(e)
+            return exception_handler(e)
 
     @staticmethod
     def __update_recode_check(schedule_id):
@@ -183,19 +186,34 @@ class DataCollectionViewSet(viewsets.ViewSet):
         else:
             return False
 
-    def __check_is_lock(self, schedule_id):
-        self.__get_items_list(schedule_id)
+    @staticmethod
+    def __check_is_lock(arry):
+        queryset = DataTableItems.objects.exclude(itme__in=arry)
+        if queryset.count() > 0:
+            return True
+        else:
+            return False
 
-    def __check_is_Processing(self, schedule_id):
-         pass
+    @staticmethod
+    def __check_is_Processing(arry):
+        is_processing = False
+        data = Tool.get_data_from_collection_server()
+        for recoder in data['items']:
+            if recoder['valid_status']:
+                if recoder['item_id'] in arry:
+                    is_processing = True
+                    break
+            else:
+                continue
+        return is_processing
 
     @staticmethod
     def __get_items_list(schedule_id):
         queryset = Items.objects.filter(schedule=schedule_id).values('item_id')
-        arry = []
+        item_id_arry = []
         for item in queryset:
-            arry.append(item['item_id'])
-        return arry
+            item_id_arry.append(item['item_id'])
+        return item_id_arry
 
 
 

@@ -196,7 +196,6 @@ class Render(Tool, DBOpt):
                     # for item in node:
                     start_line = item['start_line']
                     end_line = item['end_line']
-
                     for i in range(len(all_data)):
                         if item.has_key('identifier_line_num'):
                             if i == item['identifier_line_num']:
@@ -211,13 +210,32 @@ class Render(Tool, DBOpt):
                             color_index += 1
                             # block rule by regular
                             if item.has_key('reg_match_context'):
-                                for (lm, match_string) in item['reg_match_context']:
-                                    if constants.EXTRACT_DATA_HTML_FONT_START not in all_data[lm]:
-                                        all_data[lm] = all_data[lm].replace(match_string,
-                                                                          '{}{}{}'.format(
-                                                                              constants.BLOCK_START_HTML_FONT_START,
-                                                                              match_string,
-                                                                              constants.HTML_FONT_END))
+                                (lm, match_string) =item['reg_match_context']
+                                if constants.EXTRACT_DATA_HTML_FONT_START not in all_data[lm]:
+                                    all_data[lm] = all_data[lm].replace(match_string,
+                                                                      '{}{}{}'.format(
+                                                                          constants.BLOCK_START_HTML_FONT_START,
+                                                                          match_string,
+                                                                          constants.HTML_FONT_END))
+                            # if item['rule_type'] == 8:
+                            #     # block rule by regular
+                            #     if item.has_key('reg_match_context'):
+                            #         for (lm, match_string) in item['reg_match_context']:
+                            #             if constants.EXTRACT_DATA_HTML_FONT_START not in all_data[lm]:
+                            #                 all_data[lm] = all_data[lm].replace(match_string,
+                            #                                                     '{}{}{}'.format(
+                            #                                                         constants.BLOCK_START_HTML_FONT_START,
+                            #                                                         match_string,
+                            #                                                         constants.HTML_FONT_END))
+                            #                 all_data[lm] = '<div style="background-color:{};display: inline-block;">{}' \
+                            #                                '</div>'.format(self.colors[deep][color_index], all_data[lm])
+                            #                 color_index += 1
+                            # else:
+                            #     all_data[i] = '<div style="background-color:{};display: inline-block;">{}'.format(
+                            #         self.colors[deep][color_index], all_data[i])
+                            #     color_index += 1
+
+
                         if i == end_line:
                             if item.has_key('is_include'):
                                 if item['is_include']:

@@ -307,16 +307,19 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
         if front_data.has_key('extract_key'):
             rule_data_dict['extract_key'] = front_data['extract_key']
+            # if front_data['extract_key']:
+            #     rule_data_dict['extract_key'] = front_data['extract_key']
+            # else:
+            #     # if rule_data_dict['rule_type'] >4:
+            #     #     rule_data_dict['extract_key'] = None
+            #     # else:
+            #     rule_data_dict['extract_key'] = '.*'
         else:
-            if rule_data_dict['rule_type'] >4:
-                rule_data_dict['extract_key'] = None
-            else:
-                rule_data_dict['extract_key'] = '.*'
+            rule_data_dict['extract_key'] = None
 
         if front_data.has_key('value_type'):
             rule_data_dict['value_type'] = front_data['value_type']
         else:
             rule_data_dict['value_type'] = None
 
-        print rule_data_dict
         return rule_data_dict

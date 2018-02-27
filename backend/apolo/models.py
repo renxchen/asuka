@@ -7,6 +7,7 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from __future__ import unicode_literals
 
+import time
 from django.db import models
 
 
@@ -367,10 +368,6 @@ class PolicysGroups(models.Model):
     def policy_name(self):
         return self.policy.name
 
-    @property
-    def policy_policy_type(self):
-        return self.policy.policy_type
-
 
 class Schedules(models.Model):
     schedule_id = models.AutoField(primary_key=True)
@@ -407,6 +404,18 @@ class Schedules(models.Model):
         after = self.end_period_time.replace('@', ' ')
         return str(before) + '~' + str(after)
 
+    @property
+    def schedules_is_valid(self):
+        now_time = time.strftime('%Y-%m-%d@%H:%M:%S', time.localtime(time.time()))
+        if self.valid_period_type == 0:
+            return 1
+        else:
+            if self.start_period_time < now_time < self.end_period_time:
+                return 1
+            else:
+                return 0
+
+
 
 class TriggerDetail(models.Model):
     trigger_detail_id = models.AutoField(primary_key=True)
@@ -435,7 +444,6 @@ class Triggers(models.Model):
     expression = models.CharField(max_length=255, blank=True, null=True)
     columnA = models.CharField(max_length=255, blank=True, null=True)
     columnB = models.CharField(max_length=255, blank=True, null=True)
-
     class Meta:
         # managed = False
         db_table = 'triggers'
