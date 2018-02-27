@@ -18,28 +18,30 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
     // dd: string = '1';
     deviceNo: any;
     stopAll = '<button class="btn btn-xs btn-primary" id="stopAll">全停止</button>';
-    startAll = '<button class="btn btn-default" id="openAll">全解除</button>';
-    dcModel: any = [
+    startAll = '<button class="btn btn-xs btn-default" id="stopAll">全解除</button>';
+    ppdModel: any = [
         {label: 'No', hidden: true, name: 'policyNo', index: 'policyNo'},
-        {label: 'デバイス',  name: 'device', width: 30, align: 'center',
-        cellattr: this.arrtSetting, sortable: false,},
+        // {label: 'デバイス',  name: 'device', width: 30, align: 'center',
+        // cellattr: this.arrtSetting, sortable: false,},
         {label: 'コレクションポリシーグループ名',  name: 'cpGroup', width: 100,
             align: 'center', sortable: false, cellattr: this.arrtSetting,},
         {label: 'プライオリティー',  name: 'priority', width: 30,
             align: 'center', sortable: false, cellattr: this.arrtSetting,},
         {label: 'コレクションポリシー', name: 'policy', width: 50, align: 'center',
             classes: 'policy', sortable: false,cellattr: this.renderCpColor },
-        {label: this.stopAll, name: 'valid_status', width: 50, align: 'center', search: false,
+        // {label: this.stopAll, name: 'valid_status', width: 50, align: 'center', search: false,
+        // formatter: this.fomatterBtn, sortable: false, height: 50,},
+        {label: '', name: 'action', width: 50, align: 'center', search: false,
         formatter: this.fomatterBtn, sortable: false, height: 50,}
     ];
     deviceList: any = [];
     testData: any = [
-        {policyNo: 10, device:'SSEU A', cpGroup: 'Cisco AER 基本監視', priority: '標準',
-        policy: 'CPU監視  60分おき', action: 0, attr: {device: {rowspan: "3"}, cpGroup: {rowspan: "2"}, priority: {rowspan: "2"}}},
-        {policyNo: 20, device:'SSEU A', cpGroup: 'Cisco AER 基本監視', priority: '標準',
-        policy: 'HDD監視  60分おき', action: 1, attr: {device: {rowspan: "none"}, cpGroup: {rowspan: "none"}, priority: {rowspan: "none"}}},
-        {policyNo: 30, device:'SSEU A', cpGroup: '緊急停止_SSEU A', priority: '緊急',
-        policy: 'CPU監視  機能OFF', action: 1, attr: {device: {rowspan: "none"}, cpGroup: {rowspan: "1"}, priority:{rowspan: "1"}}},
+        {policyNo: 10, cpGroup: 'Cisco AER 基本監視', priority: '標準',
+        policy: 'CPU監視  60分おき', action: 0, attr: {cpGroup: {rowspan: "2"}, priority: {rowspan: "2"}}},
+        {policyNo: 20, cpGroup: 'Cisco AER 基本監視', priority: '標準',
+        policy: 'HDD監視  60分おき', action: 1, attr: {cpGroup: {rowspan: null}, priority: {rowspan: null}}},
+        {policyNo: 30, cpGroup: '緊急停止_SSEU A', priority: '緊急',
+        policy: 'CPU監視  機能OFF', action: 1, attr: {cpGroup: {rowspan: "1"}, priority:{rowspan: "1"}}},
         // {cpNo: 2, cPName: 'ishiba_test_01', ostype: 'cisco-ios', oid: '$#$3', commond: 'show interface', summary: 'test'},
         // {cpNo: 3, cPName: 'ishiba_test_02', ostype: 'cisco-ios', oid: '$#$8', commond: 'show file systems', summary: 'file'},
         // {cpNo: 4, cPName: 'ishiba_test_03', ostype: 'cisco-ios', oid: '$#$2', commond: 'show data', summary: 'data'},
@@ -101,9 +103,10 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                             // console.log('init,no=1 :',this.deviceNo);
 
                         }
-                        this.drawPPDTable();
+
 
                         setTimeout(function () {
+                            _t.drawPPDTable();
                             _t.setSelect();
                         }, 0);
 
@@ -118,6 +121,19 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                     }
                 }
             });
+    }
+
+    setStopAllButton(){
+        let _this = this;
+
+        // console.log(res.userdata);
+        for (let item of _this.testData) {
+            console.log(item);
+            if (item.action == 1){
+                return this.stopAll;
+            }
+        }
+        return this.startAll;
     }
 
 
@@ -190,11 +206,47 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         }
     }
 
-    allAction(){
+    allAction(res){
+        console.log(res);
+
         let _this = this;
-        $('#stopAll').click(function (even) {
-            console.log(even.target);
-            even.target.replace(_this.stopAll);
+        // $('#policiesTable').jqGrid('setLabel', 'action', 'asd');
+        $('#policiesTable').jqGrid('setLabel', 'action', _this.setStopAllButton.bind(_this));
+        let url = '/api_new_data_collection/';
+        $('#stopAll').click(function (event) {
+            // console.log(event);
+            if(event.target.innerHTML == '全停止'){
+                let _confirm = confirm('Stop?');
+                // event.target.parentElement.innerHTML = _this.startAll;
+                $('#stopAll').html('全解除').removeClass('btn-primary').addClass('btn-default');
+                if(_confirm){
+                    _this.httpClient
+                        .toJson(this.httpClient.put(url, {'id': _this.deviceNo, 'status': 0}))
+                        .subscribe(res => {
+                            if (res['status']['status'].toString().toLowerCase() === 'true') {
+                                let newUrl = '/v1/api_data_collection_devices/?device_id='+_this.deviceNo;
+                                $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
+                                // if (res['data']) {
+                                //     // let id = res['data']['coll_policy_id'];
+                                //     // this.router.navigate(['/index/cliCPEdit'],
+                                //     //     { queryParams: { 'id': id } });
+                                // }
+                            } else {
+                                alert('failed');
+                                // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                                //     this.uniqueFlg = false;
+                                // } else {
+                                //     alert(res['status']['message']);
+                                // }
+                            }
+                    });
+                    // send the request to background, return if success; if success, reload the table
+                }
+
+            } else {
+                $('#stopAll').html('全停止').removeClass('btn-default').addClass('btn-primary');
+            }
+            // even.target.replace(_this.stopAll);
         //     if(confirm('stop all policies?')){
         //     alert('all stoped');
         //     $('#jqgh_policiesTable_action').html(this.stopAll);
@@ -208,21 +260,61 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         $('.stop').click(function (event) {
             let id = $(event)[0].target.id;
             let policy = $(event)[0].target.name;
-
+            let url = '/api_new_data_collection/';
 
 
             if ($('#'+id).html() == '停止'){
                 let _confirm = confirm('Stop '+policy+'?');
                 if(_confirm){
-                    $('#'+id).html('解除').removeClass('btn-primary').addClass('btn-default');
+                    // $('#'+id).html('解除').removeClass('btn-primary').addClass('btn-default');
+                    this.httpClient
+                        .toJson(this.httpClient.put(url, {'id': id, 'status': 0}))
+                        .subscribe(res => {
+                            if (res['status']['status'].toString().toLowerCase() === 'true') {
+                                let newUrl = '/v1/api_data_collection_devices/?device_id='+this.deviceNo;
+                                $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
+                                // if (res['data']) {
+                                //     // let id = res['data']['coll_policy_id'];
+                                //     // this.router.navigate(['/index/cliCPEdit'],
+                                //     //     { queryParams: { 'id': id } });
+                                // }
+                            } else {
+                                alert('failed');
+                                // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                                //     this.uniqueFlg = false;
+                                // } else {
+                                //     alert(res['status']['message']);
+                                // }
+                            }
+                    });
                     // send the request to background, return if success; if success, reload the table
                 }
 
             } else {
                 let _confirm = confirm('Start '+policy+'?');
                 if(_confirm){
-                    $('#'+id).html('停止').removeClass('btn-default').addClass('btn-primary');
+                    // $('#'+id).html('停止').removeClass('btn-default').addClass('btn-primary');
                     // send the request to background, return if success; if success, reload the table
+                    this.httpClient
+                        .toJson(this.httpClient.put(url, {'id': id, 'status': 1}))
+                        .subscribe(res => {
+                            if (res['status']['status'].toString().toLowerCase() === 'true') {
+                                let newUrl = '/v1/api_data_collection_devices/?device_id='+this.deviceNo;
+                                $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
+                                // if (res['data']) {
+                                //     // let id = res['data']['coll_policy_id'];
+                                //     // this.router.navigate(['/index/cliCPEdit'],
+                                //     //     { queryParams: { 'id': id } });
+                                // }
+                            } else {
+                                alert('failed');
+                                // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                                //     this.uniqueFlg = false;
+                                // } else {
+                                //     alert(res['status']['message']);
+                                // }
+                            }
+                    });
                 }
 
             }
@@ -245,18 +337,18 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         }
         let url = '/v1/api_data_collection_devices/?device_id='+deviceId;
         $('#policiesTable').jqGrid({
-            url: url,
-            datatype: 'JSON',
-            // datatype: 'local',
-            mtype: 'get',
-            colModel: this.dcModel,
+            // url: url,
+            // datatype: 'JSON',
+            datatype: 'local',
+            // mtype: 'get',
+            colModel: this.ppdModel,
             // postData: { '': '' },
-            // data: this.testData,
+            data: this.testData,
             // viewrecords: true,
-            loadComplete: function () {
+            loadComplete: function (res) {
                 _this.stopPolicy();
                 _this.renderTitleHeight();
-                _this.allAction();
+                _this.allAction(res);
             },
             rowNum: 10,
             // rowList: [10, 20, 30],
@@ -270,14 +362,14 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             //     groupField : ['device']
             // },
             // pager: '#policiesPager',
-            jsonReader: {
-                root: 'data',
-                page: 'current_page_num',
-                total: 'num_page',
-                records: 'total_num',
-                userData: 'status',
-                repeatitems: false,
-            },
+            // jsonReader: {
+            //     root: 'data',
+            //     page: 'current_page_num',
+            //     total: 'num_page',
+            //     records: 'total_num',
+            //     userData: 'status',
+            //     repeatitems: false,
+            // },
         });
         // $('#policiesTable').jqGrid('filterToolbar', {defaultSearch: 'cn'});
     }
