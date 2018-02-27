@@ -31,6 +31,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     endTime: Date = new Date(2018, 1, 1, 23, 59);
 
     isEnabled: boolean = false;
+    isLock: boolean = false;
+    isProcessing: boolean = false;
 
     // bsRangeValue: any = [new Date(2017, 7, 4), new Date(2017, 7, 20)];
 
@@ -173,12 +175,20 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 if (res['data']) {
                     let data = res['data'];
 
+                    // setTimeout(function () {
+                    //     this.validPeriodType = _.get(data, 'valid_period_type');
+                    //     this.dataScheduleType = _.get(data, 'data_schedule_type');
+                    // },0);
+
+
                     let valid_period_type = _.get(data, 'valid_period_type');
                     $('input[name="validPeriodType"][value="'+valid_period_type+'"]').attr('checked','checked');
                     this.changeValidPeriodType(valid_period_type);
                     let data_schedule_type = _.get(data, 'data_schedule_type');
                     $('input[name="dataScheduleType"][value="'+data_schedule_type+'"]').attr('checked','checked');
                     this.changeDataScheduleType(data_schedule_type);
+
+
 
                     this.id = _.get(data, 'schedule_id');
                     this.selectedOsType = _.get(data, 'ostype_id');
@@ -187,21 +197,23 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     this.policyGroup = _.get(data, 'policy_group_id');
                     this.getOsTypes();
 
-                    let isLock = _.get(data, '');
-                    isLock = true;
-                    if (isLock) {
-                        this.setOsDgPg(true);
-                    } else {
-                        this.setOsDgPg(false);
-                    }
+                    this.isLock = _.get(data, 'isLock');
+                    this.setOsDgPg(this.isLock);
+                    // isLock = true;
+                    // if (this.isLock) {
+                    //     this.setOsDgPg(true);
+                    // } else {
+                    //     this.setOsDgPg(false);
+                    // }
 
-                    let isProcessing = _.get(data, '');
-                    isProcessing = true;
-                    if (isProcessing) {
-                        this.setSchedule(true);
-                    } else {
-                        this.setSchedule(false);
-                    }
+                    this.isProcessing = _.get(data, 'isProcessing');
+                    this.setSchedule(this.isProcessing);
+                    // isProcessing = true;
+                    // if (isProcessing) {
+                    //     this.setSchedule(true);
+                    // } else {
+                    //     this.setSchedule(false);
+                    // }
 
                     let start_period_time = _.get(data, 'start_period_time');
                     let end_period_time = _.get(data, 'end_period_time');
@@ -305,6 +317,21 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     }
 
     save() {
+        let f = true;
+        let m = "";
+        if (this.startDateTime == null || this.endDateTime == null) {
+            f = false;
+            m += 'The format of date time is wrong';
+        } else if(this.startTime == null || this.endTime == null){
+            f = false;
+            m += 'The format of period time is wrong';
+        }
+        console.log(this.startDateTime.getHours());
+        if (!f) {
+            alert(m);
+            return;
+        }
+
         let startDate = $('input[name="startDate"]').val();
         let startPeriodTime = '';
         if (startDate != ''){
@@ -335,11 +362,9 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             dataScheduleTime = dataScheduleTime.substring(0,dataScheduleTime.length-1)+'@'+dataScheduleStartTime+'-'+dataScheduleEndTime;
         }
 
-        let checkResult = this.doCheck(startDate, endDate, startPeriodTime, endPeriodTime,
-                        dataScheduleTime, dataScheduleStartTime, dataScheduleEndTime);
+        let checkResult = this.doCheck(startDate, endDate, dataScheduleTime);
         let flag = checkResult['flag'];
-        let message = checkResult['result'];
-
+        let message = checkResult['message'];
 
         if (flag) {
             let scheduleInfo: any = {};
@@ -404,15 +429,29 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     }
 
-    doCheck(startDate, endDate, startPeriodTime, endPeriodTime,
-            dataScheduleTime, dataScheduleStartTime, dataScheduleEndTime){
+    doCheck(startDate, endDate, dataScheduleTime){
         let result: any = {};
         let flag: boolean = true;
         let message: string = '';
+        console.log(startDate, endDate);
+        console.log(this.startDateTime.getTime(), this.endDateTime.getTime());
         // check date and time when valid period type is 1 (with period)
         if (this.validPeriodType == 1) {
+            let reg = /^\d{4}-\d{2}-\d{2}$/;
             if(startDate == "" || endDate == ""){
-                message = "Please set period date."
+                flag = false;
+                message += "Please set period date.";
+                console.log(reg.test(startDate));
+                console.log(reg.test(endDate));
+            }else if (!reg.test(startDate) || !reg.test(endDate)){
+                flag = false;
+                message += "The format of date is wrong.";
+            } else if(startDate > endDate) {
+                flag = false;
+                message += "The start date cannot earlier than the end date.";
+            }  else if(startDate == endDate && this.startDateTime > this.endDateTime) {
+                flag = false;
+                message += "The start time cannot earlier than the end time for the same date.";
             }
             // check date all selected; format right; start<=end
             // if same date, check start time < end time
@@ -421,14 +460,16 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         if (this.dataScheduleType == 3) {
             if (dataScheduleTime == ''){
                 flag = false;
-                message = 'periodic collection with no weekday selected!'
-            } else {
-
+                message += 'Periodic collection with no weekday selected!';
+            } else if(this.startTime > this.endTime) {
+                flag = false;
+                message += "The start time cannot earlier than the end time for period collection.";
             }
         }
 
         result['flag'] = flag;
         result['message'] = message;
+        console.log(result);
         return result;
 
     }

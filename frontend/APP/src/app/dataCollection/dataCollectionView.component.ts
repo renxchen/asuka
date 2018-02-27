@@ -59,7 +59,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         keyboard: true,
         backdrop: true,
         ignoreBackdropClick: true
-      };
+    };
 
     constructor(
         private modalService: BsModalService,
@@ -68,10 +68,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
     ) {}
 
     ngOnInit() {
-        // this.cpType = 'cli';
-        // this.model = this.dcModel;
 
-        // this.drawCPTable();
     }
 
     ngAfterViewInit() {
