@@ -52,7 +52,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     validPeriodTypes: any = [{id: 0, value:'期間なし'}, {id: 1, value: '期間あり'}];
 
     dataScheduleType: any;
-    dataScheduleTypes: any = [{id: 1, value:'常に取得'}, {id: 2, value: '取得停止'}, {id: 3, value: '周期取得'}];
+    dataScheduleTypes: any = [{id: 0, value:'常に取得'}, {id: 1, value: '取得停止'}, {id: 2, value: '周期取得'}];
     weekdays: any = [
         {id: 1, value: '月', ifCheck: ''},
         {id: 2, value: '火', ifCheck: ''},
@@ -141,7 +141,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             this.policyGroups.unshift({policy_group_id:-1, name: '全機能OFF'});
         } else if(this.priority == 0 && this.policyGroups[0]['policy_group_id'] == -1) {
             this.policyGroups.shift();
-            $('input[name="dataScheduleType"][value="2"]').attr('disabled', false);
+            $('input[name="dataScheduleType"][value="1"]').attr('disabled', false);
             if (this.policyGroup == -1) {
                 this.policyGroup = this.policyGroups[0]['policy_group_id'].toString();
             }
@@ -150,14 +150,14 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     changeCPG(){
         if (this.policyGroup == -1) {
-            $('input[name="dataScheduleType"][value="2"]').attr('disabled', true).prop('checked', false);
-            if (this.dataScheduleType == 2) {
-                this.dataScheduleType = 1;
-                $('input[name="dataScheduleType"][value="1"]').prop('checked', true);
+            $('input[name="dataScheduleType"][value="1"]').attr('disabled', true).prop('checked', false);
+            if (this.dataScheduleType == 1) {
+                this.dataScheduleType = 0;
+                $('input[name="dataScheduleType"][value="0"]').prop('checked', true);
                 console.log(this.dataScheduleType);
             }
         } else {
-            $('input[name="dataScheduleType"][value="2"]').attr('disabled', false);
+            $('input[name="dataScheduleType"][value="1"]').attr('disabled', false);
         }
     }
 
@@ -248,9 +248,9 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     }
 
     setInitSelect() {
-        $('input[name="validPeriodType"][value="0"]').prop('checked', true);
-        $('input[name="dataScheduleType"][value="1"]').prop('checked', true);
-        this.dataScheduleType = 1;
+        $('input[value="0"]').prop('checked', true);
+        // $('input[name="dataScheduleType"][value="1"]').prop('checked', true);
+        this.dataScheduleType = 0;
         this.validPeriodType = 0;
         this.priority = 0;
 
@@ -270,8 +270,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         if (flag) {
             this.isEnabled = flag;
             $('div.down-place').css('margin-top', '25px');
-            if(this.dataScheduleType == 1){
-                $('input[name="dataScheduleType"][value="3"]').prop('disabled', flag);
+            if(this.dataScheduleType == 0){
+                $('input[name="dataScheduleType"][value="2"]').prop('disabled', flag);
             }
         }
         $('input[name="weekday"]').prop('disabled', flag);
@@ -294,7 +294,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     changeDataScheduleType(id: number){
         this.dataScheduleType = id;
         console.log(this.dataScheduleType);
-        if (id == 3){
+        if (id == 2){
             $('#dataSchedule').show();
         } else {
             $('#dataSchedule').hide();
@@ -457,7 +457,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             // if same date, check start time < end time
         }
         // check if any days has been select when data schedule type is 3 (periodic collection)
-        if (this.dataScheduleType == 3) {
+        if (this.dataScheduleType == 2) {
             if (dataScheduleTime == ''){
                 flag = false;
                 message += 'Periodic collection with no weekday selected!';
