@@ -6,6 +6,7 @@ from db_helper import DeviceDbHelp
 
 
 class MemCacheBase(object):
+
     def __init__(self, timeout=2):
         self.AUTO_SAVE_CACHE = True
         self.key = None
@@ -28,7 +29,6 @@ class MemCacheBase(object):
         #     self.delete()
         data = self._mc.get(self.key)
         if data is not None:
-            print 1
             logging.debug("Get data from memory cache")
         else:
             data = self.do_get()

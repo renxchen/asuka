@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 
 import time
 from django.db import models
-
+app_label = "db_units"
 
 class User(models.Model):
     name = models.CharField(max_length=32, blank=True)
@@ -122,6 +122,8 @@ class DataTable(models.Model):
     table_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=45, blank=True, null=True)
     descr = models.CharField(max_length=2000, blank=True, null=True)
+    coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
+    groups = models.ForeignKey('Groups', models.DO_NOTHING)
 
     class Meta:
         # managed = False
@@ -136,6 +138,27 @@ class DataTableItems(models.Model):
     class Meta:
         # managed = False
         db_table = 'data_table_items'
+
+
+class DevicesTmp(models.Model):
+    operation_id = models.IntegerField(blank=True, null=True)
+    device_id = models.AutoField(primary_key=True)
+    hostname = models.CharField(max_length=30)
+    ip = models.CharField(max_length=30)
+    telnet_port = models.IntegerField(blank=True, null=True)
+    snmp_port = models.IntegerField(blank=True, null=True)
+    snmp_community = models.CharField(max_length=30, blank=True, null=True)
+    snmp_version = models.CharField(max_length=5, blank=True, null=True)
+    login_expect = models.CharField(max_length=1000, blank=True, null=True)
+    status = models.IntegerField(blank=True, null=True)
+    telnet_status = models.CharField(max_length=255, blank=True, null=True)
+    snmp_status = models.CharField(max_length=255, blank=True, null=True)
+    device_type = models.CharField(max_length=255, blank=True, null=True)
+    ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
+
+    class Meta:
+        # managed = False
+        db_table = 'devices'
 
 
 class Devices(models.Model):
@@ -311,12 +334,17 @@ class Items(models.Model):
     last_exec_time = models.IntegerField(blank=True, null=True, default=0)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
     coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
-                                                     db_column='coll_policy_rule_tree_treeid')
+                                                     db_column='coll_policy_rule_tree_treeid',
+                                                     blank=True, null=True)
     device = models.ForeignKey(Devices, models.DO_NOTHING)
     schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
     # add 1.17
     # add 1.17
     policys_groups = models.ForeignKey('PolicysGroups', models.DO_NOTHING)
+
+    #add 2.28 v1.5
+    enable_status = models.IntegerField(blank=True, null=True)
+    groups = models.ForeignKey(Groups, models.DO_NOTHING)
 
     class Meta:
         # managed = False
