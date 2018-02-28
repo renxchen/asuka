@@ -33,8 +33,10 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         {label: '優先度',  name: 'priority', width: 30, align: 'center',
         formatter: this.formatterPriority},
         {label: 'OS Type', name: 'ostype_name', width: 50, align: 'center'},
-        {label: 'デバイスグループ',  name: 'device_group_name', width: 80, align: 'center'},
-        {label: 'コレクションポリシーグループ名',  name: 'policy_group_name', width: 100, align: 'center'},
+        {label: 'DeviceGroupNo', hidden: true, name: 'device_group_id', index: 'device_group_id'},
+        {label: 'デバイスグループ',  name: 'device_group_name', width: 80, align: 'center', classes: 'deviceGroup'},
+        {label: 'PolicyGroupNo', hidden: true, name: 'policy_group_id', index: 'policy_group_id'},
+        {label: 'コレクションポリシーグループ名',  name: 'policy_group_name', width: 100, align: 'center', classes: 'policyGroup'},
 
         // {label: '有効期間',  name: 'period_time', width: 60, align: 'center'},
         {label: '開始日時',  name: 'start_period_time', width: 65, align: 'center',
@@ -107,11 +109,11 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
 
     public formatterScheduleType(cellvalue, options, rowObject){
         let result;
-        if (rowObject['data_schedule_type'] == 1){
+        if (rowObject['data_schedule_type'] == 0){
             result = '常に取得';
-        } else if(rowObject['data_schedule_type'] == 2) {
+        } else if(rowObject['data_schedule_type'] == 1) {
             result = '取得停止';
-        } else if(rowObject['data_schedule_type'] == 3) {
+        } else if(rowObject['data_schedule_type'] == 2) {
             result = '周期取得';
         } else {
             result = rowObject['data_schedule_type'];
@@ -127,6 +129,34 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         }
 
     }
+
+    public renderLink(){
+        let _this = this;
+        let _deviceGroup = $('.deviceGroup');
+        for (let i=0;i<_deviceGroup.length;i++){
+            let _target = $(_deviceGroup[i]);
+            let _content = '<div style="color:blue;">';
+            _content += _target.html() + '</div>';
+            _target.html(_content);
+            let deviceGroupNo = _target.prev().html();
+            _target.click( function (event) {
+                _this.router.navigate(['/index/devicegroup'],{queryParams:{'id':deviceGroupNo}});
+            })
+        }
+
+        let _policyGroup = $('.policyGroup');
+        for (let i=0;i<_policyGroup.length;i++){
+            let _target = $(_policyGroup[i]);
+            let _content = '<div style="color:blue;">';
+            _content += _target.html() + '</div>';
+            _target.html(_content);
+            let policyGroupNo = _target.prev().html();
+            _target.click( function (event) {
+                _this.router.navigate(['/index/cpgdetail'],{queryParams:{'id':policyGroupNo}});
+            })
+        }
+    }
+
     newDC() {
         // open modal
         this.modalRef = this.modalService.show(DataCollectionLoginComponent, this.modalConfig);
@@ -171,6 +201,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
             // viewrecords: true,
             loadComplete: function() {
                 _this.editDC();
+                _this.renderLink();
                 // _this.renderColor();
             },
             rowNum: 10,
