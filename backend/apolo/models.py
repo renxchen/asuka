@@ -122,8 +122,8 @@ class DataTable(models.Model):
     table_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=45, blank=True, null=True)
     descr = models.CharField(max_length=2000, blank=True, null=True)
-    coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
-    groups = models.ForeignKey('Groups', models.DO_NOTHING)
+    coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING, db_column="coll_policy")
+    groups = models.ForeignKey('Groups', models.DO_NOTHING, db_column="groups")
 
     class Meta:
         # managed = False
