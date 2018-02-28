@@ -151,8 +151,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     changeCPG(){
         if (this.policyGroup == -1) {
             $('input[name="dataScheduleType"][value="1"]').attr('disabled', true).prop('checked', false);
-            if (this.dataScheduleType == 2) {
-                this.dataScheduleType = 1;
+            if (this.dataScheduleType == 1) {
+                this.dataScheduleType = 0;
                 $('input[name="dataScheduleType"][value="0"]').prop('checked', true);
                 console.log(this.dataScheduleType);
             }
