@@ -86,7 +86,15 @@ class TaskRunningMemCacheDb(MemCacheBase):
         self.key = "Task_Running_Status_%s" % type
 
     def do_get(self):
-        return False
+        return 0
+
+class PendingNumMemCache(MemCacheBase):
+    def __init__(self, type):
+        super(PendingNumMemCache, self).__init__()
+        self.key = "Pending_Task_Num_%s" % type
+
+    def do_get(self):
+        return 0
 
 
 class LogMessage(object):
@@ -294,6 +302,7 @@ def __get_snmp_data(param):
     __base_url = GET_SNMP_DATA_SERVICE_URL
     __url = __base_url % 'snmp'
     try:
+        print json.dumps(param, indent=2)
         res = requests.post(__url, data=json.dumps(param), timeout=TIMEOUT)
     except requests.exceptions.ConnectionError:
         raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_CONNECT_ERROR)
@@ -371,11 +380,18 @@ def snmp_main():
     snmp_logger.info("Total device task: %d" % len(devices))
 
 
+def check_pending_num(type):
+    with PendingNumMemCache(type) as cache:
+        number = cache.get()
+    return number
+
+
 def pending_task(type):
     while True:
         with TaskRunningMemCacheDb(type) as cache:
             if cache.get():
                 logger.info("Task is runnning now, will be pending %ds" % STANDARD_PENDING_TIME)
+                add_pending(type)
                 time.sleep(STANDARD_PENDING_TIME)
             else:
                 logger.info("Begin Task")
@@ -383,6 +399,7 @@ def pending_task(type):
 
 
 def start_task(type):
+    clean_pending(type)
     with TaskRunningMemCacheDb(type) as cache:
         cache.set(True)
 
@@ -391,50 +408,71 @@ def end_task(type):
     with TaskRunningMemCacheDb(type) as cache:
         cache.set(False)
 
+
+def clean_pending(type):
+    with PendingNumMemCache(type) as cache:
+        cache.set(0)
+
+
+def clean_pending_num(type):
+    with PendingNumMemCache(type) as cache:
+        cache.set(0)
+
+
+def clean_running_status(type):
+    with TaskRunningMemCacheDb(type) as cache:
+        cache.set(False)
+
+
+def add_pending(type):
+    print type
+    with PendingNumMemCache(type) as cache:
+        cache.set(1)
+
 if __name__ == "__main__":
-    args = sys.argv[1]
+    task_type = sys.argv[1]
+    task_param = sys.argv[2]
     now_time = int(time.time())
     logger = log_factory(log_name="common")
-    if args == "snmp":
-        snmp_parser_logger = log_factory(log_name="Snmp_Parser")
-        snmp_collection_logger = log_factory(log_name="Snmp_Collection")
-        snmp_device_logger = log_factory(log_name="Snmp_Device")
-        snmp_trigger_logger = log_factory(log_name="Snmp_Trigger")
-        snmp_logger = log_factory(log_name="Snmp")
-        pending_task("snmp")
-        try:
-            start_task("snmp")
-            snmp_main()
-        except Exception:
-            pass
-        finally:
-            end_task("snmp")
-    elif args == "cli":
-        cli_parser_logger = log_factory(log_name="Cli_Parser")
-        cli_collection_logger = log_factory(log_name="Cli_Collection")
-        cli_device_logger = log_factory(log_name="Cli_Device")
-        cli_trigger_logger = log_factory(log_name="Cli_Trigger")
-        cli_logger = log_factory(log_name="Cli")
-        pending_task("cli")
-        try:
-            start_task("cli")
-            cli_main()
-        except Exception:
-            pass
-        finally:
-            end_task("cli")
 
-    elif args == "opencli":
-        start_task("cli")
+    if task_type == "collection":
+        if task_param == "snmp":
+            if check_pending_num("snmp") == 0:
+                snmp_parser_logger = log_factory(log_name="Snmp_Parser")
+                snmp_collection_logger = log_factory(log_name="Snmp_Collection")
+                snmp_device_logger = log_factory(log_name="Snmp_Device")
+                snmp_trigger_logger = log_factory(log_name="Snmp_Trigger")
+                snmp_logger = log_factory(log_name="Snmp")
+                pending_task("snmp")
+                try:
+                    start_task("snmp")
+                    snmp_main()
+                except Exception:
+                    pass
+                finally:
+                    end_task("snmp")
+        elif task_param == "cli":
+            if check_pending_num("cli") == 0:
+                cli_parser_logger = log_factory(log_name="Cli_Parser")
+                cli_collection_logger = log_factory(log_name="Cli_Collection")
+                cli_device_logger = log_factory(log_name="Cli_Device")
+                cli_trigger_logger = log_factory(log_name="Cli_Trigger")
+                cli_logger = log_factory(log_name="Cli")
+                pending_task("cli")
+                try:
+                    start_task("cli")
+                    # cli_main()
+                    time.sleep(15)
+                except Exception, e:
+                    pass
+                finally:
+                    end_task("cli")
 
-    elif args == "closecli":
-        end_task("cli")
+    elif task_type == "cleanpendingnum":
+        clean_pending_num(task_param)
 
-    elif args == "opensnmp":
-        end_task("snmp")
-
-    elif args == "closesnmp":
-        end_task("snmp")
+    elif task_type == "cleanrunningstatus":
+        clean_running_status(task_param)
 
     end_time = int(time.time())
     print end_time - now_time
