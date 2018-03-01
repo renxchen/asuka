@@ -124,7 +124,9 @@ class DataTable(models.Model):
     descr = models.CharField(max_length=2000, blank=True, null=True)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING, db_column="coll_policy")
     groups = models.ForeignKey('Groups', models.DO_NOTHING, db_column="groups")
-
+    tree = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
+                                                     db_column='tree_id',
+                                                     blank=True, null=True)
     class Meta:
         # managed = False
         db_table = 'data_table'
@@ -132,6 +134,16 @@ class DataTable(models.Model):
 
 class DataTableItems(models.Model):
     data_table_items_id = models.AutoField(primary_key=True)
+    table = models.ForeignKey(DataTable, models.DO_NOTHING)
+    item = models.ForeignKey('Items', models.DO_NOTHING)
+
+    class Meta:
+        # managed = False
+        db_table = 'data_table_items'
+
+
+class DataTableHistoryItems(models.Model):
+    data_table_history_items_id = models.AutoField(primary_key=True)
     table = models.ForeignKey(DataTable, models.DO_NOTHING)
     item = models.ForeignKey('Items', models.DO_NOTHING)
 
@@ -155,6 +167,7 @@ class DevicesTmp(models.Model):
     snmp_status = models.CharField(max_length=255, blank=True, null=True)
     device_type = models.CharField(max_length=255, blank=True, null=True)
     ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
+    group_name = models.CharField(max_length=2000)
 
     class Meta:
         # managed = False
