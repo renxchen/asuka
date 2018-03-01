@@ -69,7 +69,7 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
                         if(typeof(this.policyNo) == 'undefined'){
                             // console.log("ununun");
                             // console.log(this.deviceList[0]['device_id']);
-                            this.policyNo = this.policyList[0]['policy_id'];
+                            this.policyNo = this.policyList[0]['coll_policy_id'];
                             // console.log('init,no=1 :',this.deviceNo);
 
                         }
@@ -98,12 +98,12 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
             no_results_text: "検索結果ありません：",
             search_contains: true,
         }).change( function () {
-            _this.policyNo = $('#device').val();
+            _this.policyNo = $('#policy').val();
             // console.log('deviceNo',_this.deviceNo);
-            let newUrl = '/v1/api_data_collection_policys/?policy_id='+_this.policyNo;
+            let newUrl = '/v1/api_data_collection_policy/?coll_policy_id='+_this.policyNo;
             // console.log(newUrl);
             // $("#policiesTable").trigger("reloadGrid");
-            $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
+            $("#devicesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
 
         }).val(this.policyNo).trigger("chosen:updated");
     }
@@ -147,44 +147,45 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
 
     public drawDPPTable() {
         let _this = this;
-        // let policyId = this.policyNo;
-        // if(typeof(policyId) == 'undefined'){
-        //    return;
-        // }
-        // let url = '/v1/api_data_collection_policy/?policy_id='+policyId;
+        let policyId = this.policyNo;
+        console.log(policyId);
+        if(typeof(policyId) == 'undefined'){
+           return;
+        }
+        let url = '/v1/api_data_collection_policy/?coll_policy_id='+policyId;
         $('#devicesTable').jqGrid({
-            // url: url,
-            // datatype: 'JSON',
-            datatype: 'local',
-            // mtype: 'get',
+            url: url,
+            datatype: 'JSON',
+            // datatype: 'local',
+            mtype: 'get',
             colModel: this.dppModel,
             // postData: { '': '' },
-            data: this.testData,
+            // data: this.testData,
             // viewrecords: true,
             loadComplete: function () {
                 // _this.stopPolicy();
                 _this.renderLink();
             },
-            rowNum: 10,
-            // rowList: [10, 20, 30],
+            rowNum: 2,
+            rowList: [1, 2, 3],
             autowidth: true,
             beforeSelectRow: function (rowid, e) {
                 return false;
             },
-            // autoheight: true,
+            autoheight: true,
             // grouping:true,
             // groupingView : {
             //     groupField : ['device']
             // },
-            // pager: '#policiesPager',
-            // jsonReader: {
-            //     root: 'data',
-            //     page: 'current_page_num',
-            //     total: 'num_page',
-            //     records: 'total_num',
-            //     userData: 'status',
-            //     repeatitems: false,
-            // },
+            pager: '#devicesPager',
+            jsonReader: {
+                root: 'data',
+                page: 'current_page_num',
+                total: 'num_page',
+                records: 'total_num',
+                userData: 'status',
+                repeatitems: false,
+            },
         });
         $('#devicesTable').jqGrid('filterToolbar', {defaultSearch: 'cn'});
     }

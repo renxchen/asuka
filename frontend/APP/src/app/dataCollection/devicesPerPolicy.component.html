@@ -2,7 +2,7 @@
     <div>
         <label>Poloicy</label>
         <select id="policy" name="policy" style="width: 200px">
-            <option *ngFor="let item of policyList" value="{{item.policyNo}}">
+            <option *ngFor="let item of policyList" value="{{item.coll_policy_id}}">
                 {{item.name}}
            </option>
             <!--<option value="1">aaa</option>-->
@@ -13,7 +13,7 @@
     </div>
     <div style="margin-top: 30px">
         <table id='devicesTable'></table>
-        <!--<div id='devicesPager'></div>-->
+        <div id='devicesPager'></div>
     </div>
 
 </div>

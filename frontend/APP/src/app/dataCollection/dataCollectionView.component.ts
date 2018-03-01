@@ -49,7 +49,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         },
         {label: '取得方法', name: 'data_schedule_type', width: 45, align: 'center',
         formatter: this.formatterScheduleType},
-        {label: 'ステータス', name: 'status', width: 45, align: 'center', classes: 'status',
+        {label: 'ステータス', name: 'schedules_is_valid', width: 45, align: 'center', classes: 'status',
         formatter: this.formatterStatus},
         {label: 'アクション', name: 'action', width: 45, align: 'center', search: false,
         formatter: this.fomatterBtn
@@ -83,14 +83,14 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
 
     public formatterStatus(cellvalue, options, rowObject){
         let result;
-        if (rowObject['status'] == 0){
+        if (rowObject['schedules_is_valid'] == 0){
             // result = '無効';
             result = '<a href="#" class = "btn btn-default btn-xs disabled">無効</a>';
-        } else if (rowObject['status'] == 1){
+        } else if (rowObject['schedules_is_valid'] == 1){
             // result = '有効';
             result = '<a href="#" class = "btn btn-primary btn-xs disabled">有効</a>'
         } else {
-            result = rowObject['status'];
+            result = rowObject['schedules_is_valid'];
         }
         return result;
     }
