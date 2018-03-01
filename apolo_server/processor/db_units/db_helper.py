@@ -80,7 +80,7 @@ class DeviceDbHelp(DbHelp):
 
     @staticmethod
     def get_all_rule():
-        rules = CollPolicyCliRule.objects.filter(**{}).values()
+        rules = list(CollPolicyCliRule.objects.all().values())
         return rules
 
 

@@ -3,7 +3,7 @@ import logging
 import time
 from apolo_server.processor.constants import CommonConstants
 from db_helper import DeviceDbHelp
-
+from apolo_server.processor.parser.common_policy_tree.tool import Tool
 
 class MemCacheBase(object):
 
@@ -91,9 +91,13 @@ class RulesMemCacheDb(MemCacheBase):
         self.key = "DB_Rules"
 
     def do_get(self):
+        rule_dict = {}
         rules = DeviceDbHelp.get_all_rule()
-        result = [rule for rule in rules]
-        return result
+        ruletool = Tool()
+        for rule in rules:
+            format_rule = ruletool.get_rule_value(rule)
+            rule_dict[str(rule['ruleid'])] = format_rule
+        return rule_dict
 
 
 class TaskRunningMemCacheDb(MemCacheBase):
