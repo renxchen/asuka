@@ -88,6 +88,7 @@ class TaskRunningMemCacheDb(MemCacheBase):
     def do_get(self):
         return 0
 
+
 class PendingNumMemCache(MemCacheBase):
     def __init__(self, type):
         super(PendingNumMemCache, self).__init__()
