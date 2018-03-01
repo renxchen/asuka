@@ -29,10 +29,10 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             align: 'center', sortable: false, cellattr: this.arrtSetting,},
         {label: 'コレクションポリシー', name: 'policy', width: 50, align: 'center',
             classes: 'policy', sortable: false,cellattr: this.renderCpColor },
-        // {label: this.stopAll, name: 'valid_status', width: 50, align: 'center', search: false,
-        // formatter: this.fomatterBtn, sortable: false, height: 50,},
-        {label: '', name: 'action', width: 50, align: 'center', search: false,
-        formatter: this.fomatterBtn, sortable: false, height: 50,}
+        {label: this.stopAll, name: 'valid_status', width: 50, align: 'center', search: false,
+        formatter: this.fomatterBtn, sortable: false, height: 50,},
+        // {label: '', name: 'action', width: 50, align: 'center', search: false,
+        // formatter: this.fomatterBtn, sortable: false, height: 50,}
     ];
     deviceList: any = [];
     testData: any = [
@@ -129,7 +129,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         // console.log(res.userdata);
         for (let item of _this.testData) {
             console.log(item);
-            if (item.action == 1){
+            if (item.valid_status == 1){
                 return this.stopAll;
             }
         }
@@ -200,7 +200,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
     }
 
     renderCpColor(rowId, val, rowObject){
-        let status = rowObject['action'];
+        let status = rowObject['valid_status'];
         if (status == 1){
             return 'style="color:blue"';
         }
@@ -211,12 +211,12 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
         let _this = this;
         // $('#policiesTable').jqGrid('setLabel', 'action', 'asd');
-        $('#policiesTable').jqGrid('setLabel', 'action', _this.setStopAllButton.bind(_this));
+        $('#policiesTable').jqGrid('setLabel', 'valid_status', _this.setStopAllButton.bind(_this));
         let url = '/api_new_data_collection/';
         $('#stopAll').click(function (event) {
             // console.log(event);
             if(event.target.innerHTML == '全停止'){
-                let _confirm = confirm('Stop?');
+                let _confirm = confirm('Stop All?');
                 // event.target.parentElement.innerHTML = _this.startAll;
                 $('#stopAll').html('全解除').removeClass('btn-primary').addClass('btn-default');
                 if(_confirm){
@@ -244,14 +244,35 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                 }
 
             } else {
+                let _confirm = confirm('Start All?');
+                // event.target.parentElement.innerHTML = _this.startAll;
+                if(_confirm){
+                    _this.httpClient
+                        .toJson(this.httpClient.put(url, {'id': _this.deviceNo, 'status': 1}))
+                        .subscribe(res => {
+                            if (res['status']['status'].toString().toLowerCase() === 'true') {
+                                let newUrl = '/v1/api_data_collection_devices/?device_id='+_this.deviceNo;
+                                $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
+                                // if (res['data']) {
+                                //     // let id = res['data']['coll_policy_id'];
+                                //     // this.router.navigate(['/index/cliCPEdit'],
+                                //     //     { queryParams: { 'id': id } });
+                                // }
+                            } else {
+                                alert('failed');
+                                // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                                //     this.uniqueFlg = false;
+                                // } else {
+                                //     alert(res['status']['message']);
+                                // }
+                            }
+                    });
+                    // send the request to background, return if success; if success, reload the table
+                }
+
                 $('#stopAll').html('全停止').removeClass('btn-default').addClass('btn-primary');
             }
-            // even.target.replace(_this.stopAll);
-        //     if(confirm('stop all policies?')){
-        //     alert('all stoped');
-        //     $('#jqgh_policiesTable_action').html(this.stopAll);
-        //
-        // }
+
         });
 
     }
@@ -260,7 +281,8 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         $('.stop').click(function (event) {
             let id = $(event)[0].target.id;
             let policy = $(event)[0].target.name;
-            let url = '/api_new_data_collection/';
+            console.log($(event)[0].target);
+            let url = '/api_data_collection_devices/';
 
 
             if ($('#'+id).html() == '停止'){
@@ -271,6 +293,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                         .toJson(this.httpClient.put(url, {'id': id, 'status': 0}))
                         .subscribe(res => {
                             if (res['status']['status'].toString().toLowerCase() === 'true') {
+                                console.log('device no'+this.deviceNo);
                                 let newUrl = '/v1/api_data_collection_devices/?device_id='+this.deviceNo;
                                 $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
                                 // if (res['data']) {
@@ -319,9 +342,6 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
             }
 
-
-            // let id = target.id;
-            // target.html("<a>ffffff</a>");
         });
     }
 
@@ -337,13 +357,13 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         }
         let url = '/v1/api_data_collection_devices/?device_id='+deviceId;
         $('#policiesTable').jqGrid({
-            // url: url,
-            // datatype: 'JSON',
-            datatype: 'local',
-            // mtype: 'get',
+            url: url,
+            datatype: 'JSON',
+            // datatype: 'local',
+            mtype: 'get',
             colModel: this.ppdModel,
             // postData: { '': '' },
-            data: this.testData,
+            // data: this.testData,
             // viewrecords: true,
             loadComplete: function (res) {
                 _this.stopPolicy();
@@ -362,14 +382,14 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             //     groupField : ['device']
             // },
             // pager: '#policiesPager',
-            // jsonReader: {
-            //     root: 'data',
-            //     page: 'current_page_num',
-            //     total: 'num_page',
-            //     records: 'total_num',
-            //     userData: 'status',
-            //     repeatitems: false,
-            // },
+            jsonReader: {
+                root: 'data',
+                page: 'current_page_num',
+                total: 'num_page',
+                records: 'total_num',
+                userData: 'status',
+                repeatitems: false,
+            },
         });
         // $('#policiesTable').jqGrid('filterToolbar', {defaultSearch: 'cn'});
     }

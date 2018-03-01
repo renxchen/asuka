@@ -197,7 +197,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     this.policyGroup = _.get(data, 'policy_group_id');
                     this.getOsTypes();
 
-                    this.isLock = _.get(data, 'isLock');
+                    this.isLock = _.get(res, 'isLock');
                     this.setOsDgPg(this.isLock);
                     // isLock = true;
                     // if (this.isLock) {
@@ -206,7 +206,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     //     this.setOsDgPg(false);
                     // }
 
-                    this.isProcessing = _.get(data, 'isProcessing');
+                    this.isProcessing = _.get(res, 'isProcessing');
+                    // console.log(this.isProcessing);
                     this.setSchedule(this.isProcessing);
                     // isProcessing = true;
                     // if (isProcessing) {
@@ -328,13 +329,13 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         }
         console.log(this.startDateTime.getHours());
         if (!f) {
-            alert(m);
+            // alert(m);
             return;
         }
 
         let startDate = $('input[name="startDate"]').val();
         let startPeriodTime = '';
-        if (startDate != ''){
+        if (this.validPeriodType == 1 && startDate != ''){
             startPeriodTime = startDate+'@'
                 +this.filledToTwoNumber(this.startDateTime.getHours())+':'
                 +this.filledToTwoNumber(this.startDateTime.getMinutes());
@@ -342,7 +343,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
         let endDate = $('input[name="endDate"]').val();
         let endPeriodTime = '';
-        if (endDate != ''){
+        if (this.validPeriodType == 1 && endDate != ''){
             endPeriodTime = endDate+'@'
                 +this.filledToTwoNumber(this.endDateTime.getHours())+':'
                 +this.filledToTwoNumber(this.endDateTime.getMinutes());
@@ -368,7 +369,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
         if (flag) {
             let scheduleInfo: any = {};
-            let url = '/api_new_data_collection/';
+            let url_new = '/api_new_data_collection/';
+            let url_edit = '/api_data_collection/';
 
             scheduleInfo['ostype_id'] = this.selectedOsType;
             scheduleInfo['priority'] = this.priority.toString();
@@ -381,20 +383,20 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             scheduleInfo['data_schedule_time'] = dataScheduleTime;
             scheduleInfo['period_time'] = '';
             scheduleInfo['weeks'] = '';
+            scheduleInfo['is_lock'] = this.isLock;
+            scheduleInfo['is_processing'] = this.isProcessing;
 
             console.log(scheduleInfo);
-            alert(flag);
+            // alert(flag);
             // return;
             if (this.id == -1){
                 this.httpClient
-                    .toJson(this.httpClient.post(url, scheduleInfo))
+                    .toJson(this.httpClient.post(url_new, scheduleInfo))
                     .subscribe(res => {
                         $('#dcTable').trigger("reloadGrid");
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
                             if (res['data']) {
-                                // let id = res['data']['coll_policy_id'];
-                                // this.router.navigate(['/index/cliCPEdit'],
-                                //     { queryParams: { 'id': id } });
+                               alert('データ取得追加しました。');
                             }
                         } else {
                             alert(res['status']['message']);
@@ -404,7 +406,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             } else {
                 scheduleInfo['schedule_id'] = this.id.toString();
                 this.httpClient
-                    .toJson(this.httpClient.put(url, scheduleInfo))
+                    .toJson(this.httpClient.put(url_edit, scheduleInfo))
                     .subscribe(res => {
                         $('#dcTable').trigger("reloadGrid");
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
@@ -483,8 +485,9 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     console.log('delete',res);
                     alert(res['status']['status'].toString());
+                    $('#dcTable').trigger("reloadGrid");
                 });
-            $('#dcTable').trigger("reloadGrid");
+
             this.bsModalRef.hide();
         } else {
 
