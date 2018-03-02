@@ -435,7 +435,7 @@ if __name__ == "__main__":
     task_param = sys.argv[2]
     now_time = int(time.time())
     logger = log_factory(log_name="common")
-
+    print now_time
     if task_type == "collection":
         if task_param == "snmp":
             if check_pending_num("snmp") == 0:
@@ -462,8 +462,14 @@ if __name__ == "__main__":
                 pending_task("cli")
                 try:
                     start_task("cli")
+                    param = dict(
+                        now_time=now_time,
+                        item_type=CLI_TYPE_CODE
+                    )
+                    devices = get_devices(param)
+                    print json.dumps(devices, indent=2)
                     # cli_main()
-                    time.sleep(15)
+                    time.sleep(45)
                 except Exception, e:
                     pass
                 finally:
