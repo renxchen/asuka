@@ -4,8 +4,8 @@
 
 @author: kimli
 @contact: kimli@cisco.com
-@file: action_policy_views.py
-@time: 2018/1/3 17:34
+@file: action_policy_column_views.py
+@time: 2018/2/12 12:34
 @desc:
 
 """
@@ -27,9 +27,9 @@ import simplejson as json
 import logging
 
 
-class ActionPolicyViewSet(viewsets.ViewSet):
+class ActionPolicyColumnViewSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):
-        super(ActionPolicyViewSet, self).__init__(**kwargs)
+        super(ActionPolicyColumnViewSet, self).__init__(**kwargs)
         self.request = request
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         self.page_from = views_helper.get_request_value(self.request, 'page', 'GET')
@@ -41,9 +41,6 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         if request.method.lower() == 'post' or request.method.lower() == 'put':
             method = 'BODY'
         self.table_id = views_helper.get_request_value(self.request, 'id', method)
-        self.sort_by = views_helper.get_request_value(self.request, 'sidx', method)
-        self.order = views_helper.get_request_value(self.request, 'sord', method)
-        self.action_policy_name = views_helper.get_request_value(self.request, 'name', method)
 
     def get(self):
         try:

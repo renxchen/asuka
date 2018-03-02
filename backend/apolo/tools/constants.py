@@ -10,7 +10,7 @@ LOG_PATH = 'logs/system_logger.log'
 #########################################
 # API Debug Flag
 #########################################
-DEBUG_FLAG = False
+DEBUG_FLAG = True
 #########################################
 # API token related define
 #########################################
@@ -50,7 +50,7 @@ NO_USERNAME_OR_PASSWORD = "No user or password found."
 USER_AND_PASSWD_INCORRECT = "User or password is incorrect."
 USER_DISABLED = "User is disabled."
 USER_LOGOUT_SUCCESSFUL = "User logout successful."
-COLLECTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
+COLLECTION_POLICY_NAME_DUPLICATE = 'COLLECTION_POLICY_NAME_DUPLICATE'
 ACTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 DATA_TABLE_NAME_DUPLICATE = 'DATA_TABLE_NAME_DUPLICATE'
 COLL_POLICY_GROUP_EXIST_IN_SCHEDULE = 'COLL_POLICY_GROUP_EXIST_IN_SCHEDULE'

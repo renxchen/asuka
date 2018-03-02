@@ -42,15 +42,20 @@ urlpatterns = [
     url(r'^v1/api_data_collection/', resource_api.api_data_collection),
     url(r'^v1/api_new_data_collection/', resource_api.api_new_data_collection),
     url(r'^v1/api_device_group/', resource_api.api_device_group),
+    # action policy related start
     url(r'^v1/api_data_table_step3_table/', resource_api.api_data_table_step3_table),
     url(r'^v1/api_data_table_step4_tree/', resource_api.api_data_table_step4_tree),
     url(r'^v1/api_data_table_step4_table/', resource_api.api_data_table_step4_table),
     url(r'^v1/api_data_table_step1/', resource_api.api_data_table_step1),
+    url(r'^v1/api_action_policy/', resource_api.api_action_policy),
+    url(r'^v1/api_regenerate_trigger_detail/', resource_api.api_regenerate_trigger_detail),
+    # action policy related end
     url(r'^v1/api_data_collection_devices/', resource_api.api_data_collection_by_device),
     url(r"^v1/api_collection_policy_edit_page/", resource_api.api_collection_policy_edit),
     url(r'^v1/api_data_collection_policy/', resource_api.api_data_collection_by_cp),
-    # device view related
+    # device view related start
     url(r'^v1/api_device_ostype/', resource_api.api_device_ostype)
+    # device view related end
     # url(r'^users/$', user_list, name='user-list'),
     # url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
