@@ -123,13 +123,14 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             });
     }
 
-    setStopAllButton(){
-        let _this = this;
+    setStopAllButton(res){
+        console.log(res);
+        // let _this = this;
 
         // console.log(res.userdata);
-        for (let item of _this.testData) {
+        for (let item of res.data) {
             console.log(item);
-            if (item.valid_status == 1){
+            if (item.valid_status == true){
                 return this.stopAll;
             }
         }
@@ -179,10 +180,10 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         // console.log(rowObject);
         if (cellvalue == true){
             return '<button class="btn btn-xs btn-primary stop"' +
-                ' name="'+ rowObject["policy"] +'" id="'+ rowObject["policyNo"] + '">停止</button>';
+                ' name="'+ rowObject["policy"] +'" id="'+ rowObject["cpGroupNo"] + "_" + rowObject["policyNo"] + '">停止</button>';
         } else if (cellvalue == 0){
             return '<button class="btn btn-xs btn-default stop"' +
-                ' name="'+ rowObject["policy"] +'" id="'+ rowObject["policyNo"] + '">解除</button>';
+                ' name="'+ rowObject["policy"] +'" id="'+ rowObject["cpGroupNo"] + "_" +  rowObject["policyNo"] + '">解除</button>';
         } else {
             return cellvalue;
         }
@@ -207,23 +208,28 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
     }
 
     allAction(res){
-        console.log(res);
+        // console.log(res);
 
         let _this = this;
         // $('#policiesTable').jqGrid('setLabel', 'action', 'asd');
-        $('#policiesTable').jqGrid('setLabel', 'valid_status', _this.setStopAllButton.bind(_this));
-        let url = '/api_new_data_collection/';
+        $('#policiesTable').jqGrid('setLabel', 'valid_status', _this.setStopAllButton(res));
+        let url = '/api_data_collection_devices/';
         $('#stopAll').click(function (event) {
             // console.log(event);
             if(event.target.innerHTML == '全停止'){
                 let _confirm = confirm('Stop All?');
                 // event.target.parentElement.innerHTML = _this.startAll;
-                $('#stopAll').html('全解除').removeClass('btn-primary').addClass('btn-default');
+
                 if(_confirm){
                     _this.httpClient
-                        .toJson(this.httpClient.put(url, {'id': _this.deviceNo, 'status': 0}))
+                        .toJson(_this.httpClient.put(url,
+                                    {"is_all": 1, 'device_id': _this.deviceNo, "coll_policy_id": "-1",
+                                    "policy_group_id": "-1", 'status': 0}
+                                ))
                         .subscribe(res => {
+
                             if (res['status']['status'].toString().toLowerCase() === 'true') {
+                                $('#stopAll').html('全解除').removeClass('btn-primary').addClass('btn-default');
                                 let newUrl = '/v1/api_data_collection_devices/?device_id='+_this.deviceNo;
                                 $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
                                 // if (res['data']) {
@@ -248,9 +254,13 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                 // event.target.parentElement.innerHTML = _this.startAll;
                 if(_confirm){
                     _this.httpClient
-                        .toJson(this.httpClient.put(url, {'id': _this.deviceNo, 'status': 1}))
+                        .toJson(_this.httpClient.put(url,
+                                    {"is_all": 1, 'device_id': _this.deviceNo, "coll_policy_id": "-1",
+                                    "policy_group_id": "-1", 'status': 1}
+                                ))
                         .subscribe(res => {
                             if (res['status']['status'].toString().toLowerCase() === 'true') {
+                                $('#stopAll').html('全停止').removeClass('btn-default').addClass('btn-primary');
                                 let newUrl = '/v1/api_data_collection_devices/?device_id='+_this.deviceNo;
                                 $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
                                 // if (res['data']) {
@@ -270,7 +280,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                     // send the request to background, return if success; if success, reload the table
                 }
 
-                $('#stopAll').html('全停止').removeClass('btn-default').addClass('btn-primary');
+
             }
 
         });
@@ -278,10 +288,12 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
     }
 
     public stopPolicy(){
+        let _this = this;
         $('.stop').click(function (event) {
             let id = $(event)[0].target.id;
             let policy = $(event)[0].target.name;
-            console.log($(event)[0].target);
+            let coll_policy_id = id.split('_')[1];
+            let policy_group_id = id.split('_')[0];
             let url = '/api_data_collection_devices/';
 
 
@@ -289,12 +301,15 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                 let _confirm = confirm('Stop '+policy+'?');
                 if(_confirm){
                     // $('#'+id).html('解除').removeClass('btn-primary').addClass('btn-default');
-                    this.httpClient
-                        .toJson(this.httpClient.put(url, {'id': id, 'status': 0}))
+                    _this.httpClient
+                        .toJson(_this.httpClient.put(url,
+                                    {"is_all": 0, 'device_id': _this.deviceNo, "coll_policy_id": coll_policy_id,
+                                    "policy_group_id": policy_group_id, 'status': 0}
+                                ))
                         .subscribe(res => {
                             if (res['status']['status'].toString().toLowerCase() === 'true') {
-                                console.log('device no'+this.deviceNo);
-                                let newUrl = '/v1/api_data_collection_devices/?device_id='+this.deviceNo;
+                                console.log('device no'+_this.deviceNo);
+                                let newUrl = '/v1/api_data_collection_devices/?device_id='+_this.deviceNo;
                                 $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
                                 // if (res['data']) {
                                 //     // let id = res['data']['coll_policy_id'];
@@ -318,11 +333,14 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                 if(_confirm){
                     // $('#'+id).html('停止').removeClass('btn-default').addClass('btn-primary');
                     // send the request to background, return if success; if success, reload the table
-                    this.httpClient
-                        .toJson(this.httpClient.put(url, {'id': id, 'status': 1}))
+                    _this.httpClient
+                        .toJson(_this.httpClient.put(url,
+                                    {"is_all": 0, 'device_id': _this.deviceNo, "coll_policy_id": coll_policy_id,
+                                    "policy_group_id": policy_group_id, 'status': 1}
+                                ))
                         .subscribe(res => {
                             if (res['status']['status'].toString().toLowerCase() === 'true') {
-                                let newUrl = '/v1/api_data_collection_devices/?device_id='+this.deviceNo;
+                                let newUrl = '/v1/api_data_collection_devices/?device_id='+_this.deviceNo;
                                 $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
                                 // if (res['data']) {
                                 //     // let id = res['data']['coll_policy_id'];

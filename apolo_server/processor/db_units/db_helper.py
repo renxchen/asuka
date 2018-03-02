@@ -29,6 +29,15 @@ class DbHelp(object):
         pass
 
 
+class ItemsDbHelp(DbHelp):
+    def __init__(self):
+        pass
+
+    def update_last_exec_time(self, now_time, items):
+        for item in items:
+            Items.objects.filter(**{"item_id": item['item_id']}).update(last_exec_time=now_time)
+
+
 class DeviceDbHelp(DbHelp):
     def __init__(self):
         pass
@@ -46,6 +55,7 @@ class DeviceDbHelp(DbHelp):
             "schedule__data_schedule_time",
             "last_exec_time",
             "item_type",
+            "item_id",
             "device__device_id",
             "device__ip",
             "device__hostname",
