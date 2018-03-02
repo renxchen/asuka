@@ -1,15 +1,14 @@
 <div class="ibox-content" style="min-height:380px" >
     <div>
-        <label>Poloicy</label>
+        <label>Policy</label>
         <select id="policy" name="policy" style="width: 200px">
             <option *ngFor="let item of policyList" value="{{item.coll_policy_id}}">
-                {{item.name}}
-           </option>
-            <!--<option value="1">aaa</option>-->
-            <!--<option value="2">bbb</option>-->
-            <!--<option value="3">ccc</option>-->
-        </select>
+                <span *ngIf="item.policy_type">[snmp]{{item.name}}</span>
+                <span *ngIf="!item.policy_type">[cli]{{item.name}}</span>
 
+           </option>
+        </select>
+        <button class="btn btn-success" (click)="jumpToPolicy()">jump to selected policy</button>
     </div>
     <div style="margin-top: 30px">
         <table id='devicesTable'></table>

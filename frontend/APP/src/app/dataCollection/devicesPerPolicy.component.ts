@@ -128,6 +128,19 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
         _policy.html(_content2);
     }
 
+    jumpToPolicy(){
+        let policyNo = this.policyNo;
+        for (let policy of this.policyList){
+            if (policy["coll_policy_id"] == policyNo){
+                if (policy["policy_type"] == 0){
+                    this.router.navigate(['/index/clicpdetail'],{queryParams:{'id':policyNo}});
+                } else if (policy["policy_type"] == 1){
+                    this.router.navigate(['/index/snmpcpdetail'],{queryParams:{'id':policyNo}});
+                }
+            }
+        }
+    }
+
     // public arrtSetting(rowId, val, rowObject, cm) {
     //     // let result;
     //     // if (rowId == 1){
