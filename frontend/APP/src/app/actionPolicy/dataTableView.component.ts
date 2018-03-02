@@ -3,6 +3,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
+import { DataTableLoginComponent } from './dataTableLogin.component';
 declare var $: any;
 import * as _ from 'lodash';
 
@@ -27,6 +28,14 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
         {table_id: 12, name: 'data table 3', description: 'description of data table 3'},
     ];
 
+    modalRef: BsModalRef;
+    modalConfig = {
+        animated: true,
+        keyboard: true,
+        backdrop: true,
+        ignoreBackdropClick: true
+    };
+
     constructor(
         private modalService: BsModalService,
         public httpClient: HttpClientComponent,
@@ -40,7 +49,7 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.drawDCTable();
+        this.drawDataTableTable();
 
     }
 
@@ -52,7 +61,7 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
         return buttons
     }
 
-    public drawDCTable() {
+    public drawDataTableTable() {
         let _this = this;
         $('#tableTable').jqGrid({
             // url: '/v1/api_data_collection/',
@@ -86,6 +95,10 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
     }
 
     newTable(){
+
+        this.modalRef = this.modalService.show(DataTableLoginComponent, this.modalConfig);
+        // init the title of modal
+        this.modalRef.content.title = 'テーブル登録';
 
     }
 }
