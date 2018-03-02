@@ -23,6 +23,9 @@ class ActionPolicyDataTableSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.descr = validated_data.get('descr', instance.descr)
+        instance.coll_policy = validated_data.get('coll_policy', instance.coll_policy)
+        instance.groups = validated_data.get('groups', instance.groups)
+        instance.tree = validated_data.get('tree', instance.tree)
         instance.save()
         return instance
 
