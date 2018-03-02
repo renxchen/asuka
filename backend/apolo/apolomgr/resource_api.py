@@ -10,7 +10,8 @@ from backend.apolo.apolomgr.resource.collection_policy_tree import policy_tree_h
     policy_tree_rule_view, collection_policy_edit_view
 from backend.apolo.apolomgr.resource.action_policy_table import data_table_step3_views, data_table_step1_views, \
     data_table_step4_table_views, data_table_step4_tree_views
-from backend.apolo.apolomgr.resource.action_policy import action_policy_views
+from backend.apolo.apolomgr.resource.action_policy import action_policy_views, action_policy_column_views, \
+    action_policy_column_verify
 from backend.apolo.apolomgr.resource.common import common_views
 from backend.apolo.apolomgr.resource.data_collection import data_collection_view, new_data_collection_view, \
     data_collection_by_device_view, data_collection_by_cp_view
@@ -209,3 +210,30 @@ def api_regenerate_trigger_detail(request):
     resource_object = action_policy_views.ActionPolicyViewSet(request=request)
     resource_object.regenerate_trigger_detail()
     return HttpResponse('Successful')
+
+
+@api_view(['GET'])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_column(request):
+    resource_object = action_policy_column_views.ActionPolicyColumnViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(['GET'])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_column(request):
+    resource_object = action_policy_column_views.ActionPolicyColumnViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(['GET'])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_column_verify(request):
+    resource_object = action_policy_column_verify.ActionPolicyColumnVerifyViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+
