@@ -59,6 +59,7 @@ class DataTableCoulumnViewsSet(viewsets.ViewSet):
                                 cp_group_rowspan = len(policy_infos)
                             result_dict = {
                                 'policyNo': '',
+                                'groupNo': '',
                                 'deviceGroup': self.device_group_name,
                                 'cpGroup': '',
                                 'policy': '',
@@ -76,6 +77,8 @@ class DataTableCoulumnViewsSet(viewsets.ViewSet):
                                 **{'coll_policy_id': policy_info['policy']}).values('name', 'policy_type')
                             # policy id
                             result_dict['policyNo'] = policy_info['policy']
+                            # group id
+                            result_dict['groupNo'] = self.id
                             # collection policy group name
                             result_dict['cpGroup'] = policy_info['policy_group__name']
                             # collection policy name
