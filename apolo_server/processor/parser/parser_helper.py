@@ -102,17 +102,15 @@ def parser_main(item_type, params):
         func = SNMPParser(params)
     func.handle()
     items = __wrapper(func.parser_params['items'])
-    print items
     return items, func.timestamp
 
 
 if __name__ == "__main__":
     start_time = time.time()
-    with open("/Users/yihli/Desktop/projects/apolo/apolo_server/processor/parser/test_cli_param.json") as f:
+    with open("test_cli_param.json") as f:
         test_cli_param = json.loads(f.read())
 
-
-    parser_main(0,test_cli_param)
+    parser_main(0, test_cli_param)
     # items, timestamp = parser_main(item_type=0, params=test_cli_param)
     end_time = time.time()
     print end_time - start_time
