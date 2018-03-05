@@ -201,7 +201,7 @@ class Tool(object):
         #     ],
         #     "message": ""
         # }
-        return test_json
+        # return test_json
 
     @staticmethod
     def get_policy_status(policy_id):
