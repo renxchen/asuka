@@ -29,16 +29,16 @@ class DataCollectionByCPViewSet(viewsets.ViewSet):
     def get(self):
         # http://127.0.0.1:8000/v1/api_data_collection_policy/?policy_id=3&device_name=test
         # http://127.0.0.1:8000/v1/api_data_collection_policy/?page=1&rows=1&policy_id=3&device_name=test
-        coll_policy_id = views_helper.get_request_value(self.request, "policy_id", "GET")
-        device_name = views_helper.get_request_value(self.request, "device_name", "GET")
+        coll_policy_id = views_helper.get_request_value(self.request, "coll_policy_id", "GET")
+        device_name = views_helper.get_request_value(self.request, "device", "GET")
         if not coll_policy_id:
             # load all coll_policy
-            coll_policy_list = CollPolicy.objects.values('policy_id', 'name')
+            coll_policy_list = CollPolicy.objects.values('coll_policy_id', 'name', 'policy_type')
             arry = []
             for item in coll_policy_list:
                 arry.append(item)
             data = {
-                'devices': arry,
+                'policies': arry,
                 'new_token': self.new_token,
                 constants.STATUS: {
                     constants.STATUS: constants.TRUE,

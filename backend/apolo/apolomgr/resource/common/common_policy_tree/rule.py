@@ -49,6 +49,8 @@ class Policy(object):
                 self.extract_regexp = '.*'
             else:
                 self.extract_regexp = self.extract_policy['extract_regexp']
+        else:
+            self.extract_regexp = self.extract_policy['extract_regexp']
         # raw data of target block
         if self.deep >0 and self.rule_type >4:
             self.start_line +=1
@@ -93,7 +95,7 @@ class Policy(object):
         # if find the basic character, False is not find, True is find.
         basic_c_find_flag = False
         # calculate if match the offset
-        count = 0
+        count = -1
         # the line number of basic character
         basic_character_line_num = None
         # the index of basic character
@@ -111,7 +113,8 @@ class Policy(object):
             if m is not None:
                 basic_character = m.group()
                 # replace the space in basic character to @@
-                self.render_b_c = self.instead.join(basic_character.split())
+                #self.render_b_c = self.instead.join(basic_character.split())
+                self.render_b_c = basic_character.replace(self.split_characters, self.instead)
                 self.raw_data_list[i] = self.raw_data_list[i].replace(basic_character, self.render_b_c)
                 basic_character_line_num = i
                 break
@@ -122,8 +125,10 @@ class Policy(object):
         if self.x_offset < 0:
             # reverse the list
             new_list.reverse()
+
+        buffer_render_b_c = r'{}'.format(Tool.replace_escape_char(self.render_b_c))
+        pattern = re.compile(buffer_render_b_c)
         for i in range(len(new_list)):
-            pattern = re.compile(self.render_b_c)
             m = re.search(pattern, new_list[i])
             if m is not None:
                 basic_character = m.group()
@@ -131,7 +136,7 @@ class Policy(object):
                 basic_c_find_flag = True
                 # record the index(position) of the basic character
                 basic_character_index = i
-                continue
+                # continue
             if new_list[i].isspace() or new_list[i] == '':
                 continue
             if basic_c_find_flag and new_list[i] is not '':
@@ -341,7 +346,7 @@ class Policy(object):
                         msg = constants.NO_MATCH_EXTRACT_DATA_REGEXP
 
                 if i == basic_character_line_num and not basic_character_find_flag:
-                    self.render_b_c = r'{}'.format(Tool.repalce_escape_char(self.render_b_c))
+                    self.render_b_c = r'{}'.format(Tool.replace_escape_char(self.render_b_c))
                     pattern = re.compile(self.render_b_c)
                     m = re.search(pattern, arry[j])
                     if m is not None:

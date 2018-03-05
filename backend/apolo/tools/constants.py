@@ -50,7 +50,7 @@ NO_USERNAME_OR_PASSWORD = "No user or password found."
 USER_AND_PASSWD_INCORRECT = "User or password is incorrect."
 USER_DISABLED = "User is disabled."
 USER_LOGOUT_SUCCESSFUL = "User logout successful."
-COLLECTION_POLICY_NAME_DUPLICATE = 'COLLECTION_POLICY_NAME_DUPLICATE'
+COLLECTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 ACTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 DATA_TABLE_NAME_DUPLICATE = 'DATA_TABLE_NAME_DUPLICATE'
 COLL_POLICY_GROUP_EXIST_IN_SCHEDULE = 'COLL_POLICY_GROUP_EXIST_IN_SCHEDULE'
@@ -109,8 +109,6 @@ LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定
 DB_EXCEPTION ='there is an db exception'
 RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
 CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
-NO_ITEMS_IN_GROUP = 'no items in group,please check the group'
-
 #########################################
 # data collection value setting
 #########################################
@@ -158,8 +156,9 @@ CP_STATUS_ON_VAULE = 1
 POLICY_DEVICE_COMBINATION = 'the combination of policy and device  is used'
 CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
 CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
+NO_ITEMS_IN_GROUP = 'no items in group,please check the group'
 DATA_COLLECTION_POST_URL ='http://10.71.244.134:7777/api/v1/getItems'
-POLICY_POST_URL = 'POST：http://10.71.244.134:7777/api/v1/valid'
+POLICY_POST_URL = 'http://10.71.244.134:7777/api/v1/valid'
 #########################################
 # render
 #########################################

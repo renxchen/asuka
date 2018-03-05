@@ -12,6 +12,7 @@
 from django.db import transaction
 from rest_framework import viewsets
 
+from backend.apolo.apolomgr.resource.data_collection.data_collection import DataCollectionOptCls
 from backend.apolo.models import Ostype, CollPolicyGroups, Groups, DevicesGroups, PolicysGroups, CollPolicyRuleTree, \
     Items, Schedules
 from backend.apolo.serializer.collection_policy_serializer import OstypeSerializer
@@ -225,7 +226,54 @@ class NewDataCollectionViewSet(viewsets.ViewSet):
                     items_arry.append(data)
         return items_arry
 
+    def __set_request_param(self):
+         param_dict = {
+                "ostype": self.ostype,
+                "priority": self.priority,
+                "device_group_id": self.device_group_id,
+                "policy_group_id": self.policy_group_id,
+                "valid_period_type": self.valid_period_type,
+                "start_period_time": self.start_period_time,
+                "end_period_time": self.end_period_time,
+                "data_schedule_type": self.data_schedule_type,
+                "weeks": self.weeks,
+                "data_schedule_time": self.data_schedule_time
+            }
+         return param_dict
+
     def post(self):
+        try:
+            with transaction.atomic():
+                param_dict = self.__set_request_param()
+                opt=DataCollectionOptCls(**param_dict)
+                # ready
+                devices_list, coll_policy_list = opt.add_new_schedule_ready()
+                # insert schedule
+                res = opt.insert_new_schedule(devices_list, coll_policy_list)
+                if res[0]:
+                    # create item by schedule
+                    opt.insert_new_items(devices_list, res[1], coll_policy_list)
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.TRUE,
+                            constants.MESSAGE: constants.SUCCESS
+                        }
+                    }
+                else:
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: res[1]
+                        }
+                    }
+                return api_return(data=data)
+        except Exception as e:
+            print e
+            return exception_handler(e)
+
+    def post_bk(self):
         # ready
         # get device list
         devices_list = self.__get_devices__()
