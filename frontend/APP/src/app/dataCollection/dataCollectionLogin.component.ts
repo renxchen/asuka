@@ -123,6 +123,9 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         this.deviceGroup = this.deviceGroups[0]['group_id'].toString();
                         this.policyGroup = this.policyGroups[0]['policy_group_id'].toString();
                     }
+                    if (this.priority == 1){
+                        this.policyGroups.unshift({policy_group_id:-1, name: '全機能OFF'});
+                    }
                     // }
                 } else {
                     if (res['status'] && res['status']['message']) {
