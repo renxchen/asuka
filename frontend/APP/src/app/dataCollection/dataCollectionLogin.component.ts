@@ -395,7 +395,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     .subscribe(res => {
                         $('#dcTable').trigger("reloadGrid");
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
-                            if (res['data']) {
+                            if (res['status']['message'] == "Success") {
                                alert('データ取得追加しました。');
                             }
                         } else {
@@ -410,12 +410,14 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     .subscribe(res => {
                         $('#dcTable').trigger("reloadGrid");
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
-                            if (res['data']) {
+                            if (res['status']['message'] == "Success") {
+                                alert('データ取得更新しました。');
                                 // let id = res['data']['coll_policy_id'];
                                 // this.router.navigate(['/index/cliCPEdit'],
                                 //     { queryParams: { 'id': id } });
                             }
                         } else {
+                            alert(res['status']['message']);
                             // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
                             //     this.uniqueFlg = false;
                             // } else {
