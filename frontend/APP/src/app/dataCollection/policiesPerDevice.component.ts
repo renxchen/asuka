@@ -29,7 +29,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             align: 'center', sortable: false, cellattr: this.arrtSetting,},
         {label: 'コレクションポリシー', name: 'policy', width: 50, align: 'center',
             classes: 'policy', sortable: false,cellattr: this.renderCpColor },
-        {label: this.stopAll, name: 'valid_status', width: 50, align: 'center', search: false,
+        {label: ' ', name: 'valid_status', width: 50, align: 'center', search: false,
         formatter: this.fomatterBtn, sortable: false, height: 50,},
         // {label: '', name: 'action', width: 50, align: 'center', search: false,
         // formatter: this.fomatterBtn, sortable: false, height: 50,}
@@ -124,17 +124,18 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
     }
 
     setStopAllButton(res){
-        console.log(res);
-        // let _this = this;
-
-        // console.log(res.userdata);
-        for (let item of res.data) {
-            console.log(item);
-            if (item.valid_status == true){
-                return this.stopAll;
+        // console.log(res.data.length);
+        if (res.data.length != 0){
+            for (let item of res.data) {
+                if (item.valid_status == true){
+                    return this.stopAll;
+                }
             }
+            return this.startAll;
+        } else {
+            return ' ';
         }
-        return this.startAll;
+
     }
 
 
