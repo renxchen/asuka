@@ -11,6 +11,7 @@
 '''
 import traceback
 
+import time
 from django.core.paginator import Paginator
 from django.db import transaction
 from rest_framework import viewsets
@@ -65,6 +66,8 @@ class DataCollectionViewSet(viewsets.ViewSet):
                     schedules_dict['end_period_time'] = schedules_dict['end_period_time'].replace('@', ' ')
                 else:
                     schedules_dict['end_period_time'] = None
+                if not schedules_dict['policy_group_id']:
+                    schedules_dict['policy_group_id'] = -1
 
                 item_list = self.__get_items_list(schedule_id)
                 is_processing = self.__check_is_Processing(item_list)
@@ -104,14 +107,40 @@ class DataCollectionViewSet(viewsets.ViewSet):
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                           query_data, search_fields)
 
-            total_num = len(Schedules.objects.all())
+            total_num = Schedules.objects.count()
             if search_conditions:
-                queryset = Schedules.objects.filter(**search_conditions).order_by(*sorts)
+                queryset = Schedules.objects.filter(**search_conditions).values('schedule_id',
+                                                                                'valid_period_type',
+                                                                                'data_schedule_type',
+                                                                                'start_period_time',
+                                                                                'end_period_time',
+                                                                                'data_schedule_time',
+                                                                                'priority',
+                                                                                'policy_group__name',
+                                                                                'policy_group_id',
+                                                                                'device_group__name',
+                                                                                'device_group_id',
+                                                                                'device_group__name',
+                                                                                'ostype_id',
+                                                                                'ostype__name', ).order_by(*sorts)
             else:
-                queryset = Schedules.objects.all().order_by(*sorts)
+                queryset = Schedules.objects.all('schedule_id',
+                                                 'valid_period_type',
+                                                 'data_schedule_type',
+                                                 'start_period_time',
+                                                 'end_period_time',
+                                                 'data_schedule_time',
+                                                 'priority',
+                                                 'policy_group__name',
+                                                 'policy_group_id',
+                                                 'device_group__name',
+                                                 'device_group_id',
+                                                 'device_group__name',
+                                                 'ostype_id',
+                                                 'ostype__name', ).order_by(*sorts)
 
-            result = SchedulesSerializer(queryset, many=True).data
-            # sort by schedules_is_valid
+            # process data
+            result = self.__clean_data(list(queryset))
             if sort_by and sort_by == 'schedules_is_valid':
                 if order:
                     # True: asc, False: desc
@@ -152,8 +181,8 @@ class DataCollectionViewSet(viewsets.ViewSet):
         # request param
         ostype = views_helper.get_request_value(self.request, "ostype_id", 'BODY')
         priority = views_helper.get_request_value(self.request, "priority", 'BODY')
-        device_group_id = views_helper.get_request_value(self.request, "device_group_id", 'BODY')
-        policy_group_id = views_helper.get_request_value(self.request, "policy_group_id", 'BODY')
+        device_group_id = int(views_helper.get_request_value(self.request, "device_group_id", 'BODY'))
+        policy_group_id = int(views_helper.get_request_value(self.request, "policy_group_id", 'BODY'))
         valid_period_type = views_helper.get_request_value(self.request, "valid_period_type", 'BODY')
         start_period_time = views_helper.get_request_value(self.request, "start_period_time", 'BODY')
         end_period_time = views_helper.get_request_value(self.request, "end_period_time", 'BODY')
@@ -186,7 +215,31 @@ class DataCollectionViewSet(viewsets.ViewSet):
             else:
                 with transaction.atomic():
                     Items.objects.filter(schedule=schedule_id).delete()
-                    Schedules.objects.filter(schedule_id=schedule_id).update(**new_dict)
+                    # judge status that is all functions off
+                    obj = Schedules.objects.filter(schedule_id=schedule_id)
+                    old_status = obj[0].status
+                    # the new request that is all functions off
+                    if policy_group_id == -1:
+                        # the old schedule status is all functions off
+                        if old_status == 0:
+                            if obj[0].device_group == device_group_id:
+                                obj.update(**new_dict)
+                            else:
+                                Schedules.objects.filter(device_group=obj[0].device_group).update(status=1)
+                                obj.update(**new_dict)
+                                Schedules.objects.filter(device_group=device_group_id).update(status=0)
+                        else:
+                            # the old schedule status chance to all functions off
+                            obj.update(**new_dict)
+                            Schedules.objects.filter(device_group=device_group_id).update(status=0)
+                    else:
+                        if old_status == 0:
+                            # the old schedule status are chanced from all function off to all function on
+                            Schedules.objects.filter(device_group=obj[0].device_group).update(status=1)
+                            obj.update(**new_dict)
+                        else:
+                            obj.update(**new_dict)
+
                     devices = opt.get_devices()
                     policies = opt.get_coll_policies()
                     opt.insert_new_items(devices, schedule_id, policies)
@@ -207,6 +260,13 @@ class DataCollectionViewSet(viewsets.ViewSet):
         schedule_id = views_helper.get_request_value(self.request, 'id', 'GET')
         try:
             with transaction.atomic():
+                # close all function off thought update status =1
+                obj = Schedules.objects.get(schedule_id=schedule_id)
+                all_function_status = obj.status
+                # all function off is opened
+                if all_function_status == 0:
+                    device_group_id = obj.device_group
+                    Schedules.objects.filter(device_group=device_group_id).update(status=1)
                 # delete items table
                 # delete schedule table
                 Items.objects.filter(schedule_id=schedule_id).delete()
@@ -222,11 +282,6 @@ class DataCollectionViewSet(viewsets.ViewSet):
         except Exception as e:
             print traceback.format_exc(e)
             return exception_handler(e)
-
-    @staticmethod
-    def __update_recode_check(schedule_id):
-        print schedule_id
-        return True
 
     def __delete_recode_check(self, schedule_id):
         if self.__check_is_lock(schedule_id):
@@ -262,3 +317,29 @@ class DataCollectionViewSet(viewsets.ViewSet):
         for item in queryset:
             item_id_arry.append(item['item_id'])
         return item_id_arry
+
+    @staticmethod
+    def __clean_data(arry):
+        now_time = time.strftime('%Y-%m-%d@%H:%M:%S', time.localtime(time.time()))
+        for i in range(len(arry)):
+            item = arry[i]
+            if item['valid_period_type'] == 0:
+                arry[i]['schedules_is_valid'] = 1
+            else:
+                if item['start_period_time'] < now_time < item['end_period_time']:
+                    arry[i]['schedules_is_valid'] = 1
+                else:
+                    arry[i]['schedules_is_valid'] = 0
+
+            if item['start_period_time'] and item['end_period_time']:
+                before = item['start_period_time'].replace('@', ' ')
+                after = item['end_period_time'].replace('@', ' ')
+                arry[i]['period_time'] = str(before) + '~' + str(after)
+
+            if not item['policy_group__name']:
+                arry[i]['policy_group__name'] = 'ALL FUNCTIONS OFF'
+            arry[i]['ostype_name'] = arry[i]['ostype__name']
+            arry[i]['policy_group_name'] = arry[i]['policy_group__name']
+            arry[i]['device_group_name'] = arry[i]['device_group__name']
+
+        return arry

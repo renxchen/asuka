@@ -21,8 +21,8 @@ from backend.apolo.tools import constants
 class DataCollectionOptCls(object):
     def __init__(self, **request_param):
         self.request_param = request_param
-        self.device_group_id = self.request_param['device_group_id']
-        self.policy_group_id = self.request_param['policy_group_id']
+        self.device_group_id = int(self.request_param['device_group_id'])
+        self.policy_group_id = int(self.request_param['policy_group_id'])
 
     def insert_new_schedule_bk(self):
         # ready
@@ -82,21 +82,29 @@ class DataCollectionOptCls(object):
         # get coll_policies
         coll_policy_list = self.get_coll_policies()
         return devices_list, coll_policy_list
-
+    # if policy_group_id =1 ,set all functions off
     def insert_new_schedule(self, devices_list, coll_policy_list):
 
         try:
             # check the device nums in the devices group and policy nums in policy group
-            if len(devices_list) == 0 or len(coll_policy_list) == 0:
+            if len(devices_list) == 0 or (len(coll_policy_list) == 0 and self.policy_group_id > -1):
                 return False, constants.NO_ITEMS_IN_GROUP
             else:
+                data_check_res = True
+                # if all functions is off
+                if not self.policy_group_id ==-1:
+                    data_check_res = self.__insert_data_check(devices_list, coll_policy_list)
                 # data check
-                if not self.__insert_data_check(devices_list, coll_policy_list):
+                if not data_check_res:
                     return False, constants.POLICY_DEVICE_COMBINATION
                 else:
                     # ready
                     # get tree_id and rule_id of the collection policy tree
-                    schedule_data = self.set_schedule_data()
+                    if self.policy_group_id == -1:
+                        self.update_all_function_off_status(0)
+                        schedule_data = self.set_schedule_data(status=0)
+                    else:
+                        schedule_data = self.set_schedule_data()
                     serializer = SchedulesAddSerializer(data=schedule_data)
                     # insert data into schedule table
                     if serializer.is_valid(raise_exception=BaseException):
@@ -124,6 +132,15 @@ class DataCollectionOptCls(object):
                 return True
         except Exception as e:
             print e
+            raise e
+
+    # when set off all policies  by device group,
+    # update status =0 of schedule table by device_group_id
+    def update_all_function_off_status(self, status):
+
+        try:
+            Schedules.objects.filter(device_group=self.device_group_id).update(status=status)
+        except Exception as e:
             raise e
 
     def get_devices(self):
@@ -191,14 +208,17 @@ class DataCollectionOptCls(object):
             print e
             raise e
 
-    def set_schedule_data(self):
+    def set_schedule_data(self, status=constants.SCHEDULE_STATUS_DEFAULT):
         if self.request_param['data_schedule_time'] == '':
             self.request_param['data_schedule_time'] = None
         if self.request_param['start_period_time'] == '':
             self.request_param['start_period_time'] = None
         if self.request_param['end_period_time'] == '':
             self.request_param['end_period_time'] = None
-
+        if self.policy_group_id ==-1:
+            policy_group = None
+        else:
+            policy_group = self.policy_group_id
         schedule_recode_data = {
             'valid_period_type': self.request_param['valid_period_type'],
             'data_schedule_type': self.request_param['data_schedule_type'],
@@ -206,8 +226,8 @@ class DataCollectionOptCls(object):
             'end_period_time': self.request_param['end_period_time'],
             'data_schedule_time': self.request_param['data_schedule_time'],
             'priority': self.request_param['priority'],
-            'status': constants.SCHEDULE_STATUS_DEFAULT,
-            'policy_group': self.request_param['policy_group_id'],
+            'status': status,# constants.SCHEDULE_STATUS_DEFAULT,
+            'policy_group': policy_group, #self.request_param['policy_group_id'],
             'device_group': self.request_param['device_group_id'],
             'ostype': self.request_param['ostype']
 
