@@ -35,9 +35,9 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         {label: 'OS Type', name: 'ostype_name', width: 50, align: 'center'},
         {label: 'DeviceGroupNo', hidden: true, name: 'device_group_id', index: 'device_group_id'},
         {label: 'デバイスグループ',  name: 'device_group_name', width: 80, align: 'center', classes: 'deviceGroup'},
-        {label: 'PolicyGroupNo', hidden: true, name: 'policy_group_id', index: 'policy_group_id',
+        {label: 'PolicyGroupNo', hidden: true, name: 'policy_group_id', index: 'policy_group_id'},
+        {label: 'コレクションポリシーグループ名',  name: 'policy_group_name', width: 100, align: 'center', classes: 'policyGroup',
             formatter: this.formatterCollectionPolicyGroup},
-        {label: 'コレクションポリシーグループ名',  name: 'policy_group_name', width: 100, align: 'center', classes: 'policyGroup'},
 
         // {label: '有効期間',  name: 'period_time', width: 60, align: 'center'},
         {label: '開始日時',  name: 'start_period_time', width: 65, align: 'center',
@@ -166,6 +166,8 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
                 _target.click( function (event) {
                     _this.router.navigate(['/index/cpgdetail'],{queryParams:{'id':policyGroupNo}});
                 });
+            } else {
+                _content = _target.html();
             }
             _target.html(_content);
 
