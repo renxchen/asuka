@@ -419,7 +419,8 @@ class Schedules(models.Model):
     data_schedule_time = models.CharField(max_length=255, blank=True, null=True)
     priority = models.IntegerField(blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
-    policy_group = models.ForeignKey(CollPolicyGroups, models.DO_NOTHING)
+    policy_group = models.ForeignKey(CollPolicyGroups, models.DO_NOTHING,
+                                     blank=True, null=True)
     device_group = models.ForeignKey(Groups, models.DO_NOTHING)
     ostype = models.ForeignKey(Ostype, models.DO_NOTHING)
 
@@ -429,7 +430,10 @@ class Schedules(models.Model):
 
     @property
     def policy_group_name(self):
-        return self.policy_group.name
+        if self.policy_group:
+            return self.policy_group.name
+        else:
+            return 'ALL FUNCTIONS OFF'
 
     @property
     def device_group_name(self):
@@ -455,6 +459,7 @@ class Schedules(models.Model):
                 return 1
             else:
                 return 0
+
 
 
 
