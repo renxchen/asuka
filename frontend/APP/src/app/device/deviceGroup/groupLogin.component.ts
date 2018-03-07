@@ -28,7 +28,7 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
     constructor(
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
-        private bsModalRef: BsModalRef,
+        private bsModalRef: BsModalRef
     ) { }
 
     ngOnInit() {

@@ -34,14 +34,14 @@
                         </label>
                         <input type="text" class="form-control" id="markString"
                         name="markString" [(ngModel)]="markString" maxlength="256"
-                        placeholder="正規表現で記述可能" required="" aria-required="true">
+                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
                     </div>
                     <div class="form-group">
                         <label for="splitChar">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             切り分け文字:
                         </label>
-                        <select class="form-control" [(ngModel)]="selSplitChar" id="selSplitChar" name="selSplitChar">
+                        <select class="form-control" [(ngModel)]="selSplitChar" id="selSplitChar" name="selSplitChar" [disabled]="processFlg">
                             <option value="4">スペース</option>
                             <option value="1">カンマ</option>
                             <option value="2">スラッシュ</option>
@@ -50,7 +50,7 @@
                         <span *ngIf="selSplitChar=='3'" [ngClass]="{'has-warning': !otherCharFlg}">
                             <input type="text" class="form-control" id="extractKey"
                             name="otherChar" [(ngModel)]="otherChar" maxlength="256"
-                            placeholder="正規表現で記述可能" required="" aria-required="true">
+                            placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
                         </span>
                     </div>
                     <div class="form-group" [ngClass]="{'has-warning': !xOffsetFlg}">
@@ -59,7 +59,7 @@
                             基準文字列からの距離：
                         </label>
                         <input type="number" class="form-control" id="xOffset" name="xOffset"
-                        [(ngModel)]="xOffset" value="0" required="">
+                        [(ngModel)]="xOffset" value="0" required="" [disabled]="processFlg">
                     </div> 
                     <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
                         <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
@@ -67,7 +67,7 @@
                             データ識別子名：
                         </label>
                         <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true">
+                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
                     </div>
                     <div class="form-group" [ngClass]="{'has-warning': !extKeyNotNull}">
                         <label for="extractKey" [ngClass]="{'text-warning': !extKeyNotNull}">
@@ -76,13 +76,13 @@
                         </label>
                         <input type="text" class="form-control" id="extractKey"
                         name="extractKey" [(ngModel)]="extractKey" maxlength="50"
-                        placeholder="正規表現で記述可能" required="" aria-required="true">
+                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg"> 
                     </div>
                     <div class="form-group">
                         <label for="returnType">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
                         </label>
-                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType">
+                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType" [disabled]="processFlg">
                             <option value="1">Int</option>
                             <option value="2">Float</option>
                             <option value="3">String</option>
@@ -99,7 +99,7 @@
                         </label>
                         <input type="text" class="form-control" id="markString"
                         name="markString" [(ngModel)]="markString" maxlength="256"
-                        placeholder="正規表現で記述可能" required="" aria-required="true">
+                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
                     </div>
                     <div class="form-group" [ngClass]="{'has-warning': !yOffsetFlg}">
                         <label for="yOffset" [ngClass]="{'text-warning': !yOffsetFlg}">
@@ -107,7 +107,7 @@
                             基準文字列からの距離：
                         </label>
                         <input type="number" class="form-control" id="yOffset" name="yOffset"
-                        [(ngModel)]="yOffset" value="0" required="">
+                        [(ngModel)]="yOffset" value="0" required="" [disabled]="processFlg">
                     </div>     
                     
                     <div class="form-group">
@@ -115,7 +115,7 @@
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             切り分け文字:
                         </label>
-                        <select class="form-control" [(ngModel)]="selSplitChar" id="selSplitChar" name="selSplitChar">
+                        <select class="form-control" [(ngModel)]="selSplitChar" id="selSplitChar" name="selSplitChar" [disabled]="processFlg">
                             <option value="4">スペース</option>
                             <option value="1">カンマ</option>
                             <option value="2">スラッシュ</option>
@@ -124,7 +124,7 @@
                         <span *ngIf="selSplitChar=='3'" [ngClass]="{'has-warning': !otherCharFlg}">
                             <input type="text" class="form-control" id="extractKey"
                             name="otherChar" [(ngModel)]="otherChar" maxlength="256"
-                            placeholder="正規表現で記述可能" required="" aria-required="true">
+                            placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
                         </span>
                     </div>
                     <!-- sdfghjkl -->
@@ -134,7 +134,7 @@
                             先頭文字からの距離：
                         </label>
                         <input type="number" class="form-control" id="xOffset" name="xOffset"
-                        [(ngModel)]="xOffset" value="0" required="">
+                        [(ngModel)]="xOffset" value="0" required="" [disabled]="processFlg">
                     </div>               
                     <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
                         <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
@@ -142,7 +142,7 @@
                             データ識別子名：
                         </label>
                         <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true">
+                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
                     </div>
                     <div class="form-group" [ngClass]="{'has-warning': !extKeyNotNull}">
                         <label for="extractKey" [ngClass]="{'text-warning': !extKeyNotNull}">
@@ -151,13 +151,13 @@
                         </label>
                         <input type="text" class="form-control" id="extractKey"
                         name="extractKey" [(ngModel)]="extractKey" maxlength="256"
-                        placeholder="正規表現で記述可能" required="" aria-required="true">
+                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
                     </div>
                     <div class="form-group unuse_east">
                         <label for="returnType">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
                         </label>
-                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType">
+                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType" [disabled]="processFlg">
                             <option value="1">Int</option>
                             <option value="2">Float</option>
                             <option value="3">String</option>
@@ -174,7 +174,7 @@
                         </label>
                         <input type="text" class="form-control" id="markString"
                         name="markString" [(ngModel)]="markString" maxlength="256"
-                        placeholder="正規表現で記述可能" required="" aria-required="true">
+                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
                     </div>
                     <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
                         <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
@@ -182,14 +182,14 @@
                             データ識別子名：
                         </label>
                         <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true">
+                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
                     </div> 
                     <div class="form-group unuse_east">
                         <label for="returnType"
                             [ngClass]="{'text-warning': osTypeFlg=== false}">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
                         </label>
-                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType">
+                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType" [disabled]="processFlg">
                             <option value="1">Int</option>
                             <option value="2">Float</option>
                             <option value="3">String</option>
@@ -205,14 +205,14 @@
                             データ識別子名：
                         </label>
                         <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true">
+                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
                     </div> 
                     <div class="form-group unuse_east">
                         <label for="returnType"
                             [ngClass]="{'text-warning': osTypeFlg=== false}">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
                         </label>
-                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType">
+                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType" [disabled]="processFlg">
                             <option value="1">Int</option>
                             <option value="2">Float</option>
                             <option value="3">String</option>
@@ -228,14 +228,14 @@
                             データ識別子名：
                         </label>
                         <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true">
+                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
                     </div> 
                     <div class="form-group unuse_east">
                         <label for="returnType"
                             [ngClass]="{'text-warning': osTypeFlg=== false}">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
                         </label>
-                            <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType">
+                            <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType" [disabled]="processFlg">
                             <option value="1">Int</option>
                             <option value="2">Float</option>
                             <option value="3">String</option>

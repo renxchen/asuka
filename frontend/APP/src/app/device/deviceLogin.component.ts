@@ -1,0 +1,259 @@
+import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
+import { HttpClientComponent } from '../../components/utils/httpClient';
+import { Http } from '@angular/http';
+import { Router } from '@angular/router';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { ModalComponent } from '../../components/modal/modal.component';
+import { Observable } from 'rxjs/Rx';
+import * as _ from 'lodash';
+declare var $: any;
+declare var waitingDialog: any;
+
+@Component({
+    selector: 'device-loign',
+    templateUrl: './deviceLogin.component.html',
+    styleUrls: ['./device.component.less']
+})
+export class DeviceLoginComponent implements OnInit {
+    filename: any;
+    devLoginTable$: any;
+    apiPrefix: any;
+    uploadFlg: string;
+    errorDevices: any;
+    optId: any;
+    loginFlg: Boolean = true;
+    actionFlg: Boolean = true;
+    formData: FormData;
+    modalRef: BsModalRef;
+    closeMsg: any;
+    modalMsg: any;
+    testData: any = [
+        {
+            'device_id': 1, 'hostname': 'test1', 'ip': '10.71.243.69', 'telnet_port': '23',
+            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
+            'device_type': 'cisco', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
+        },
+        {
+            'device_id': 2, 'hostname': 'test2', 'ip': '10.71.243.69', 'telnet_port': '23',
+            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
+            'device_type': 'a', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
+        },
+        {
+            'device_id': 3, 'hostname': 'test3', 'ip': '10.71.243.69', 'telnet_port': '23',
+            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
+            'device_type': 'b', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
+        },
+        {
+            'device_id': 4, 'hostname': 'test4', 'ip': '10.71.243.69', 'telnet_port': '23',
+            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
+            'device_type': 'd', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
+        },
+        {
+            'device_id': 5, 'hostname': 'test5', 'ip': '10.71.243.69', 'telnet_port': '23',
+            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
+            'device_type': 'e', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
+        },
+        {
+            'device_id': 6, 'hostname': 'test6', 'ip': '10.71.243.69', 'telnet_port': '23',
+            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
+            'device_type': 'f', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
+        },
+        {
+            'device_id': 7, 'hostname': 'test7', 'ip': '10.71.243.69', 'telnet_port': '23',
+            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
+            'device_type': 'h', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
+        },
+        {
+            'device_id': 8, 'hostname': 'test8', 'ip': '10.71.243.69', 'telnet_port': '23',
+            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
+            'device_type': 'i', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
+        },
+        {
+            'device_id': 9, 'hostname': 'test9', 'ip': '10.71.243.69', 'telnet_port': '23',
+            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
+            'device_type': 'g', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
+        },
+        {
+            'device_id': 10, 'hostname': 'test10', 'ip': '10.71.243.69', 'telnet_port': '23',
+            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
+            'device_type': 'k', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
+        }
+    ];
+    constructor(
+        public httpClient: HttpClientComponent,
+        private modalService: BsModalService,
+        private router: Router,
+        private http: Http
+    ) { }
+
+    ngOnInit() {
+        this.uploadFlg = 'null';
+    }
+    public changeFile(files: FileList) {
+        if (files && files.length > 0) {
+            let file: File = files.item(0);
+            let fileType = file.type;
+            this.filename = file.name;
+            this.formData = new FormData();
+            this.formData.append('file', file);
+            if (fileType === 'application/vnd.ms-excel') {
+                this.uploadFlg = 'csv';
+                this.loginFlg = false;
+            } else {
+                this.uploadFlg = 'other';
+                this.loginFlg = true;
+            }
+        } else {
+            this.loginFlg = true;
+        }
+    }
+    public uploadFile() {
+        if (this.devLoginTable$) {
+            this.devLoginTable$.GridUnload();
+        }
+        // this.modalMsg = 'Uploading...Please wait.';
+        // this.showAlertModal(this.modalMsg, this.closeMsg, this.errorDevices);
+        this.http.post('/v1/api_device/upload', this.formData)
+            .map(res => res.json())
+            .catch(error => Observable.throw(error))
+            .subscribe(res => {
+                console.log(res);
+                // this.modalRef.hide();
+                let status = _.get(res, 'status');
+                let msg = _.get(status, 'message');
+                let data: any = _.get(res, 'error_list');
+                this.optId = _.get(res, 'operation_id');
+                if (status && status['status'].toLowerCase() === 'true') {
+                    this.drawDevLoginTable();
+                    this.actionFlg = false;
+                    if (data && data.length > 0) {
+                        this.modalMsg = '';
+                        this.closeMsg = '閉じる';
+                        this.errorDevices = data;
+                        this.showAlertModal(this.modalMsg, this.closeMsg, this.errorDevices);
+                    }
+                } else {
+                    this.actionFlg = true;
+                    alert(msg);
+                }
+            });
+    }
+    public drawDevLoginTable() {
+        let _t = this;
+        _t.devLoginTable$ = $('#devLoginTable').jqGrid({
+            url: '/v1/api_device_pre/?operation_id=' + this.optId,
+            // datatype: 'local',
+            // data: _t.testData,
+            datatype: 'JSON',
+            mtype: 'get',
+            colNames: ['DeviceId', 'Hostname', 'IP Address', 'Telnet Port', 'SNMP Port', 'SNMP Community',
+                'SNMP Version', 'Login Expect', 'Device Type', 'Ostype', 'Group', 'Telnet Status', 'SNMP Status'
+            ],
+            colModel: [
+                { hidden: true, name: 'device_id', index: 'device_id', search: false, key: true },
+                { name: 'hostname', index: 'hostname', width: 40, align: 'center', search: true },
+                { name: 'ip', index: 'ip', width: 50, align: 'center', search: true },
+                { name: 'telnet_port', index: 'telnet_port', width: 50, align: 'center', search: true },
+                { name: 'snmp_port', index: 'snmp_port', width: 50, align: 'center', search: true },
+                { name: 'snmp_community', index: 'snmp_community', width: 50, align: 'center', search: true },
+                { name: 'snmp_version', index: 'snmp_version', width: 50, align: 'center', search: true },
+                {
+                    name: 'login_expect', index: 'login_expect', width: 50, align: 'center', search: true,
+                    // formatter: _t.loginExpFormmater
+                },
+                { name: 'device_type', index: 'device_type', width: 50, align: 'center', search: true },
+                {
+                    name: 'ostype', index: 'ostype', width: 50, align: 'center', search: true,
+                    formatter: function (cellvalue, options, rowObject) {
+                        return cellvalue['name'];
+                    }
+                },
+                { name: 'group_name', index: 'group_name', width: 50, align: 'center', search: true },
+                { name: 'telnet_status', index: 'telnet_status', width: 50, align: 'center', search: true },
+                { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
+            ],
+            // beforeSelectRow: function (rowid, e) { return false; },
+            beforeRequest: function () {
+                let currentPage: any = $('#devLoginTable').jqGrid('getGridParam', 'page');
+                let rowNum: any = $('#devLoginTable').jqGrid('getGridParam', 'rowNum');
+                let records: any = $('#devLoginTable').jqGrid('getGridParam', 'records');
+                let totalPages = records % rowNum;
+                if (records > 0 && currentPage > totalPages) {
+                    $('#devLoginTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
+                }
+            },
+            // text-overflow: ellipsis;
+            pager: '#devLoginPager',
+            rowNum: 10,
+            rowList: [5, 10, 15],
+            autowidth: true,
+            height: 300,
+            viewrecords: false,
+            multiselect: true,
+            emptyrecords: 'There is no data to display',
+            jsonReader: {
+                root: 'data',
+                page: 'current_page_num',
+                total: 'num_page',
+                records: 'total_num',
+                // userData:'erroList',
+                repeatitems: false,
+            },
+        });
+        $('#devLoginTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
+    }
+    public deviceCheck() {
+        this.apiPrefix = '/v1';
+        let checkUrl = '/api_device_pre/';
+        let deviceSel: any = [];
+        deviceSel = $('#devLoginTable').jqGrid('getGridParam', 'selarrrow');
+        alert(deviceSel);
+        let checkInfo: any = {};
+        checkInfo['id_list'] = deviceSel;
+        checkInfo['operation_id'] = this.optId;
+        if (deviceSel.length > 0) {
+            this.httpClient.setUrl(this.apiPrefix);
+            this.httpClient
+                .toJson(this.httpClient.put(checkUrl, checkInfo))
+                .subscribe(res => {
+                    let status = _.get(res, 'status');
+                    console.log(res);
+                    // check upload status; if success, call the function draw table;
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        this.devLoginTable$.GridUnload();
+                        this.drawDevLoginTable();
+                    } else {
+                        alert('check data failed');
+                    }
+                });
+        } else {
+            alert('no device selected');
+        }
+    }
+    // save to database;
+    public deviceLogin() {
+        // waitingfor.show('uploading...');
+        this.apiPrefix = '/v1';
+        let databaseUrl = '/api_device/';
+        let loginInfo: any = {};
+        loginInfo['operation_id'] = this.optId;
+        this.httpClient.setUrl(this.apiPrefix);
+        this.httpClient
+            .toJson(this.httpClient.post(databaseUrl, loginInfo))
+            .subscribe(res => {
+                let status = _.get(res, 'status');
+                if (status && status['status'].toString().toLowerCase() === 'true') {
+                    this.router.navigate(['index/deviceview/']);
+                } else {
+                    alert('save failed');
+                }
+            });
+    }
+    public showAlertModal(modalMsg?: any, closeMsg?: any, data?: any) {
+        this.modalRef = this.modalService.show(ModalComponent);
+        this.modalRef.content.modalMsg = modalMsg;
+        this.modalRef.content.closeMsg = closeMsg;
+        this.modalRef.content.data = data;
+    }
+}

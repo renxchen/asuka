@@ -83,7 +83,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.deleteBtn();
             },
             beforeSelectRow: function (rowid, e) { return false; },
-            beforeRequest: function () {
+            onPaging: function () {
                 let currentPage: any = $('#cpTable').jqGrid('getGridParam', 'page');
                 let rowNum: any = $('#cpTable').jqGrid('getGridParam', 'rowNum');
                 let records: any = $('#cpTable').jqGrid('getGridParam', 'records');
@@ -227,9 +227,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             }
         }
     }
-    public showAlertModal(modalMsg: any, closeMsg: any) {
+    public showAlertModal(modalMsg?: any, closeMsg?: any, data?: any) {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+        this.modalRef.content.data = data;
     }
 }

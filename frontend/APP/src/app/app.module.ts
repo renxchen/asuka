@@ -7,7 +7,7 @@ import { appRouting, entryComponentList } from './app.router';
 import { TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { SharedModule } from './sharedModule/shared.module';
-import { ModalModule, BsDatepickerModule, TimepickerModule } from 'ngx-bootstrap';
+import { ModalModule, BsDatepickerModule, TimepickerModule,ProgressbarModule } from 'ngx-bootstrap';
 import { AppComponent } from './app.component';
 import { HClientModule } from '../components/utils/httpClient.module';
 import { ValidationModule } from '../components/validation/validation.module';
@@ -33,6 +33,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         ModalModule.forRoot(),
         BsDatepickerModule.forRoot(),
         TimepickerModule.forRoot(),
+        ProgressbarModule.forRoot(),
         TranslateModule.forRoot({
             loader: {
                 provide: TranslateLoader,

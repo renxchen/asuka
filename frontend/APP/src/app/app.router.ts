@@ -9,6 +9,11 @@ import { IndexComponent } from './index/index.component';
 import { DeviceGroupComponent} from './device/deviceGroup/deviceGroup.component';
 import { GroupLoginComponent} from './device/deviceGroup/groupLogin.component';
 import { GroupEditComponent} from './device/deviceGroup/groupEdit.component';
+import { DeviceLoginComponent} from './device/deviceLogin.component';
+import { DeviceViewComponent} from './device/deviceView.component';
+import { OstypeComponent } from './device/./ostype/ostype.component';
+import { OstypeLoginComponent } from './device/./ostype/ostypeLogin.component';
+import { OstypeEditComponent } from './device/./ostype/ostypeEdit.component';
 // collection policy
 import { CPViewComponent } from './collectionPolicy/cPView.component';
 import { CLICPLoginComponent } from './collectionPolicy/cli/cliCPLogin.component';
@@ -64,11 +69,35 @@ const routes: Routes = [
           },
           // device
           {
+              path: 'ostype',
+              component: OstypeComponent,
+              data: {
+                parentTitle: 'デバイス',
+                title: 'OS Type設定',
+              }
+          },
+          {
               path: 'devicegroup',
               component: DeviceGroupComponent,
               data: {
                 parentTitle: 'デバイス',
                 title: 'デバイスグループ閲覧',
+              }
+          },
+          {
+              path: 'deviceview',
+              component: DeviceViewComponent,
+              data: {
+                parentTitle: 'デバイス',
+                title: 'デバイス閲覧',
+              }
+          },
+          {
+              path: 'devicelogin',
+              component: DeviceLoginComponent,
+              data: {
+                parentTitle: 'デバイス',
+                title: 'デバイス登録',
               }
           },
           // collection policy
@@ -210,6 +239,8 @@ ModalComponent,
     // device
     GroupLoginComponent,
     GroupEditComponent,
+    OstypeLoginComponent,
+    OstypeEditComponent,
     // collection policy
     CLIBlockComponent,
     CLIDataComponent,
