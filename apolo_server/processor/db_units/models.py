@@ -6,6 +6,8 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from __future__ import unicode_literals
+
+import time
 from django.db import models
 
 
@@ -51,6 +53,10 @@ class CollPolicy(models.Model):
         db_table = 'coll_policy'
         app_label = "db_units"
 
+    @property
+    def ostype_name(self):
+        return self.ostype.name
+
 
 class CollPolicyCliRule(models.Model):
     ruleid = models.AutoField(primary_key=True)
@@ -92,11 +98,7 @@ class CollPolicyGroups(models.Model):
 
     @property
     def ostype_name(self):
-        return self.ostype.name
-
-    @property
-    def ostype_ostypeid(self):
-        return self.ostype.ostypeid
+        return self.ostypeid.name
 
 
 class CollPolicyRuleTree(models.Model):
@@ -118,6 +120,8 @@ class DataTable(models.Model):
     table_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=45, blank=True, null=True)
     descr = models.CharField(max_length=2000, blank=True, null=True)
+    coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
+    groups = models.ForeignKey('Groups', models.DO_NOTHING)
 
     class Meta:
         # managed = False
@@ -133,6 +137,28 @@ class DataTableItems(models.Model):
     class Meta:
         # managed = False
         db_table = 'data_table_items'
+        app_label = "db_units"
+
+
+class DevicesTmp(models.Model):
+    operation_id = models.IntegerField(blank=True, null=True)
+    device_id = models.AutoField(primary_key=True)
+    hostname = models.CharField(max_length=30)
+    ip = models.CharField(max_length=30)
+    telnet_port = models.IntegerField(blank=True, null=True)
+    snmp_port = models.IntegerField(blank=True, null=True)
+    snmp_community = models.CharField(max_length=30, blank=True, null=True)
+    snmp_version = models.CharField(max_length=5, blank=True, null=True)
+    login_expect = models.CharField(max_length=1000, blank=True, null=True)
+    status = models.IntegerField(blank=True, null=True)
+    telnet_status = models.CharField(max_length=255, blank=True, null=True)
+    snmp_status = models.CharField(max_length=255, blank=True, null=True)
+    device_type = models.CharField(max_length=255, blank=True, null=True)
+    ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
+
+    class Meta:
+        # managed = False
+        db_table = 'devices'
         app_label = "db_units"
 
 
@@ -166,6 +192,10 @@ class DevicesGroups(models.Model):
         # managed = False
         db_table = 'devices_groups'
         app_label = "db_units"
+
+    @property
+    def group_name(self):
+        return self.group.name
 
 
 class Event(models.Model):
@@ -312,13 +342,23 @@ class Items(models.Model):
     value_type = models.IntegerField(blank=True, null=True)
     item_type = models.IntegerField(blank=True, null=True)
     key_str = models.CharField(max_length=30, blank=True, null=True)
-    status = models.IntegerField(blank=True, null=True)
-    last_exec_time = models.IntegerField(blank=True, null=True)
+    # modify 1.17 add default value
+    status = models.IntegerField(blank=True, null=True, default=1)
+    # modify 1.17 add default value
+    last_exec_time = models.IntegerField(blank=True, null=True, default=0)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
-    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING, db_column='coll_policy_rule_tree_treeid')
+    coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
+                                                     db_column='coll_policy_rule_tree_treeid',
+                                                     blank=True, null=True)
     device = models.ForeignKey(Devices, models.DO_NOTHING)
     schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
+    # add 1.17
+    # add 1.17
     policys_groups = models.ForeignKey('PolicysGroups', models.DO_NOTHING)
+
+    #add 2.28 v1.5
+    enable_status = models.IntegerField(blank=True, null=True)
+    groups = models.ForeignKey(Groups, models.DO_NOTHING)
 
     class Meta:
         # managed = False
@@ -370,6 +410,10 @@ class PolicysGroups(models.Model):
         db_table = 'policys_groups'
         app_label = "db_units"
 
+    @property
+    def policy_name(self):
+        return self.policy.name
+
 
 class Schedules(models.Model):
     schedule_id = models.AutoField(primary_key=True)
@@ -389,6 +433,36 @@ class Schedules(models.Model):
         db_table = 'schedules'
         app_label = "db_units"
 
+    @property
+    def policy_group_name(self):
+        return self.policy_group.name
+
+    @property
+    def device_group_name(self):
+        return self.device_group.name
+
+    @property
+    def ostype_name(self):
+        return self.ostype.name
+
+    @property
+    def period_time(self):
+        before = self.start_period_time.replace('@', ' ')
+        after = self.end_period_time.replace('@', ' ')
+        return str(before) + '~' + str(after)
+
+    @property
+    def schedules_is_valid(self):
+        now_time = time.strftime('%Y-%m-%d@%H:%M:%S', time.localtime(time.time()))
+        if self.valid_period_type == 0:
+            return 1
+        else:
+            if self.start_period_time < now_time < self.end_period_time:
+                return 1
+            else:
+                return 0
+
+
 
 class TriggerDetail(models.Model):
     trigger_detail_id = models.AutoField(primary_key=True)
@@ -397,6 +471,7 @@ class TriggerDetail(models.Model):
     status = models.IntegerField(blank=True, null=True)
     trigger = models.ForeignKey('Triggers', models.DO_NOTHING)
     expression_view = models.CharField(max_length=255, blank=True, null=True)
+
     class Meta:
         # managed = False
         db_table = 'trigger_detail'
@@ -413,6 +488,7 @@ class Triggers(models.Model):
     trigger_type = models.IntegerField(blank=True, null=True)
     trigger_limit_nums = models.IntegerField(blank=True, null=True)
     condition = models.IntegerField(blank=True, null=True)
+
     expression = models.CharField(max_length=255, blank=True, null=True)
     columnA = models.CharField(max_length=255, blank=True, null=True)
     columnB = models.CharField(max_length=255, blank=True, null=True)
@@ -422,3 +498,6 @@ class Triggers(models.Model):
         app_label = "db_units"
 
 
+if __name__ == "__main__":
+    trigger = Triggers.objects.all()
+    print trigger

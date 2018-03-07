@@ -183,7 +183,7 @@ const routes: Routes = [
           },
           // data collection
           {
-            path: 'dataCollectionView',
+            path: 'datacollectionview',
             component: DataCollectionViewComponent,
             data: {
               parentTitle: 'データ取得',
@@ -191,7 +191,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'policiesPerDevice',
+            path: 'policiesperdevice',
             component: PoliciesPerDeviceComponent,
             data: {
               parentTitle: 'データ取得',
@@ -199,7 +199,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'devicesPerPolicy',
+            path: 'devicesperpolicy',
             component: DevicesPerPolicyComponent,
             data: {
               parentTitle: 'データ取得',
@@ -207,7 +207,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'dataTableView',
+            path: 'datatableview',
             component: DataTableViewComponent,
             data: {
               parentTitle: 'アクションポリシー',
@@ -215,7 +215,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'actionPolicyView',
+            path: 'actionpolicyview',
             component: ActionPolicyViewComponent,
             data: {
               parentTitle: 'アクションポリシー',
@@ -223,7 +223,7 @@ const routes: Routes = [
             }
           },
           {
-            path: 'actionPolicyHistory',
+            path: 'actionpolicyhistory',
             component: ActionPolicyHistoryComponent,
             data: {
               parentTitle: 'アクションポリシー',

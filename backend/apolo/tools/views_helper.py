@@ -38,8 +38,6 @@ def get_search_conditions(request, field_relation_ships, query_data, search_fiel
                     search_conditions[field_relation_ships[value] + '__in'] = query_data[field]
                 elif field == 'data_schedule_type':
                     search_conditions[field_relation_ships[value] + '__in'] = query_data[field]
-                elif field == 'status':
-                    search_conditions[field_relation_ships[value] + '__in'] = query_data[field]
                 else:
                     search_conditions[field_relation_ships[value] + '__contains'] = query_data[field]
     sorts = []

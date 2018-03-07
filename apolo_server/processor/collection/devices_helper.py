@@ -3,7 +3,7 @@ import time
 import copy
 from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
 from apolo_server.processor.db_units.memcached_helper import RulesMemCacheDb, ItemMemCacheDb
-from apolo_server.processor.db_units.db_helper import DeviceDbHelp
+from apolo_server.processor.db_units.db_helper import DeviceDbHelp, ItemsDbHelp
 
 
 __version__ = '0.1'
@@ -108,7 +108,6 @@ def get_items(item_type):
 def get_valid_items(now_time, item_type):
     items = get_items(item_type)
     items = valid_items(now_time, items)
-
     items = map(__item_type_mapping, items)
     return items
 
@@ -161,8 +160,8 @@ def get_devices(now_time, item_type):
 
     items = valid_items(now_time, items)
     items = [item for item in items if item.get('valid_status')]
-    items = __create_test_devices(items)
-
+    # items = __create_test_devices(items)
+    ItemsDbHelp().update_last_exec_time(now_time, items)
     devices = __merge_device(items)
     other_param = []
     if item_type == CommonConstants.CLI_TYPE_CODE:
@@ -293,14 +292,14 @@ def __check_item_interval(item, now_time):
     """
     exec_interval = item["policys_groups__exec_interval"]
     last_exec_time = item['last_exec_time']
-    if now_time - last_exec_time >= exec_interval:
-        return True
-    else:
-        return False
-    # if now_time / exec_interval == last_exec_time / exec_interval:
-    #     return False
-    # else:
+    # if now_time - last_exec_time >= exec_interval:
     #     return True
+    # else:
+    #     return False
+    if now_time / exec_interval == last_exec_time / exec_interval:
+        return False
+    else:
+        return True
 
 
 @deco_item
@@ -456,8 +455,9 @@ def __add_items_valid_status(item, status):
 
 
 if __name__ == "__main__":
-    for i in get_devices(1517281147, 0).items():
-        print i
+    for i in get_devices(1519612244, 0).items():
+        pass
+        # print i
     # device_valid = DeviceValid(1517281147)
     # print device_valid.valid(1)
     # device_valid = PolicyGroupValid(1517281147)

@@ -33,13 +33,16 @@ class TableViewsSet(viewsets.ViewSet):
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         self.page_from = views_helper.get_request_value(self.request, 'page', 'GET')
         self.max_size_per_page = views_helper.get_request_value(self.request, 'rows', 'GET')
+        self.id = views_helper.get_request_value(self.request, 'id', 'GET')
         method = 'GET'
         if request.method.lower() == 'get':
             method = 'GET'
         if request.method.lower() == 'post' or request.method.lower() == 'put':
             method = 'BODY'
-        self.id = views_helper.get_request_value(self.request, 'id', method)
         self.name = views_helper.get_request_value(self.request, 'name', method)
+        self.coll_policy_id = views_helper.get_request_value(self.request, 'coll_policy_id', method)
+        self.tree_id = views_helper.get_request_value(self.request, 'tree_id', method)
+        self.group_id = views_helper.get_request_value(self.request, 'group_id', method)
         self.desc = views_helper.get_request_value(self.request, 'desc', method)
         # table detail page sort parameters
         self.sort_by = views_helper.get_request_value(self.request, 'sidx', method)
@@ -62,7 +65,7 @@ class TableViewsSet(viewsets.ViewSet):
     @staticmethod
     def get_data_table(**kwargs):
         try:
-            dt = DataTable.objects.get(**kwargs)
+            dt = DataTable.objects.filter(**kwargs)
             return dt
         except Exception, e:
             print traceback.format_exc(e)
@@ -255,6 +258,9 @@ class TableViewsSet(viewsets.ViewSet):
                 data = {
                     'name': self.name,
                     'descr': self.desc,
+                    'coll_policy': self.coll_policy_id,
+                    'tree': self.tree_id,
+                    'groups': self.group_id,
                 }
                 if self.name is not '':
                     get_name_from_data_table = self.get_data_table(**{'name': self.name})

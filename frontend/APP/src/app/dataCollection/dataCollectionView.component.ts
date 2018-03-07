@@ -31,26 +31,29 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
     dcModel: any = [
         {label: 'No', hidden: true, name: 'schedule_id', index: 'schedule_id'},
         {label: '優先度',  name: 'priority', width: 30, align: 'center',
-        formatter: this.formatterPriority},
+            formatter: this.formatterPriority},
         {label: 'OS Type', name: 'ostype_name', width: 50, align: 'center'},
-        {label: 'デバイスグループ',  name: 'device_group_name', width: 80, align: 'center'},
-        {label: 'コレクションポリシーグループ名',  name: 'policy_group_name', width: 100, align: 'center'},
+        {label: 'DeviceGroupNo', hidden: true, name: 'device_group_id', index: 'device_group_id'},
+        {label: 'デバイスグループ',  name: 'device_group_name', width: 80, align: 'center', classes: 'deviceGroup'},
+        {label: 'PolicyGroupNo', hidden: true, name: 'policy_group_id', index: 'policy_group_id'},
+        {label: 'コレクションポリシーグループ名',  name: 'policy_group_name', width: 100, align: 'center', classes: 'policyGroup',
+            formatter: this.formatterCollectionPolicyGroup},
 
         // {label: '有効期間',  name: 'period_time', width: 60, align: 'center'},
         {label: '開始日時',  name: 'start_period_time', width: 65, align: 'center',
-        formatter: this.formatterTime,
+            formatter: this.formatterTime,
             // unformat: this.unFormatterTime
         },
         {label: '終了日時',  name: 'end_period_time', width: 65, align: 'center',
-        formatter: this.formatterTime,
+            formatter: this.formatterTime,
             // unformat: this.unFormatterTime
         },
         {label: '取得方法', name: 'data_schedule_type', width: 45, align: 'center',
-        formatter: this.formatterScheduleType},
-        {label: 'ステータス', name: 'status', width: 45, align: 'center', classes: 'status',
-        formatter: this.formatterStatus},
+            formatter: this.formatterScheduleType},
+        {label: 'ステータス', name: 'schedules_is_valid', width: 45, align: 'center', classes: 'status',
+            formatter: this.formatterStatus},
         {label: 'アクション', name: 'action', width: 45, align: 'center', search: false,
-        formatter: this.fomatterBtn
+            formatter: this.fomatterBtn
         }
     ];
     modalRef: BsModalRef;
@@ -59,7 +62,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         keyboard: true,
         backdrop: true,
         ignoreBackdropClick: true
-      };
+    };
 
     constructor(
         private modalService: BsModalService,
@@ -68,10 +71,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
     ) {}
 
     ngOnInit() {
-        // this.cpType = 'cli';
-        // this.model = this.dcModel;
 
-        // this.drawCPTable();
     }
 
     ngAfterViewInit() {
@@ -82,16 +82,26 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         return '<button class="btn btn-xs btn-success edit" id='+ rowObject["schedule_id"] + '><i class="fa fa-pencil-square"></i> 編集</button>'
     }
 
+    public formatterCollectionPolicyGroup(cellvalue, options, rowObject){
+        let result;
+        if (cellvalue == "ALL FUNCTIONS OFF"){
+            result = '全機能OFF';
+        } else {
+            result = cellvalue;
+        }
+        return result;
+    }
+
     public formatterStatus(cellvalue, options, rowObject){
         let result;
-        if (rowObject['status'] == 0){
+        if (rowObject['schedules_is_valid'] == 0){
             // result = '無効';
             result = '<a href="#" class = "btn btn-default btn-xs disabled">無効</a>';
-        } else if (rowObject['status'] == 1){
+        } else if (rowObject['schedules_is_valid'] == 1){
             // result = '有効';
             result = '<a href="#" class = "btn btn-primary btn-xs disabled">有効</a>'
         } else {
-            result = rowObject['status'];
+            result = rowObject['schedules_is_valid'];
         }
         return result;
     }
@@ -110,11 +120,11 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
 
     public formatterScheduleType(cellvalue, options, rowObject){
         let result;
-        if (rowObject['data_schedule_type'] == 1){
+        if (rowObject['data_schedule_type'] == 0){
             result = '常に取得';
-        } else if(rowObject['data_schedule_type'] == 2) {
+        } else if(rowObject['data_schedule_type'] == 1) {
             result = '取得停止';
-        } else if(rowObject['data_schedule_type'] == 3) {
+        } else if(rowObject['data_schedule_type'] == 2) {
             result = '周期取得';
         } else {
             result = rowObject['data_schedule_type'];
@@ -130,6 +140,40 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         }
 
     }
+
+    public renderLink(){
+        let _this = this;
+        let _deviceGroup = $('.deviceGroup');
+        for (let i=0;i<_deviceGroup.length;i++){
+            let _target = $(_deviceGroup[i]);
+            let _content = '<div style="color:blue;">';
+            _content += _target.html() + '</div>';
+            _target.html(_content);
+            let deviceGroupNo = _target.prev().html();
+            _target.click( function (event) {
+                _this.router.navigate(['/index/devicegroup'],{queryParams:{'id':deviceGroupNo}});
+            })
+        }
+
+        let _policyGroup = $('.policyGroup');
+        for (let i=0;i<_policyGroup.length;i++){
+            let _target = $(_policyGroup[i]);
+            let _content = '';
+            if (_target.html() != '全機能OFF'){
+                _content += '<div style="color:blue;">';
+                _content += _target.html() + '</div>';
+                let policyGroupNo = _target.prev().html();
+                _target.click( function (event) {
+                    _this.router.navigate(['/index/cpgdetail'],{queryParams:{'id':policyGroupNo}});
+                });
+            } else {
+                _content = _target.html();
+            }
+            _target.html(_content);
+
+        }
+    }
+
     newDC() {
         // open modal
         this.modalRef = this.modalService.show(DataCollectionLoginComponent, this.modalConfig);
@@ -174,6 +218,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
             // viewrecords: true,
             loadComplete: function() {
                 _this.editDC();
+                _this.renderLink();
                 // _this.renderColor();
             },
             rowNum: 10,

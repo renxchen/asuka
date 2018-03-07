@@ -11,6 +11,7 @@
 '''
 import traceback
 
+from django.db.models import Q
 from rest_framework import viewsets
 
 from backend.apolo.models import CollPolicyCliRule, CollPolicy, CollPolicyRuleTree
@@ -36,6 +37,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         try:
             coll_policy_id = views_helper.get_request_value(self.request, key='coll_policy_id', method_type='GET')
             rule_id = views_helper.get_request_value(self.request, key='rule_id', method_type='GET')
+            print coll_policy_id
             query_set = CollPolicyRuleTree.objects.filter(rule=rule_id, coll_policy=coll_policy_id)
             is_used = False
             if len(query_set) > 0:
@@ -83,18 +85,33 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             coll_policy_id = str(insert_info['coll_policy'])
             name = insert_info['name']
             query_set = CollPolicyCliRule.objects.filter(name=name, coll_policy=coll_policy_id)
+            error_msg_list = {}
             if len(query_set) > 0:
+                error_msg_list.update({'rule_name': False})
+            else:
+                error_msg_list.update({'rule_name': True})
+
+            identifier_is_existing = self.__judge_identifier_name_exist(insert_info['key_str'], coll_policy_id)
+            if identifier_is_existing:
+                error_msg_list.update({'key_str_name': False})
+            else:
+                error_msg_list.update({'key_str_name': True})
+
+            if len(query_set) > 0 or identifier_is_existing:
                 data = {
                     'data': '',
+                    'verify_error_msg': error_msg_list,
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.FALSE,
+                        # constants.MESSAGE: '\n'.join(Error_Msg_list)
                         constants.MESSAGE: constants.RULE_NAME_IS_EXISTENCE
                     }
                 }
+
             else:
                 cli_command = CollPolicy.objects.get(coll_policy_id=coll_policy_id).cli_command
-                rule_data_dict = self.__set_input_rule_data__(insert_info)
+                rule_data_dict = self.__set_input_rule_data(insert_info)
                 rule_data_dict['command'] = cli_command
                 serializer = CollPolicyCliRuleSerializer(data=rule_data_dict)
                 if serializer.is_valid():
@@ -106,6 +123,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
                             "block_rule_tree_json": rule_tree_tuple[0],
                             "data_rule_tree_json": rule_tree_tuple[1]
                         },
+                        'verify_error_msg': None,
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
@@ -115,6 +133,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
                 else:
                     data = {
                         'data': serializer.errors,
+                        'verify_error_msg': None,
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
@@ -135,33 +154,50 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
             # http://127.0.0.1:8000/v1/api_policy_tree_rule/?rule_id=1
             # check before delete rule
-            rule_id = views_helper.get_request_value(self.request, 'rule_id', 'GET')
+            rule_id = int(views_helper.get_request_value(self.request, 'rule_id', 'GET'))
             insert_info = views_helper.get_request_value(self.request, 'rule_info', 'BODY')
             # policy_tree_id = views_helper.get_request_value(self.request, key='policy_tree_id', method_type='BODY')
-            policy_tree_id = insert_info['coll_policy']
+            policy_id = insert_info['coll_policy']
             name = insert_info['name']
-            query_set_len = 0
             # judge what is the name chanced in the rule_info
-            if name != CollPolicyCliRule.objects.get(ruleid=rule_id).name:
-                query_set = CollPolicyCliRule.objects.filter(name=name, coll_policy=policy_tree_id)
-                query_set_len = len(query_set)
+            # if name != CollPolicyCliRule.objects.get(ruleid=rule_id).name:
+            #     query_set = CollPolicyCliRule.objects.filter(name=name, coll_policy=policy_tree_id)
+            #     query_set_len = len(query_set)
+            query_set_len = len(CollPolicyCliRule.objects.filter(Q(name=name) &
+                                                                 Q(coll_policy=policy_id) &
+                                                               ~Q(ruleid=rule_id)))
+
+            error_msg_list = {}
             if query_set_len > 0:
+                error_msg_list.update({'rule_name': False})
+            else:
+                error_msg_list.update({'rule_name': True})
+            identifier_is_existing = self.__judge_identifier_name_exist(insert_info['key_str'], policy_id,
+                                                                        rule_id=rule_id)
+            if identifier_is_existing:
+                error_msg_list.update({'key_str_name': False})
+            else:
+                error_msg_list.update({'key_str_name': True})
+
+            if query_set_len > 0 or identifier_is_existing:
                 data = {
                     'data': '',
                     'new_token': self.new_token,
+                    'verify_error_msg': error_msg_list,
                     constants.STATUS: {
                         constants.STATUS: constants.FALSE,
-                        constants.MESSAGE: constants.RULE_NAME_IS_EXISTENCE
+                        # print '\n'.join(Error_Msg_list)
+                        constants.MESSAGE: constants.FAILED
                     }
                 }
             else:
                 old_rule_obj = CollPolicyCliRule.objects.get(ruleid=rule_id)
-                rule_data_dict = self.__set_input_rule_data__(insert_info)
+                rule_data_dict = self.__set_input_rule_data(insert_info)
                 serializer = CollPolicyCliRuleSerializer(instance=old_rule_obj, data=rule_data_dict)
                 if serializer.is_valid(Exception):
                     serializer.save()
                     new_name= serializer.data['name']
-                    policy_tree = Policy_tree(policy_tree_id)
+                    policy_tree = Policy_tree(policy_id)
                     rule_tree_tuple = policy_tree.get_rules_tree()
                     data = {
                         'data': {
@@ -169,6 +205,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
                             "block_rule_tree_json": rule_tree_tuple[0],
                             "data_rule_tree_json": rule_tree_tuple[1]
                         },
+                        'verify_error_msg': None,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
                             constants.MESSAGE: constants.SUCCESS
@@ -179,6 +216,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
                     data = {
                         'data': '',
                         'new_token': self.new_token,
+                        'verify_error_msg': None,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
                             constants.MESSAGE: constants.RULE_DATA_VALID_ERROR
@@ -215,7 +253,8 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     @staticmethod
-    def __set_input_rule_data__(front_data):
+    def __set_input_rule_data(front_data):
+        print front_data
         rule_data_dict = {'name': front_data['name']}
         if front_data.has_key('key_str'):
             rule_data_dict['key_str'] = front_data['key_str']
@@ -256,7 +295,6 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             rule_data_dict['line_nums'] = None
 
         if front_data.has_key('rule_type'):
-
             arry = front_data['rule_type'].split('_')
             if arry[0] == 'block':
                 rule_data_dict['rule_type'] = int(arry[2]) + 4
@@ -307,16 +345,29 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
         if front_data.has_key('extract_key'):
             rule_data_dict['extract_key'] = front_data['extract_key']
+            # if front_data['extract_key']:
+            #     rule_data_dict['extract_key'] = front_data['extract_key']
+            # else:
+            #     # if rule_data_dict['rule_type'] >4:
+            #     #     rule_data_dict['extract_key'] = None
+            #     # else:
+            #     rule_data_dict['extract_key'] = '.*'
         else:
-            if rule_data_dict['rule_type'] >4:
-                rule_data_dict['extract_key'] = None
-            else:
-                rule_data_dict['extract_key'] = '.*'
+            rule_data_dict['extract_key'] = None
 
         if front_data.has_key('value_type'):
             rule_data_dict['value_type'] = front_data['value_type']
         else:
             rule_data_dict['value_type'] = None
 
-        print rule_data_dict
         return rule_data_dict
+
+    @staticmethod
+    def __judge_identifier_name_exist(identifier_name, policy_id, rule_id=0):
+        query_result = CollPolicyCliRule.objects.filter(Q(key_str=identifier_name) &
+                                                       Q(coll_policy=policy_id) &
+                                                       ~Q(ruleid=rule_id))
+        if len(query_result) > 0:
+            return True
+        else:
+            return False

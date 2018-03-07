@@ -7,8 +7,9 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from __future__ import unicode_literals
 
+import time
 from django.db import models
-
+app_label = "db_units"
 
 class User(models.Model):
     name = models.CharField(max_length=32, blank=True)
@@ -121,7 +122,11 @@ class DataTable(models.Model):
     table_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=45, blank=True, null=True)
     descr = models.CharField(max_length=2000, blank=True, null=True)
-
+    coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING, db_column="coll_policy")
+    groups = models.ForeignKey('Groups', models.DO_NOTHING, db_column="groups")
+    tree = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
+                                                     db_column='tree_id',
+                                                     blank=True, null=True)
     class Meta:
         # managed = False
         db_table = 'data_table'
@@ -135,6 +140,38 @@ class DataTableItems(models.Model):
     class Meta:
         # managed = False
         db_table = 'data_table_items'
+
+
+class DataTableHistoryItems(models.Model):
+    data_table_history_items_id = models.AutoField(primary_key=True)
+    table = models.ForeignKey(DataTable, models.DO_NOTHING)
+    item = models.ForeignKey('Items', models.DO_NOTHING)
+
+    class Meta:
+        # managed = False
+        db_table = 'data_table_items'
+
+
+class DevicesTmp(models.Model):
+    operation_id = models.IntegerField(blank=True, null=True)
+    device_id = models.AutoField(primary_key=True)
+    hostname = models.CharField(max_length=30)
+    ip = models.CharField(max_length=30)
+    telnet_port = models.IntegerField(blank=True, null=True)
+    snmp_port = models.IntegerField(blank=True, null=True)
+    snmp_community = models.CharField(max_length=30, blank=True, null=True)
+    snmp_version = models.CharField(max_length=5, blank=True, null=True)
+    login_expect = models.CharField(max_length=1000, blank=True, null=True)
+    status = models.IntegerField(blank=True, null=True)
+    telnet_status = models.CharField(max_length=255, blank=True, null=True)
+    snmp_status = models.CharField(max_length=255, blank=True, null=True)
+    device_type = models.CharField(max_length=255, blank=True, null=True)
+    ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
+    group_name = models.CharField(max_length=2000)
+
+    class Meta:
+        # managed = False
+        db_table = 'devices'
 
 
 class Devices(models.Model):
@@ -310,12 +347,17 @@ class Items(models.Model):
     last_exec_time = models.IntegerField(blank=True, null=True, default=0)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING)
     coll_policy_rule_tree_treeid = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
-                                                     db_column='coll_policy_rule_tree_treeid')
+                                                     db_column='coll_policy_rule_tree_treeid',
+                                                     blank=True, null=True)
     device = models.ForeignKey(Devices, models.DO_NOTHING)
     schedule = models.ForeignKey('Schedules', models.DO_NOTHING)
     # add 1.17
     # add 1.17
     policys_groups = models.ForeignKey('PolicysGroups', models.DO_NOTHING)
+
+    #add 2.28 v1.5
+    enable_status = models.IntegerField(blank=True, null=True)
+    groups = models.ForeignKey(Groups, models.DO_NOTHING)
 
     class Meta:
         # managed = False
@@ -367,10 +409,6 @@ class PolicysGroups(models.Model):
     def policy_name(self):
         return self.policy.name
 
-    @property
-    def policy_policy_type(self):
-        return self.policy.policy_type
-
 
 class Schedules(models.Model):
     schedule_id = models.AutoField(primary_key=True)
@@ -381,7 +419,8 @@ class Schedules(models.Model):
     data_schedule_time = models.CharField(max_length=255, blank=True, null=True)
     priority = models.IntegerField(blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
-    policy_group = models.ForeignKey(CollPolicyGroups, models.DO_NOTHING)
+    policy_group = models.ForeignKey(CollPolicyGroups, models.DO_NOTHING,
+                                     blank=True, null=True)
     device_group = models.ForeignKey(Groups, models.DO_NOTHING)
     ostype = models.ForeignKey(Ostype, models.DO_NOTHING)
 
@@ -391,7 +430,10 @@ class Schedules(models.Model):
 
     @property
     def policy_group_name(self):
-        return self.policy_group.name
+        if self.policy_group:
+            return self.policy_group.name
+        else:
+            return 'ALL FUNCTIONS OFF'
 
     @property
     def device_group_name(self):
@@ -406,6 +448,19 @@ class Schedules(models.Model):
         before = self.start_period_time.replace('@', ' ')
         after = self.end_period_time.replace('@', ' ')
         return str(before) + '~' + str(after)
+
+    @property
+    def schedules_is_valid(self):
+        now_time = time.strftime('%Y-%m-%d@%H:%M:%S', time.localtime(time.time()))
+        if self.valid_period_type == 0:
+            return 1
+        else:
+            if self.start_period_time < now_time < self.end_period_time:
+                return 1
+            else:
+                return 0
+
+
 
 
 class TriggerDetail(models.Model):
@@ -435,7 +490,6 @@ class Triggers(models.Model):
     expression = models.CharField(max_length=255, blank=True, null=True)
     columnA = models.CharField(max_length=255, blank=True, null=True)
     columnB = models.CharField(max_length=255, blank=True, null=True)
-
     class Meta:
         # managed = False
         db_table = 'triggers'

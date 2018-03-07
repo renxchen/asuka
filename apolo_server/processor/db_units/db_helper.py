@@ -29,6 +29,15 @@ class DbHelp(object):
         pass
 
 
+class ItemsDbHelp(DbHelp):
+    def __init__(self):
+        pass
+
+    def update_last_exec_time(self, now_time, items):
+        for item in items:
+            Items.objects.filter(**{"item_id": item['item_id']}).update(last_exec_time=now_time)
+
+
 class DeviceDbHelp(DbHelp):
     def __init__(self):
         pass
@@ -46,6 +55,7 @@ class DeviceDbHelp(DbHelp):
             "schedule__data_schedule_time",
             "last_exec_time",
             "item_type",
+            "item_id",
             "device__device_id",
             "device__ip",
             "device__hostname",
@@ -80,7 +90,7 @@ class DeviceDbHelp(DbHelp):
 
     @staticmethod
     def get_all_rule():
-        rules = CollPolicyCliRule.objects.filter(**{}).values()
+        rules = list(CollPolicyCliRule.objects.all().values())
         return rules
 
 
@@ -186,24 +196,19 @@ class TriggerDbHelp(DbHelp):
             obj = table.objects.filter(**{"item_id": item_id}).order_by("-clock", "-ns").first()
         else:
             objs = table.objects.filter(**{"item_id": item_id}).order_by("-clock", "-ns")[:last_param]
-
             if len(objs) < param:
                 raise TriggerException("History data not exist for last %d" % last_param)
             else:
                 obj = objs[last_param - 1]
         return obj
 
-
     def get_last_range_value(self, item_id, policy_type, value_type, param):
         table = self.__get_table_module(policy_type, value_type)
         last_param = int(param) + 1
-        objs = table.objects.filter(**{"item_id": item_id}).order_by("-clock", "-ns")
+        objs = table.objects.filter(**{"item_id": item_id}).order_by("-clock", "-ns")[:last_param]
         if len(objs) < param:
             raise TriggerException("History data not exist for last %d" % last_param)
-        else:
-            obj = objs[:last_param]
-        return obj
-
+        return objs
 
     def get_triggers(self, devices_id):
         triggers = []
@@ -230,10 +235,9 @@ class TriggerDbHelp(DbHelp):
             triggers.extend(tmp)
         return triggers
 
-
     def get_latest_event(self, source, object_id):
-        latest_event = Event.objects.filter(**{"source": source, "objectid": object_id}).order_by('clock').values(
-            "number")
+        latest_event = Event.objects.filter(**{"source": source, "objectid": object_id}).order_by('-clock').first()
+
         return latest_event
 
 

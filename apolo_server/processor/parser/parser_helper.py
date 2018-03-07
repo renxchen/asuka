@@ -1,27 +1,31 @@
+import sys
 from apolo_server.processor.parser.common_policy_tree.dispatch import Dispatch
 from apolo_server.processor.constants import ParserConstants, CommonConstants
 from apolo_server.processor.parser.common_policy_tree.tool import Tool
 from apolo_server.processor.db_units.memcached_helper import ItemMemCacheDb, RulesMemCacheDb
 from apolo_server.processor.db_units.db_helper import ParserDbHelp
+from multiprocessing.dummy import Pool as ThreadPool
+import threading
 import json
+import os
 import logging
-
+import time
+import thread
 
 class Parser(object):
     def __init__(self, param):
         self.parser_params = dict()
         self.timestamp = 0
-        self.items = []
+        #self.items = []
         self.get_param_from_request(param)
 
     def get_param_from_request(self, param):
-        with RulesMemCacheDb() as rules:
-            rules = rules.get()
-        self.parser_params['rules'] = rules
+        
+        #self.parser_params['rules'] = rules
         self.parser_params['items'] = param['items']
         self.timestamp = param['task_timestamp']
         for item in self.parser_params['items']:
-            self.items.append(item)
+            #self.items.append(item)
             item['task_timestamp'] = param['task_timestamp'] if "task_timestamp" in param else 0
 
     def handle(self):
@@ -41,17 +45,20 @@ class SNMPParser(Parser):
 
 
 class CliParser(Parser):
+
+    
     def __init__(self, param):
         super(CliParser, self).__init__(param)
+       
 
     def handle(self):
-        tool = Tool()
+        
         rules = {}
+        with RulesMemCacheDb() as rules:
+            rules = rules.get()
+        print rules
         result = []
 
-        for rule in self.parser_params['rules']:
-            tmp = tool.get_rule_value(rule)
-            rules[str(rule['ruleid'])] = tmp
         for item in self.parser_params['items']:
             rule_path = CliParser.__split_path(item['tree_path'],
                                                item['rule_id'])
@@ -78,6 +85,7 @@ class CliParser(Parser):
 
 
 def parser_main(item_type, params):
+
     def __wrapper(items):
         result = {}
         for item in items:
@@ -93,14 +101,26 @@ def parser_main(item_type, params):
     else:
         func = SNMPParser(params)
     func.handle()
-    items = __wrapper(func.items)
+    items = __wrapper(func.parser_params['items'])
     return items, func.timestamp
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     with open("test_cli_param.json") as f:
         test_cli_param = json.loads(f.read())
-    items, timestamp = parser_main(item_type=0, params=test_cli_param)
+
+    parser_main(0, test_cli_param)
+    # items, timestamp = parser_main(item_type=0, params=test_cli_param)
+    end_time = time.time()
+    print end_time - start_time
+    
+    
+    #pool = ThreadPool(20)
+    #for i in range(0, 1000):
+    #    pool.apply_async(parser_main, args=(0, test_cli_param))
+    #pool.close()
+    #pool.join()
     # trigger = TriggerHelp(items, logging)
     # trigger.trigger(task_timestamp=123)
     # cli_handle = CliParser(test_cli_param)

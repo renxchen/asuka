@@ -3,9 +3,10 @@ import logging
 import time
 from apolo_server.processor.constants import CommonConstants
 from db_helper import DeviceDbHelp
-
+from apolo_server.processor.parser.common_policy_tree.tool import Tool
 
 class MemCacheBase(object):
+
     def __init__(self, timeout=2):
         self.AUTO_SAVE_CACHE = True
         self.key = None
@@ -27,7 +28,7 @@ class MemCacheBase(object):
         # if self.AUTO_UPDATE_LATEST or auto_update_latest:
         #     self.delete()
         data = self._mc.get(self.key)
-        if data:
+        if data is not None:
             logging.debug("Get data from memory cache")
         else:
             data = self.do_get()
@@ -90,14 +91,30 @@ class RulesMemCacheDb(MemCacheBase):
         self.key = "DB_Rules"
 
     def do_get(self):
+        rule_dict = {}
         rules = DeviceDbHelp.get_all_rule()
-        result = [rule for rule in rules]
-        return result
+        ruletool = Tool()
+        for rule in rules:
+            format_rule = ruletool.get_rule_value(rule)
+            rule_dict[str(rule['ruleid'])] = format_rule
+        return rule_dict
+
+
+class TaskRunningMemCacheDb(MemCacheBase):
+    def __init__(self):
+        super(TaskRunningMemCacheDb, self).__init__()
+        self.key = "Task_Running_Status"
+
+    def do_get(self):
+        return False
+
 
 if __name__ == "__main__":
-    with RulesMemCacheDb() as item:
-        print item.get()
+    # with RulesMemCacheDb() as item:
+    #     print item.get()
 
+    with TaskRunningMemCacheDb() as cache:
+        print cache.get()
     # item.flush_all()
     # for i in item._get():
     #     print i

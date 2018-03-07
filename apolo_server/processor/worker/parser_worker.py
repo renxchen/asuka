@@ -19,6 +19,7 @@ class Parser(WorkerBase):
             params = task['params']
             item_type = params['item_type']
             items, timestamp = parser_main(item_type=item_type, params=params)
+            # print json.dumps(items, indent=2), timestamp
             trigger = TriggerHelp(items, logger)
             trigger.trigger(task_timestamp=timestamp)
             result = dict(

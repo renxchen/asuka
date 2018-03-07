@@ -2,7 +2,10 @@ import logging
 import requests
 import json
 import time
+import memcache
+import sys
 from multiprocessing.dummy import Pool as ThreadPool
+import threading
 TIMEOUT = 300
 DEFAULT_LOG_FILE_PATH = "log.log"
 DEFAULT_LOG_LEVEL = logging.INFO
@@ -11,7 +14,7 @@ BASE_CLI_PLATFORM = 'ios'
 BASE_SNMP_METHOD = "bulk_get"
 CLI_TYPE_CODE = 0
 SNMP_TYPE_CODE = 1
-CLI_THREADPOOL_SIZE = 150
+CLI_THREADPOOL_SIZE = 20
 SNMP_THREADPOOL_SIZE = 15
 GET_CLI_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
 GET_SNMP_DATA_SERVICE_URL = 'http://10.71.244.134:8080/api/v1/sync/%s'
@@ -21,6 +24,78 @@ GET_DEVICES_SERVICE_URL = "http://127.0.0.1:7777/api/v1/getCollectionInfor"
 PARSER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/parser"
 # TRIGGER_SERVICE_URL = "http://10.71.244.134:7777/api/v1/trigger"
 TRIGGER_SERVICE_URL = "http://127.0.0.1:7777/api/v1/trigger"
+MEM_CACHE_HOSTS = [('10.71.244.134:11211', 1), ]
+STANDARD_PENDING_TIME = 10
+
+
+class MemCacheBase(object):
+    def __init__(self, timeout=2):
+        self.AUTO_SAVE_CACHE = True
+        self.key = None
+        self.timeout = timeout
+        pass
+
+    def __enter__(self):
+        self._connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._disconnect_all()
+        return self
+
+    def _connect(self):
+        self._mc = memcache.Client(MEM_CACHE_HOSTS, debug=True)
+
+    def get(self):
+        # if self.AUTO_UPDATE_LATEST or auto_update_latest:
+        #     self.delete()
+        data = self._mc.get(self.key)
+        if data is not None:
+            logging.debug("Get data from memory cache")
+        else:
+            data = self.do_get()
+            if self.AUTO_SAVE_CACHE:
+                self.set(data)
+        return data
+
+    def set(self, value):
+        self._mc.set(self.key, value)
+
+    def update(self):
+        data = self.do_get()
+        self.set(data)
+        return data
+
+    def do_get(self):
+        pass
+        return []
+
+    def flush_all(self):
+        self._mc.flush_all()
+
+    def delete(self):
+        self._mc.delete(self.key)
+
+    def _disconnect_all(self):
+        self._mc.disconnect_all()
+
+
+class TaskRunningMemCacheDb(MemCacheBase):
+    def __init__(self, type):
+        super(TaskRunningMemCacheDb, self).__init__()
+        self.key = "Task_Running_Status_%s" % type
+
+    def do_get(self):
+        return 0
+
+
+class PendingNumMemCache(MemCacheBase):
+    def __init__(self, type):
+        super(PendingNumMemCache, self).__init__()
+        self.key = "Pending_Task_Num_%s" % type
+
+    def do_get(self):
+        return 0
 
 
 class LogMessage(object):
@@ -95,6 +170,7 @@ def get_devices(param):
     except requests.exceptions.ReadTimeout:
         raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_TIMEOUT)
     status_code = res.status_code
+
     if status_code == 200:
         devices = json.loads(str(res.text))
     else:
@@ -125,7 +201,6 @@ def send_trigger(param):
 def __get_cli_data(param):
     __base_url = GET_CLI_DATA_SERVICE_URL
     __url = __base_url % 'cli'
-
     try:
         res = requests.post(__url, data=json.dumps(param), timeout=TIMEOUT)
     except requests.exceptions.ConnectionError:
@@ -195,6 +270,7 @@ def cli_main():
     )
     try:
         devices = get_devices(param)
+
         items = []
         # for i in devices['output']['devices']:
         #     items.extend(i['items'])
@@ -203,7 +279,9 @@ def cli_main():
         if len(devices) == 0:
             cli_logger.debug(LogMessage.DEBUG_NO_DEVICE_RUNNING_AT_TIME)
         pool = ThreadPool(CLI_THREADPOOL_SIZE)
-        pool.map(__get_cli_data, devices)
+        for device in devices:
+            pool.apply_async(__get_cli_data, args=(device, ))
+        # pool.map(__get_cli_data, devices)
         pool.close()
         pool.join()
     except DeviceServiceExceptions, e:
@@ -225,6 +303,7 @@ def __get_snmp_data(param):
     __base_url = GET_SNMP_DATA_SERVICE_URL
     __url = __base_url % 'snmp'
     try:
+        print json.dumps(param, indent=2)
         res = requests.post(__url, data=json.dumps(param), timeout=TIMEOUT)
     except requests.exceptions.ConnectionError:
         raise DeviceServiceExceptions(LogMessage.CRITICAL_SERVICE_CONNECT_ERROR)
@@ -302,19 +381,105 @@ def snmp_main():
     snmp_logger.info("Total device task: %d" % len(devices))
 
 
+def check_pending_num(type):
+    with PendingNumMemCache(type) as cache:
+        number = cache.get()
+    return number
+
+
+def pending_task(type):
+    while True:
+        with TaskRunningMemCacheDb(type) as cache:
+            if cache.get():
+                logger.info("Task is runnning now, will be pending %ds" % STANDARD_PENDING_TIME)
+                add_pending(type)
+                time.sleep(STANDARD_PENDING_TIME)
+            else:
+                logger.info("Begin Task")
+                break
+
+
+def start_task(type):
+    clean_pending(type)
+    with TaskRunningMemCacheDb(type) as cache:
+        cache.set(True)
+
+
+def end_task(type):
+    with TaskRunningMemCacheDb(type) as cache:
+        cache.set(False)
+
+
+def clean_pending(type):
+    with PendingNumMemCache(type) as cache:
+        cache.set(0)
+
+
+def clean_pending_num(type):
+    with PendingNumMemCache(type) as cache:
+        cache.set(0)
+
+
+def clean_running_status(type):
+    with TaskRunningMemCacheDb(type) as cache:
+        cache.set(False)
+
+
+def add_pending(type):
+    print type
+    with PendingNumMemCache(type) as cache:
+        cache.set(1)
+
 if __name__ == "__main__":
+    task_type = sys.argv[1]
+    task_param = sys.argv[2]
     now_time = int(time.time())
-    snmp_parser_logger = log_factory(log_name="Snmp_Parser")
-    snmp_collection_logger = log_factory(log_name="Snmp_Collection")
-    snmp_device_logger = log_factory(log_name="Snmp_Device")
-    snmp_trigger_logger = log_factory(log_name="Snmp_Trigger")
-    snmp_logger = log_factory(log_name="Snmp")
-    cli_parser_logger = log_factory(log_name="Cli_Parser")
-    cli_collection_logger = log_factory(log_name="Cli_Collection")
-    cli_device_logger = log_factory(log_name="Cli_Device")
-    cli_trigger_logger = log_factory(log_name="Cli_Trigger")
-    cli_logger = log_factory(log_name="Cli")
-    cli_main()
-    # snmp_main()
+    logger = log_factory(log_name="common")
+    print now_time
+    if task_type == "collection":
+        if task_param == "snmp":
+            if check_pending_num("snmp") == 0:
+                snmp_parser_logger = log_factory(log_name="Snmp_Parser")
+                snmp_collection_logger = log_factory(log_name="Snmp_Collection")
+                snmp_device_logger = log_factory(log_name="Snmp_Device")
+                snmp_trigger_logger = log_factory(log_name="Snmp_Trigger")
+                snmp_logger = log_factory(log_name="Snmp")
+                pending_task("snmp")
+                try:
+                    start_task("snmp")
+                    snmp_main()
+                except Exception:
+                    pass
+                finally:
+                    end_task("snmp")
+        elif task_param == "cli":
+            if check_pending_num("cli") == 0:
+                cli_parser_logger = log_factory(log_name="Cli_Parser")
+                cli_collection_logger = log_factory(log_name="Cli_Collection")
+                cli_device_logger = log_factory(log_name="Cli_Device")
+                cli_trigger_logger = log_factory(log_name="Cli_Trigger")
+                cli_logger = log_factory(log_name="Cli")
+                pending_task("cli")
+                try:
+                    start_task("cli")
+                    param = dict(
+                        now_time=now_time,
+                        item_type=CLI_TYPE_CODE
+                    )
+                    devices = get_devices(param)
+                    print json.dumps(devices, indent=2)
+                    # cli_main()
+                    time.sleep(45)
+                except Exception, e:
+                    pass
+                finally:
+                    end_task("cli")
+
+    elif task_type == "cleanpendingnum":
+        clean_pending_num(task_param)
+
+    elif task_type == "cleanrunningstatus":
+        clean_running_status(task_param)
+
     end_time = int(time.time())
     print end_time - now_time

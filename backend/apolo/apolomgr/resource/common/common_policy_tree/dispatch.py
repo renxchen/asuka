@@ -46,16 +46,28 @@ class Dispatch(object):
             self.buffer_res.append(result)
             # the next work follow
             if self.work_follow.has_key(work_follow_num+1):
-                for pre in result:
+                # parent node rule  is block rule with regular and data extract is expect_line_extract
+                if len(result)> 0 and result[0]['rule_type']==8 and self.work_follow.get(work_follow_num + 1) == 'expect_line_extract':
                     # set the input of the next method
                     rule_id = self.path[work_follow_num]
                     input_dict = self.rules[rule_id]
                     input_dict['deep'] = work_follow_num
-                    input_dict['start_line'] = pre['start_line']
-                    input_dict['end_line'] = pre['end_line']
-                    input_dict['block_path'] = pre['block_path']
+                    input_dict['start_line'] = 0
+                    input_dict['end_line'] = len(result)-1
+                    input_dict['block_path'] = result[0]['block_path']
                     setattr(self.instance, 'extract_policy', input_dict)
                     self.dispatch(work_follow_num)
+                else:
+                    for pre in result:
+                        # set the input of the next method
+                        rule_id = self.path[work_follow_num]
+                        input_dict = self.rules[rule_id]
+                        input_dict['deep'] = work_follow_num
+                        input_dict['start_line'] = pre['start_line']
+                        input_dict['end_line'] = pre['end_line']
+                        input_dict['block_path'] = pre['block_path']
+                        setattr(self.instance, 'extract_policy', input_dict)
+                        self.dispatch(work_follow_num)
         else:
             return
 

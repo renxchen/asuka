@@ -27,12 +27,17 @@ class Render(Tool, DBOpt):
         self.kwargs = kwargs
         self.data = kwargs['data']
         self.tree= kwargs['tree']  # json data from front
-        self.tree_id = kwargs['tree_id'] # the clicked tree node id
+        self.tree_id = kwargs['tree_id']  # the clicked tree node id
         # save format [leaf rule_id,parent rule_id...root rule_id]
         self.leaf_path = []
         self.rule_context = {}
 
         self.dispatch_result = {}
+        # self.colors = [
+        #                 ["#FDEDEC", "#EBF5FB", "#F5EEF8", "#FEF9E7", "#F8F9F9"],
+        #                 ["#FADBD8", "#D6EAF8", "#EBDEF0", "#FCF3CF", "#F2F3F4"],
+        #                 ["#F5B7B1", "#AED6F1", "#D7BDE2", "#F9E79F", "#E5E7E9"]
+        #               ]
         self.colors = [
                         ["#FDEDEC", "#EBF5FB", "#F5EEF8", "#FEF9E7", "#F8F9F9"],
                         ["#FADBD8", "#D6EAF8", "#EBDEF0", "#FCF3CF", "#F2F3F4"],
@@ -181,6 +186,7 @@ class Render(Tool, DBOpt):
                                         break
                                     element_index += 1
                             html_context = '\n'.join(data_list)
+                            print html_context
                     # replace block
                         html_context_list = html_context.split('\n')
                         j = 0
@@ -196,7 +202,6 @@ class Render(Tool, DBOpt):
                     # for item in node:
                     start_line = item['start_line']
                     end_line = item['end_line']
-
                     for i in range(len(all_data)):
                         if item.has_key('identifier_line_num'):
                             if i == item['identifier_line_num']:
@@ -208,16 +213,23 @@ class Render(Tool, DBOpt):
                         if i == start_line:
                             all_data[i] = '<div style="background-color:{};display: inline-block;">{}'.format(
                                 self.colors[deep][color_index], all_data[i])
-                            color_index += 1
+                            #color_index += 1
+                            if color_index ==1:
+                                color_index = 0
+                            else:
+                                color_index=1
                             # block rule by regular
                             if item.has_key('reg_match_context'):
-                                for (lm, match_string) in item['reg_match_context']:
-                                    if constants.EXTRACT_DATA_HTML_FONT_START not in all_data[lm]:
-                                        all_data[lm] = all_data[lm].replace(match_string,
-                                                                          '{}{}{}'.format(
-                                                                              constants.BLOCK_START_HTML_FONT_START,
-                                                                              match_string,
-                                                                              constants.HTML_FONT_END))
+                                (lm, match_string) =item['reg_match_context']
+                                if constants.EXTRACT_DATA_HTML_FONT_START not in all_data[lm]:
+                                    all_data[lm] = all_data[lm].replace(match_string,
+                                                                      '{}{}{}'.format(
+                                                                          constants.BLOCK_START_HTML_FONT_START,
+                                                                          match_string,
+                                                                          constants.HTML_FONT_END))
+
+
+
                         if i == end_line:
                             if item.has_key('is_include'):
                                 if item['is_include']:

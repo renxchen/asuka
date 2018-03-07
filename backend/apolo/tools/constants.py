@@ -10,7 +10,7 @@ LOG_PATH = 'logs/system_logger.log'
 #########################################
 # API Debug Flag
 #########################################
-DEBUG_FLAG = False
+DEBUG_FLAG = True
 #########################################
 # API token related define
 #########################################
@@ -109,8 +109,6 @@ LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定
 DB_EXCEPTION ='there is an db exception'
 RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
 CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
-NO_ITEMS_IN_GROUP = 'no items in group,please check the group'
-
 #########################################
 # data collection value setting
 #########################################
@@ -158,8 +156,9 @@ CP_STATUS_ON_VAULE = 1
 POLICY_DEVICE_COMBINATION = 'the combination of policy and device  is used'
 CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
 CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
+NO_ITEMS_IN_GROUP = 'no items in group,please check the group'
 DATA_COLLECTION_POST_URL ='http://10.71.244.134:7777/api/v1/getItems'
-
+POLICY_POST_URL = 'http://10.71.244.134:7777/api/v1/valid'
 #########################################
 # render
 #########################################
@@ -175,4 +174,5 @@ NO_EXTRACT_LINE_NUM = 'no lines'
 BLOCK_START_HTML_FONT_START = '<font color="red">'
 LINE_NUM_MSG_REPLACE = '@##@'
 LEAF_IS_BLOCK_RULE = 'LEAF_IS_BLOCK_RULE'
+POLICY_TREE_IS_GROUPED = 'policy tree is grouped'
 
