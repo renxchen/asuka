@@ -152,6 +152,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         return true;
     }
     public policyMoveRule(operation, node, node_parent, node_position, more) {
+        // console.log(node, node_parent);
         if (node_parent.parent === null) {
             return false;
         }
@@ -170,6 +171,12 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         // policy tree can keep open;
         if (operation === 'copy_node') {
             node_parent.state.opened = true;
+        }
+        // block_rule_4 can not have the type of 'block_rule' children
+        if (node['data']['rule_type'] && node['data']['rule_type'].indexOf('block_rule') !== -1
+            && node_parent['data']['rule_type']
+            && node_parent['data']['rule_type'] === 'block_rule_4') {
+            return false;
         }
         return true;
     }
@@ -258,10 +265,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                         alert('保存しました');
                         this.router.navigate(['/index/clicpdetail'], { queryParams: { 'id': this.cPId } });
                     } else {
-                        // confim with yuanyang
-                        if (msg && msg === 'LEAF_IS_BLOCK_RULE') {
-                            alert('leaf node must be data rule');
-                        } else {
+                        if (msg) {
                             alert(msg);
                         }
                     }
@@ -397,7 +401,10 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 },
                 'data': data,
             },
-            'plugins': ['type', 'dnd', 'crrm', 'node_customize', 'state'],
+            'plugins': ['types', 'dnd', 'crrm', 'node_customize', 'state'],
+            'types': {
+                '#': { 'max_depth': 4 }
+            },
             'state': { 'opened': true },
             'expand_selected_onload': true,
             'dnd': {

@@ -36,8 +36,8 @@
                     </div>
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='!nameNotNull'>デバイスグループ名は必須入力です。</div>            
-                <div class="col-sm-12 text-warning" *ngIf='nameNotNull&&!nameFlg'>デバイスグループ名は必須入力です。</div>            
-                <div class="col-sm-12 text-warning" *ngIf='!uniqueFlg'>デバイスグループ名は必須入力です。</div>            
+                <div class="col-sm-12 text-warning" *ngIf='nameNotNull&&!nameFlg'>デバイスグループ名半角英数字のみで入力してください</div>            
+                <div class="col-sm-12 text-warning" *ngIf='!uniqueFlg'>デバイスグループ名は重複しています。</div>            
             </div>
         </form>
     </div>

@@ -72,7 +72,7 @@ export class DeviceGroupComponent implements OnInit {
                 { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
             ],
             beforeSelectRow: function (rowid, e) { return false; },
-            beforeRequest: function () {
+            onPaging: function () {
                 let currentPage: any = $('#deviceTable').jqGrid('getGridParam', 'page');
                 let rowNum: any = $('#deviceTable').jqGrid('getGridParam', 'rowNum');
                 let records: any = $('#deviceTable').jqGrid('getGridParam', 'records');
@@ -82,9 +82,6 @@ export class DeviceGroupComponent implements OnInit {
                 }
             },
             // text-overflow: ellipsis;
-            loadComplete: function (res) {
-                console.log(res);
-            },
             pager: '#devicePager',
             rowNum: 10,
             rowList: [5, 10, 15],

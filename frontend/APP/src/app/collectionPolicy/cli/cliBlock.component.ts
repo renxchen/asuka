@@ -48,6 +48,8 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     extractKeyNotNull: Boolean = true;
     extractKeyFlg: Boolean = true;
     delBtn: Boolean = false;
+    processFlg: Boolean = false;
+    lockFlg: Boolean = false;
 
     constructor(
         private httpClient: HttpClientComponent,
@@ -80,14 +82,17 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         }, 0);
     }
     public typeFomatter(param: any) {
-        if (param.toString() === '0') {
+        console.log('para', param);
+        if (param && param.toString() === '0') {
             return false;
-        } else if (param.toString() === '1') {
+        } else if (param && param.toString() === '1') {
             return true;
-        } else if (param === false) {
+        } else if (param && param === false) {
             return '0';
-        } else {
+        } else if (param && param === false) {
             return '1';
+        } else {
+            return;
         }
     }
     public commInfo(cpId: any, ruleId: any) {
@@ -98,6 +103,8 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     }
     public getDataRule(cpId: any, ruleId: any) {
         this.commInfo(cpId, ruleId).subscribe(res => {
+            this.processFlg = _.get(res, 'is_processing');
+            this.lockFlg = _.get(res, 'is_locked');
             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                 if (res['data']) {
                     let data = res['data'];
@@ -108,11 +115,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     this.startLnNum = _.get(data, 'start_line_num');
                     this.endLnNum = _.get(data, 'end_line_num');
                     this.endMrkStr = _.get(data, 'end_mark_string');
-                    this.isInclude = _.get(data, 'is_include');
-                    this.isSerial = _.get(data, 'is_serial');
+                    this.isInclude = this.typeFomatter(_.get(data, 'is_include'));
+                    this.isSerial = this.typeFomatter(_.get(data, 'is_serial'));
                     this.extractKey = _.get(data, 'extract_key');
                 }
-                console.log(res['rule_is_used']);
+                // console.log(res['rule_is_used']);
                 if (res['rule_is_used'] || res['rule_is_used'].toString().toLowerCase() === 'true' && this.info['delFlg']) {
                     this.delBtn = false;
                 } else {
@@ -230,10 +237,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                 // same as marktring
                 rule_info['extract_key'] = this.extractKey;
                 rule_info['key_str'] = this.keyStr;
+                console.log('flg', this.isSerial, this.isInclude);
                 rule_info['is_serial'] = this.typeFomatter(this.isSerial);
                 rule_info['is_include'] = this.typeFomatter(this.isInclude);
                 sendRuleInfo['rule_info'] = rule_info;
-                // console.log('sendRule', sendRuleInfo);
+                console.log('sendRule', sendRuleInfo);
                 return sendRuleInfo;
             }
         } else if (this.ruleType === 'block_rule_4') {
@@ -257,6 +265,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         let createUrl = '/api_policy_tree_rule/';
         this.httpClient.setUrl(this.apiPrefix);
         let sendInfo = this.blockRulePrepare();
+        console.log('rule_test', sendInfo);
         if (this.actionType === 'create' && sendInfo !== '') {
             this.httpClient
                 .toJson(this.httpClient.post(createUrl, sendInfo))
@@ -264,6 +273,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
+                    let errMsg = _.get(res, 'verify_error_msg');
                     if (status && status['status'].toLowerCase() === 'true') {
                         if (data) {
                             let blockInfo: any = {};
@@ -274,10 +284,17 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                             this.modalService.setDismissReason(blockInfo);
                         }
                     } else {
-                        if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
-                            this.uniqueFlg = false;
-                        } else if (msg && msg === 'KEY_STR RULE_NAME_IS_EXISTENCE') {
-                            this.keyUnqFlg = false;
+                        if (errMsg) {
+                            if (!_.get(errMsg, 'rule_name')) {
+                                this.uniqueFlg = false;
+                            } else {
+                                this.uniqueFlg = true;
+                            }
+                            if (!_.get(errMsg, 'key_str_name')) {
+                                this.keyUnqFlg = false;
+                            } else {
+                                this.keyUnqFlg = true;
+                            }
                         } else {
                             alert(msg);
                         }
@@ -291,6 +308,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
+                    let errMsg = _.get(res, 'verify_error_msg');
                     if (status && status['status'].toLowerCase() === 'true') {
                         if (data) {
                             let blockInfo: any = {};
@@ -301,10 +319,17 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                             this.modalService.setDismissReason(blockInfo);
                         }
                     } else {
-                        if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
-                            this.uniqueFlg = false;
-                        } else if (msg && msg === 'key_str duplicatoin') {
-                            this.keyUnqFlg = false;
+                        if (errMsg) {
+                            if (!_.get(errMsg, 'rule_name')) {
+                                this.uniqueFlg = false;
+                            } else {
+                                this.uniqueFlg = true;
+                            }
+                            if (!_.get(errMsg, 'key_str_name')) {
+                                this.keyUnqFlg = false;
+                            } else {
+                                this.keyUnqFlg = true;
+                            }
                         } else {
                             alert(msg);
                         }
