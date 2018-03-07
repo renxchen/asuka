@@ -8,7 +8,7 @@ import { ModalComponent } from '../../components/modal/modal.component';
 import { Observable } from 'rxjs/Rx';
 import * as _ from 'lodash';
 declare var $: any;
-declare var waitingDialog: any;
+// declare var waitingDialog: any;
 
 @Component({
     selector: 'device-loign',
