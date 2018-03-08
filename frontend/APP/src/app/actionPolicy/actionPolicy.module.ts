@@ -6,6 +6,7 @@ import { ActionPolicyViewComponent } from './actionPolicyView.component';
 import { ActionPolicyLoginComponent } from './actionPolicyLogin.component';
 import { DataTableViewComponent } from './dataTableView.component';
 import { DataTableLoginComponent } from './dataTableLogin.component';
+import { DataTableDetailComponent } from './dataTableDetail.component';
 import { ActionPolicyHistoryComponent } from './actionPolicyHistory.component';
 
 @NgModule({
@@ -14,6 +15,7 @@ import { ActionPolicyHistoryComponent } from './actionPolicyHistory.component';
         ActionPolicyLoginComponent,
         DataTableViewComponent,
         DataTableLoginComponent,
+        DataTableDetailComponent,
         ActionPolicyHistoryComponent
     ],
     imports: [
