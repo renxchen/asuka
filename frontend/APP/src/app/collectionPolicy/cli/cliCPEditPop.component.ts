@@ -27,6 +27,8 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
     nameNotNull: Boolean = true;
     cmdNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
+    ostypeFlg: Boolean = true;
+    cliCmdFlg: Boolean = true;
     modalMsg: any;
     closeMsg: any;
     constructor(
@@ -70,13 +72,21 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get(url))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    if (res['data']) {
-                        let data = res['data'];
-                        this.name = _.get(data, 'name');
-                        this.desc = _.get(data, 'desc');
-                        this.cliCommand = _.get(data, 'cli_command');
-                        this.selectedOsType = _.get(data, 'ostype');
+                let status = _.get(res, 'status');
+                let msg = _.get(status, 'message');
+                let data = _.get(res, 'data');
+                let verify: any = _.get(data, 'verify_result');
+                let policy: any = _.get(data, 'policy_detail');
+                if (status && status['status'].toLowerCase() === 'true') {
+                    if (policy) {
+                        this.name = _.get(policy, 'name');
+                        this.desc = _.get(policy, 'desc');
+                        this.cliCommand = _.get(policy, 'cli_command');
+                        this.selectedOsType = _.get(policy, 'ostype');
+                    }
+                    if (verify) {
+                        this.ostypeFlg = _.get(verify, 'ostype');
+                        this.cliCmdFlg = _.get(verify, 'cli_command');
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {

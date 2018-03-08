@@ -49,6 +49,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     extKeyNotNull: Boolean = true;
     delBtn: Boolean = false;
     otherCharFlg: Boolean = true;
+    processFlg: Boolean = false;
+    lockFlg: Boolean = false;
     constructor(
         private httpClient: HttpClientComponent,
         private bsModalRef: BsModalRef,
@@ -89,6 +91,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     }
     public getDataRule(cpId: any, ruleId: any) {
         this.commInfo(cpId, ruleId).subscribe(res => {
+                this.processFlg = _.get(res, 'is_processing');
+                this.lockFlg = _.get(res, 'is_locked');
             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                 if (res['data']) {
                     let data = res['data'];
@@ -309,6 +313,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
+                    let errMsg = _.get(res, 'verify_error_msg');
+
                     if (status && status['status'].toLowerCase() === 'true') {
                         if (data) {
                             let dataInfo: any = {};
@@ -316,12 +322,19 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                             alert('保存しました。');
                             this.bsModalRef.hide();
                             this.modalService.setDismissReason(dataInfo);
-                        }
+                        }3
                     } else {
-                        if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
-                            this.uniqueFlg = false;
-                        } else if (msg && msg === 'key_str duplicatoin') {
-                            this.keyUnqFlg = false;
+                        if (errMsg) {
+                            if (!_.get(errMsg, 'rule_name')) {
+                                this.uniqueFlg = false;
+                            } else {
+                                this.uniqueFlg = true;
+                            }
+                            if (!_.get(errMsg, 'key_str_name')) {
+                                this.keyUnqFlg = false;
+                            } else {
+                                this.keyUnqFlg = true;
+                            }
                         } else {
                             alert(msg);
                         }
@@ -336,6 +349,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
+                    let errMsg = _.get(res, 'verify_error_msg');
                     if (status && status['status'].toLowerCase() === 'true') {
                         if (data) {
                             let dataInfo: any = {};
@@ -346,12 +360,17 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                             this.modalService.setDismissReason(dataInfo);
                         }
                     } else {
-                        // backendInfo: data valid error in saving the rule; the same name rule is existence
-                        if (msg && msg === 'RULE_NAME_IS_EXISTENCE') {
-                            this.uniqueFlg = false;
-                        } else if (msg && msg === 'key_str duplicatoin') {
-                            // 后台未做check
-                            this.keyUnqFlg = false;
+                        if (errMsg) {
+                            if (!_.get(errMsg, 'rule_name')) {
+                                this.uniqueFlg = false;
+                            } else {
+                                this.uniqueFlg = true;
+                            }
+                            if (!_.get(errMsg, 'key_str_name')) {
+                                this.keyUnqFlg = false;
+                            } else {
+                                this.keyUnqFlg = true;
+                            }
                         } else {
                             alert(msg);
                         }

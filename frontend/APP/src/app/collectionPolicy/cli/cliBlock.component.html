@@ -27,134 +27,134 @@
             </div>
             <!-- インデントによるブロック定義 block_rule_1 -->
             <div class="col-xs-7" *ngIf="(ruleType)=='block_rule_1'">
-                <div class="form-group" [ngClass]="{'has-warning': !mrkStrNotNull}">
+                <div class="form-group" [ngClass]="{'has-warning': !mrkStrNotNull}" >
                     <label for="markString" [ngClass]="{'text-warning': !mrkStrNotNull}">
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     基準文字列（ブロック識別子）：
                     </label>
                     <input type="text" class="form-control" id="markString"
                     name="markString" [(ngModel)]="markString" maxlength="256"
-                    placeholder="正規表現で記述可能" required="">
+                    placeholder="正規表現で記述可能" required="" [disabled]="processFlg">
                 </div>
-                <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
+                <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}" >
                     <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     ブロック識別子名：
                     </label>
                     <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                    [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true">
+                    [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
                 </div>
-                <div>
+                <div >
                     <input type="checkbox" id="isSerial" name="isSerial"
-                    [(ngModel)]="isSerial" >ブロック識別子に連番を付与
+                    [(ngModel)]="isSerial" [disabled]="processFlg" >ブロック識別子に連番を付与
                 </div>  
             </div>
             <!-- 行数によるブロック定義 block_rule_2 -->
-            <div class="col-xs-7" *ngIf="(ruleType)=='block_rule_2'">
-                <div class="form-group" [ngClass]="{'has-warning': !mrkStrNotNull}">
+            <div class="col-xs-7" *ngIf="(ruleType)=='block_rule_2'" >
+                <div class="form-group" [ngClass]="{'has-warning': !mrkStrNotNull}" >
                     <label for="markString" [ngClass]="{'text-warning': !mrkStrNotNull}">
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     基準文字列（ブロック識別子）：
                     </label>
                     <input type="text" class="form-control" id="markString"
                     name="markString" [(ngModel)]="markString" maxlength="256"
-                    placeholder="正規表現で記述可能" required="" aria-required="true">
+                    placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
                 </div>
-                <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
+                <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}" >
                     <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     ブロック識別子名：
                     </label>
                     <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                    [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true">
+                    [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
                 </div>
-                <div class="form-group" [ngClass]="{'has-warning': !lnNubFlg||!sLnNubFlg}">
+                <div class="form-group" [ngClass]="{'has-warning': !lnNubFlg||!sLnNubFlg}" >
                     <label for="startLnNum" [ngClass]="{'text-warning': !lnNubFlg||!sLnNubFlg}">
                         <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                         基準以下スタート行：
                     </label>
                     <input type="number" class="form-control" id="startLnNum"name="startLnNum" 
-                    [(ngModel)]=startLnNum value="0" required="" aria-required="true">
+                    [(ngModel)]=startLnNum value="0" required="" aria-required="true" [disabled]="processFlg">
                 </div>  
-                <div class="form-group" [ngClass]="{'has-warning': !lnNubFlg||!eLnNubFlg}">
+                <div class="form-group" [ngClass]="{'has-warning': !lnNubFlg||!eLnNubFlg}" >
                     <label for="endLnNum" [ngClass]="{'text-warning': !lnNubFlg||!eLnNubFlg}">
                         <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                         基準以下エンド行：
                     </label>
                     <input type="number" class="form-control" id="endLnNum" name="endLnNum"
-                    [(ngModel)]="endLnNum" value="0" required="" aria-required="true">
+                    [(ngModel)]="endLnNum" value="0" required="" aria-required="true" [disabled]="processFlg">
                 </div>  
-                <div>
+                <div >
                     <input type="checkbox" id="isSerial" name="isSerial"
-                    [(ngModel)]="isSerial" >ブロック識別子に連番を付与
+                    [(ngModel)]="isSerial" [disabled]="processFlg">ブロック識別子に連番を付与
                 </div>  
             </div>
             <!-- 指定文字列-指定文字列でのブロック抽出 block_rule_3 -->
             <!-- block识别子和start文字列重复 -->
             <div class="col-xs-7" *ngIf="(ruleType)=='block_rule_3'">
-                <div class="form-group" [ngClass]="{'has-warning': !mrkStrNotNull_A}">
-                <label for="markString" [ngClass]="{'text-warning':!mrkStrNotNull_A}">
+                <div class="form-group" [ngClass]="{'has-warning': !mrkStrNotNull_A}" >
+                    <label for="markString" [ngClass]="{'text-warning':!mrkStrNotNull_A}">
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     スタート文字列：
                     </label>
                     <!-- placeholder="英数字のみ"  -->
                     <input type="text" class="form-control" id="markString"
                     name="markString" [(ngModel)]="markString" maxlength="256"
-                    required="" placeholder="正規表現で記述可能">
+                    required="" placeholder="正規表現で記述可能" [disabled]="processFlg">
                 </div>  
-                <div class="form-group" [ngClass]="{'has-warning': !endMrkNotNull}">
+                <div class="form-group" [ngClass]="{'has-warning': !endMrkNotNull}" >
                     <label for="endMrkStr" [ngClass]="{'text-warning': !endMrkNotNull}">
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     エンド文字列：
                     </label>
                     <input type="text" class="form-control" id="endMrkStr" 
                     name="endMrkStr" maxlength="256" [(ngModel)]="endMrkStr"
-                    required="" placeholder="正規表現で記述可能">                
+                    required="" placeholder="正規表現で記述可能" [disabled]="processFlg">                
                 </div>
                 <div>
                     <input type="checkbox" id="isInclude" name="isInclude"
-                    [(ngModel)]="isInclude">エンド文字列行を含まない
+                    [(ngModel)]="isInclude" [disabled]="processFlg">エンド文字列行を含まない
                 </div>  
-                <div class="form-group" [ngClass]="{'has-warning': !extractKeyNotNull}">
+                <div class="form-group" [ngClass]="{'has-warning': !extractKeyNotNull}" >
                     <label for="extractKey" [ngClass]="{'text-warning': !extractKeyNotNull}">
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     ブロック識別子：
                     </label>
                     <input type="text" class="form-control" id="extractKey"
                     name="extractKey" [(ngModel)]="extractKey" maxlength="256"
-                    placeholder="正規表現で記述可能" required="" >
+                    placeholder="正規表現で記述可能" required="" [disabled]="processFlg">
                 </div>
-                <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
+                <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}" >
                     <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     ブロック識別子名：
                     </label>
                     <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                    [(ngModel)]="keyStr" placeholder="英数字のみ" required="">
+                    [(ngModel)]="keyStr" placeholder="英数字のみ" required="" [disabled]="lockFlg">
                 </div>  
-                <div>
+                <div >
                     <input type="checkbox" id="isSerial" name="isSerial"
-                    [(ngModel)]="isSerial">ブロック識別子に連番を付与
+                    [(ngModel)]="isSerial" [disabled]="processFlg">ブロック識別子に連番を付与
                 </div>  
             </div>
             <!-- 正規表現を含むブロック抽出 block_rule_4 -->
             <div class="col-xs-7" *ngIf="(ruleType)=='block_rule_4'">
-                    <div class="form-group"[ngClass]="{'has-warning': !mrkStrNotNull}">
+                    <div class="form-group"[ngClass]="{'has-warning': !mrkStrNotNull}" >
                         <label for="markString" [ngClass]="{'text-warning':!mrkStrNotNull}">
                         <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                         基準文字列：
                         </label>
                         <input type="text" class="form-control" id="markString"
                         name="markString" [(ngModel)]="markString" maxlength="256"
-                        placeholder="正規表現で記述可能" required="" aria-required="true">
+                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
                     </div>
-                    <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
+                    <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}" >
                         <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
                         <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                         ブロック識別子名：
                         </label>
                         <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="">
+                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" [disabled]="lockFlg">
                     </div>  
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='!nameNotNull'>ルール名は必須入力です。</div>
