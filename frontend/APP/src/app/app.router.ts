@@ -39,11 +39,13 @@ import { PoliciesPerDeviceComponent } from './dataCollection/policiesPerDevice.c
 import { DevicesPerPolicyComponent } from './dataCollection/devicesPerPolicy.component';
 import { DataCollectionLoginComponent } from './dataCollection/dataCollectionLogin.component';
 
+//action policy
 import { ActionPolicyViewComponent } from './actionPolicy/actionPolicyView.component';
 import { ActionPolicyLoginComponent } from './actionPolicy/actionPolicyLogin.component';
 import { DataTableViewComponent } from './actionPolicy/dataTableView.component';
 import { ActionPolicyHistoryComponent } from './actionPolicy/actionPolicyHistory.component';
 import { DataTableLoginComponent } from './actionPolicy/dataTableLogin.component';
+import { DataTableDetailComponent } from './actionPolicy/dataTableDetail.component';
 
 const routes: Routes = [
     {
@@ -250,5 +252,6 @@ ModalComponent,
     // data
     DataCollectionLoginComponent,
     DataTableLoginComponent,
+    DataTableDetailComponent,
     ActionPolicyLoginComponent
 ];
