@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 """
 
 @author: kimli
@@ -29,10 +30,9 @@ class DataTableCoulumnViewsSet(viewsets.ViewSet):
         self.device_group_name = views_helper.get_request_value(self.request, 'device_group_name', 'GET')
 
     def get(self):
-        """
-        Search collection policy by given device group
-        API: http://127.0.0.1:1111/v1/api_data_table_column/?id=1&device_group_name='SSEU'
-        :return: data
+        """!@brief
+        Get data for Step 3 when click [新规登陆]
+        @return data: data for Step 3
         """
         try:
             data = []
