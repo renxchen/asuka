@@ -425,8 +425,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             'major': None,
             'minor': None
         }
-        kwargs_a = {'table_id': column_a}
-        kwargs_b = {'table_id': colunm_b}
+        kwargs_a = {'table_id': column_a, 'item__enable_status': 1}
+        kwargs_b = {'table_id': colunm_b, 'item__enable_status': 1}
         column_a_result = self.get_data_table_items(**kwargs_a)
         column_b_result = self.get_data_table_items(**kwargs_b)
         if len(column_a_result) > 0:
