@@ -212,8 +212,8 @@ export class OstypeLoginComponent implements OnInit {
             let ostypeInfo: any = {
                 'name': this.name,
                 'desc': this.desc,
-                'start_default_command': this.multiDataFomatter(this.startCmds),
-                'end_default_command': this.multiDataFomatter(this.endCmds),
+                'start_default_commands': this.multiDataFomatter(this.startCmds),
+                'end_default_commands': this.multiDataFomatter(this.endCmds),
                 'log_fail_judges': this.multiDataFomatter(this.logs),
                 'telnet_prompt': this.telPrompt,
                 'snmp_timeout': this.snmpTimeout,

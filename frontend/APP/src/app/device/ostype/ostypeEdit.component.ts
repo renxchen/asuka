@@ -14,9 +14,9 @@ import * as _ from 'lodash';
 })
 
 export class OstypeEditComponent implements OnInit, AfterViewInit {
-/*
-@brif:
-**/
+    /*
+    @brif:
+    **/
     id: any;
     apiPrefix: any;
     name: any;
@@ -261,6 +261,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         }
     }
     public ostypeCheck() {
+        console.log(this.name, this.telPrompt, this.telPrompt, this.telTimeout, this.snmpTimeout);
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.noCommsymbol(this.name);
@@ -309,10 +310,11 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         if (this.ostypeCheck()) {
             this.apiPrefix = '/v1';
             let ostypeInfo: any = {
+                'ostypeid': this.id,
                 'name': this.name,
                 'desc': this.desc,
-                'start_default_command': this.multiDataFomatter(this.startCmds),
-                'end_default_command': this.multiDataFomatter(this.endCmds),
+                'start_default_commands': this.multiDataFomatter(this.startCmds),
+                'end_default_commands': this.multiDataFomatter(this.endCmds),
                 'log_fail_judges': this.multiDataFomatter(this.logs),
                 'telnet_prompt': this.telPrompt,
                 'snmp_timeout': this.snmpTimeout,
