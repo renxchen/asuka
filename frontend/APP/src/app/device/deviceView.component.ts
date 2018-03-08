@@ -33,7 +33,7 @@ export class DeviceViewComponent implements OnInit {
                 'SNMP Version', 'Login Expect', 'Device Type', 'Ostype', 'Group', 'Telnet Status', 'SNMP Status'
             ],
             colModel: [
-                { hidden: true, name: 'device_id', index: 'device_id', search: false, key: true },
+                { hidden: true, name: 'devices_id', index: 'devices_id', search: false, key: true },
                 { name: 'hostname', index: 'hostname', width: 40, align: 'center', search: true },
                 { name: 'ip', index: 'ip', width: 50, align: 'center', search: true },
                 { name: 'telnet_port', index: 'telnet_port', width: 50, align: 'center', search: true },
@@ -52,15 +52,15 @@ export class DeviceViewComponent implements OnInit {
                 { name: 'telnet_status', index: 'telnet_status', width: 50, align: 'center', search: true },
                 { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
             ],
-            onPaging: function () {
-                let currentPage: any = $('#devViewTable').jqGrid('getGridParam', 'page');
-                let rowNum: any = $('#devViewTable').jqGrid('getGridParam', 'rowNum');
-                let records: any = $('#devViewTable').jqGrid('getGridParam', 'records');
-                let totalPages = records % rowNum;
-                if (records > 0 && currentPage > totalPages) {
-                    $('#devViewTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
-                }
-            },
+            // beforeRequest: function () {
+            //     let currentPage: any = $('#devViewTable').jqGrid('getGridParam', 'page');
+            //     let rowNum: any = $('#devViewTable').jqGrid('getGridParam', 'rowNum');
+            //     let records: any = $('#devViewTable').jqGrid('getGridParam', 'records');
+            //     let totalPages = records % rowNum;
+            //     if (records > 0 && currentPage > totalPages) {
+            //         $('#devViewTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
+            //     }
+            // },
             pager: '#devViewPager',
             rowNum: 10,
             rowList: [5, 10, 15],
@@ -96,7 +96,7 @@ export class DeviceViewComponent implements OnInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     console.log(res);
-                    if (status && status['status'].toLowCase() === 'true') {
+                    if (status && status['status'].toLowerCase() === 'true') {
                         this.devViewTable$.GridUnload();
                         this.drawdevViewTable();
                     } else {

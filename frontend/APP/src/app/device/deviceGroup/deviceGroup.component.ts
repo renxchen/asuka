@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../../components/modal/modal.component';
@@ -14,7 +14,7 @@ declare var $: any;
     templateUrl: './deviceGroup.component.html',
     styleUrls: ['.././device.component.less']
 })
-export class DeviceGroupComponent implements OnInit {
+export class DeviceGroupComponent implements OnInit, AfterViewInit {
     groupId: any;
     name: any;
     desc: any;
@@ -37,13 +37,23 @@ export class DeviceGroupComponent implements OnInit {
     };
     constructor(
         public httpClient: HttpClientComponent,
-        private modalService: BsModalService) { }
+        private modalService: BsModalService,
+        private router: Router,
+        private activedRoute: ActivatedRoute, ) {
+    }
     ngOnInit() {
-        // this.groups = this.groupData;
         this.getGroups();
-        this.drawDeviceTable('-1');
-        this.getPanelData('-1');
-
+    }
+    ngAfterViewInit() {
+        let groupIdeTmp: any = this.activedRoute.snapshot.queryParams['id'];
+        if (groupIdeTmp && typeof (groupIdeTmp) !== 'undefined') {
+            this.groupId = groupIdeTmp;
+            this.drawDeviceTable(this.groupId);
+            this.getPanelData(this.groupId);
+        } else {
+            this.drawDeviceTable('-1');
+            this.getPanelData('-1');
+        }
     }
     public drawDeviceTable(id: any) {
         let _t = this;
@@ -52,11 +62,11 @@ export class DeviceGroupComponent implements OnInit {
             url: '/v1/api_device/?group_id=' + id,
             datatype: 'JSON',
             mtype: 'get',
-            colNames: ['GroupId', 'Hostname', 'IP Address', 'Telnet Port', 'SNMP Port', 'SNMP Community',
+            colNames: ['DeviceId', 'Hostname', 'IP Address', 'Telnet Port', 'SNMP Port', 'SNMP Community',
                 'SNMP Version', 'Login Expect', 'Device Type', 'Telnet Status', 'SNMP Status'
             ],
             colModel: [
-                { hidden: true, name: 'group_id', index: 'group_id', search: false, key: true },
+                { hidden: true, name: 'device_id', index: 'device_id', search: false, key: true },
                 { name: 'hostname', index: 'hostname', width: 50, align: 'center', search: true },
                 { name: 'ip', index: 'ip', width: 50, align: 'center', search: true },
                 { name: 'telnet_port', index: 'telnet_port', width: 50, align: 'center', search: true },
@@ -72,15 +82,16 @@ export class DeviceGroupComponent implements OnInit {
                 { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
             ],
             beforeSelectRow: function (rowid, e) { return false; },
-            onPaging: function () {
-                let currentPage: any = $('#deviceTable').jqGrid('getGridParam', 'page');
-                let rowNum: any = $('#deviceTable').jqGrid('getGridParam', 'rowNum');
-                let records: any = $('#deviceTable').jqGrid('getGridParam', 'records');
-                let totalPages = records % rowNum;
-                if (records > 0 && currentPage > totalPages) {
-                    $('#deviceTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
-                }
-            },
+            // beforeRequest: function () {
+            //     let currentPage: any = $('#deviceTable').jqGrid('getGridParam', 'page');
+            //     let rowNum: any = $('#deviceTable').jqGrid('getGridParam', 'rowNum');
+            //     let records: any = $('#deviceTable').jqGrid('getGridParam', 'records');
+            //     console.log(currentPage, rowNum, records);
+            //     let totalPages = records % rowNum;
+            //     if (records > 0 && currentPage > totalPages) {
+            //         $('#deviceTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
+            //     }
+            // },
             // text-overflow: ellipsis;
             pager: '#devicePager',
             rowNum: 10,

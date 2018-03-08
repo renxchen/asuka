@@ -27,6 +27,7 @@
                         class="form-control" 
                         id="name" 
                         name="name"
+                        placeholder="日本語、英数字、記号可"
                         [(ngModel)]="name"
                      >
                 </div>
@@ -43,6 +44,7 @@
                         class="form-control"
                         id="desc"
                         name="desc"
+                        placeholder="日本語、英数字、記号可"
                         [(ngModel)]="desc"
                     >
                     </textarea>
@@ -62,6 +64,7 @@
                                 class="form-control" 
                                 id="start_id_{{startCmd.id}}"
                                 name="start_name_{{startCmd.id}}" 
+                                placeholder="英数字、記号のみ"
                                 [(ngModel)]="startCmd.name"
                             >
                         </div>
@@ -99,6 +102,7 @@
                                 class="form-control" 
                                 id="end_id_{{endCmd.id}}"
                                 name="end_name_{{endCmd.id}}" 
+                                placeholder="英数字、記号のみ"
                                 [(ngModel)]="endCmd.name"
                             >
                         </div>
@@ -136,7 +140,8 @@
                                 type="text" 
                                 class="form-control" 
                                 id="log_id_{{log.id}}"
-                                name="log_name_{{log.id}}" 
+                                name="log_name_{{log.id}}"
+                                placeholder="正規表現形式" 
                                 [(ngModel)]="log.name"
                             >
                         </div>
@@ -175,6 +180,7 @@
                         class="form-control"
                         id="telPrompt"
                         name="telPrompt" 
+                        placeholder="正規表現形式"
                         [(ngModel)]="telPrompt"
                     >
                 </div>
@@ -194,6 +200,7 @@
                         class="form-control" 
                         id="telTimeout" 
                         name="telTimeout" 
+                        placeholder="数値のみ"
                         [(ngModel)]="telTimeout" 
                     >
                 </div>
@@ -212,7 +219,8 @@
                         type="text" 
                         class="form-control" 
                         id="snmpTimeout"
-                        name="snmpTimeout" 
+                        name="snmpTimeout"
+                        placeholder="数値のみ" 
                         [(ngModel)]="snmpTimeout"
                     >
                 </div>
