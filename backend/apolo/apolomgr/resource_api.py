@@ -226,14 +226,6 @@ def api_column(request):
 @api_view(['GET'])
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))
-def api_column(request):
-    resource_object = action_policy_column_views.ActionPolicyColumnViewSet(request=request)
-    return HttpResponse(run_request_method(resource_object))
-
-
-@api_view(['GET'])
-@auth_if_refresh_required
-@permission_classes((IsAuthenticated,))
 def api_column_verify(request):
     resource_object = action_policy_column_verify.ActionPolicyColumnVerifyViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))

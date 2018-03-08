@@ -39,6 +39,12 @@ class ActionPolicyColumnViewSet(viewsets.ViewSet):
         self.policy_id = views_helper.get_request_value(self.request, 'policy_id', method)
 
     def get(self):
+        """!@brief
+        When click Column button in 新规页面， return all table or return history data and policy tree data according
+        to the table id
+        @post return all data or history data and policy tree data
+        @return data: all data or history data and policy tree data
+        """
         try:
             if self.table_id is not '':
                 tvs = TableViewsSet(request=self.request)

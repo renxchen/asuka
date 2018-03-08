@@ -46,6 +46,12 @@ class ActionPolicyColumnVerifyViewSet(viewsets.ViewSet):
         self.table_id_B = views_helper.get_request_value(self.request, 'id_B', method)
 
     def get(self):
+        """!@brief
+        When select column2 after choose column1 in 新规页面, column1 and column2 should have the same device group,
+        the same value type(both str or both int), the same policy type(both cli or both snmp)
+        @post return verify result
+        @return data: return verify result
+        """
         try:
             if self.table_id_A is not '' and self.table_id_B is not '':
                 table_a = DataTable.objects.filter(table_id=self.table_id_A).values('groups', 'coll_policy__value_type',

@@ -53,6 +53,12 @@ class CollPolicyViewSet(viewsets.ViewSet):
         self.get_execute_ing()
 
     def get_execute_ing(self):
+        """!@brief
+        Get the status of whether is executing or not
+        @pre call the api from Gin
+        @post return the status
+        @return execute_ing: status
+        """
         # {
         #     "now_time": 1513312116,
         #     "param": 2,
@@ -70,6 +76,13 @@ class CollPolicyViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_cp(**kwargs):
+        """!@brief
+        Get the data of CollPolicy table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of CollPolicy table
+        @post return CollPolicy data
+        @return: data of CollPolicy table
+        """
         try:
             return CollPolicy.objects.get(**kwargs)
         except CollPolicy.DoesNotExist:
@@ -77,6 +90,13 @@ class CollPolicyViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_cp_from_item(**kwargs):
+        """!@brief
+        Get the data of Items table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of Items table
+        @post return Items data
+        @return: data of Items table
+        """
         try:
             return Items.objects.filter(**kwargs)
         except Exception, e:
@@ -86,6 +106,13 @@ class CollPolicyViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_cp_from_policys_groups(**kwargs):
+        """!@brief
+        Get the data of PolicysGroups table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of PolicysGroups table
+        @post return PolicysGroups data
+        @return: data of PolicysGroups table
+        """
         try:
             return PolicysGroups.objects.filter(**kwargs)
         except Exception, e:
@@ -95,6 +122,13 @@ class CollPolicyViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_tree_from_coll_policy_rule_tree(**kwargs):
+        """!@brief
+        Get the data of CollPolicyRuleTree table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of CollPolicyRuleTree table
+        @post return CollPolicyRuleTree data
+        @return: data of CollPolicyRuleTree table
+        """
         try:
             return CollPolicyRuleTree.objects.filter(**kwargs)
         except Exception, e:
@@ -104,6 +138,13 @@ class CollPolicyViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_tree_from_coll_policy_cli_rule(**kwargs):
+        """!@brief
+        Get the data of CollPolicyCliRule table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of CollPolicyCliRule table
+        @post return CollPolicyCliRule data
+        @return: data of CollPolicyCliRule table
+        """
         try:
             return CollPolicyCliRule.objects.filter(**kwargs)
         except Exception, e:
@@ -112,9 +153,14 @@ class CollPolicyViewSet(viewsets.ViewSet):
             return False
 
     def verify_column(self, id, method='GET'):
-        """
-        verify column
-        :return: False: modify reject, True: modify or shown permit
+        """!@brief
+        Return the status of each column, decide whether should disable or enable in web page
+        False: modify reject, True: modify or shown permit
+        @param id: collection policy id
+        @param method: request method, default is GET
+        @pre call when need to get the column status
+        @post return column status
+        @return verify_result: the status of each column
         """
         try:
             if id is not '':
@@ -136,6 +182,10 @@ class CollPolicyViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def get(self):
+        """!@brief
+        Return the data for summary page or return the data for [表示] button
+        @return data: data for summary page or data for [表示] button
+        """
         try:
             if self.id is not '':
                 queryset = CollPolicy.objects.filter(**{'coll_policy_id': self.id})
@@ -213,6 +263,10 @@ class CollPolicyViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def post(self):
+        """!@brief
+        Create collection policy
+        @return data: the status of whether create successful and the inserted data
+        """
         try:
             with transaction.atomic():
                 data = {
@@ -256,6 +310,10 @@ class CollPolicyViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def put(self):
+        """!@brief
+        Modify collection policy data
+        @return data: the status of whether modified successful and the modified data
+        """
         try:
             with transaction.atomic():
                 kwargs = {'coll_policy_id': self.id}
@@ -301,6 +359,10 @@ class CollPolicyViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def delete(self):
+        """!@brief
+        Delete collection policy data
+        @return data: the status of whether deleted successful
+        """
         try:
             with transaction.atomic():
                 kwargs = {'coll_policy_id': self.id}
