@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 
 '''
 
@@ -47,6 +48,12 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         self.get_execute_ing()
 
     def get_execute_ing(self):
+        """!@brief
+        Get the status of whether is executing or not
+        @pre call the api from Gin
+        @post return the status
+        @return execute_ing: status
+        """
         # {
         #     "now_time": 1513312116,
         #     "param": 2,
@@ -64,6 +71,13 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_cp_group(**kwargs):
+        """!@brief
+        Get the data of CollPolicyGroups table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of CollPolicyGroups table
+        @post return CollPolicyGroups data
+        @return: data of CollPolicyGroups table
+        """
         try:
             cpg = CollPolicyGroups.objects.get(**kwargs)
             return cpg
@@ -74,6 +88,13 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_policy_group(**kwargs):
+        """!@brief
+        Get the data of PolicysGroups table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of PolicysGroups table
+        @post return PolicysGroups data
+        @return: data of PolicysGroups table
+        """
         try:
             pg = PolicysGroups.objects.filter(**kwargs)
             return pg
@@ -82,7 +103,46 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 print traceback.format_exc(e)
             return exception_handler(e)
 
+    @staticmethod
+    def get_schedule(**kwargs):
+        """!@brief
+        Get the data of Schedules table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of Schedules table
+        @post return Schedules data
+        @return: data of Schedules table
+        """
+        try:
+            return Schedules.objects.filter(**kwargs)
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
+
+    @staticmethod
+    def get_policys_groups(**kwargs):
+        """!@brief
+        Get the data of PolicysGroups table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of PolicysGroups table
+        @post return PolicysGroups data
+        @return: data of PolicysGroups table
+        """
+        try:
+            policys_groups = PolicysGroups.objects.get(**kwargs)
+            return policys_groups
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return False
+
     def del_policy_group_and_coll_policy_group(self, **kwargs):
+        """!@brief
+        Delete policys_groups and coll_policy_group
+        @param kwargs: dictionary type of the query condition
+        @pre call when need to delete policys_groups and coll_policy_group
+        @return: status
+        """
         try:
             queryset = self.get_cp_group(**kwargs)
             if isinstance(queryset, str):
@@ -115,6 +175,12 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def del_policy_group(self, **kwargs):
+        """!@brief
+        Delete policys_groups and coll_policy_group
+        @param kwargs: dictionary type of the query condition
+        @pre call when need to delete policys_groups
+        @return: status
+        """
         try:
             pgs = self.get_policy_group(**kwargs)
             if len(pgs) > 0:
@@ -125,29 +191,15 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 print traceback.format_exc(e)
             return exception_handler(e)
 
-    @staticmethod
-    def get_schedule(**kwargs):
-        try:
-            return Schedules.objects.filter(**kwargs)
-        except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
-
-    @staticmethod
-    def get_policys_groups(**kwargs):
-        try:
-            policys_groups = PolicysGroups.objects.get(**kwargs)
-            return policys_groups
-        except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return False
-
     def verify_column(self, id, method='GET'):
-        """
-        verify column
-        :return: False: modify reject, True: modify or shown permit
+        """!@brief
+        Return the status of each column, decide whether should disable or enable in web page
+        False: modify reject, True: modify or shown permit
+        @param id: policy group id
+        @param method: request method, default is GET
+        @pre call when need to get the column status
+        @post return column status
+        @return verify_result: the status of each column
         """
         try:
             if id is not '':
@@ -173,6 +225,10 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def get(self):
+        """!@brief
+        Return the data for summary page or return the data for [表示] button
+        @return data: data for summary page or data for [表示] button
+        """
         try:
             if self.id is not '':
                 queryset = CollPolicyGroups.objects.filter(**{'policy_group_id': self.id})
@@ -247,6 +303,10 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def post(self):
+        """!@brief
+        Create policy group
+        @return data: the status of whether create successful and the inserted data
+        """
         try:
             with transaction.atomic():
                 data = {
@@ -285,6 +345,10 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def put(self):
+        """!@brief
+        Modify policy group data
+        @return data: the status of whether modified successful and the modified data
+        """
         try:
             kwargs = {'policy_group_id': self.id}
             cps = views_helper.get_request_value(self.request, 'cps', 'BODY')
@@ -368,6 +432,10 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def delete(self):
+        """!@brief
+        Delete policy group data
+        @return data: the status of whether deleted successful
+        """
         try:
             with transaction.atomic():
                 kwargs = {'policy_group_id': self.id}

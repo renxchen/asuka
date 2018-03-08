@@ -21,6 +21,12 @@ logger.addHandler(file_handler)
 
 
 def exception_handler(e):
+    """!@brief
+    Exception handling method, return formatted exception according the type of exception
+    @param e: initial exception
+    @post return formatted exception
+    @return data: return formatted exception
+    """
     if 'KeyError' in repr(e):
         logger.info("Failed, KeyError occurred")  ###Logger###
         data = {'message': constants.KEY_ERROR % e}

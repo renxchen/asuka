@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 
 """
 
@@ -21,6 +22,17 @@ def get_query_condition(request, query_data, method_type):
 
 
 def get_search_conditions(request, field_relation_ships, query_data, search_fields):
+    """!@brief
+    Generate search condition and sort by
+    @param request: object request
+    @param field_relation_ships: corresponding relation of field in DB table and parameter
+    @param query_data: search value
+    @param search_fields: search field
+    @pre call when need to generate search condition and sort by
+    @post return the search condition and sort by
+    @return sorts: sort by
+    @return search_conditions: search condition
+    """
     sort_by = get_request_value(request, 'sidx', 'GET')
     order = get_request_value(request, 'sord', 'GET')
     search_conditions = {}
