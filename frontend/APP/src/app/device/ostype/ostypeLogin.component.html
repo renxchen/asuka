@@ -147,7 +147,8 @@
                         </div>
                         <div class="multi-i">
                             <span>
-                                <i class="fa fa-lg fa-trash-o"
+                                <i 
+                                    class="fa fa-lg fa-trash-o"
                                     style="color:#f8ac59;"
                                     (click)="delLogCmd(log)"
                                 >
@@ -155,7 +156,8 @@
                             </span>
                             <span [hidden]="log.logFlg">
                                 &nbsp;&nbsp;
-                                <i class="fa fa-lg fa-plus"
+                                <i 
+                                    class="fa fa-lg fa-plus"
                                     style="color:#1ab394;"
                                     (click)="addLogCmd()"
                                 >
@@ -191,7 +193,11 @@
                     class="col-sm-4 control-label"
                     [ngClass]="{'text-warning': !telTimeoutFlg||!telTimeoutNotNull}"
                 >
-                    <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                    <i 
+                        class="fa fa-asterisk text-danger"
+                        title="必須項目"
+                    >
+                    </i>
                     CLI(Telnet) タイムアウト値:
                 </label>
                 <div class="col-sm-8" [ngClass]="{'has-warning': !telTimeoutFlg||!telTimeoutNotNull}">

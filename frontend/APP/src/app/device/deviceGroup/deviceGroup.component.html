@@ -7,7 +7,10 @@
                         <div class="col-lg-6">
                             <div class="panel panel-success" style="height:310px">
                                 <div class="panel-heading">デバイスグループ一覧
-                                    <button class="btn btn-info btn-xs pull-right" (click)="groupLogin()">
+                                    <button 
+                                        class="btn btn-info btn-xs pull-right" 
+                                        (click)="groupLogin()"
+                                    >
                                         <i class="fa fa-plus-square"></i> 新規作成
                                     </button>
                                 </div>
@@ -24,27 +27,26 @@
                                                     <a class="pull-left" id="{{group.group_id}}">{{group.name}}</a>
                                                 </td>
                                                 <td class="group-table-td pull-right">
-                                                    <button id="{{group.group_id}}"  class="btn btn-info btn-xs" (click)="editGroup(group.group_id)"><i class="fa fa-pencil-square"></i> 編集</button>                                                                                                    
-                                                    <button id="{{group.group_id}}" class="btn btn-warning btn-xs" (click)="deleteGroup(group.group_id)"><i class="fa fa-minus-square"></i> 削除</button>
+                                                    <button 
+                                                        id="{{group.group_id}}"  
+                                                        class="btn btn-info btn-xs" 
+                                                        click)="editGroup(group.group_id)"
+                                                    >
+                                                        <i class="fa fa-pencil-square"></i> 
+                                                        編集
+                                                </button>                                                                                                    
+                                                    <button 
+                                                        id="{{group.group_id}}" 
+                                                        class="btn btn-warning btn-xs" 
+                                                        (click)="deleteGroup(group.group_id)"
+                                                    >
+                                                        <i class="fa fa-minus-square"></i> 
+                                                        削除
+                                                    </button>
                                                 </td>
-                                                <!-- <td>
-                                                </td> -->
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <!-- <div class="group-list" (click)="getGroupInfo('other')">
-                                        <a class="pull-left" id="other">無所属</a>
-                                        <div class="space-25"></div>
-                                    </div>
-                                    <div *ngFor="let group of groups">
-                                        <div class="group-list" (click)="getGroupInfo(group.group_id)" style="border-right:none">
-                                            <a class="pull-left" id="{{group.group_id}}">{{group.name}}</a>
-                                        </div>
-                                        <div class="group-list" style="border-left:none;text-alin:pull-right">
-                                            <button id="{{group.group_id}}"  class="btn btn-info btn-xs" (click)="editGroup($event)"><i class="fa fa-pencil-square"></i> 編集</button>
-                                            <button id="{{group.group_id}}" class="btn btn-warning btn-xs" (click)="deleteGroup($event)"><i class="fa fa-minus-square"></i> 削除</button>
-                                        </div>
-                                    </div> -->
                                 </div>
                             </div>
                         </div>

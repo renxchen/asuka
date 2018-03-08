@@ -11,10 +11,13 @@ import { OstypeLoginComponent } from './ostype/ostypeLogin.component';
 import { OstypeEditComponent } from './ostype/ostypeEdit.component';
 
 @NgModule({
-    declarations: [DeviceGroupComponent, GroupLoginComponent,
-        GroupEditComponent, DeviceLoginComponent,
-        DeviceViewComponent, OstypeComponent,
-        OstypeLoginComponent, OstypeEditComponent],
+    declarations:
+        [
+            DeviceGroupComponent, GroupLoginComponent,
+            GroupEditComponent, DeviceLoginComponent,
+            DeviceViewComponent, OstypeComponent,
+            OstypeLoginComponent, OstypeEditComponent
+        ],
     imports: [CommonModule, FormsModule],
     exports: [],
     providers: [],

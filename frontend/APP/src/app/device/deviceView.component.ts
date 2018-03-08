@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -13,6 +13,16 @@ declare var $: any;
     styleUrls: ['./device.component.less']
 })
 export class DeviceViewComponent implements OnInit {
+    /*
+    @brief 函数简要说明
+    @param 参数名 参数的意思和用户
+    @pre 代码使用前条件
+    @post 代码使用后条件
+    @note 备注
+    @return 返回值
+    @author Zizhuang Jiang
+    @date 03/08/2018
+     */
     apiPrefix: any;
     devViewTable$: any;
     constructor(
