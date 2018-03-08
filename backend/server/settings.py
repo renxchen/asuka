@@ -237,7 +237,8 @@ LOGGING = {
     },
     'formatters': {
         'standard': {
-            'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(levelname)s]- %(message)s'
+            # 'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(levelname)s]- %(message)s'
+            'format': '%(asctime)s - %(name)s - %(levelname)s - %(thread)d - %(filename)s - %(threadName)s - %(funcName)s - %(message)s'
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -257,23 +258,7 @@ LOGGING = {
             'backupCount': 10,
             'formatter': 'standard',
         },
-        'apolo_handler_error': {
-            'level': 'ERROR',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 10,
-            'formatter': 'standard',
-        },
-        'apolo_handler_warning': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 10,
-            'formatter': 'standard',
-        },
-        'apolo_handler_debug': {
+        'apolo_handler': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
@@ -281,15 +266,6 @@ LOGGING = {
             'backupCount': 10,
             'formatter': 'standard',
         },
-        'apolo_handler_info': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 10,
-            'formatter': 'standard',
-        },
-
     },
     'loggers': {
         'apolo.console': {
@@ -297,28 +273,13 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False
         },
-        'apolo.info': {
-            'handlers': ["apolo_handler_info"],
-            'level': 'INFO',
-            'propagate': False
-        },
         'apolo.default': {
             'handlers': ['default'],
             'level': 'DEBUG',
             'propagate': False
         },
-        'apolo.error': {
-            'handlers': ["apolo_handler_error"],
-            'level': 'ERROR',
-            'propagate': False
-        },
-        'apolo.warning': {
-            'handlers': ["apolo_handler_warning"],
-            'level': 'WARNING',
-            'propagate': False
-        },
-        'apolo.debug': {
-            'handlers': ["apolo_handler_debug"],
+        'apolo.log': {
+            'handlers': ["apolo_handler"],
             'level': 'DEBUG',
             'propagate': False
         },
