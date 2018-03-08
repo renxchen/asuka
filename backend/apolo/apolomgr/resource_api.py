@@ -11,13 +11,15 @@ from backend.apolo.apolomgr.resource.collection_policy_tree import policy_tree_h
 from backend.apolo.apolomgr.resource.action_policy_table import data_table_step3_views, data_table_step1_views, \
     data_table_step4_table_views, data_table_step4_tree_views
 from backend.apolo.apolomgr.resource.action_policy import action_policy_views, action_policy_column_views, \
-    action_policy_column_verify
+    action_policy_column_verify, verify_expression
 from backend.apolo.apolomgr.resource.common import common_views
 from backend.apolo.apolomgr.resource.data_collection import data_collection_view, new_data_collection_view, \
     data_collection_by_device_view, data_collection_by_cp_view
 from backend.apolo.apolomgr.resource.device import ostype_views
 from backend.apolo.apolomgr.resource.login import authentication
 from backend.apolo.apolomgr.resource.login.authentication import auth_if_refresh_required
+from backend.apolo.tools import constants
+from backend.apolo.tools.exception import exception_handler
 
 
 def run_request_method(resource_object):
@@ -34,8 +36,9 @@ def run_request_method(resource_object):
         elif request_method == 'patch':
             return resource_object.patch()
     except Exception as e:
-        error_message = traceback.format_exc()
-        print error_message
+        if constants.DEBUG_FLAG:
+            print traceback.format_exc(e)
+        return exception_handler(e)
 
 
 @api_view(["POST"])
@@ -236,4 +239,9 @@ def api_column_verify(request):
     return HttpResponse(run_request_method(resource_object))
 
 
-
+@api_view(['GET'])
+# @auth_if_refresh_required
+# @permission_classes((IsAuthenticated,))
+def api_expression_verify(request):
+    resource_object = verify_expression.ExpressionVerify(request=request)
+    return HttpResponse(run_request_method(resource_object))

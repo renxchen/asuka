@@ -29,7 +29,7 @@ class ActionPolicyColumnViewSet(viewsets.ViewSet):
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         self.page_from = views_helper.get_request_value(self.request, 'page', 'GET')
         self.max_size_per_page = views_helper.get_request_value(self.request, 'rows', 'GET')
-        self.logger = logging.getLogger("apolo.error")
+        self.logger = logging.getLogger("apolo.log")
         method = 'GET'
         if request.method.lower() == 'get' or request.method.lower() == 'delete':
             method = 'GET'

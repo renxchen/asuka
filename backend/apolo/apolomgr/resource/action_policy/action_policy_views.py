@@ -39,7 +39,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         self.page_from = views_helper.get_request_value(self.request, 'page', 'GET')
         self.max_size_per_page = views_helper.get_request_value(self.request, 'rows', 'GET')
-        self.logger = logging.getLogger("apolo.error")
+        self.logger = logging.getLogger("apolo.log")
         method = 'GET'
         if request.method.lower() == 'get' or request.method.lower() == 'delete':
             method = 'GET'
@@ -224,25 +224,39 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
     @staticmethod
     def map_condition(value):
-        # 0: <=, 1: ==, 2: >=, 3: !=, 4: <, 5: >
-        critical_condition = ''
+        """!@brief
+        Match the condition expression, 0: <=, 1: ==, 2: >=, 3: !=, 4: <, 5: >
+        @param value: the integer type of condition expression
+        @pre call when need the string condition expression
+        @post using the return value directly
+        @note
+        @return condition_exp: string value of condition expression
+        """
+        condition_exp = ''
         if value == 0:
-            critical_condition = '<='
+            condition_exp = '<='
         if value == 1:
-            critical_condition = '=='
+            condition_exp = '=='
         if value == 2:
-            critical_condition = '>='
+            condition_exp = '>='
         if value == 3:
-            critical_condition = '!='
+            condition_exp = '!='
         if value == 4:
-            critical_condition = '<'
+            condition_exp = '<'
         if value == 5:
-            critical_condition = '>'
-        return critical_condition
+            condition_exp = '>'
+        return condition_exp
 
     @staticmethod
     def map_priority(value):
-        # 0: critical, 1: major, 2: minor
+        """!@brief
+        Match the priority, 0: critical, 1: major, 2: minor
+        @param value: the integer type of priority
+        @pre call when need the string priority
+        @post using the return value directly
+        @note
+        @return priority: string value of priority
+        """
         priority = ''
         if value == 0:
             priority = 'critical'
@@ -254,7 +268,14 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
     @staticmethod
     def map_trigger_type(value):
-        # 0:演算比較,1:数値比較,2:文字列比較,3:取得失敗
+        """!@brief
+        Match the trigger type, 0:演算比較,1:数値比較,2:文字列比較,3:取得失敗
+        @param value: the integer type of trigger type
+        @pre call when need the string trigger type
+        @post using the return value directly
+        @note
+        @return trigger_type: string value of trigger
+        """
         trigger_type = ''
         if value == 0:
             trigger_type = str('演算比較')
@@ -268,6 +289,14 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_action_policy_in_trigger(**kwargs):
+        """!@brief
+        Get the queryset of the Triggers table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need to select Triggers table
+        @post according to the need to deal with the Triggers table
+        @note
+        @return result: queryset of Triggers table
+        """
         try:
             result = Triggers.objects.filter(**kwargs)
             return result
@@ -278,6 +307,14 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_data_table_items(**kwargs):
+        """!@brief
+        Get the queryset of the DataTableItems table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need to select DataTableItems table
+        @post according to the need to deal with the DataTableItems table
+        @note
+        @return result: queryset of DataTableItems table
+        """
         try:
             result = DataTableItems.objects.filter(**kwargs).values('data_table_items_id', 'table_id', 'item_id',
                                                                     'item__device__device_id')
@@ -287,7 +324,44 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 print traceback.format_exc(e)
             return exception_handler(e)
 
+    @staticmethod
+    def delete_trigger_related(name):
+        """!@brief
+        Delete Actions table, TriggerDetail table and Triggers table according to name
+        @param name: action name or trigger name of the query condition
+        @pre call when need to delete Triggers table
+        @post delete Actions table, TriggerDetail table and Triggers table
+        @note
+        @return
+        """
+        try:
+            with transaction.atomic():
+                # delete action by action name
+                Actions.objects.filter(action_name=name).delete()
+                # select trigger_id by name
+                trigger = Triggers.objects.filter(name=name)
+                trigger_ids = trigger.values_list('trigger_id', flat=True)
+                # delete trigger_detail by trigger_id
+                for per_trigger_id in trigger_ids:
+                    TriggerDetail.objects.filter(trigger_id=per_trigger_id).delete()
+                trigger.delete()
+        except Exception, e:
+            transaction.rollback()
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
+
     def create_expression(self, value, column_a=None, column_b=None):
+        """!@brief
+        Change the column1(A) or column2(B) into corresponding table id, and return the expression dic
+        @param value: the integer type of trigger type
+        @param column_a: table id1
+        @param column_b: table id2
+        @pre call when need the expression
+        @post return expression dic
+        @note
+        @return expression: dictionary of expression(include of critical expression, major expression, minor expression)
+        """
         expression = {}
         expression_critical = None
         expression_major = None
@@ -311,22 +385,22 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         # 1:数値比較-->{4} == 'ok', 2:文字列比較-->{4} > 1000
         elif value == 1 or value == 2:
             if self.critical_threshold is not '':
-                expression_critical = '{' + str(self.critical_threshold) + '}' + self.map_condition(
-                    self.critical_condition) + str(self.critical_threshold)
+                expression_critical = '{' + str(column_a) + '}' + self.map_condition(self.critical_condition) + str(
+                    self.critical_threshold)
             if self.major_threshold is not '':
-                expression_major = '{' + str(self.major_threshold) + '}' + self.map_condition(
-                    self.major_condition) + str(self.major_threshold)
+                expression_major = '{' + str(column_a) + '}' + self.map_condition(self.major_condition) + str(
+                    self.major_threshold)
             if self.minor_threshold is not '':
-                expression_minor = '{' + str(self.minor_threshold) + '}' + self.map_condition(
-                    self.minor_condition) + str(self.minor_threshold)
+                expression_minor = '{' + str(column_a) + '}' + self.map_condition(self.minor_condition) + str(
+                    self.minor_threshold)
         # 3:取得失敗-->Fail(1)
         elif value == 3:
             if self.critical_threshold is not '':
-                expression_critical = 'Fail(1)'
+                expression_critical = 'Fail(' + str(column_a) + ')'
             if self.major_threshold is not '':
-                expression_major = 'Fail(1)'
+                expression_major = 'Fail(' + str(column_a) + ')'
             if self.minor_threshold is not '':
-                expression_minor = 'Fail(1)'
+                expression_minor = 'Fail(' + str(column_a) + ')'
         expression['expression_critical'] = expression_critical
         expression['expression_major'] = expression_major
         expression['expression_minor'] = expression_minor
@@ -334,6 +408,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         return expression
 
     def tableid_change_to_itemid(self, column_a, colunm_b):
+        """!@brief
+        Change the column1(A) or column2(B) into corresponding item id with the same device, and return the expression dic
+        @param column_a: table id1
+        @param column_b: table id2
+        @pre call when need to change table id to item id
+        @post return expression dic
+        @note the result of the method will save into trigger_detial table
+        @return expression: dictionary of expression(include of critical expression, major expression, minor expression)
+        """
         critical_detail_list = []
         major_detail_list = []
         minor_detail_list = []
@@ -376,9 +459,9 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     major_detail = expression_detail['expression_major']
                     minor_detail = expression_detail['expression_minor']
                     if self.trigger_type == 1 or self.trigger_type == 2 or self.trigger_type == 3:
-                        critical_detail_list = [critical_detail]
-                        major_detail_list = [major_detail]
-                        minor_detail_list = [minor_detail]
+                        critical_detail_list.append(critical_detail)
+                        major_detail_list.append(major_detail)
+                        minor_detail_list.append(minor_detail)
                     else:
                         critical_detail_list.append(critical_detail)
                         major_detail_list.append(major_detail)
@@ -392,6 +475,14 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         return expression_detail_result
 
     def regenerate_trigger_detail(self):
+        """!@brief
+        According to the Triggers table to regenerate trigger_detail table for re-upload device, the method will
+        regenerate trigger_detail table according to the Triggers.
+        @pre call when the device was re-uploaded
+        @post update trigger_detail table
+        @note
+        @return
+        """
         try:
             with transaction.atomic():
                 trigger_data = Triggers.objects.all()
@@ -404,6 +495,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     self.trigger_type = per.trigger_type
                     if per.priority == 0:
                         self.critical_threshold = per.value
+                        self.critical_condition = per.condition
                         critical_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)['critical']
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
@@ -415,6 +507,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                         data.append(data_trigger_detail)
                     if per.priority == 1:
                         self.major_threshold = per.value
+                        self.major_condition = per.condition
                         major_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)['major']
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
@@ -426,6 +519,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                         data.append(data_trigger_detail)
                     if per.priority == 2:
                         self.minor_threshold = per.value
+                        self.minor_condition = per.condition
                         minor_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)['minor']
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
@@ -456,50 +550,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             self.logger.error(e)
             return exception_handler(e)
 
-    def create_expression_trigger_detail(self, value):
-        expression = {}
-        expression_critical = None
-        expression_major = None
-        expression_minor = None
-        # 0:演算比較
-        if value == 0:
-            if self.critical_threshold is not '':
-                expression_critical = self.critical_threshold.replace('A(', str(self.column_a) + '(').replace('A[', str(
-                    self.column_a) + '[').replace('B(', str(self.column_b) + '(').replace('B[',
-                                                                                          str(self.column_b) + '[')
-            if self.major_threshold is not '':
-                expression_major = self.major_threshold.replace('A(', str(self.column_a) + '(').replace('A[', str(
-                    self.column_a) + '[').replace('B(', str(self.column_b) + '(').replace('B[',
-                                                                                          str(self.column_b) + '[')
-            if self.minor_threshold is not '':
-                expression_minor = self.minor_threshold.replace('A(', str(self.column_a) + '(').replace('A[', str(
-                    self.column_a) + '[').replace('B(', str(self.column_b) + '(').replace('B[',
-                                                                                          str(self.column_b) + '[')
-        # 1:数値比較-->{4} == 'ok', 2:文字列比較-->{4} > 1000
-        elif value == 1 or value == 2:
-            if self.critical_threshold is not '':
-                expression_critical = '{' + str(self.critical_threshold) + '}' + self.critical_condition + str(
-                    self.critical_threshold)
-            if self.major_threshold is not '':
-                expression_major = '{' + str(
-                    self.major_threshold) + '}' + self.major_condition + str(self.major_threshold)
-            if self.minor_threshold is not '':
-                expression_minor = '{' + str(
-                    self.minor_threshold) + '}' + self.minor_condition + str(self.minor_threshold)
-        # 3:取得失敗-->Fail(1)
-        elif value == 3:
-            if self.critical_threshold is not '':
-                expression_critical = 'Fail(1)'
-            if self.major_threshold is not '':
-                expression_major = 'Fail(1)'
-            if self.minor_threshold is not '':
-                expression_minor = 'Fail(1)'
-        expression['expression_critical'] = expression_critical
-        expression['expression_major'] = expression_major
-        expression['expression_minor'] = expression_minor
-        return expression
-
     def data_generate_critical(self):
+        """!@brief
+        Generate critical data
+        @pre call when need critical data
+        @post return critical data
+        @return result: dictionary of critical data
+        """
         # create trigger from table page
         data_common = {
             'name': self.action_policy_name,  # アクションポリ シー名
@@ -581,6 +638,12 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         return result
 
     def data_generate_major(self):
+        """!@brief
+        Generate major data
+        @pre call when need major data
+        @post return major data
+        @return result: dictionary of major data
+        """
         # create trigger from table page
         data_common = {
             'name': self.action_policy_name,  # アクションポリ シー名
@@ -666,6 +729,12 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         return result
 
     def data_generate_minor(self):
+        """!@brief
+        Generate minor data
+        @pre call when need minor data
+        @post return minor data
+        @return result: dictionary of minor data
+        """
         # create trigger from table page
         data_common = {
             'name': self.action_policy_name,  # アクションポリ シー名
@@ -749,6 +818,12 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         return result
 
     def data_generate(self):
+        """!@brief
+        Generate all data that can insert into DB directly, include of Trigger table, trigger_detail table and actions table
+        @pre call when after generating critical data, major data and minor data
+        @post return all data that can insert into DB directly
+        @return result: dictionary of all data
+        """
         # 当A(column_a),B(column_b)在DB中查不到的时候， 说明数据不存在，不需要继续一下步骤，创建trigger失败。
         if self.expression_detail_result is False:
             return False
@@ -780,6 +855,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         return result
 
     def generate_trigger_detail_data(self, data, param):
+        """!@brief
+        Regenerate trigger detail data
+        @param data: the data of trigger detail
+        @param param: the relationship of priority and trigger id, for determine the data belongs to what
+        trigger and what priority
+        @pre call when the all data is generated and ready to insert trigger detail data into trigger_detail table
+        @post return trigger detail data list
+        @return trigger_detail_data: list of trigger detail data
+        """
         trigger_detail_data = []
         for per in data:
             priority_key = self.map_priority(per['priority'])
@@ -796,6 +880,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         return trigger_detail_data
 
     def generate_action_data(self, data, param):
+        """!@brief
+        Regenerate action data
+        @param data: the data of action
+        @param param: the relationship of priority and trigger id, for determine the data belongs to what
+        trigger and what priority
+        @pre call when the all data is generated and ready to insert action data into actions table
+        @post return action data list
+        @return re_genreate_action_data: list of action data
+        """
         re_genreate_action_data = []
         for per in data:
             for per_action in per:
@@ -806,6 +899,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         return re_genreate_action_data
 
     def get_search_sort_data(self, initial_data):
+        """!@brief
+        Generate sorted and searched data for summary page when need to sort or search
+        @param initial_data: the view data from generate_view_data method
+        @pre call when the view data is generated and need to sort and search
+        @post return the final data for view
+        @return data: json of final view data
+        """
         paginator = Paginator(initial_data, int(self.max_size_per_page))
         contacts = paginator.page(int(self.page_from))
         result = []
@@ -876,6 +976,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         return data
 
     def generate_view_data(self):
+        """!@brief
+        Generate all view data for summary page, then call get_search_sort_data to sort or search, and return the view data for display,
+        if no need to sort or search, will display all view data
+        @pre GET method for rest api
+        @post generate initial data and call method of get_search_sort_data, then return the final data for summary page
+        @return result_data: json of final view data
+        """
         # queryset = Actions.objects.raw('select * from Actions group by action_name')
         # queryset = Actions.objects.values('action_name', 'trigger_id', 'trigger__priority', 'trigger__trigger_type',
         #                                   'trigger__descr').annotate(total_num=Count('action_name'))
@@ -911,6 +1018,12 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         return result_data
 
     def get_data_by_name(self):
+        """!@brief
+        Generate view data by action name for action page
+        @pre GET method for rest api when click [表示] button
+        @post return the final data according to the action name for action page
+        @return result: json of final data for action page
+        """
         result_common = {}
         result_critical = {}
         result_major = {}
@@ -1036,26 +1149,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         return result
 
-    @staticmethod
-    def delete_trigger_related(name):
-        try:
-            with transaction.atomic():
-                # delete action by action name
-                Actions.objects.filter(action_name=name).delete()
-                # select trigger_id by name
-                trigger = Triggers.objects.filter(name=name)
-                trigger_ids = trigger.values_list('trigger_id', flat=True)
-                # delete trigger_detail by trigger_id
-                for per_trigger_id in trigger_ids:
-                    TriggerDetail.objects.filter(trigger_id=per_trigger_id).delete()
-                trigger.delete()
-        except Exception, e:
-            transaction.rollback()
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
-
     def create_trigger_related(self):
+        """!@brief
+        Insert data into triggers table, actions table and trigger_detail table
+        @pre call when the data is generated
+        @post insert data for all tables
+        @return data: the status of whether insert successful, and inserted data for all tables
+        """
         try:
             with transaction.atomic():
                 data = self.data_generate()
@@ -1127,6 +1227,10 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def get(self):
+        """!@brief
+        Rest Api of GET, can get all the data for summary page or can get the data according to action name
+        @return data: the view data for summary page
+        """
         try:
             if self.action_policy_name is not '':
                 result = self.get_data_by_name()
@@ -1139,6 +1243,10 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def post(self):
+        """!@brief
+        Rest Api of POST, Insert data into triggers table, actions table and trigger_detail table
+        @return data: the status of whether insert successful, and inserted data
+        """
         try:
             with transaction.atomic():
                 data = self.create_trigger_related()
@@ -1151,6 +1259,10 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def put(self):
+        """!@brief
+        Rest Api of PUT, modify data according to action name
+        @return data: the status of whether modify successful, and modified data
+        """
         try:
             with transaction.atomic():
                 if self.action_policy_name is not '':
@@ -1166,6 +1278,10 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def delete(self):
+        """!@brief
+        Rest Api of DELETE, delete data according to action name
+        @return data: the status of whether delete successful
+        """
         try:
             with transaction.atomic():
                 self.delete_trigger_related(self.action_policy_name)
