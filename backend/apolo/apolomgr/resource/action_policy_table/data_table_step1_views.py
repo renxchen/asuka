@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 """
 
 @author: kimli
@@ -64,6 +65,13 @@ class TableViewsSet(viewsets.ViewSet):
 
     @staticmethod
     def get_data_table(**kwargs):
+        """!@brief
+        Get the data of DataTable table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of DataTable table
+        @post return DataTable data
+        @return result: data of DataTable table
+        """
         try:
             dt = DataTable.objects.filter(**kwargs)
             return dt
@@ -73,6 +81,13 @@ class TableViewsSet(viewsets.ViewSet):
 
     @staticmethod
     def get_data_table_item(**kwargs):
+        """!@brief
+        Get the data of DataTableItems table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of DataTableItems table
+        @post return DataTableItems data
+        @return result: data of DataTableItems table
+        """
         try:
             data_table_item_info = DataTableItems.objects.filter(**kwargs).values('item', 'item__value_type',
                                                                                   'item__item_type',
@@ -85,10 +100,13 @@ class TableViewsSet(viewsets.ViewSet):
 
     @staticmethod
     def get_mapping(code):
-        """
-        Search mapping relationship by given code
-        :param code:
-        :return: code meaning
+        """!@brief
+        Match the value type， change the integer value into string value,
+        0: snmp, 1: cli, 2: float, 3: string, 4: text, 5: int
+        @param code: the integer value of value type
+        @pre call when need to change value type
+        @post return the value type
+        @return code_meaning: string value type
         """
         # value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
         code_meaning = ''
@@ -107,14 +125,14 @@ class TableViewsSet(viewsets.ViewSet):
         return code_meaning
 
     def get_history(self, item_id, value_type, policy_type):
+        """!@brief
+        Get history data from History%s%s table
+        @param item_id: item id
+        @param value_type: value type(str, int, float, text)
+        @param policy_type: policy type(cli, snmp)
+        @note
+        @return history: history data(type is list)
         """
-        Search history data from db by given item id and value type
-        :param item_id:
-        :param policy_type:
-        :param value_type:
-        :return: history list
-        """
-
         base_db_format = "History%s%s"
         trigger_db_modules = "backend.apolo.models"
         trigger_numeric = ["Float", "Int"]
@@ -140,11 +158,16 @@ class TableViewsSet(viewsets.ViewSet):
         return history
 
     def get_info_by_table_id(self, id):
+        """!@brief
+        Get the data when click [表示] button according the search by and sort by
+        @param id: table id
+        @return data: history data(type is list)
+        """
         result = []
         result_temp = []
         data_history = {}
         # get all items by provided table id
-        data_table_item_info = self.get_data_table_item(**{'table_id': id})
+        data_table_item_info = self.get_data_table_item(**{'table_id': id, 'item__enable_status': 1})
         for per_data_table_item_info in data_table_item_info:
             # value type in item table
             value_type = self.get_mapping(per_data_table_item_info['item__value_type'])
@@ -210,6 +233,10 @@ class TableViewsSet(viewsets.ViewSet):
         return data
 
     def get(self):
+        """!@brief
+        Rest Api of GET, get all the data for summary page or get the data according to table id
+        @return data: the data for summary page
+        """
         try:
             if self.id is not '':
                 data = self.get_info_by_table_id(self.id)
@@ -253,6 +280,10 @@ class TableViewsSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def post(self):
+        """!@brief
+        Rest Api of POST, create data table, Insert data into DataTable table, DataTableItems table
+        @return data: the status of whether insert successful, and inserted data
+        """
         try:
             with transaction.atomic():
                 data = {
@@ -297,10 +328,11 @@ class TableViewsSet(viewsets.ViewSet):
             print traceback.format_exc(e)
             return exception_handler(e)
 
-    def put(self):
-        pass
-
     def delete(self):
+        """!@brief
+        Rest Api of DELETE, delete data according to table id
+        @return data: the status of whether delete successful
+        """
         try:
             with transaction.atomic():
                 kwargs = {'table_id': self.id}
