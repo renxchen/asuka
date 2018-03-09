@@ -1,86 +1,167 @@
 <div class="wrapper wrapper-content">
-    <div class="row"><div class="col-lg-12">
-        <div class="ibox float-e-margins">
-            <div class="ibox-title">
-                <h3>SNMPコレクションポリシー：新規登録</h3>
-            </div>
-            <div class="ibox-content">
-                <form class="form-horizontal" id="form">
-                    <div class="form-group">
-                        <label for="name" class="col-sm-4 control-label"
-                            [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}">
-                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
-                            コレクションポリシー名：
-                        </label>
-                        <div class="col-sm-6" [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}">
-                            <input type="text" class="form-control" id="name"  name="name" 
-                            [(ngModel)]="name" placeholder="英数字のみ" maxlength="256"
-                             required="" autocomplete="off">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h3>SNMPコレクションポリシー：新規登録</h3>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal" id="form">
+                        <div class="form-group">
+                            <label 
+                                for="name" 
+                                class="col-sm-4 control-label"
+                                [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
+                            >
+                                <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                                コレクションポリシー名：
+                            </label>
+                            <div 
+                                class="col-sm-6" 
+                                [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
+                            >
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="name"  
+                                    name="name" 
+                                    [(ngModel)]="name" 
+                                    placeholder="英数字のみ" 
+                                    maxlength="256"
+                                >
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="desc" class="col-sm-4 control-label" [ngClass]="{'text-warning': descFlg}">概要：</label>
-                        <div class="col-sm-6">
-                            <textarea class="form-control" id="desc" name="desc" [ngClass]="{'has-warning': descFlg}"
-                            [(ngModel)]="desc" maxlength="2000"></textarea>
+                        <div class="form-group">
+                            <label 
+                                for="desc" 
+                                class="col-sm-4 control-label" 
+                                [ngClass]="{'text-warning': descFlg}"
+                            >
+                                概要：
+                            </label>
+                            <div class="col-sm-6">
+                                <textarea 
+                                    class="form-control" 
+                                    id="desc" 
+                                    name="desc" 
+                                    [ngClass]="{'has-warning': descFlg}"
+                                    [(ngModel)]="desc" 
+                                    maxlength="2000"
+                                >
+                                </textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="snmpOid" class="control-label col-sm-4" 
-                            [ngClass]="{'text-warning': !oidFlg||!oidNotNull}">
-                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
-                            OID値：
-                        </label>
-                        <div class="col-sm-6" [ngClass]="{'has-warning': !oidFlg||!oidNotNull}">
-                            <input type="text" class="form-control" id="snmpOid" name="snmpOid" 
-                            [(ngModel)]="snmpOid" maxlength="256" placeholder="数字とドットのみ" required="">
+                        <div class="form-group">
+                            <label 
+                                for="snmpOid" 
+                                class="control-label col-sm-4" 
+                                [ngClass]="{'text-warning': !oidFlg||!oidNotNull}"
+                            >
+                                <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                                OID値：
+                            </label>
+                            <div 
+                                class="col-sm-6" 
+                                [ngClass]="{'has-warning': !oidFlg||!oidNotNull}"
+                            >
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="snmpOid" 
+                                    name="snmpOid" 
+                                    [(ngModel)]="snmpOid" 
+                                    maxlength="256" 
+                                    placeholder="数字とドットのみ" 
+                                    required=""
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group unuse_east">
-                        <label for="returnType" class="col-sm-4 control-label">
-                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
-                        </label>
-                        <div class="col-sm-6">
-                                <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType">
-                                <option value="1">Int</option>
-                                <option value="2">Float</option>
-                                <option value="3">String</option>
-                                <option value="4">Text</option>
-                            </select>
+                        <div class="form-group unuse_east">
+                            <label 
+                                for="returnType" 
+                                class="col-sm-4 control-label"
+                            >
+                                <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                                Return Type:
+                            </label>
+                            <div class="col-sm-6">
+                                <select 
+                                    class="form-control" 
+                                    [(ngModel)]="selectedRtnType" 
+                                    id="returnType" 
+                                    name="returnType"
+                                >
+                                    <option value="1">Int</option>
+                                    <option value="2">Float</option>
+                                    <option value="3">String</option>
+                                    <option value="4">Text</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="osType" class="col-sm-4 control-label"
-                            [ngClass]="{'text-warning': osTypeFlg=== false}">
-                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>OS Type:
-                        </label>
-                        <div class="col-sm-6" [ngClass]="{'has-warning': osTypeFlg=== false}">
-                                <select class="form-control" [(ngModel)]="selectedOsType" id="osType" name="osType">
-                                <option *ngFor="let item of osType"
-                                value="{{item.ostypeid}}">{{item.name}}</option>
-                            </select>
+                        <div class="form-group">
+                            <label 
+                                for="osType" 
+                                class="col-sm-4 control-label"
+                                [ngClass]="{'text-warning': osTypeFlg=== false}"
+                            >
+                                <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                                OS Type:
+                            </label>
+                            <div 
+                                class="col-sm-6" 
+                                [ngClass]="{'has-warning': osTypeFlg=== false}"
+                            >
+                                <select 
+                                    class="form-control" 
+                                    [(ngModel)]="selectedOsType" 
+                                    id="osType" 
+                                    name="osType"
+                                >
+                                    <option 
+                                        *ngFor="let item of osType"
+                                        value="{{item.ostypeid}}"
+                                    >
+                                        {{item.name}}
+                                    </option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <!-- message alert -->
-                    <div class="form-group">
-                        <div class="col-sm-12 text-warning" *ngIf="!nameNotNull">コレクションポリシー名は必須入力です。</div>
-                        <div class="col-sm-12 text-warning" *ngIf="nameNotNull&&!nameFlg">コレクションポリシー名は半角英数字のみで入力してください。</div>
-                        <div class="col-sm-12 text-warning" *ngIf="!uniqueFlg">コレクションポリシー名は重複しています。</div>
-                        <div class="col-sm-12 text-warning" *ngIf="!oidNotNull">OID値は必須入力です。</div>
-                        <div class="col-sm-12 text-warning" *ngIf="oidNotNull&&!oidFlg">OID値は半角数字とドットのみで入力してください。</div>
-                        <div class="col-sm-12 text-warning" *ngIf="descFlg">Warning:Description can not include Chinese.</div>                        
-                    </div>
-                    <div class="form-group" style="margin-top:20px">
-                        <div class="col-sm-10 text-right">
-                            <button  class="btn btn-primary" id="add" (click)="cPLogin()">
-                                <i class="fa fa-check-square-o"></i>
-                                保存する
-                            </button>
+                        <!-- message alert -->
+                        <div class="form-group">
+                            <div class="col-sm-12 text-warning" *ngIf="!nameNotNull">
+                                コレクションポリシー名は必須入力です。
+                            </div>
+                            <div class="col-sm-12 text-warning" *ngIf="nameNotNull&&!nameFlg">
+                                コレクションポリシー名は半角英数字のみで入力してください。
+                            </div>
+                            <div class="col-sm-12 text-warning" *ngIf="!uniqueFlg">
+                                コレクションポリシー名は重複しています。
+                            </div>
+                            <div class="col-sm-12 text-warning" *ngIf="!oidNotNull">
+                                OID値は必須入力です。
+                            </div>
+                            <div class="col-sm-12 text-warning" *ngIf="oidNotNull&&!oidFlg">
+                                OID値は半角数字とドットのみで入力してください。
+                            </div>
+                            <div class="col-sm-12 text-warning" *ngIf="descFlg">
+                                Warning:Description can not include Chinese.
+                            </div>                        
                         </div>
-                    </div>
-                </form>
+                        <div class="form-group" style="margin-top:20px">
+                            <div class="col-sm-10 text-right">
+                                <button  
+                                    class="btn btn-primary" 
+                                    id="add" 
+                                    (click)="cPLogin()"
+                                >
+                                    <i class="fa fa-check-square-o"></i>
+                                    保存する
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 </div>

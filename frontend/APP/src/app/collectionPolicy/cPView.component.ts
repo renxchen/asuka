@@ -83,15 +83,15 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.deleteBtn();
             },
             beforeSelectRow: function (rowid, e) { return false; },
-            onPaging: function () {
-                let currentPage: any = $('#cpTable').jqGrid('getGridParam', 'page');
-                let rowNum: any = $('#cpTable').jqGrid('getGridParam', 'rowNum');
-                let records: any = $('#cpTable').jqGrid('getGridParam', 'records');
-                let totalPages = records % rowNum;
-                if (records > 0 && currentPage > totalPages) {
-                    $('#cpTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
-                }
-            },
+            // beforeRequest: function () {
+            //     let currentPage: any = $('#cpTable').jqGrid('getGridParam', 'page');
+            //     let rowNum: any = $('#cpTable').jqGrid('getGridParam', 'rowNum');
+            //     let records: any = $('#cpTable').jqGrid('getGridParam', 'records');
+            //     let totalPages = records % rowNum;
+            //     if (records > 0 && currentPage > totalPages) {
+            //         $('#cpTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
+            //     }
+            // },
             pager: '#cpPager',
             postData: { 'policy_type': cPType },
             rowNum: 10,

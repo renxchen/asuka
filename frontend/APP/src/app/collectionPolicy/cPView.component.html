@@ -3,21 +3,28 @@
 </div> -->
 <div class="ibox-content text-center p-md" style="min-height:610px;">
     <div class="btn-group btn-groups" data-toggle="buttons">
-        <label for = "cli" class="btn btn-default btn-change-cli" 
-        [ngClass]="{'active':(cPType)=='0'}">
+        <label 
+            for = "cli" 
+            class="btn btn-default btn-change-cli" 
+            [ngClass]="{'active':(cPType)=='0'}"
+        >
             <input 
-            id = "cli"
-            name="cp_type" 
-            value="0"
-            autocomplete="off" 
-            btn-radio="" 
-            type="radio"
-            class="ng-pristine ng-untouched ng-valid ng-not-empty"
-            (click)="changeCPType($event)"
-            >CLIコレクションポリシー
+                id = "cli"
+                name="cp_type" 
+                value="0"
+                autocomplete="off" 
+                btn-radio="" 
+                type="radio"
+                class="ng-pristine ng-untouched ng-valid ng-not-empty"
+                (click)="changeCPType($event)"
+            >
+                CLIコレクションポリシー
         </label>
-        <label for="snmp" class="btn btn-default btn-change-snmp" 
-        [ngClass]="{'active':(cPType)=='1'}">
+        <label 
+            for="snmp" 
+            class="btn btn-default btn-change-snmp" 
+            [ngClass]="{'active':(cPType)=='1'}"
+        >
             <input 
                 id="snmp"
                 name="cp_type" 
@@ -27,7 +34,8 @@
                 type="radio"
                 class="ng-pristine ng-untouched ng-valid ng-not-empty" 
                 (click)="changeCPType($event)"
-                >SNMPコレクションポリシー
+            >
+            SNMPコレクションポリシー
         </label>
     </div>
     <div class='cp-grid'>
@@ -37,10 +45,14 @@
     <div class="row cp-add-row">
         <div class="col-xs-12">
             <div class="text-right">
-                <a id="add_btn" class="btn btn-primary" (click)="cpLogin()">
-                <i class="fa fa-plus-square"></i>
-                コレクションポリシー新規登録
-                </a>
+                <button 
+                    id="add-btn"
+                    class="btn btn-primary"
+                    (click)="cpLogin()"
+                >
+                    <i class="fa fa-plus-square"></i>
+                    コレクションポリシー新規登録
+                </button>
             </div>
         </div>
     </div>

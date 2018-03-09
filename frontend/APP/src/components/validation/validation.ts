@@ -17,7 +17,7 @@ export class Validator {
         }
     }
     static notNullCheck(param: any) {
-        if (param && param.trim()) {
+        if (param && param.toString().trim()) {
             return true;
         } else {
             return false;
