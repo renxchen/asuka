@@ -55,7 +55,8 @@ export class DeviceViewComponent implements OnInit {
                     // formatter: _t.loginExpFormmater
                 },
                 { name: 'device_type', index: 'device_type', width: 50, align: 'center', search: true },
-                { name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true
+                {
+                    name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true
                 },
                 // { name: 'group', index: 'group', width: 50, align: 'center', search: true },
                 { name: 'group_list', index: 'group_list', width: 50, align: 'center', search: true },
@@ -118,6 +119,6 @@ export class DeviceViewComponent implements OnInit {
         }
     }
     public CSVExport() {
-
+        alert('have not finished');
     }
 }

@@ -13,14 +13,14 @@
     <div class="modal-body">
         <form novalidate="novalidate">
             <div class="row">
-            <div class="row">
                 <div class="form-group">
                     <label 
                         for="name" 
-                        class="col-sm-4 control-label"
+                        class="col-sm-4 control-label text-right"
                         [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
                     >
                         <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                        &nbsp;
                         デバイスグループ名：
                     </label>
                     <div 
@@ -39,12 +39,13 @@
                 <div class="form-group">
                     <label 
                         for="osType" 
-                        class="col-sm-4 control-label"
+                        class="col-sm-4 control-label text-right"
                     >
                         <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                        &nbsp;
                         OS Type：
                     </label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-8" style="margin-top:15px;margin-bottom:15px">
                         <select 
                             class="form-control" 
                             [(ngModel)]="selectedOsType" 
@@ -63,7 +64,7 @@
                 <div class="form-group">
                     <label 
                         for="desc" 
-                        class="col-sm-4 control-label" 
+                        class="col-sm-4 control-label text-right" 
                         [ngClass]="{'text-warning': descFlg}"
                     >
                         概要：
@@ -98,7 +99,6 @@
                     デバイスグループ名は重複しています。
                 </div>            
             </div>
-        </div>
         </form>
     </div>
     <div class="modal-footer">
