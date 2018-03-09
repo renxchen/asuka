@@ -11,7 +11,8 @@
 '''
 from rest_framework import serializers
 from collection_policy_serializer import OstypeSerializer
-from backend.apolo.models import Schedules, CollPolicyGroups, Groups, Items, Ostype
+from backend.apolo.models import Schedules, CollPolicyGroups, Groups, Items, Ostype, DataTableHistoryItems, \
+    DataTableItems
 
 
 class SchedulesSerializer(serializers.ModelSerializer):
@@ -69,3 +70,13 @@ class DeviceGroupIDNameSerializer(serializers.ModelSerializer):
             instance.ostype = ostype
         instance.save()
         return instance
+
+class DataTableHistoryItemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataTableHistoryItems
+        fields = '__all__'
+
+class DataTableItemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataTableItems
+        fields = '__all__'
