@@ -7,6 +7,7 @@
 # PATHS
 #########################################
 LOG_PATH = 'logs/system_logger.log'
+CSV_PATH = 'export/apolo_export.csv'
 #########################################
 # API Debug Flag
 #########################################
@@ -90,7 +91,7 @@ BLOCK_RULE_TREE_KIND_THREE_NAME = '指定文字列の間'
 BLOCK_RULE_TREE_KIND_FOUR_NAME = '正規表現による絞る'
 DATA_RULE_TREE_KIND_ONE_NAME = '特定文字からの距離'
 DATA_RULE_TREE_KIND_TWO_NAME = '行数指定'
-DATA_RULE_TREE_KIND_THREE_NAME ='正規表現'
+DATA_RULE_TREE_KIND_THREE_NAME = '正規表現'
 DATA_RULE_TREE_KIND_FOUR_NAME = 'データ行数を取得'
 DATA_RULE_TREE_KIND_FIVE_NAME = '出力全抽出機能'
 POLICY_TREE_ROOT_ICON = 'fa fa-tags fa-lg'
@@ -106,7 +107,7 @@ POLICY_IS_APPLIED = 'the policy is being applied by schedule function'  # この
 POLICY_DATA_VALID_ERROR = 'data valid error when insert policy tree rules'  # コレクションポリシーツリーに追加されたデータが適切ではないです。
 RULE_DATA_VALID_ERROR = 'data valid error in saving the rule'  # ルールを追加する時に、データが適切ではないです
 LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定義されていないです
-DB_EXCEPTION ='there is an db exception'
+DB_EXCEPTION = 'there is an db exception'
 RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
 CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 #########################################
@@ -114,7 +115,7 @@ CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 #########################################
 SCHEDULE_STATUS_DEFAULT = 1
 ITEM_TABLE_STATUS_DEFAULT = 0
-ITEM_TYPE_CLI = 0  #cli
+ITEM_TYPE_CLI = 0  # cli
 ITEM_TYPE_SNMP = 1  # snmp
 VALUE_TYPE = {
     'INT': 0,
@@ -128,7 +129,7 @@ LEAF_NODE_MARK = 1
 PRIORITY_STANDARD_LEVEL_VALUE = 0
 PRIORITY_STANDARD_LEVEL_KEY = u'標準'
 PRIORITY_HIGH_LEVEL_VALUE = 1
-PRIORITY_HIGH_LEVEL_KEY =u'高'
+PRIORITY_HIGH_LEVEL_KEY = u'高'
 PRIORITY_URGENT_LEVEL_VALUE = 2
 PRIORITY_URGENT_LEVEL_KEY = u'緊急'
 
@@ -157,17 +158,17 @@ POLICY_DEVICE_COMBINATION = 'the combination of policy and device  is used'
 CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
 CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
 NO_ITEMS_IN_GROUP = 'no items in group,please check the group'
-DATA_COLLECTION_POST_URL ='http://10.71.244.134:7777/api/v1/getItems'
+DATA_COLLECTION_POST_URL = 'http://10.71.244.134:7777/api/v1/getItems'
 POLICY_POST_URL = 'http://10.71.244.134:7777/api/v1/valid'
 #########################################
 # render
 #########################################
-REPLACE_START_MARK ='@start@'
+REPLACE_START_MARK = '@start@'
 REPLACE_END_MARK = '@end@'
-MARK_STRING_HTML_FONT_START ='<font color="blue">'
-HTML_FONT_END ='</font>'
+MARK_STRING_HTML_FONT_START = '<font color="blue">'
+HTML_FONT_END = '</font>'
 EXTRACT_DATA_HTML_FONT_START = '<font color="green"><u>'
-EXTRACT_DATA_HTML_FONT_END ='</u></font>'
+EXTRACT_DATA_HTML_FONT_END = '</u></font>'
 EXTRACT_LINE_NUM = '<font color="blue">all <font color="green"><u>{}</u></font>lines:</font>'
 OFFSET_ERROR = 'Offset is too long'
 NO_EXTRACT_LINE_NUM = 'no lines'
@@ -175,4 +176,3 @@ BLOCK_START_HTML_FONT_START = '<font color="red">'
 LINE_NUM_MSG_REPLACE = '@##@'
 LEAF_IS_BLOCK_RULE = 'LEAF_IS_BLOCK_RULE'
 POLICY_TREE_IS_GROUPED = 'policy tree is grouped'
-

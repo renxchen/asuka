@@ -25,6 +25,8 @@ from backend.apolo.serializer.action_policy_serializer import ActionPolicyDataTa
 from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
 import time
 import simplejson as json
+from backend.apolo.apolomgr.resource.common import csv_export
+import os
 
 
 class TableViewsSet(viewsets.ViewSet):
@@ -232,6 +234,35 @@ class TableViewsSet(viewsets.ViewSet):
         }
         return data
 
+    def csv_export(self):
+        try:
+            if self.id is not '':
+                data = self.get_info_by_table_id(self.id)
+                title = ['デバイス名', 'Time Stamp', 'Path', data['data'][0]['checkitem']]
+                csv_data = []
+                for per in data['data']:
+                    csv_data.append([per['hostname'], per['date'], per['path'], per['value']])
+                script_dir = os.path.split(os.path.realpath(__file__))[0]
+                csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))),
+                                        constants.CSV_PATH)
+                csv_data.insert(0, title)
+                # create csv
+                result = csv_export.csv_export(csv_path, csv_data)
+                # download csv
+                if result is False:
+                    data = {
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: result
+                        },
+                    }
+                    return api_return(data=data)
+                return result
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
+
     def get(self):
         """!@brief
         Rest Api of GET, get all the data for summary page or get the data according to table id
@@ -276,7 +307,8 @@ class TableViewsSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     def post(self):
@@ -325,7 +357,8 @@ class TableViewsSet(viewsets.ViewSet):
                         return api_return(data=data)
         except Exception, e:
             transaction.rollback()
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     def delete(self):
@@ -358,5 +391,6 @@ class TableViewsSet(viewsets.ViewSet):
                 return api_return(data=data)
         except Exception, e:
             transaction.rollback()
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)

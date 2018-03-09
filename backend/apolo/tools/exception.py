@@ -75,6 +75,10 @@ def exception_handler(e):
         logger.info("TypeError.")  ###Logger###
         data = {'message': str(e)}
         return api_return(data=eval(json.dumps(data)))
+    elif 'IOError' in repr(e):
+        logger.info("IOError.")  ###Logger###
+        data = {'message': str(e)}
+        return api_return(data=eval(json.dumps(data)))
     else:
         logger.info("Error or exception occurred. %s" % str(e))  ###Logger###
         data = {'message': "Error or exception occurred."}

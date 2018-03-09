@@ -110,5 +110,6 @@ class DataTableCoulumnViewsSet(viewsets.ViewSet):
                 }
                 return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
