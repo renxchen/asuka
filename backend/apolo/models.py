@@ -149,7 +149,7 @@ class DataTableHistoryItems(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'data_table_items'
+        db_table = 'data_table_history_items'
 
 
 class DevicesTmp(models.Model):

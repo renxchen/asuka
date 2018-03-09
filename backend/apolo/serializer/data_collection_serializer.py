@@ -11,7 +11,7 @@
 '''
 from rest_framework import serializers
 
-from backend.apolo.models import Schedules, CollPolicyGroups, Groups, Items
+from backend.apolo.models import Schedules, CollPolicyGroups, Groups, Items, DataTableHistoryItems, DataTableItems
 
 
 class SchedulesSerializer(serializers.ModelSerializer):
@@ -43,3 +43,13 @@ class DeviceGroupIDNameSerializer(serializers.ModelSerializer):
         model = Groups
         fields = ('group_id', 'name',)
         # fields = '__all__'
+
+class DataTableHistoryItemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataTableHistoryItems
+        fields = '__all__'
+
+class DataTableItemsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataTableItems
+        fields = '__all__'
