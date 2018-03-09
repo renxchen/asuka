@@ -15,7 +15,8 @@ from backend.apolo.apolomgr.resource.action_policy import action_policy_views, a
 from backend.apolo.apolomgr.resource.common import common_views
 from backend.apolo.apolomgr.resource.data_collection import data_collection_view, new_data_collection_view, \
     data_collection_by_device_view, data_collection_by_cp_view
-from backend.apolo.apolomgr.resource.device import ostype_views
+from backend.apolo.apolomgr.resource.device import ostype_views, groups_views,device_views,device_pre_view, \
+    device_upload,device_export
 from backend.apolo.apolomgr.resource.login import authentication
 from backend.apolo.apolomgr.resource.login.authentication import auth_if_refresh_required
 from backend.apolo.tools import constants
@@ -236,4 +237,39 @@ def api_column_verify(request):
 # @permission_classes((IsAuthenticated,))
 def api_expression_verify(request):
     resource_object = verify_expression.ExpressionVerify(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+api_view(['POST', "GET", "DELETE", "PUT"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_device_groups(request):
+    resource_object = groups_views.GroupsViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+@api_view(['POST', "GET", "DELETE", "PUT"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_device(request):
+    resource_object = device_views.DevicesViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+@api_view(['POST', "GET", "DELETE", "PUT"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_device_upload(request):
+    resource_object = device_upload.DevicePreViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+@api_view(['POST', "GET", "DELETE", "PUT"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_device_pre(request):
+    resource_object = device_pre_view.DevicePreViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+@api_view(['POST', "GET", "DELETE", "PUT"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_device_export(request):
+    resource_object = device_export.ExportDevicesViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
