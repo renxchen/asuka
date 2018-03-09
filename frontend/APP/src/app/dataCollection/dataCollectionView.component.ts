@@ -151,7 +151,10 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
             _target.html(_content);
             let deviceGroupNo = _target.prev().html();
             _target.click( function (event) {
-                _this.router.navigate(['/index/devicegroup'],{queryParams:{'id':deviceGroupNo}});
+                if (deviceGroupNo != ""){
+                   _this.router.navigate(['/index/devicegroup'],{queryParams:{'id':deviceGroupNo}});
+                }
+
             })
         }
 
@@ -164,7 +167,10 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
                 _content += _target.html() + '</div>';
                 let policyGroupNo = _target.prev().html();
                 _target.click( function (event) {
-                    _this.router.navigate(['/index/cpgdetail'],{queryParams:{'id':policyGroupNo}});
+                    if (policyGroupNo != ""){
+                        _this.router.navigate(['/index/cpgdetail'],{queryParams:{'id':policyGroupNo}});
+                    }
+
                 });
             } else {
                 _content = _target.html();

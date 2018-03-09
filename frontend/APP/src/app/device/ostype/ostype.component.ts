@@ -34,6 +34,15 @@ export class OstypeComponent implements OnInit, AfterViewInit {
         private modalService: BsModalService) {
     }
     ngOnInit() {
+        // for reg test
+        // let input = '+';
+        // try {
+        //     let a = new RegExp('/+');
+        //     // let t = new RegExp(input);
+        //     console.log(a);
+        // } catch (e) {
+        //     console.log('无效正则');
+        // }
     }
     ngAfterViewInit() {
         this.drawOstypeTable();
@@ -46,23 +55,24 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             mtype: 'get',
             colModel: [
                 { label: 'No', hidden: true, name: 'ostypeid', index: 'ostypeid', search: false, key: true },
-                { label: 'OS Type名', name: 'name', index: 'name', width: 200, align: 'center', search: true },
-                { label: '概要', name: 'desc', index: 'desc', width: 200, align: 'center', search: true },
+                { label: 'OS Type名', name: 'name', index: 'name', width: 140, align: 'center', search: true },
+                { label: '概要', name: 'desc', index: 'desc', width: 140, align: 'center', search: true },
                 {
-                    label: 'CLI情報取得前デフォルト実行コマンド', name: 'start_default_commands',
-                    index: 'start_default_commands', width: 250, align: 'center', search: true
+                    label: 'CLI情報取得前</br>デフォルト実行コマンド', name: 'start_default_commands',
+                    index: 'start_default_commands', align: 'center', search: true
                 },
                 {
-                    label: 'CLI情報取得完了後デフォルト実行コマンド', name: 'end_default_commands',
-                    index: 'end_default_commands', width: 250, align: 'center', search: true
+                    label: 'CLI情報取得完了後</br>デフォルト実行コマンド', name: 'end_default_commands',
+                    index: 'end_default_commands', width: 140, align: 'center', search: true
                 },
-                { label: 'CLIエラー文字列', name: 'log_fail_judges', index: 'log_fail_judges', width: 150, align: 'center', search: true },
-                { label: 'CLIデフォルトプロンプト文字列', name: 'telnet_prompt', index: 'telnet_prompt', width: 220, align: 'center', search: true },
-                { label: 'CLI タイムアウト値', name: 'telnet_timeout', index: 'telnet_timeout', width: 180, align: 'center', search: true },
-                { label: 'SNMP タイムアウト値', name: 'snmp_timeout', index: 'snmp_timeout', width: 170, align: 'center', search: true },
+                { label: 'CLIエラー文字列', name: 'log_fail_judges', index: 'log_fail_judges', width: 140, align: 'center', search: true },
+                { label: 'CLIデフォルト</br>プロンプト文字列', name: 'telnet_prompt', index: 'telnet_prompt',
+                width: 140, align: 'center', search: true },
+                { label: 'CLI タイムアウト値', name: 'telnet_timeout', index: 'telnet_timeout', width: 140, align: 'center', search: true },
+                { label: 'SNMP タイムアウト値', name: 'snmp_timeout', index: 'snmp_timeout', width: 140, align: 'center', search: true },
                 {
                     label: 'アクション', name: 'action', width: 120, align: 'center', search: false,
-                    formatter: this.formatterBtn, resizable: false
+                    formatter: this.formatterBtn
                 }
             ],
             gridComplete: function () {
@@ -70,26 +80,26 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                 _t.deleteBtn();
             },
             beforeSelectRow: function (rowid, e) { return false; },
-            onPaging: function () {
-                let currentPage: any = $('#ostypeTable').jqGrid('getGridParam', 'page');
-                let rowNum: any = $('#ostypeTable').jqGrid('getGridParam', 'rowNum');
-                let records: any = $('#ostypeTable').jqGrid('getGridParam', 'records');
-                let totalPages = records % rowNum;
-                if (records > 0 && currentPage > totalPages) {
-                    console.log(records, currentPage, totalPages);
-                    $('#ostypeTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
-                }
-            },
+            // beforeRequest: function () {
+            //     let currentPage: any = $('#ostypeTable').jqGrid('getGridParam', 'page');
+            //     let rowNum: any = $('#ostypeTable').jqGrid('getGridParam', 'rowNum');
+            //     let records: any = $('#ostypeTable').jqGrid('getGridParam', 'records');
+            //     let totalPages = records % rowNum;
+            //     if (records > 0 && currentPage > totalPages) {
+            //         console.log(records, currentPage, totalPages);
+            //         $('#ostypeTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
+            //     }
+            // },
             pager: '#ostypePager',
-            rowNum: 5,
+            rowNum: 10,
             rowList: [5, 10, 15],
-            autowidth: false,
-            // set overFlow-x
-            width: 1216,
-            shrinkToFit: false,
-            height: 340,
-            viewrecords: false,
+            autowidth: true,
+            height: 380,
+            viewrecords: true,
             emptyrecords: 'There is no data to display',
+            loadError: function (xhr, st, err) {
+                console.log(xhr, st, err);
+            },
             jsonReader: {
                 root: 'data',
                 page: 'current_page_num',
@@ -100,6 +110,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             },
         });
         $('#ostypeTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
+        $('.ui-jqgrid .ui-jqgrid-htable th div').css({'height': '27px'});
     }
     // btn formatter
     public formatterBtn(cellvalue, options, rowObject) {
@@ -163,6 +174,10 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
                             } else if (msg === 'OSTYPE_EXIST_IN_SCHEDULE') {
                                 this.modalMsg = 'Can not been delete when ostype exits in schedule';
+                                this.closeMsg = 'close';
+                                _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            } else if (msg === 'EXIST_IN_COLL_POLICY') {
+                                this.modalMsg = 'Can not been delete when ostype exits in collection policy';
                                 this.closeMsg = 'close';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
                             } else {

@@ -76,9 +76,9 @@
                                 <span [hidden]="startCmd.startCmdFlg">
                                     &nbsp;&nbsp;
                                     <i class="fa fa-lg fa-plus"
-                                        style="color:#1ab394;"
-                                        (click)="addStartCmd()"
-                                     >
+                                    style="color:#1ab394;"
+                                    (click)="addStartCmd()"
+                                >
                                     </i>
                                 </span>
                             </div>
@@ -95,7 +95,8 @@
                     <div class="col-sm-8">
                         <div *ngFor="let endCmd of endCmds" style="width:100%">
                             <div class="multi-input">
-                                <input type="text" 
+                                <input
+                                    type="text" 
                                     class="form-control" 
                                     id="end_id_{{endCmd.id}}"
                                     name="end_name_{{endCmd.id}}" 
@@ -104,7 +105,8 @@
                             </div>
                             <div class="multi-i">
                                 <span>
-                                    <i class="fa fa-lg fa-trash-o"
+                                    <i 
+                                        class="fa fa-lg fa-trash-o"
                                         style="color:#f8ac59;"
                                         (click)="delEndCmd(endCmd)"
                                     >
@@ -112,7 +114,8 @@
                                 </span>
                                 <span [hidden]="endCmd.endCmdFlg">
                                     &nbsp;&nbsp;
-                                    <i class="fa fa-lg fa-plus"
+                                    <i 
+                                        class="fa fa-lg fa-plus"
                                         style="color:#1ab394;"
                                         (click)="addEndCmd()"
                                      >
@@ -142,7 +145,8 @@
                             </div>
                             <div class="multi-i">
                                 <span>
-                                    <i class="fa fa-lg fa-trash-o"
+                                    <i 
+                                        class="fa fa-lg fa-trash-o"
                                         style="color:#f8ac59;"
                                         (click)="delLogCmd(log)"
                                     >
@@ -150,7 +154,8 @@
                                 </span>
                                 <span [hidden]="log.logFlg">
                                     &nbsp;&nbsp;
-                                    <i class="fa fa-lg fa-plus"
+                                    <i 
+                                        class="fa fa-lg fa-plus"
                                         style="color:#1ab394;"
                                         (click)="addLogCmd()"
                                     >

@@ -5,35 +5,80 @@
           <span style="font-size: 30px">&times;</span>
         </button>
     </div>
-    <div class="modal-body" style="padding-bottom: 20px;height: 350px;">
-        <div>
-            <!--<button class="btn" [ngClass]="buttonClass1" disabled="{{buttonDisable1}}" id="step1">step 1</button>-->
-            <button class="btn" [ngClass]="{'btn-primary': buttonClass1, 'btn-default': !buttonClass1}"
-                    disabled="{{buttonDisable1}}" id="step1">step 1</button>
-            <button class="btn" [ngClass]="{'btn-primary': buttonClass2, 'btn-default': !buttonClass2}"
-                    disabled="{{buttonDisable2}}" id="step2">step 2</button>
-            <button class="btn" [ngClass]="{'btn-primary': buttonClass3, 'btn-default': !buttonClass3}"
-                    disabled="{{buttonDisable3}}" id="step3">step 3</button>
-            <button class="btn" [ngClass]="{'btn-primary': buttonClass4, 'btn-default': !buttonClass4}"
-                    disabled="{{buttonDisable4}}" id="step4">step 4</button>
+    <div class="modal-body" style="padding: 15px 5px 40px 5px;min-height: 320px">
+        <div style="min-height: 300px">
+            <div class="col-sm-12" style="padding-bottom: 15px">
+                <!--<button class="btn" [ngClass]="buttonClass1" disabled="{{buttonDisable1}}" id="step1">step 1</button>-->
+                <button class="btn btn-sm" [ngClass]="{'btn-primary': buttonClass1, 'btn-default': !buttonClass1}"
+                        disabled="{{buttonDisable1}}" id="step1button">step 1</button>&nbsp;
+                <button class="btn btn-sm" [ngClass]="{'btn-primary': buttonClass2, 'btn-default': !buttonClass2}"
+                        disabled="{{buttonDisable2}}" id="step2button">step 2</button>&nbsp;
+                <button class="btn btn-sm" [ngClass]="{'btn-primary': buttonClass3, 'btn-default': !buttonClass3}"
+                        disabled="{{buttonDisable3}}" id="step3button">step 3</button>&nbsp;
+                <button class="btn btn-sm" [ngClass]="{'btn-primary': buttonClass4, 'btn-default': !buttonClass4}"
+                        disabled="{{buttonDisable4}}" id="step4button">step 4</button>
+            </div>
+            <div id="step1div" *ngIf="step1display">
+                <div class="col-sm-12">基本設定を入力してください</div>
+                <div class="form-group">
+
+                    <label class="col-sm-3 control-label">
+                            <!--<span style="color:red">※</span>-->
+                        テーブル名:
+                    </label>
+                    <div >
+                        <input type="text" placeholder="" [(ngModel)]="tableName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">
+                            <!--<span style="color:red">※</span>-->
+                        概要:
+                    </label>
+                    <div >
+                        <textarea style="height: 100px" [(ngModel)]="description"></textarea>
+                    </div>
+
+                </div>
+            </div>
+            <div id="step2div" *ngIf="step2display">
+                <div class="col-sm-12">デバイスグループを選択してください</div>
+                <div class="form-group">
+
+                    <select class="form-control" [(ngModel)]="selectedDeviceGroup"
+                            id="deviceGroup" name="selectedDeviceGroup">
+                        <option *ngFor="let item of deviceGroup" value="{{item.deviceGroupId}}">
+                            {{item.deviceGroupName}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div id="step3div" *ngIf="step3display">
+                <div class="col-sm-12">カラムを選択してください</div>
+                <div class="form-group">
+                    <table id="columnTable"></table>
+                </div>
+            </div>
+            <div id="step4div" *ngIf="step4display">
+                <div class="col-sm-12">leafを選択してください</div>
+                <div class="form-group">
+                    hhhhhhh
+                </div>
+            </div>
         </div>
-        <div>
-            step 1
-        </div>
-        <div>
-            step 2
-        </div>
-        <div>
-            step 3
-        </div>
-        <div>
-            step 4
-        </div>
-        <div>
-            <button>
+        <div class="col-sm-12 form-group">
+            <button class="btn btn-xs btn-warning" (click)="bsModalRef.hide()">
                 cancel
             </button>
-
+            <button *ngIf="finishButton" disabled="{{buttonFinishDisabled}}" class="btn btn-primary btn-xs pull-right">Finish</button>
+            <button class="btn btn-xs pull-right" [ngClass]="{'btn-primary': buttonNextClass, 'btn-default': !buttonNextClass}"
+                disabled="{{buttonNextDisable}}" (click)="next()">
+                >>
+            </button>
+            <button class="btn btn-xs pull-right" [ngClass]="{'btn-primary': buttonBackClass, 'btn-default': !buttonBackClass}"
+                disabled="{{buttonBackDisable}}" (click)="previous()">
+                <<
+            </button>
         </div>
         <button (click)="click()">click!!!!</button>
 

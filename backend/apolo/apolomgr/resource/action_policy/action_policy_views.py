@@ -10,7 +10,6 @@
 
 """
 import traceback
-import importlib
 from rest_framework import viewsets
 from django.utils.translation import gettext
 from django.core.paginator import Paginator
@@ -22,8 +21,6 @@ from backend.apolo.models import Triggers, TriggerDetail, DataTableItems, Action
 from django.db import transaction
 from backend.apolo.serializer.action_policy_serializer import TriggerSerializer, ActionsSerializer, \
     TriggerDetailSerializer
-import time
-import simplejson as json
 import logging
 from django.db.models import *
 import sys
@@ -225,12 +222,12 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     @staticmethod
     def map_condition(value):
         """!@brief
-        Match the condition expression, 0: <=, 1: ==, 2: >=, 3: !=, 4: <, 5: >
-        @param value: the integer type of condition expression
-        @pre call when need the string condition expression
-        @post using the return value directly
-        @note
-        @return condition_exp: string value of condition expression
+        Match the condition expression， change the integer value into string value,
+        0: <=, 1: ==, 2: >=, 3: !=, 4: <, 5: >
+        @param value: the integer value of condition expression
+        @pre call when need to change condition expression
+        @post return the string condition
+        @return condition_exp: string condition
         """
         condition_exp = ''
         if value == 0:
@@ -250,12 +247,12 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     @staticmethod
     def map_priority(value):
         """!@brief
-        Match the priority, 0: critical, 1: major, 2: minor
-        @param value: the integer type of priority
-        @pre call when need the string priority
-        @post using the return value directly
-        @note
-        @return priority: string value of priority
+        Match the priority， change the integer value into string value,
+        0: critical, 1: major, 2: minor
+        @param value: the integer value of priority
+        @pre call when need to change priority
+        @post return string priority
+        @return priority: string priority
         """
         priority = ''
         if value == 0:
@@ -269,12 +266,12 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     @staticmethod
     def map_trigger_type(value):
         """!@brief
-        Match the trigger type, 0:演算比較,1:数値比較,2:文字列比較,3:取得失敗
-        @param value: the integer type of trigger type
-        @pre call when need the string trigger type
-        @post using the return value directly
-        @note
-        @return trigger_type: string value of trigger
+        Match the trigger type， change the integer value into string value,
+        0:演算比較,1:数値比較,2:文字列比較,3:取得失敗
+        @param value: the integer value of trigger type
+        @pre call when need to change trigger type
+        @post return string trigger type
+        @return trigger_type: string trigger type
         """
         trigger_type = ''
         if value == 0:
@@ -290,12 +287,11 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     @staticmethod
     def get_action_policy_in_trigger(**kwargs):
         """!@brief
-        Get the queryset of the Triggers table
+        Get the data of Triggers table
         @param kwargs: dictionary type of the query condition
-        @pre call when need to select Triggers table
-        @post according to the need to deal with the Triggers table
-        @note
-        @return result: queryset of Triggers table
+        @pre call when need data of Triggers table
+        @post return trigger data
+        @return result: data of Triggers table
         """
         try:
             result = Triggers.objects.filter(**kwargs)
@@ -328,10 +324,9 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     def delete_trigger_related(name):
         """!@brief
         Delete Actions table, TriggerDetail table and Triggers table according to name
-        @param name: action name or trigger name of the query condition
-        @pre call when need to delete Triggers table
-        @post delete Actions table, TriggerDetail table and Triggers table
-        @note
+        @param name: action name or trigger name
+        @pre call when click delete button or modify button
+        @post delete Actions table, TriggerDetail table and Triggers table according to name
         @return
         """
         try:
@@ -353,14 +348,14 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
     def create_expression(self, value, column_a=None, column_b=None):
         """!@brief
-        Change the column1(A) or column2(B) into corresponding table id, and return the expression dic
-        @param value: the integer type of trigger type
+        Generate expression according to the table id
+        Change the column1(A) or column2(B) into corresponding table id, and return the 3 priorities of expression
+        @param value: trigger type
         @param column_a: table id1
         @param column_b: table id2
-        @pre call when need the expression
-        @post return expression dic
-        @note
-        @return expression: dictionary of expression(include of critical expression, major expression, minor expression)
+        @pre call when need expression
+        @post return the 3 priorities of expression
+        @return expression: 3 priorities of expression (include of critical expression, major expression, minor expression)
         """
         expression = {}
         expression_critical = None
@@ -407,14 +402,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
         return expression
 
-    def tableid_change_to_itemid(self, column_a, colunm_b):
+    def tableid_change_to_itemid(self, column_a, column_b):
         """!@brief
-        Change the column1(A) or column2(B) into corresponding item id with the same device, and return the expression dic
+        Generate expression for trigger_detail table,
+        Change the column1(A) or column2(B) into corresponding item id with the same device, and return the expression
         @param column_a: table id1
         @param column_b: table id2
         @pre call when need to change table id to item id
-        @post return expression dic
-        @note the result of the method will save into trigger_detial table
+        @post return expression with item id
+        @note the result of the method will save into trigger_detial table for parse
         @return expression: dictionary of expression(include of critical expression, major expression, minor expression)
         """
         critical_detail_list = []
@@ -426,11 +422,11 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             'minor': None
         }
         kwargs_a = {'table_id': column_a, 'item__enable_status': 1}
-        kwargs_b = {'table_id': colunm_b, 'item__enable_status': 1}
+        kwargs_b = {'table_id': column_b, 'item__enable_status': 1}
         column_a_result = self.get_data_table_items(**kwargs_a)
         column_b_result = self.get_data_table_items(**kwargs_b)
         if len(column_a_result) > 0:
-            if column_a is not None and colunm_b is not None:
+            if column_a is not None and column_b is not None:
                 for per_column_a in column_a_result:
                     device_id_a = per_column_a['item__device__device_id']
                     for per_column_b in column_b_result:
@@ -477,7 +473,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     def regenerate_trigger_detail(self):
         """!@brief
         According to the Triggers table to regenerate trigger_detail table for re-upload device, the method will
-        regenerate trigger_detail table according to the Triggers.
+        regenerate all data in trigger_detail table according to the Triggers.
         @pre call when the device was re-uploaded
         @post update trigger_detail table
         @note
@@ -819,9 +815,9 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
     def data_generate(self):
         """!@brief
-        Generate all data that can insert into DB directly, include of Trigger table, trigger_detail table and actions table
+        Generate all data, include of critical, major, minor
         @pre call when after generating critical data, major data and minor data
-        @post return all data that can insert into DB directly
+        @post return all data
         @return result: dictionary of all data
         """
         # 当A(column_a),B(column_b)在DB中查不到的时候， 说明数据不存在，不需要继续一下步骤，创建trigger失败。
@@ -857,11 +853,11 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     def generate_trigger_detail_data(self, data, param):
         """!@brief
         Regenerate trigger detail data
-        @param data: the data of trigger detail
-        @param param: the relationship of priority and trigger id, for determine the data belongs to what
-        trigger and what priority
-        @pre call when the all data is generated and ready to insert trigger detail data into trigger_detail table
-        @post return trigger detail data list
+        @param data: the data(type is list) of trigger detail
+        @param param: the relationship of priority and trigger id, for getting corresponding relation
+        of priority and trigger id
+        @pre call when need to insert into trigger_detail table
+        @post return trigger detail data(type is list)
         @return trigger_detail_data: list of trigger detail data
         """
         trigger_detail_data = []
@@ -883,10 +879,10 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         """!@brief
         Regenerate action data
         @param data: the data of action
-        @param param: the relationship of priority and trigger id, for determine the data belongs to what
-        trigger and what priority
-        @pre call when the all data is generated and ready to insert action data into actions table
-        @post return action data list
+        @param param: the relationship of priority and trigger id, for getting corresponding relation
+        of priority and trigger id
+        @pre call when need to insert into actions table
+        @post return action data(type is list)
         @return re_genreate_action_data: list of action data
         """
         re_genreate_action_data = []
@@ -901,9 +897,9 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     def get_search_sort_data(self, initial_data):
         """!@brief
         Generate sorted and searched data for summary page when need to sort or search
-        @param initial_data: the view data from generate_view_data method
-        @pre call when the view data is generated and need to sort and search
-        @post return the final data for view
+        @param initial_data: the initial data that no processing
+        @pre call when the initial data is generated and need to sort and search
+        @post return the data according the sort_by and search_by
         @return data: json of final view data
         """
         paginator = Paginator(initial_data, int(self.max_size_per_page))
@@ -977,11 +973,11 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
     def generate_view_data(self):
         """!@brief
-        Generate all view data for summary page, then call get_search_sort_data to sort or search, and return the view data for display,
-        if no need to sort or search, will display all view data
-        @pre GET method for rest api
-        @post generate initial data and call method of get_search_sort_data, then return the final data for summary page
-        @return result_data: json of final view data
+        Generate view data for summary page, then call get_search_sort_data to sort or search,
+        and return the view data for display, if no need to sort or search, will display initial data
+        @pre call from GET method
+        @post return data for summary page
+        @return result_data: json of view data
         """
         # queryset = Actions.objects.raw('select * from Actions group by action_name')
         # queryset = Actions.objects.values('action_name', 'trigger_id', 'trigger__priority', 'trigger__trigger_type',
@@ -1019,10 +1015,10 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
     def get_data_by_name(self):
         """!@brief
-        Generate view data by action name for action page
-        @pre GET method for rest api when click [表示] button
-        @post return the final data according to the action name for action page
-        @return result: json of final data for action page
+        When click [表示] button, generate data by action name
+        @pre call from GET method when click [表示] button
+        @post return the data according to the action name
+        @return result: json of data
         """
         result_common = {}
         result_critical = {}
@@ -1152,8 +1148,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     def create_trigger_related(self):
         """!@brief
         Insert data into triggers table, actions table and trigger_detail table
-        @pre call when the data is generated
-        @post insert data for all tables
+        @pre call from POST or PUT method
+        @post insert data into triggers table, actions table and trigger_detail table
         @return data: the status of whether insert successful, and inserted data for all tables
         """
         try:
@@ -1228,8 +1224,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
     def get(self):
         """!@brief
-        Rest Api of GET, can get all the data for summary page or can get the data according to action name
-        @return data: the view data for summary page
+        Rest Api of GET, get all the data for summary page or get the data according to action name
+        @return data: the data for summary page
         """
         try:
             if self.action_policy_name is not '':

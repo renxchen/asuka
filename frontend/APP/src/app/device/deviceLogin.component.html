@@ -1,13 +1,29 @@
 <div class="ibox-content text-center p-md">
     <div class="row">
-        <div class="col-lg-2 text-right">
-            <label title="Import CSV file" for="uploadInfo" class="btn btn-primary">   
-                <input type="file" name="uploadInfo" (change)="changeFile($event.target.files)"
-                id="uploadInfo" class="hide"/> CSVによるデバイス登録
+        <div class="col-lg-2 text-left">
+            <label 
+                title="Import CSV file" 
+                for="uploadInfo"
+                class="btn btn-primary"
+            >   
+                <input
+                    type="file"
+                    name="uploadInfo"
+                    (change)="changeFile($event.target.files)"
+                    id="uploadInfo"
+                    class="hide"
+                /> 
+                    CSVによるデバイス登録
             </label>
         </div>
         <div class="col-lg-10 text-left">
-            <button class="btn btn-primary" (click)="uploadFile()" [disabled]="loginFlg">デバイス登録</button>
+            <button 
+                class="btn btn-primary" 
+                (click)="uploadFile()" 
+                [disabled]="loginFlg"
+            >
+                デバイス登録
+            </button>
         </div>
     </div>
     <div class="row" id="import-msg">
@@ -35,13 +51,19 @@
     </div>
     <div class="row" style="margin-top:20px;" [hidden]="actionFlg">
         <div class="col-lg-10 text-right">
-            <button class="btn btn-primary" (click)="deviceLogin()">
+            <button 
+                class="btn btn-primary"
+                (click)="deviceLogin()"
+            >
                 <i class="fa fa-angle-double-right"></i>
                 デバイス登録を実施
             </button>
         </div>
         <div class="col-lg-2 text-right">
-            <button class="btn btn-primary" (click)="deviceCheck()">
+            <button 
+                class="btn btn-primary"
+                (click)="deviceCheck()"
+            >
                 <i class="fa fa-check"></i>
                 ステータスチェック
             </button>

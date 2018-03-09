@@ -34,13 +34,70 @@ class ItemsDbHelp(DbHelp):
         pass
 
     def update_last_exec_time(self, now_time, items):
+        item_ids = []
         for item in items:
-            Items.objects.filter(**{"item_id": item['item_id']}).update(last_exec_time=now_time)
+            item_ids.append(item['item_id'])
+
+        #for item in items:
+        #TODO  may have max in values
+        Items.objects.filter(item_id__in = item_ids).update(last_exec_time=now_time)
 
 
 class DeviceDbHelp(DbHelp):
     def __init__(self):
         pass
+
+    @staticmethod
+    def get_items(item_type):
+        param_dict = {"policys_groups__status": 1, "status": 1, "schedule__status": 1}
+        if item_type is not None:
+            param_dict["item_type"] = item_type
+
+        items = Items.objects.filter(
+            **param_dict).order_by(
+                "-policys_groups__exec_interval","schedule__priority").values(
+                "item_id",
+                "schedule__valid_period_type",
+                "schedule__start_period_time",
+                "schedule__end_period_time",
+                "schedule__data_schedule_type",
+                "schedule__data_schedule_time",
+                "last_exec_time",
+                "item_type",
+                "item_id",
+                "device__device_id",
+                "device__ip",
+                "device__hostname",
+                "device__login_expect",
+                "device__ostype__start_default_commands",
+                "device__ostype__snmp_timeout",
+                "device__ostype__telnet_timeout",
+                "device__login_expect",
+                "device__telnet_port",
+
+                "device__snmp_port",
+                "device__snmp_community",
+                "device__snmp_version",
+                "coll_policy__name",
+                "coll_policy__cli_command",
+                "coll_policy__snmp_oid",
+
+                "coll_policy_rule_tree_treeid",
+                "coll_policy_rule_tree_treeid__rule_id_path",
+                "coll_policy_rule_tree_treeid__rule_id",
+                "coll_policy_rule_tree_treeid__rule__value_type",
+                "coll_policy__value_type",
+                "schedule__priority",
+                "policys_groups__exec_interval",
+                "policys_groups__history",
+                "policys_groups__policy_group_id",
+                "policys_groups__policy_group_id__name",
+                "coll_policy_id",
+                "value_type",
+                "coll_policy_id")
+        return list(items)
+
+
 
     @staticmethod
     def get_all_items_from_db():

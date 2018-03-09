@@ -4,6 +4,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { DataTableLoginComponent } from './dataTableLogin.component';
+import { DataTableDetailComponent } from './dataTableDetail.component';
 declare var $: any;
 import * as _ from 'lodash';
 
@@ -73,7 +74,7 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
             data: _this.testData,
             // viewrecords: true,
             loadComplete: function() {
-                // _this.editDC();
+                _this.showDataTable();
                 // _this.renderColor();
             },
             rowNum: 10,
@@ -100,5 +101,17 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
         // init the title of modal
         this.modalRef.content.title = 'テーブル登録';
 
+    }
+
+    public showDataTable(){
+        let _this = this;
+        $('.showInfo').click(function (event) {
+            let id = $(event)[0].target.id;
+            let tableId = id.split('_')[1];
+            // open modal and init the title and id of modal
+            _this.modalRef = _this.modalService.show(DataTableDetailComponent, _this.modalConfig);
+            _this.modalRef.content.title = 'データ取得編集';
+            _this.modalRef.content.id = tableId;
+        });
     }
 }

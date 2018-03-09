@@ -28,8 +28,8 @@ class ExpressionVerify(viewsets.ViewSet):
         self.value = views_helper.get_request_value(self.request, 'value', 'GET')
         # self.type_a = 'string'
         # self.type_b = 'int'
-        # self.value = 'A{4} > 1000'  # 没考虑到的情况(A{0}这种写法好像不允许)
-        # self.value = '(A{0} - Hex2Dec(Max(B[3])))*8 > 1'  # 验证失败， 应该通过才对(A{0}这种写法好像不允许)； 并且，如果是除了== !=之外， 必须是string类型才能通过（这个问题可以忽略，因为string和int是前台传过来的)
+        # self.value = 'A{4} > 1000'  # 验证失败
+        # self.value = '(A{0} - Hex2Dec(Max(B[3])))*8 > 1'  # 验证失败
         # self.value = 'Min(4[10]) != 1500'  # 验证失败
         # self.value = '(A[2] - Hex2Dec(Max(B[3])))*8 > 1'
         # self.value = 'Min(A[10]) != 1500'
@@ -52,11 +52,11 @@ class ExpressionVerify(viewsets.ViewSet):
 
     def expression_verify(self):
         """!@brief
-        Verify expression
-        @pre call when need the verify expression
+        Verify expression when the trigger type is 演算比较
+        @pre call when need verify expression
         @post return the result whether verify successful
         @note
-        @return result: return the result whether verify successful
+        @return result: return the result whether the expression is legal
         """
         initial_expression = self.value
         value = self.value.upper()
@@ -82,6 +82,7 @@ class ExpressionVerify(viewsets.ViewSet):
         """
         is_string_exp = False
         keys = []
+        # 判断表达式是否满足A[1], B[1], A(1), B(1)格式。
         item_list = reg_item_value.findall(value)
         if len(item_list) <= 0:
             result = {
@@ -101,6 +102,7 @@ class ExpressionVerify(viewsets.ViewSet):
                 keys.append(item)
             if self.param[item].upper() == "STRING":
                 is_string_exp = True
+        # 当表达式存在A,B时，判断A,B的类型是否都是String or int
         if len(keys) == 2 and is_string_exp and self.param["A"].upper() != self.param["B"].upper():
             result = {
                 'msg': 'A and B do not have the same type(both of A,B should be str or int)',
@@ -115,6 +117,7 @@ class ExpressionVerify(viewsets.ViewSet):
                 string表达式: A B ( ) [ ] \s \d \w
                 非string表达式: A B \d + - * % ( ) [ ] \s \! \@ \# \$ \& \" \^.
         """
+        # 按照 <>|<=|>=|==|!=|<|> 分割表达式， 分为三个部分
         values = re.split(operators, value)
         if len(values) != 3:
             result = {
@@ -122,21 +125,29 @@ class ExpressionVerify(viewsets.ViewSet):
                 'status': False,
             }
             return result
+        # 表达式左面部分
         exp_left = values[0].strip()
+        # 表达式条件部分
         exp_operator = values[1].strip()
+        # 表达式右面部分
         exp_right = values[2].strip()
+        # 判断表达式条件是否在规定条件(<>|<=|>=|==|!=|<|>)里
         if re.search(re.compile(operators), exp_operator) is None or len(exp_operator) >= 3:
             result = {
                 'msg': 'The operation should be (<=|>=|==|!=|>|<)',
                 'status': False,
             }
             return result
-
+        # 替换左表达式中的运算符(MAX|MIN|AVG|HEX2DEC)为""
         result_left = reg_function_chars.subn("", exp_left)[0]
+        # 替换右表达式中的运算符(MAX|MIN|AVG|HEX2DEC)为""
         result_right = reg_function_chars.subn("", exp_right)[0]
         reg_check = reg_num_chars
         if is_string_exp:
             reg_check = reg_string_chars
+        # 左右表达式的运算符替换成""之后，
+        # 如果表达式是int类型，且左右表达式存在规定正则[^AB\d\+\-\*/%\(\)\[\]\s\!\@\#\$\&\"\^]以外的字符，视为不合法
+        # 如果表达式是String类型，且左右表达式存在规定正则[^AB\(\)\[\]\s\d\w]以外的字符，视为不合法
         if reg_check.search(result_left) is not None or reg_check.search(result_right) is not None:
             msg = ''
             if reg_check.search(result_left) is not None:
@@ -157,20 +168,25 @@ class ExpressionVerify(viewsets.ViewSet):
         3.  将{0}  替换成-9999 进行eval 判断
         4.  如果是String类型， 将右表达式  替换成-9999 进行eval 判断
         """
+        # 将表达式中的A[1], B[1], A(1), B(1)替换成{0}, return：AVG({0})   MAX({0}) != 1500
         value = reg_item_value.subn("{0}", value)[0]
+        # 将表达式中的AVG({0})替换成{0}，return：(u'{0}   {0} != 1500', 2)
         while True:
             result_function = reg_fun_value.subn("{0}", value)
             value = result_function[0]
             if result_function[1] == 0:
                 break
         reg_illegal_chars = re.compile("\w\{0\}|\{0\}\w")
+        # 此时，如果表达式符合规范，应该为完全替换成{0}， 则不会出现在reg_illegal_chars范围内。
         if reg_illegal_chars.search(value) is not None:
             result = {
                 'msg': 'The expression verify failed, \w{0} situation exist',
                 'status': False,
             }
             return result
+        # 将{0}替换成-9999， 进行eval运算验证
         value = value.replace("{0}", "-9999")
+        # 如果表达式是String类型，则应该把右表达式也同时替换成-9999，否则eval会验证失败
         if is_string_exp:
             value = re.compile("\w+").subn("-9999", value)[0]
         try:
@@ -191,7 +207,7 @@ class ExpressionVerify(viewsets.ViewSet):
     def get(self):
         """!@brief
             Rest Api of GET, verify the expression
-            @return data: the status
+            @return data: the status of whether verify successful
             """
         try:
             data = self.expression_verify()

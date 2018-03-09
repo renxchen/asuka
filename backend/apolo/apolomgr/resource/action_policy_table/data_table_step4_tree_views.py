@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 """
 
 @author: kimli
@@ -27,10 +28,10 @@ class DataTableTreeViewsSet(viewsets.ViewSet):
         self.id = views_helper.get_request_value(self.request, 'id', 'GET')
 
     def get(self):
-        """
-        Get the tree in left of action policy step 4
-        API: http://127.0.0.1:1111/v1/api_data_table_tree/?id=2
-        :return: tree
+        """!@brief
+        Get data in left for Step 4 when click [新规登陆]
+        Get the tree for left in step 4
+        @return data: data for left in step 4
         """
         try:
             if self.id is not '':

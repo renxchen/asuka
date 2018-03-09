@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 """
 
 @author: kimli
@@ -35,14 +36,13 @@ class DataTableTableViewsSet(viewsets.ViewSet):
 
     @staticmethod
     def get_history(item_id, value_type, policy_type):
+        """!@brief
+        Get history data from History%s%s table
+        @param item_id: item id
+        @param value_type: value type(str, int, float, text)
+        @param policy_type: policy type(cli, snmp)
+        @return history: history data(type is list)
         """
-        Search history data from db by given item id and value type
-        :param item_id:
-        :param policy_type:
-        :param value_type:
-        :return: history list
-        """
-
         base_db_format = "History%s%s"
         trigger_db_modules = "backend.apolo.models"
         trigger_numeric = ["Float", "Int"]
@@ -58,21 +58,47 @@ class DataTableTableViewsSet(viewsets.ViewSet):
                 h.value = str(h.value)
         return history
 
+    # @staticmethod
+    # def get_mapping(code):
+    #     """
+    #     Search mapping relationship from Mapping table by given code
+    #     :param code:
+    #     :return: code meaning
+    #     """
+    #     value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
+    #     return value['code_meaning']
+
     @staticmethod
     def get_mapping(code):
+        """!@brief
+        Match the value type， change the integer value into string value,
+        0: snmp, 1: cli, 2: float, 3: string, 4: text, 5: int
+        @param code: the integer value of value type
+        @pre call when need to change value type
+        @post return the value type
+        @return code_meaning: string value type
         """
-        Search mapping relationship from Mapping table by given code
-        :param code:
-        :return: code meaning
-        """
-        value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
-        return value['code_meaning']
+        # value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
+        code_meaning = ''
+        if code == 0:
+            code_meaning = 'snmp'
+        if code == 1:
+            code_meaning = 'cli'
+        if code == 2:
+            code_meaning = 'float'
+        if code == 3:
+            code_meaning = 'string'
+        if code == 4:
+            code_meaning = 'text'
+        if code == 5:
+            code_meaning = 'int'
+        return code_meaning
 
     def get(self):
-        """
-        Get the latest history data of each device in right table of action policy step 4
-        API: http://127.0.0.1:1111/v1/api_data_table_table/?id=17&devices=1,2&coll_id=2&rule_name=RP0
-        :return: latest history data of each device
+        """!@brief
+        Get data in right for Step 4 when click [新规登陆]
+        Get the latest history data of each device for right table in step 4
+        @return data: data for right table in step 4
         """
         try:
             data = []

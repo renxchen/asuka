@@ -16,17 +16,17 @@
                     <a><i class="fa fa-desktop"></i> <span class="nav-label">デバイス</span> <span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level collapse">
                         <li>
-                            <a aria-expanded="false" role="button" [routerLink]="['/index/ostype']" routerLinkActive="active-link"> <p>OS Type設定</p></a>                                
-                        </li>
-                        <li>
-                            <a aria-expanded="false" role="button" [routerLink]="['/index/devicegroup']" routerLinkActive="active-link"> <p>グループ閲覧</p></a>
-                        </li>
-                        <li>
                             <a aria-expanded="false" role="button" [routerLink]="['/index/devicelogin']" routerLinkActive="active-link"> <p>デバイス登録</p></a>
                         </li>
                         <li>
-                            <a aria-expanded="false" role="button" [routerLink]="['/index/deviceview']" routerLinkActive="active-link"> <p>デバイス閲覧</p></a>
+                            <a aria-expanded="false" role="button" [routerLink]="['/index/deviceview']" routerLinkActive="active-link"> <p>登録デバイス閲覧</p></a>
                         </li> 
+                        <li>
+                            <a aria-expanded="false" role="button" [routerLink]="['/index/ostype']" routerLinkActive="active-link"> <p>OS Type 登録・閲覧</p></a>                                
+                        </li>
+                        <li>
+                            <a aria-expanded="false" role="button" [routerLink]="['/index/devicegroup']" routerLinkActive="active-link"> <p>デバイスグループ 登録・閲覧</p></a>
+                        </li>
                     </ul>
                 <li>
                     <a><i class="fa fa-file-text"></i> <span class="nav-label">{{'index.cp'|translate}}</span> <span class="fa arrow"></span></a>
