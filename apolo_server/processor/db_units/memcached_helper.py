@@ -11,7 +11,8 @@ class MemCacheBase(object):
         self.AUTO_SAVE_CACHE = True
         self.key = None
         self.timeout = timeout
-        pass
+        self._mc = ""
+        
 
     def __enter__(self):
         self._connect()
@@ -48,6 +49,13 @@ class MemCacheBase(object):
         pass
         return []
 
+    def cache(self):
+        data = self._mc.get(self.key)
+        if data is None:
+            data = self.do_get()
+            if self.AUTO_SAVE_CACHE:
+                self.set(data)
+
     def flush_all(self):
         self._mc.flush_all()
 
@@ -60,7 +68,7 @@ class MemCacheBase(object):
 
 class LastCheckTimeMemCache(MemCacheBase):
     def __init__(self):
-        super(ItemMemCacheDb, self).__init__()
+        super(LastCheckTimeMemCache, self).__init__()
         self.key = "Last_Check_Time"
 
     def get(self, schedule_id):
@@ -113,8 +121,8 @@ if __name__ == "__main__":
     # with RulesMemCacheDb() as item:
     #     print item.get()
 
-    with TaskRunningMemCacheDb() as cache:
-        print cache.get()
+    TaskRunningMemCacheDb().get()
+        #print cache.get()
     # item.flush_all()
     # for i in item._get():
     #     print i
