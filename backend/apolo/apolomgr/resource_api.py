@@ -167,6 +167,15 @@ def api_data_table_step1(request):
     return HttpResponse(run_request_method(resource_object))
 
 
+@api_view(["GET"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_data_table_csv_export(request):
+    resource_object = data_table_step1_views.TableViewsSet(request=request).csv_export()
+    return resource_object
+    # return HttpResponse(resource_object)
+
+
 @api_view(['PUT', "GET"])
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))

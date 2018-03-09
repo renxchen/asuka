@@ -20,6 +20,7 @@ from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import views_helper
 from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
+from backend.apolo.tools import constants
 
 
 class DataTableTableViewsSet(viewsets.ViewSet):
@@ -130,5 +131,6 @@ class DataTableTableViewsSet(viewsets.ViewSet):
                     data.append(result)
                 return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)

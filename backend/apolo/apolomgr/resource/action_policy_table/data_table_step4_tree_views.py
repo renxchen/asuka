@@ -18,6 +18,7 @@ from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import views_helper
 from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree
+from backend.apolo.tools import constants
 
 
 class DataTableTreeViewsSet(viewsets.ViewSet):
@@ -40,5 +41,6 @@ class DataTableTreeViewsSet(viewsets.ViewSet):
                 policy_tree_dict = policy_tree.get_policy_tree()
                 return api_return(data=policy_tree_dict)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
