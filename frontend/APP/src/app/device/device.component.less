@@ -10,20 +10,16 @@
     position: relative;
 }
 .table {
-    // border: 1px solid #EBEBEB;
-    border-radius:4px;
-    tr {
-        border: 1px solid #EBEBEB;
-        .group-name-td {
-            width: 450px;
-            height: 35px;
-            border: 1px solid #EBEBEB;
-            border-right: none;
+    // border-radius:4px;
+    tbody {
+        height:250px;
+        display:inline-block;
+        overflow-y: auto;
+        tr {
+            border: 1px solid #e7eaec
         }
-        .group-button-td {
-            width: 105px;
-            border-left: none;
-            height: 35px;
+        td{
+            width: 325px;
         }
     }
 }
@@ -45,4 +41,18 @@
     width: 9%;
     display: inline-block;
     text-align: right;
+}
+.grey-panel {
+    margin-bottom: 20px;
+    border: 1px solid #ced5dc;
+    border-radius: 4px;
+    height: 90px;
+    .panel-heading {
+        background-color: #f9f9f9;
+        border-color: #ced5dc;
+        color: #333333;
+    }
+    .panel-body {
+        color: #333333;
+    }
 }

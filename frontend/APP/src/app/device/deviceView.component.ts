@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -13,6 +13,16 @@ declare var $: any;
     styleUrls: ['./device.component.less']
 })
 export class DeviceViewComponent implements OnInit {
+    /*
+    @brief 函数简要说明
+    @param 参数名 参数的意思和用户
+    @pre 代码使用前条件
+    @post 代码使用后条件
+    @note 备注
+    @return 返回值
+    @author Zizhuang Jiang
+    @date 03/08/2018
+     */
     apiPrefix: any;
     devViewTable$: any;
     constructor(
@@ -33,7 +43,7 @@ export class DeviceViewComponent implements OnInit {
                 'SNMP Version', 'Login Expect', 'Device Type', 'Ostype', 'Group', 'Telnet Status', 'SNMP Status'
             ],
             colModel: [
-                { hidden: true, name: 'device_id', index: 'device_id', search: false, key: true },
+                { hidden: true, name: 'devices_id', index: 'devices_id', search: false, key: true },
                 { name: 'hostname', index: 'hostname', width: 40, align: 'center', search: true },
                 { name: 'ip', index: 'ip', width: 50, align: 'center', search: true },
                 { name: 'telnet_port', index: 'telnet_port', width: 50, align: 'center', search: true },
@@ -45,22 +55,23 @@ export class DeviceViewComponent implements OnInit {
                     // formatter: _t.loginExpFormmater
                 },
                 { name: 'device_type', index: 'device_type', width: 50, align: 'center', search: true },
-                { name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true
+                {
+                    name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true
                 },
                 // { name: 'group', index: 'group', width: 50, align: 'center', search: true },
                 { name: 'group_list', index: 'group_list', width: 50, align: 'center', search: true },
                 { name: 'telnet_status', index: 'telnet_status', width: 50, align: 'center', search: true },
                 { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
             ],
-            onPaging: function () {
-                let currentPage: any = $('#devViewTable').jqGrid('getGridParam', 'page');
-                let rowNum: any = $('#devViewTable').jqGrid('getGridParam', 'rowNum');
-                let records: any = $('#devViewTable').jqGrid('getGridParam', 'records');
-                let totalPages = records % rowNum;
-                if (records > 0 && currentPage > totalPages) {
-                    $('#devViewTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
-                }
-            },
+            // beforeRequest: function () {
+            //     let currentPage: any = $('#devViewTable').jqGrid('getGridParam', 'page');
+            //     let rowNum: any = $('#devViewTable').jqGrid('getGridParam', 'rowNum');
+            //     let records: any = $('#devViewTable').jqGrid('getGridParam', 'records');
+            //     let totalPages = records % rowNum;
+            //     if (records > 0 && currentPage > totalPages) {
+            //         $('#devViewTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
+            //     }
+            // },
             pager: '#devViewPager',
             rowNum: 10,
             rowList: [5, 10, 15],
@@ -96,7 +107,7 @@ export class DeviceViewComponent implements OnInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     console.log(res);
-                    if (status && status['status'].toLowCase() === 'true') {
+                    if (status && status['status'].toLowerCase() === 'true') {
                         this.devViewTable$.GridUnload();
                         this.drawdevViewTable();
                     } else {
@@ -108,6 +119,6 @@ export class DeviceViewComponent implements OnInit {
         }
     }
     public CSVExport() {
-
+        alert('have not finished');
     }
 }

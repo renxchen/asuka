@@ -208,7 +208,6 @@ export class DeviceLoginComponent implements OnInit {
         let checkUrl = '/api_device_pre/';
         let deviceSel: any = [];
         deviceSel = $('#devLoginTable').jqGrid('getGridParam', 'selarrrow');
-        alert(deviceSel);
         let checkInfo: any = {};
         checkInfo['id_list'] = deviceSel;
         checkInfo['operation_id'] = this.optId;

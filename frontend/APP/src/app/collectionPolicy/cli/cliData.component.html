@@ -3,7 +3,12 @@
         <i class="fa fa-cubes"></i>&nbsp;ルール
         <span *ngIf='(actionType)=="edit"'>追加</span>
         <span *ngIf='(actionType)=="create"'>編集</span>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <button 
+            type="button" 
+            class="close pull-right" 
+            aria-label="Close" 
+            (click)="bsModalRef.hide()"
+        >
             <i class="fa fa-times"></i>
         </button>
     </div>
@@ -11,78 +16,173 @@
         <form novalidate="novalidate">
             <div class="row">
                 <div class="col-xs-5">
-                    <div class="form-group" [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}" >
-                        <label for="name" [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}" 
+                    >
+                        <label 
+                            for="name" 
+                            [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             ルール名：
                         </label>
-                        <input type="text" class="form-control" id="name"
-                        name="name" [(ngModel)]="name" maxlength="30" 
-                        placeholder="英数字のみ" required="" aria-required="true">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="name"
+                            name="name" 
+                            [(ngModel)]="name" 
+                            maxlength="30" 
+                            placeholder="英数字のみ"
+                        />
                     </div>
                     <div class="form-group">
                         <label for="desc">概要：</label>
-                        <textarea class="form-control" id="desc" name="desc" [(ngModel)]="desc" maxlength="2000"></textarea>
+                        <textarea 
+                            class="form-control" 
+                            id="desc" 
+                            name="desc" 
+                            [(ngModel)]="desc" 
+                            maxlength="2000"
+                        >
+                        </textarea>
                     </div>
                 </div>
               <!-- 特定文字からの距離での抽出 data_rule_1 -->
                 <div class="col-xs-7" *ngIf="(ruleType)=='data_rule_1'">
-                    <div class="form-group" [ngClass]="{'has-warning': !mrkStrNotNull}">
-                        <label for="markString" [ngClass]="{'text-warning': !mrkStrNotNull}">
-                        <i class="fa fa-asterisk text-danger" title="必須項目"></i>
-                        基準となる文字列：
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !mrkStrNotNull}"
+                    >
+                        <label 
+                            for="markString" 
+                            [ngClass]="{'text-warning': !mrkStrNotNull}"
+                        >
+                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                            基準となる文字列：
                         </label>
-                        <input type="text" class="form-control" id="markString"
-                        name="markString" [(ngModel)]="markString" maxlength="256"
-                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="markString"
+                            name="markString" 
+                            [(ngModel)]="markString" 
+                            maxlength="256"
+                            placeholder="正規表現で記述可能"
+                            [disabled]="processFlg"
+                        />
                     </div>
                     <div class="form-group">
                         <label for="splitChar">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             切り分け文字:
                         </label>
-                        <select class="form-control" [(ngModel)]="selSplitChar" id="selSplitChar" name="selSplitChar" [disabled]="processFlg">
+                        <select 
+                            class="form-control" 
+                            [(ngModel)]="selSplitChar" 
+                            id="selSplitChar" 
+                            name="selSplitChar" 
+                            [disabled]="processFlg"
+                        >
                             <option value="4">スペース</option>
                             <option value="1">カンマ</option>
                             <option value="2">スラッシュ</option>
                             <option value="3">その他</option>
                         </select>
-                        <span *ngIf="selSplitChar=='3'" [ngClass]="{'has-warning': !otherCharFlg}">
-                            <input type="text" class="form-control" id="extractKey"
-                            name="otherChar" [(ngModel)]="otherChar" maxlength="256"
-                            placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
+                        <span 
+                            *ngIf="selSplitChar=='3'" 
+                            [ngClass]="{'has-warning': !otherCharFlg}"
+                        >
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="extractKey"
+                                name="otherChar" 
+                                [(ngModel)]="otherChar" 
+                                maxlength="256"
+                                placeholder="正規表現で記述可能" 
+                                [disabled]="processFlg"
+                            />
                         </span>
                     </div>
-                    <div class="form-group" [ngClass]="{'has-warning': !xOffsetFlg}">
-                        <label for="xOffset" [ngClass]="{'text-warning': !xOffsetFlg}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !xOffsetFlg}"
+                    >
+                        <label 
+                            for="xOffset" 
+                            [ngClass]="{'text-warning': !xOffsetFlg}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             基準文字列からの距離：
                         </label>
-                        <input type="number" class="form-control" id="xOffset" name="xOffset"
-                        [(ngModel)]="xOffset" value="0" required="" [disabled]="processFlg">
+                        <input 
+                            type="number" 
+                            class="form-control" 
+                            id="xOffset" 
+                            name="xOffset"
+                            [(ngModel)]="xOffset" 
+                            value="0" 
+                            required="" 
+                            [disabled]="processFlg"
+                        />
                     </div> 
-                    <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
-                        <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}"
+                    >
+                        <label 
+                            for="keyStr" 
+                            [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             データ識別子名：
                         </label>
-                        <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="keyStr" 
+                            name="keyStr" 
+                            maxlength="30"
+                            [(ngModel)]="keyStr" 
+                            placeholder="英数字のみ" [disabled]="lockFlg"
+                        />
                     </div>
-                    <div class="form-group" [ngClass]="{'has-warning': !extKeyNotNull}">
-                        <label for="extractKey" [ngClass]="{'text-warning': !extKeyNotNull}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !extKeyNotNull}"
+                    >
+                        <label 
+                            for="extractKey" 
+                            [ngClass]="{'text-warning': !extKeyNotNull}"
+                        >
                             <!-- <i class="fa fa-asterisk text-danger" title="必須項目"></i> -->
                             抽出するデータ（正規表現）:
                         </label>
-                        <input type="text" class="form-control" id="extractKey"
-                        name="extractKey" [(ngModel)]="extractKey" maxlength="50"
-                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg"> 
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="extractKey"
+                            name="extractKey" 
+                            [(ngModel)]="extractKey" 
+                            maxlength="50"
+                            placeholder="正規表現で記述可能" 
+                            [disabled]="processFlg"
+                        /> 
                     </div>
                     <div class="form-group">
                         <label for="returnType">
-                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
+                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                            Return Type:
                         </label>
-                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType" [disabled]="processFlg">
+                        <select 
+                            class="form-control" 
+                            [(ngModel)]="selectedRtnType" 
+                            id="returnType" 
+                            name="returnType" 
+                            [disabled]="processFlg"
+                        >
                             <option value="1">Int</option>
                             <option value="2">Float</option>
                             <option value="3">String</option>
@@ -92,22 +192,45 @@
                 </div>
               <!-- 行数による抽出機能 data_rule_2 -->
                 <div class="col-xs-7" *ngIf="(ruleType)=='data_rule_2'">
-                    <div class="form-group" [ngClass]="{'has-warning': !mrkStrNotNull}">
-                        <label for="markString" [ngClass]="{'text-warning': !mrkStrNotNull}">
-                        <i class="fa fa-asterisk text-danger" title="必須項目"></i>
-                        基準となる文字列：
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !mrkStrNotNull}"
+                    >
+                        <label 
+                            for="markString" 
+                            [ngClass]="{'text-warning': !mrkStrNotNull}"
+                        >
+                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                            基準となる文字列：
                         </label>
-                        <input type="text" class="form-control" id="markString"
-                        name="markString" [(ngModel)]="markString" maxlength="256"
-                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="markString"
+                            name="markString" 
+                            [(ngModel)]="markString"
+                            maxlength="256"
+                            placeholder="正規表現で記述可能" 
+                            [disabled]="processFlg"
+                        />
                     </div>
-                    <div class="form-group" [ngClass]="{'has-warning': !yOffsetFlg}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !yOffsetFlg}"
+                    >
                         <label for="yOffset" [ngClass]="{'text-warning': !yOffsetFlg}">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             基準文字列からの距離：
                         </label>
-                        <input type="number" class="form-control" id="yOffset" name="yOffset"
-                        [(ngModel)]="yOffset" value="0" required="" [disabled]="processFlg">
+                        <input 
+                            type="number" 
+                            class="form-control" 
+                            id="yOffset" 
+                            name="yOffset"
+                            [(ngModel)]="yOffset" 
+                            value="0" 
+                            [disabled]="processFlg"
+                        />
                     </div>     
                     
                     <div class="form-group">
@@ -115,49 +238,112 @@
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             切り分け文字:
                         </label>
-                        <select class="form-control" [(ngModel)]="selSplitChar" id="selSplitChar" name="selSplitChar" [disabled]="processFlg">
+                        <select 
+                            class="form-control" 
+                            [(ngModel)]="selSplitChar" 
+                            id="selSplitChar"
+                            name="selSplitChar" 
+                            [disabled]="processFlg"
+                         >
                             <option value="4">スペース</option>
                             <option value="1">カンマ</option>
                             <option value="2">スラッシュ</option>
                             <option value="3">その他</option>
                         </select>
-                        <span *ngIf="selSplitChar=='3'" [ngClass]="{'has-warning': !otherCharFlg}">
-                            <input type="text" class="form-control" id="extractKey"
-                            name="otherChar" [(ngModel)]="otherChar" maxlength="256"
-                            placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
+                        <span 
+                            *ngIf="selSplitChar=='3'" 
+                            [ngClass]="{'has-warning': !otherCharFlg}"
+                        >
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="extractKey"
+                                name="otherChar" 
+                                [(ngModel)]="otherChar" 
+                                maxlength="256"
+                                placeholder="正規表現で記述可能"  
+                                [disabled]="processFlg"
+                            />
                         </span>
                     </div>
                     <!-- sdfghjkl -->
-                    <div class="form-group" [ngClass]="{'has-warning': !xOffsetFlg}">
-                        <label for="xOffset" [ngClass]="{'text-warning': !xOffsetFlg}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !xOffsetFlg}"
+                    >
+                        <label 
+                            for="xOffset" 
+                            [ngClass]="{'text-warning': !xOffsetFlg}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             先頭文字からの距離：
                         </label>
-                        <input type="number" class="form-control" id="xOffset" name="xOffset"
-                        [(ngModel)]="xOffset" value="0" required="" [disabled]="processFlg">
+                        <input 
+                            type="number" 
+                            class="form-control" 
+                            id="xOffset" 
+                            name="xOffset"
+                            [(ngModel)]="xOffset" 
+                            value="0"
+                            [disabled]="processFlg"
+                        />
                     </div>               
-                    <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
-                        <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}"
+                    >
+                        <label 
+                            for="keyStr" 
+                            [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             データ識別子名：
                         </label>
-                        <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="keyStr" 
+                            name="keyStr" 
+                            maxlength="30"
+                            [(ngModel)]="keyStr" 
+                            placeholder="英数字のみ" 
+                            [disabled]="lockFlg"
+                        />
                     </div>
-                    <div class="form-group" [ngClass]="{'has-warning': !extKeyNotNull}">
-                        <label for="extractKey" [ngClass]="{'text-warning': !extKeyNotNull}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !extKeyNotNull}"
+                    >
+                        <label 
+                            for="extractKey" 
+                            [ngClass]="{'text-warning': !extKeyNotNull}"
+                        >
                             <!-- <i class="fa fa-asterisk text-danger" title="必須項目"></i> -->
                             抽出するデータ（正規表現）:
                         </label>
-                        <input type="text" class="form-control" id="extractKey"
-                        name="extractKey" [(ngModel)]="extractKey" maxlength="256"
-                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
+                        <input 
+                            type="text"
+                            class="form-control" 
+                            id="extractKey"
+                            name="extractKey" 
+                            [(ngModel)]="extractKey" 
+                            maxlength="256"
+                            placeholder="正規表現で記述可能" 
+                            [disabled]="processFlg"
+                        >
                     </div>
                     <div class="form-group unuse_east">
                         <label for="returnType">
-                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
+                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                            Return Type:
                         </label>
-                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType" [disabled]="processFlg">
+                        <select 
+                            class="form-control" 
+                            [(ngModel)]="selectedRtnType" 
+                            id="returnType" 
+                            name="returnType" 
+                            [disabled]="processFlg"
+                        >
                             <option value="1">Int</option>
                             <option value="2">Float</option>
                             <option value="3">String</option>
@@ -167,29 +353,65 @@
                 </div>
             <!-- 正規表現による抽出機能 data_rule_3 -->
                 <div class="col-xs-7" *ngIf="(ruleType)=='data_rule_3'">
-                    <div class="form-group" [ngClass]="{'has-warning': !mrkStrNotNull}">
-                        <label for="markString" [ngClass]="{'text-warning': !mrkStrNotNull}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !mrkStrNotNull}"
+                    >
+                        <label 
+                            for="markString" 
+                            [ngClass]="{'text-warning': !mrkStrNotNull}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             抽出するデータ（正規表現）:
                         </label>
-                        <input type="text" class="form-control" id="markString"
-                        name="markString" [(ngModel)]="markString" maxlength="256"
-                        placeholder="正規表現で記述可能" required="" aria-required="true" [disabled]="processFlg">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="markString"
+                            name="markString" 
+                            [(ngModel)]="markString" 
+                            maxlength="256"
+                            placeholder="正規表現で記述可能" 
+                            [disabled]="processFlg"
+                        />
                     </div>
-                    <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
-                        <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}"
+                    >
+                        <label 
+                            for="keyStr" 
+                            [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             データ識別子名：
                         </label>
-                        <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="keyStr" 
+                            name="keyStr" 
+                            maxlength="30"
+                            [(ngModel)]="keyStr" 
+                            placeholder="英数字のみ" 
+                            [disabled]="lockFlg"
+                        />
                     </div> 
                     <div class="form-group unuse_east">
-                        <label for="returnType"
-                            [ngClass]="{'text-warning': osTypeFlg=== false}">
-                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
+                        <label 
+                            for="returnType"
+                            [ngClass]="{'text-warning': osTypeFlg=== false}"
+                        >
+                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                            Return Type:
                         </label>
-                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType" [disabled]="processFlg">
+                        <select 
+                            class="form-control" 
+                            [(ngModel)]="selectedRtnType" 
+                            id="returnType" 
+                            name="returnType"
+                            [disabled]="processFlg"
+                        >
                             <option value="1">Int</option>
                             <option value="2">Float</option>
                             <option value="3">String</option>
@@ -199,20 +421,42 @@
                 </div>
                 <!-- 行数の抽出機能 data_rule_4 -->
             <div class="col-xs-7" *ngIf="(ruleType)=='data_rule_4'">
-                    <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
-                        <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}"
+                    >
+                        <label 
+                            for="keyStr" 
+                            [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             データ識別子名：
                         </label>
-                        <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="keyStr" name="keyStr" 
+                            maxlength="30"
+                            [(ngModel)]="keyStr" 
+                            placeholder="英数字のみ" 
+                            [disabled]="lockFlg"
+                        />
                     </div> 
                     <div class="form-group unuse_east">
-                        <label for="returnType"
-                            [ngClass]="{'text-warning': osTypeFlg=== false}">
-                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
+                        <label 
+                            for="returnType"
+                            [ngClass]="{'text-warning': osTypeFlg=== false}"
+                        >
+                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                            Return Type:
                         </label>
-                        <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType" [disabled]="processFlg">
+                        <select 
+                            class="form-control" 
+                            [(ngModel)]="selectedRtnType" 
+                            id="returnType" 
+                            name="returnType" 
+                            [disabled]="processFlg"
+                        >
                             <option value="1">Int</option>
                             <option value="2">Float</option>
                             <option value="3">String</option>
@@ -222,20 +466,43 @@
                 </div>
               <!-- allの抽出機能 data_rule_5 -->
               <div class="col-xs-7" *ngIf="(ruleType)=='data_rule_5'">
-                    <div class="form-group" [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
-                        <label for="keyStr" [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}">
+                    <div 
+                        class="form-group" 
+                        [ngClass]="{'has-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}"
+                    >
+                        <label 
+                            for="keyStr" 
+                            [ngClass]="{'text-warning': !keyStrNotNull||!keyStrFlg||!keyUnqFlg}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             データ識別子名：
                         </label>
-                        <input type="text" class="form-control" id="keyStr" name="keyStr" maxlength="30"
-                        [(ngModel)]="keyStr" placeholder="英数字のみ" required="" aria-required="true" [disabled]="lockFlg">
+                        <input 
+                            type="text"
+                            class="form-control" 
+                            id="keyStr" 
+                            name="keyStr" 
+                            maxlength="30"
+                            [(ngModel)]="keyStr" 
+                            placeholder="英数字のみ" 
+                            [disabled]="lockFlg"
+                        />
                     </div> 
                     <div class="form-group unuse_east">
-                        <label for="returnType"
-                            [ngClass]="{'text-warning': osTypeFlg=== false}">
-                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>Return Type:
+                        <label 
+                            for="returnType"
+                            [ngClass]="{'text-warning': osTypeFlg=== false}"
+                        >
+                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                            Return Type:
                         </label>
-                            <select class="form-control" [(ngModel)]="selectedRtnType" id="returnType" name="returnType" [disabled]="processFlg">
+                        <select 
+                            class="form-control" 
+                            [(ngModel)]="selectedRtnType" 
+                            id="returnType" 
+                            name="returnType" 
+                            [disabled]="processFlg"
+                        >
                             <option value="1">Int</option>
                             <option value="2">Float</option>
                             <option value="3">String</option>
@@ -243,13 +510,27 @@
                         </select>
                     </div>
                 </div>
-                  <div class="col-sm-12 text-warning" *ngIf='!nameNotNull'>ルール名は必須入力です。</div>
-                  <div class="col-sm-12 text-warning" *ngIf='nameNotNull&&!nameFlg'>ルール名は半角英数字のみで入力してください。</div>
-                  <div class="col-sm-12 text-warning" *ngIf='!uniqueFlg'>ルール名は重複しています。</div>
-                  <div class="col-sm-12 text-warning" *ngIf='!mrkStrNotNull'>基準文字列は必須入力です。</div>
-                  <div class="col-sm-12 text-warning" *ngIf='!keyStrNotNull'>データ識別子名は必須入力です。</div>
-                  <div class="col-sm-12 text-warning" *ngIf='keyStrNotNull&&!keyStrFlg'>データ識別子名は半角英数字のみで入力してください</div>
-                  <div class="col-sm-12 text-warning" *ngIf='!keyUnqFlg'>データ名は重複しています。</div>
+                <div class="col-sm-12 text-warning" *ngIf='!nameNotNull'>
+                    ルール名は必須入力です。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='nameNotNull&&!nameFlg'>
+                    ルール名は半角英数字のみで入力してください。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='!uniqueFlg'>
+                    ルール名は重複しています。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='!mrkStrNotNull'>
+                    基準文字列は必須入力です。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='!keyStrNotNull'>
+                    データ識別子名は必須入力です。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='keyStrNotNull&&!keyStrFlg'>
+                    データ識別子名は半角英数字のみで入力してください
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='!keyUnqFlg'>
+                    データ名は重複しています。
+                </div>
                   <!-- <div class="col-sm-12 text-warning" *ngIf='!lineNumsNotNull'>データ識別子名は必須入力です。</div>
                   <div class="col-sm-12 text-warning" *ngIf='lineNumsNotNull&&!lineNumsFlg'>データ識別子名は半角英数字のみで入力してください</div>
                   <div class="col-sm-12 text-warning" *ngIf='!lineNumsUnqFlg'>データ名は重複しています。</div>
@@ -257,21 +538,33 @@
                   <div class="col-sm-12 text-warning" *ngIf='commandNotNull&&!commandFlg'>データ識別子名は半角英数字のみで入力してください</div>
                   <div class="col-sm-12 text-warning" *ngIf='!commandUnqFlg'>データ名は重複しています。</div> -->
                   <!-- <div class="col-sm-12 text-warning" *ngIf='!extractKeyNotNull'>データ識別子名は必須入力です。</div> -->
-                  <div class="col-sm-12 text-warning" *ngIf='!xOffsetFlg'>xOffsetFlg: int needed</div>
-                  <div class="col-sm-12 text-warning" *ngIf='!yOffsetFlg'>yOffsetFlg: int needed</div>
-                  <div class="col-sm-12 text-warning" *ngIf="selSplitChar=='3'&&!otherCharFlg">その他は必須入力です</div>
-              </div>
-      </form>
-      <!-- <div class="form-group"> -->
-                                  
-      <!-- </div> -->
-      </div>
-      <div class="modal-footer">
-          <button *ngIf="delBtn" type="button" class="btn btn-danger" (click)="deleteRule()">
-              <i class="fa fa-minus-square"></i> 削除
-          </button>
-          <button type="button" class="btn btn-primary" (click)="saveRule()">
-              <i class="fa fa-clipboard"></i> 保存
-          </button>
-      </div>
-  </div>
+                <div class="col-sm-12 text-warning" *ngIf='!xOffsetFlg'>
+                      xOffsetFlg: int needed
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='!yOffsetFlg'>
+                      yOffsetFlg: int needed
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf="selSplitChar=='3'&&!otherCharFlg">
+                      その他は必須入力です
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button
+            *ngIf="delBtn" 
+            type="button" 
+            class="btn btn-danger" 
+            (click)="deleteRule()"
+        >
+            <i class="fa fa-minus-square"></i> 削除
+        </button>
+        <button 
+            type="button" 
+            class="btn btn-primary" 
+            (click)="saveRule()"
+        >
+            <i class="fa fa-clipboard"></i> 保存
+        </button>
+    </div>
+</div>
