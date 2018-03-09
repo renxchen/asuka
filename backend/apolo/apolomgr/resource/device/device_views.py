@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
 
-@author: kaixliu
-@contact: kaixliu@cisco.com
-@file: device_views.py
-@time: 2017/03/02 14:19
+@author: kimli
+@contact: kimli@cisco.com
+@file: ostype_views.py
+@time: 2017/12/19 14:19
 @desc:
 
 """
@@ -24,9 +24,12 @@ from django.db import transaction
 from django.db.models.query import QuerySet
 import requests
 from multiprocessing.dummy import Pool as ThreadPool
+from backend.apolo.apolomgr.resource.data_collection.data_collection import DataCollectionOptCls
 import collections
 CLI_THREADPOOL_SIZE = 20
 TIME_OUT = 5
+
+
 
 class DevicesViewSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):
@@ -256,6 +259,19 @@ class DevicesViewSet(viewsets.ViewSet):
     def post(self):
         try:
             with transaction.atomic():
+                devices = Devices.objects.filter(status=1)
+                # device_group_change
+                device_group_before = []
+                for device in devices:
+                    device_group_old = {}
+                    groups = DevicesGroups.objects.filter(device_id=device.device_id)
+                    device_group_old["device_id"] = device.device_id
+                    group_id_list = []
+                    if groups.exists():
+                        for group in groups:
+                            group_id_list.append(group.group_id)
+                    device_group_old["group_old"] = group_id_list
+                    device_group_before.append(device_group_old)
                 #delete devicegroups
                 DevicesGroups.objects.all().delete()
                 # update
@@ -263,7 +279,6 @@ class DevicesViewSet(viewsets.ViewSet):
                 devicegroup_list = []
                 insert_list = []
                 group_list = []
-                devices = Devices.objects.filter(status=1)
                 if len(devices) == 0:
                     for tmp in devices_tmp:
                         group_list.append((tmp.hostname,tmp.group_name))
@@ -324,6 +339,57 @@ class DevicesViewSet(viewsets.ViewSet):
                                 devicegroup_list.append(devicegroup)
                     if len(device_group) != 0:
                         DevicesGroups.objects.bulk_create(devicegroup_list)
+                    device_group_now = []
+                    for device in devices:
+                        device_group_new = {}
+                        groups = DevicesGroups.objects.filter(device_id=device.device_id)
+                        device_group_new["device_id"] = device.device_id
+                        group_id_list = []
+                        if groups.exists():
+                            for group in groups:
+                                group_id_list.append(group.group_id)
+                        device_group_new["group_new"] = group_id_list
+                        device_group_now.append(device_group_new)
+                    group_list = []
+
+                    for i in device_group_before:
+                        group_dict = {}
+                        flag = 0
+                        for j in device_group_now:
+                            if j.get("device_id") == i.get("device_id"):
+                                group_dict["device_id"] = j.get("device_id")
+                                group_old_list = i.get("group_old")
+                                group_new_list = j.get("group_new")
+                                group_dict["add_device_group"] = [x for x in group_new_list if x not in group_old_list]
+                                group_dict["del_device_group"] = [x for x in group_old_list if x not in group_new_list]
+                                group_list.append(group_dict)
+                                break
+                            else:
+                                flag += 1
+                            if flag == len(device_group_now):
+                                group_dict["device_id"] = i.get("device_id")
+                                group_dict["add_device_group"] = []
+                                group_dict["del_device_group"] = i.get("group_old")
+                                group_list.append(group_dict)
+
+                    for i in device_group_now:
+                        group_dict = {}
+                        flag = 0
+                        for j in device_group_before:
+                            if j.get("device_id") == i.get("device_id"):
+                                break
+                            else:
+                                flag += 1
+                            if flag == len(device_group_before):
+                                group_dict["device_id"] = i.get("device_id")
+                                group_dict["add_device_group"] = i.get("group_new")
+                                group_dict["del_device_group"] = []
+                                group_list.append(group_dict)
+                    # for yuanyang check
+                    data_check = {}
+                    data_check["items"] = group_list
+                    opt = DataCollectionOptCls(**data_check)
+                    opt.update_items()
                 data = {
                         'new_token': self.new_token,
                         constants.STATUS: {

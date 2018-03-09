@@ -171,7 +171,7 @@ class DevicesTmp(models.Model):
 
     class Meta:
         # managed = False
-        db_table = 'devices'
+        db_table = 'devices_tmp'
 
 
 class Devices(models.Model):
