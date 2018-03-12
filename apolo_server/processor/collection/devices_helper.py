@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 import copy
+import json
 from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
 from apolo_server.processor.db_units.memcached_helper import RulesMemCacheDb, ItemMemCacheDb
 from apolo_server.processor.db_units.db_helper import DeviceDbHelp, ItemsDbHelp
@@ -360,35 +361,44 @@ def __check_schedule_time(item, now_time):
 
 
 def __check_device_priority(items):
-    result = {}
-    """
-    Group by policy id and device id
-    """
-    invalid_items = []
+    items = sorted(items, reverse=True)
+    tmp_items = []
     for item in items:
-        if "valid_status" in item.keys():
-            if item['valid_status'] is False:
-                invalid_items.append(item)
-                continue
         item_key = "%s_%s" % (str(item["coll_policy_id"]), str(item["device__device_id"]))
-        if item_key in result.keys():
-            pass
+        if item_key in tmp_items:
+            item['valid_status'] = False
         else:
-            result[item_key] = []
-        result[item_key].append(item)
-
-    tmp_items = map(lambda k: sorted(k, key=lambda x: x['schedule__priority'], reverse=True), result.values())
-    items = []
-    for tmp in tmp_items:
-        for index, value in enumerate(tmp):
-            if index == 0:
-                status = True
-            else:
-                status = False
-            value['valid_status'] = status
-            items.append(value)
-    items.extend(invalid_items)
+            tmp_items.append(item_key)
     return items
+    # result = {}
+    # """
+    # Group by policy id and device id
+    # """
+    # invalid_items = []
+    # for item in items:
+    #     if "valid_status" in item.keys():
+    #         if item['valid_status'] is False:
+    #             invalid_items.append(item)
+    #             continue
+    #     item_key = "%s_%s" % (str(item["coll_policy_id"]), str(item["device__device_id"]))
+    #     if item_key in result.keys():
+    #         pass
+    #     else:
+    #         result[item_key] = []
+    #     result[item_key].append(item)
+    #
+    # tmp_items = map(lambda k: sorted(k, key=lambda x: x['schedule__priority'], reverse=True), result.values())
+    # items = []
+    # for tmp in tmp_items:
+    #     for index, value in enumerate(tmp):
+    #         if index == 0:
+    #             status = True
+    #         else:
+    #             status = False
+    #         value['valid_status'] = status
+    #         items.append(value)
+    # items.extend(invalid_items)
+    # return items
 
 
 @deco_item
@@ -455,9 +465,9 @@ def __add_items_valid_status(item, status):
 
 
 if __name__ == "__main__":
-    for i in get_devices(1519612244, 0).items():
-        pass
-        # print i
+    now_time = time.time()
+    for i in get_devices(now_time, 0).items():
+        print json.dumps(i[1], indent=2)
     # device_valid = DeviceValid(1517281147)
     # print device_valid.valid(1)
     # device_valid = PolicyGroupValid(1517281147)
