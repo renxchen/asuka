@@ -45,6 +45,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     lineNumsFlg: Boolean = true;
     lineNumsUnqFlg: Boolean = true;
     xOffsetNotNull: Boolean = true;
+    xOffsetNotNullB: Boolean = true;
     xOffsetFlg: Boolean = true;
     xOffsetFlgB: Boolean = true;
     yOffsetNotNull: Boolean = true;
@@ -130,10 +131,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         this.xOffsetNotNull = Validator.notNullCheck(this.xOffset.toString());
-        console.log(this.xOffset, this.xOffsetNotNull);
         if (this.xOffsetNotNull) {
             this.xOffsetFlg = Validator.xOffsetCheck(this.xOffset.toString());
-            console.log(this.xOffsetFlg);
         }
         if (this.selSplitChar === '3') {
             if (this.otherChar) {
@@ -162,11 +161,11 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
-        this.xOffsetNotNull = Validator.notNullCheck(this.xOffset.toString());
-        if (this.xOffsetNotNull) {
+        this.xOffsetNotNullB = typeof (this.xOffset) === 'number' ? true : false;
+        if (this.xOffsetNotNullB) {
             this.xOffsetFlgB = Validator.offsetCheck(this.xOffset);
         }
-        this.yOffsetNotNull = Validator.notNullCheck(this.yOffset.toString());
+        this.yOffsetNotNull = typeof (this.yOffset) === 'number' ? true : false;
         if (this.yOffsetNotNull) {
             this.yOffsetFlg = Validator.offsetCheck(this.yOffset);
         }
@@ -179,7 +178,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
         if (this.nameNotNull && this.nameFlg && this.yOffsetNotNull
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull && this.xOffsetFlg
+            && this.mrkStrNotNull && this.xOffsetNotNullB
             && this.xOffsetFlgB && this.otherCharFlg
             && this.yOffsetNotNull && this.yOffsetFlg) {
             return true;

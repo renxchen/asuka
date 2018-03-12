@@ -79,7 +79,6 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
                     if (verify) {
                         this.groupFlg = _.get(verify, 'name');
                         this.osFlg = _.get(verify, 'ostype');
-                        console.log(this.osFlg, this.groupFlg);
                     }
                 } else {
                     if (msg) {

@@ -182,7 +182,6 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
     public getGroupInfo(id: any) {
         // event.preventDefault();
         // let id = event.target.id;
-        console.log(id);
         this.deviceTable$.GridUnload();
         if (id) {
             this.getPanelData(id);
@@ -192,7 +191,6 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
     public editGroup(id: any) {
         // event.preventDefault();
         // let id = event.target.id;
-        console.log(id);
         this.modalRef = this.modalService.show(GroupEditComponent, this.modalConfig);
         this.modalRef.content.id = id;
         let group$ = this.modalService.onHidden.subscribe(res => {
@@ -205,9 +203,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
     public deleteGroup(id: any) {
         // event.preventDefault();
         // let id = event.target.id;
-        console.log(id);
         let name: any;
-        console.log(this.groups);
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i]['group_id'] === id) {
                 name = this.groups[i]['name'];

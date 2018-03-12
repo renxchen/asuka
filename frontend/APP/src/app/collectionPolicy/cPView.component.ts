@@ -186,7 +186,6 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.httpClient
                     .toJson(_t.httpClient.delete(url + '?id=' + id))
                     .subscribe(res => {
-                        console.log('res', res);
                         let status = _.get(res, 'status');
                         let msg: any = _.get(status, 'message');
                         let data = _.get(res, 'data');
@@ -228,7 +227,6 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         let code = _.get(_.get(res, 'new_token'), 'code');
         if (code === 102) {
             alert('Signature has expired');
-            console.log(this.router);
             this.router.navigate(['/login/']);
         }
         // else if (token === 103) {

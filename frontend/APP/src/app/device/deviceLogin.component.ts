@@ -8,7 +8,6 @@ import { ModalComponent } from '../../components/modal/modal.component';
 import { Observable } from 'rxjs/Rx';
 import * as _ from 'lodash';
 declare var $: any;
-// declare var waitingDialog: any;
 
 @Component({
     selector: 'device-loign',
@@ -28,58 +27,6 @@ export class DeviceLoginComponent implements OnInit {
     modalRef: BsModalRef;
     closeMsg: any;
     modalMsg: any;
-    testData: any = [
-        {
-            'device_id': 1, 'hostname': 'test1', 'ip': '10.71.243.69', 'telnet_port': '23',
-            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
-            'device_type': 'cisco', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
-        },
-        {
-            'device_id': 2, 'hostname': 'test2', 'ip': '10.71.243.69', 'telnet_port': '23',
-            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
-            'device_type': 'a', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
-        },
-        {
-            'device_id': 3, 'hostname': 'test3', 'ip': '10.71.243.69', 'telnet_port': '23',
-            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
-            'device_type': 'b', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
-        },
-        {
-            'device_id': 4, 'hostname': 'test4', 'ip': '10.71.243.69', 'telnet_port': '23',
-            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
-            'device_type': 'd', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
-        },
-        {
-            'device_id': 5, 'hostname': 'test5', 'ip': '10.71.243.69', 'telnet_port': '23',
-            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
-            'device_type': 'e', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
-        },
-        {
-            'device_id': 6, 'hostname': 'test6', 'ip': '10.71.243.69', 'telnet_port': '23',
-            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
-            'device_type': 'f', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
-        },
-        {
-            'device_id': 7, 'hostname': 'test7', 'ip': '10.71.243.69', 'telnet_port': '23',
-            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
-            'device_type': 'h', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
-        },
-        {
-            'device_id': 8, 'hostname': 'test8', 'ip': '10.71.243.69', 'telnet_port': '23',
-            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
-            'device_type': 'i', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
-        },
-        {
-            'device_id': 9, 'hostname': 'test9', 'ip': '10.71.243.69', 'telnet_port': '23',
-            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
-            'device_type': 'g', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
-        },
-        {
-            'device_id': 10, 'hostname': 'test10', 'ip': '10.71.243.69', 'telnet_port': '23',
-            'snmp_port': '161', 'snmp_community': 'public', 'snmp_version': 'v2c', 'login_expect': ':,cisco,:,cisco,>,en,:,cisco,#',
-            'device_type': 'k', 'ostype': 'cisco-ios', 'group': 'group1', 'telnet_status': 'noData', 'snmp_status': 'noData'
-        }
-    ];
     constructor(
         public httpClient: HttpClientComponent,
         private modalService: BsModalService,
@@ -118,7 +65,6 @@ export class DeviceLoginComponent implements OnInit {
             .map(res => res.json())
             .catch(error => Observable.throw(error))
             .subscribe(res => {
-                console.log(res);
                 // this.modalRef.hide();
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
@@ -217,7 +163,6 @@ export class DeviceLoginComponent implements OnInit {
                 .toJson(this.httpClient.put(checkUrl, checkInfo))
                 .subscribe(res => {
                     let status = _.get(res, 'status');
-                    console.log(res);
                     // check upload status; if success, call the function draw table;
                     if (status && status['status'].toLowerCase() === 'true') {
                         this.devLoginTable$.GridUnload();

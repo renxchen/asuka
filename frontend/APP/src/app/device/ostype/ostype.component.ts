@@ -108,9 +108,6 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             height: 380,
             viewrecords: true,
             emptyrecords: 'There is no data to display',
-            loadError: function (xhr, st, err) {
-                console.log(xhr, st, err);
-            },
             jsonReader: {
                 root: 'data',
                 page: 'current_page_num',
@@ -137,7 +134,6 @@ export class OstypeComponent implements OnInit, AfterViewInit {
         $('.edit').click(function (event) {
             let id = $(event)[0].target.id;
             if (id) {
-                console.log('id', id);
                 // _t.router.navigate(['/index/ostypedit'],
                 //     { queryParams: { 'id': id } });
                 _t.modalRef = _t.modalService.show(OstypeEditComponent, _t.modalConfig);

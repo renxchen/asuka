@@ -6,7 +6,7 @@ export class Validator {
     static oidReg: String = '[0-9]+?(\.[0-9]+?)+';
     static numReg: String = '[0-9]';
     static xOffsetReg = '^\-?[1-9]*$';
-    static offsetReg = '^-?[1-9]\d*|0$';
+    static offsetReg = '^-?[0-9]\d*$';
     static regTest(reg: any, value?: any) {
         if (value) {
             let regInstance = new RegExp(reg);
