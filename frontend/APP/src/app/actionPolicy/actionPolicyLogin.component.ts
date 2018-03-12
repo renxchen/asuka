@@ -23,6 +23,9 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
 
     actionTypes: any = [{id: 0, value: 'SNMP Trap送信'}, {id: 1, value: 'スクリプト実行'}, {id: 2, value: '自動化シナリオ実行'}];
 
+
+    isStringCompareTable: boolean;
+
     constructor(
         public httpClient: HttpClientComponent,
         public router: Router,
@@ -32,6 +35,7 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
 
     ngOnInit(){
         this.thresholdType = 0;
+        this.isStringCompareTable = true;
     }
 
     ngAfterViewInit() {
