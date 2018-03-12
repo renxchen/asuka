@@ -5,6 +5,7 @@ import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { ProcessbarComponent } from '../../components/processbar/processbar.component';
 import { Observable } from 'rxjs/Rx';
 import * as _ from 'lodash';
 declare var $: any;
@@ -27,6 +28,14 @@ export class DeviceViewComponent implements OnInit {
      */
     apiPrefix: any;
     devViewTable$: any;
+    processbar: BsModalRef;
+    modalConfig = {
+        animated: true,
+        keyboard: false,
+        backdrop: true,
+        ignoreBackdropClick: true,
+        class: 'modal-md'
+    };
     constructor(
         public httpClient: HttpClientComponent,
         private modalService: BsModalService,
@@ -114,6 +123,8 @@ export class DeviceViewComponent implements OnInit {
         let checkInfo: any = {};
         checkInfo['id_list'] = deviceSel;
         if (deviceSel.length > 0) {
+            this.processbar = this.modalService.show(ProcessbarComponent, this.modalConfig);
+            this.processbar.content.message = 'uploading...';
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put(checkUrl, checkInfo))
@@ -122,6 +133,8 @@ export class DeviceViewComponent implements OnInit {
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toLowerCase() === 'true') {
                         this.devViewTable$.GridUnload();
+                        $('.bar').width('100%');
+                        $('.modal').hide();
                         this.drawdevViewTable();
                     } else {
                         alert('msg');
