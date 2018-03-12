@@ -25,8 +25,8 @@ export class ActionPolicyViewComponent implements OnInit, AfterViewInit {
         {label: 'Critical',  name: 'critical', width: 30, align: 'center'},
         {label: 'Major',  name: 'major', width: 30, align: 'center'},
         {label: 'Minor',  name: 'minor', width: 30, align: 'center'},
-        {label: '概要', name: 'description', width: 45, align: 'center'},
-        {label: 'アクション', name: 'action', width: 50, align: 'center', search: false,
+        {label: '概要', name: 'description', width: 40, align: 'center'},
+        {label: 'アクション', name: 'action', width: 40, align: 'center', search: false,
         formatter: this.formatterbtns},
     ];
 
@@ -62,7 +62,7 @@ export class ActionPolicyViewComponent implements OnInit, AfterViewInit {
     }
 
     newActionPolicy(){
-
+        this.router.navigate(['/index/actionpolicylogin'],{queryParams:{'name':''}});
     }
 
     drawActionPolicyTable(){
