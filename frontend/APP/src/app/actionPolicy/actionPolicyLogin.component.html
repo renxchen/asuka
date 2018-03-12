@@ -1,82 +1,138 @@
 <div class="ibox-content" style="min-height:380px;">
-    <div class="form-group">
-        <label class="col-sm-6 control-label">
-            <!--<span style="color:red">※</span>-->
-            アクションポリシー名
-        </label>
-        <div class="col-sm-6" >
-            <input type="text" [(ngModel)]="actionPolicyName">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">
+                <!--<span style="color:red">※</span>-->
+                アクションポリシー名:
+            </label>
+            <div class="col-sm-6" >
+                <input type="text" class="form-control" [(ngModel)]="actionPolicyName">
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label class="col-sm-6 control-label">
-            <!--<span style="color:red">※</span>-->
-            概要
-        </label>
-        <div class="col-sm-6" >
-            <textarea style="height: 100px" [(ngModel)]="actionPolicyDescription"></textarea>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">
+                <!--<span style="color:red">※</span>-->
+                概要:
+            </label>
+            <div class="col-sm-6" >
+                <textarea class="form-control" style="height: 100px" [(ngModel)]="actionPolicyDescription"></textarea>
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label class="col-sm-6 control-label">
-            <!--<span style="color:red">※</span>-->
-            閾値タイプ
-        </label>
-        <div class="col-sm-6" >
-            <select class="form-control" [(ngModel)]="thresholdType">
-                <option *ngFor="let item of thresholdTypes" value="{{item.id}}">
-                    {{item.value}}
-                </option>
-            </select>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">
+                <!--<span style="color:red">※</span>-->
+                閾値タイプ:
+            </label>
+            <div class="col-sm-6" >
+                <select class="form-control" [(ngModel)]="thresholdType">
+                    <option *ngFor="let item of thresholdTypes" value="{{item.id}}">
+                        {{item.value}}
+                    </option>
+                </select>
+            </div>
         </div>
-    </div>
-    <!--<div class="form-group">-->
-        <!--<label class="col-sm-6 control-label">-->
-            <!--&lt;!&ndash;<span style="color:red">※</span>&ndash;&gt;-->
-            <!--コレクション<br>ポリシーグループ:-->
-        <!--</label>-->
-        <!--<div class="col-sm-6" >-->
-            <!--<select class="form-control" [(ngModel)]="policyGroup" (change)="changeCPG()"-->
-                    <!--id="policyGroup" name="policyGroup">-->
-                <!--&lt;!&ndash;<option value="-1">全機能OFF</option>&ndash;&gt;-->
-                <!--<option *ngFor="let item of policyGroups" value="{{item.policy_group_id}}">-->
-                    <!--{{item.name}}-->
-                <!--</option>-->
-            <!--</select>-->
+        <!--<div class="form-group">-->
+            <!--<label class="col-sm-6 control-label">-->
+                <!--&lt;!&ndash;<span style="color:red">※</span>&ndash;&gt;-->
+                <!--コレクション<br>ポリシーグループ:-->
+            <!--</label>-->
+            <!--<div class="col-sm-6" >-->
+                <!--<select class="form-control" [(ngModel)]="policyGroup" (change)="changeCPG()"-->
+                        <!--id="policyGroup" name="policyGroup">-->
+                    <!--&lt;!&ndash;<option value="-1">全機能OFF</option>&ndash;&gt;-->
+                    <!--<option *ngFor="let item of policyGroups" value="{{item.policy_group_id}}">-->
+                        <!--{{item.name}}-->
+                    <!--</option>-->
+                <!--</select>-->
+            <!--</div>-->
         <!--</div>-->
-    <!--</div>-->
-    <div class="form-group">
-        <label class="col-sm-6 control-label">
-            <!--<span style="color:red">※</span>-->
-            カラム
-        </label>
-        <div class="col-sm-6" >
-            <input type="text"><button>select</button>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">
+                <!--<span style="color:red">※</span>-->
+                カラム選択:
+            </label>
+            <div class="col-sm-6" >
+                <div class="col-sm-10" style="padding-left: 0px">
+                    <input class="form-control" type="text">
+                </div>
+                <div class="col-sm-2" style="padding-right: 0px">
+                    <button class="btn btn-primary pull-right">select</button>
+                </div>
+
+            </div>
         </div>
-    </div>
-    <!--<div class="form-group">-->
-        <!--<label class="col-sm-3 control-label">-->
-            <!--&lt;!&ndash;<span style="color:red">※</span>&ndash;&gt;-->
-            <!--重要度-->
-        <!--</label>-->
-        <!--<div class="col-sm-3" *ngFor="let item of dataScheduleTypes">-->
-            <!--<select class="form-control" [(ngModel)]="policyGroup" (change)="changeCPG()"-->
-                    <!--id="policyGroup" name="policyGroup">-->
-                <!--&lt;!&ndash;<option value="-1">全機能OFF</option>&ndash;&gt;-->
-                <!--<option *ngFor="let item of policyGroups" value="{{item.policy_group_id}}">-->
-                    <!--{{item.name}}-->
-                <!--</option>-->
-            <!--</select>-->
+
+        <div class="form-group">
+            <div class="col-sm-2"></div>
+            <table  class="col-sm-8" *ngIf="isStringCompareTable">
+                <thead>
+                    <tr>
+                        <th>重要度</th>
+                        <th>Critical</th>
+                        <th>Major</th>
+                        <th>Minor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>閾値</th>
+                        <td><input class="form-control" type="text"></td>
+                        <td><input class="form-control" type="text"></td>
+                        <td><input class="form-control" type="text"></td>
+                    </tr>
+                    <tr>
+                        <th>条件</th>
+                        <td><input class="form-control" type="text"></td>
+                        <td><input class="form-control" type="text"></td>
+                        <td><input class="form-control" type="text"></td>
+                    </tr>
+                    <tr>
+                        <th>連続超過条件</th>
+                        <td><input class="form-control" type="text"></td>
+                        <td><input class="form-control" type="text"></td>
+                        <td><input class="form-control" type="text"></td>
+                    </tr>
+                    <tr>
+                        <th>アクション</th>
+                        <td><input class="form-control" type="text"></td>
+                        <td><input class="form-control" type="text"></td>
+                        <td><input class="form-control" type="text"></td>
+                    </tr>
+                    <!--<tr>-->
+                        <!--<th>閾値</th>-->
+                        <!--<td><input type="text"></td>-->
+                        <!--<td><input type="text"></td>-->
+                        <!--<td><input type="text"></td>-->
+                    <!--</tr>-->
+                </tbody>
+
+            </table>
+
+        </div>
+        <!--<div class="form-group">-->
+            <!--<label class="col-sm-3 control-label">-->
+                <!--&lt;!&ndash;<span style="color:red">※</span>&ndash;&gt;-->
+                <!--重要度-->
+            <!--</label>-->
+            <!--<div class="col-sm-3" *ngFor="let item of dataScheduleTypes">-->
+                <!--<select class="form-control" [(ngModel)]="policyGroup" (change)="changeCPG()"-->
+                        <!--id="policyGroup" name="policyGroup">-->
+                    <!--&lt;!&ndash;<option value="-1">全機能OFF</option>&ndash;&gt;-->
+                    <!--<option *ngFor="let item of policyGroups" value="{{item.policy_group_id}}">-->
+                        <!--{{item.name}}-->
+                    <!--</option>-->
+                <!--</select>-->
+            <!--</div>-->
         <!--</div>-->
-    <!--</div>-->
-    <!--<div class="form-group" style="margin-bottom: 0px">-->
-        <!--<button class="btn btn-danger btn-sm pull-right" style="margin-right: 5px"-->
-                <!--type="button" (click)="delete()">-->
-            <!--<i class="fa fa-minus-square" ></i> 削除-->
-        <!--</button>-->
-        <!--<button class="btn btn-primary btn-sm pull-right" style="margin-right: 5px"-->
-                <!--type="submit" (click)="save()">-->
-            <!--<i class="fa fa-check-square" ></i> 保存-->
-        <!--</button>-->
-    <!--</div>-->
+        <!--<div class="form-group" style="margin-bottom: 0px">-->
+            <!--<button class="btn btn-danger btn-sm pull-right" style="margin-right: 5px"-->
+                    <!--type="button" (click)="delete()">-->
+                <!--<i class="fa fa-minus-square" ></i> 削除-->
+            <!--</button>-->
+            <!--<button class="btn btn-primary btn-sm pull-right" style="margin-right: 5px"-->
+                    <!--type="submit" (click)="save()">-->
+                <!--<i class="fa fa-check-square" ></i> 保存-->
+            <!--</button>-->
+        <!--</div>-->
+    </div>
 </div>
