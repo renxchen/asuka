@@ -24,29 +24,15 @@
                 閾値タイプ:
             </label>
             <div class="col-sm-6" >
-                <select class="form-control" [(ngModel)]="thresholdType">
-                    <option *ngFor="let item of thresholdTypes" value="{{item.id}}">
+                <select class="form-control" [(ngModel)]="triggerType" (change)="changeTriggerType()">
+                    <option *ngFor="let item of triggerTypes" value="{{item.id}}">
                         {{item.value}}
                     </option>
                 </select>
             </div>
         </div>
-        <!--<div class="form-group">-->
-            <!--<label class="col-sm-6 control-label">-->
-                <!--&lt;!&ndash;<span style="color:red">※</span>&ndash;&gt;-->
-                <!--コレクション<br>ポリシーグループ:-->
-            <!--</label>-->
-            <!--<div class="col-sm-6" >-->
-                <!--<select class="form-control" [(ngModel)]="policyGroup" (change)="changeCPG()"-->
-                        <!--id="policyGroup" name="policyGroup">-->
-                    <!--&lt;!&ndash;<option value="-1">全機能OFF</option>&ndash;&gt;-->
-                    <!--<option *ngFor="let item of policyGroups" value="{{item.policy_group_id}}">-->
-                        <!--{{item.name}}-->
-                    <!--</option>-->
-                <!--</select>-->
-            <!--</div>-->
-        <!--</div>-->
-        <div class="form-group">
+
+        <div class="form-group" *ngIf="oneColumn">
             <label class="col-sm-3 control-label">
                 <!--<span style="color:red">※</span>-->
                 カラム選択:
@@ -56,83 +42,153 @@
                     <input class="form-control" type="text">
                 </div>
                 <div class="col-sm-2" style="padding-right: 0px">
-                    <button class="btn btn-primary pull-right">select</button>
+                    <button class="btn btn-primary btn-sm pull-right">select</button>
                 </div>
 
             </div>
         </div>
-
+        <div class="form-group" *ngIf="!oneColumn">
+            <label class="col-sm-3 control-label">
+                <!--<span style="color:red">※</span>-->
+                カラムA選択:
+            </label>
+            <div class="col-sm-6" >
+                <div class="col-sm-10" style="padding-left: 0px">
+                    <input class="form-control" type="text">
+                </div>
+                <div class="col-sm-2" style="padding-right: 0px">
+                    <button class="btn btn-primary btn-sm pull-right">select</button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group" *ngIf="!oneColumn">
+            <label class="col-sm-3 control-label">
+            <!--<span style="color:red">※</span>-->
+                カラムB選択:
+            </label>
+            <div class="col-sm-6" >
+                <div class="col-sm-10" style="padding-left: 0px">
+                    <input class="form-control" type="text">
+                </div>
+                <div class="col-sm-2" style="padding-right: 0px">
+                    <button class="btn btn-primary btn-sm pull-right">select</button>
+                </div>
+            </div>
+        </div>
         <div class="form-group">
             <div class="col-sm-2"></div>
-            <table  class="col-sm-8" *ngIf="isStringCompareTable">
+            <table class="col-sm-8 table-striped table-hover table-bordered">
                 <thead>
                     <tr>
-                        <th>重要度</th>
-                        <th>Critical</th>
-                        <th>Major</th>
-                        <th>Minor</th>
+                        <th style="text-align: center">重要度</th>
+                        <th style="text-align: center">Critical</th>
+                        <th style="text-align: center">Major</th>
+                        <th style="text-align: center">Minor</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th>閾値</th>
+                    <tr *ngIf="isTriggerType0 || isTriggerType1">
+                        <th style="text-align: center">閾値</th>
                         <td><input class="form-control" type="text"></td>
                         <td><input class="form-control" type="text"></td>
                         <td><input class="form-control" type="text"></td>
                     </tr>
-                    <tr>
-                        <th>条件</th>
+                    <tr *ngIf="isTriggerType0">
+                        <th style="text-align: center">条件</th>
+                        <td>
+                            <select class="form-control">
+                                <option value="1">等しい</option>
+                                <option value="3">等しくない</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control">
+                                <option value="1">等しい</option>
+                                <option value="3">等しくない</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control">
+                                <option value="1">等しい</option>
+                                <option value="3">等しくない</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr *ngIf="isTriggerType1">
+                        <th style="text-align: center">条件</th>
+                        <td>
+                            <select class="form-control">
+                                <option *ngFor="let item of conditionList" value="{{item.id}}">
+                                    {{item.value}}
+                                </option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control">
+                                <option *ngFor="let item of conditionList" value="{{item.id}}">
+                                    {{item.value}}
+                                </option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control">
+                                <option *ngFor="let item of conditionList" value="{{item.id}}">
+                                    {{item.value}}
+                                </option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr *ngIf="isTriggerType2">
+                        <th style="text-align: center">演算式</th>
                         <td><input class="form-control" type="text"></td>
                         <td><input class="form-control" type="text"></td>
                         <td><input class="form-control" type="text"></td>
                     </tr>
+                    <tr *ngIf="!isTriggerType3">
+                        <th style="text-align: center">連続超過条件</th>
+                        <td>
+                            <select class="form-control">
+                                <option *ngFor="let item of continuousOverList" value="{{item.id}}">
+                                    {{item.value}}
+                                </option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control">
+                                <option *ngFor="let item of continuousOverList" value="{{item.id}}">
+                                    {{item.value}}
+                                </option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control">
+                                <option *ngFor="let item of continuousOverList" value="{{item.id}}">
+                                    {{item.value}}
+                                </option>
+                            </select>
+                        </td>
+                    </tr>
                     <tr>
-                        <th>連続超過条件</th>
+                        <th style="text-align: center">アクション</th>
                         <td><input class="form-control" type="text"></td>
                         <td><input class="form-control" type="text"></td>
                         <td><input class="form-control" type="text"></td>
                     </tr>
-                    <tr>
-                        <th>アクション</th>
-                        <td><input class="form-control" type="text"></td>
-                        <td><input class="form-control" type="text"></td>
-                        <td><input class="form-control" type="text"></td>
-                    </tr>
-                    <!--<tr>-->
-                        <!--<th>閾値</th>-->
-                        <!--<td><input type="text"></td>-->
-                        <!--<td><input type="text"></td>-->
-                        <!--<td><input type="text"></td>-->
-                    <!--</tr>-->
                 </tbody>
 
             </table>
 
         </div>
-        <!--<div class="form-group">-->
-            <!--<label class="col-sm-3 control-label">-->
-                <!--&lt;!&ndash;<span style="color:red">※</span>&ndash;&gt;-->
-                <!--重要度-->
-            <!--</label>-->
-            <!--<div class="col-sm-3" *ngFor="let item of dataScheduleTypes">-->
-                <!--<select class="form-control" [(ngModel)]="policyGroup" (change)="changeCPG()"-->
-                        <!--id="policyGroup" name="policyGroup">-->
-                    <!--&lt;!&ndash;<option value="-1">全機能OFF</option>&ndash;&gt;-->
-                    <!--<option *ngFor="let item of policyGroups" value="{{item.policy_group_id}}">-->
-                        <!--{{item.name}}-->
-                    <!--</option>-->
-                <!--</select>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="form-group" style="margin-bottom: 0px">-->
+
+        <div class="form-group">
             <!--<button class="btn btn-danger btn-sm pull-right" style="margin-right: 5px"-->
                     <!--type="button" (click)="delete()">-->
                 <!--<i class="fa fa-minus-square" ></i> 削除-->
             <!--</button>-->
-            <!--<button class="btn btn-primary btn-sm pull-right" style="margin-right: 5px"-->
-                    <!--type="submit" (click)="save()">-->
-                <!--<i class="fa fa-check-square" ></i> 保存-->
-            <!--</button>-->
-        <!--</div>-->
+            <button class="btn btn-primary btn-sm pull-right" style="margin-right: 5px"
+                    type="submit" (click)="save()">
+                <i class="fa fa-check-square" ></i> 保存
+            </button>
+        </div>
     </div>
 </div>
