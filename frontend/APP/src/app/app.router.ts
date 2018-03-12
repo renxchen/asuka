@@ -225,6 +225,14 @@ const routes: Routes = [
             }
           },
           {
+            path: 'actionpolicylogin',
+            component: ActionPolicyLoginComponent,
+            data: {
+              parentTitle: 'アクションポリシー',
+              title: 'アクションポリシー編集'
+            }
+          },
+          {
             path: 'actionpolicyhistory',
             component: ActionPolicyHistoryComponent,
             data: {
