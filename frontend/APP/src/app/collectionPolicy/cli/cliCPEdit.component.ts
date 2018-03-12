@@ -461,7 +461,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.modalRef.content.info = sendInfo;
         let blockTree$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
-                console.log(res);
                 $('#blockTree').jstree('destroy');
                 let tree = _.get(res, 'blockTree');
                 let nodes = sendInfo.node;
@@ -483,7 +482,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         // 获取blockTree上的text
         let dataTree$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
-                console.log('resData', res);
                 $('#dataTree').jstree('destroy');
                 let tree = _.get(res, 'dataTree');
                 let nodes = sendInfo.node;

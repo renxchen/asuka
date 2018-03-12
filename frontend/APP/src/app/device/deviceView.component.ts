@@ -111,7 +111,6 @@ export class DeviceViewComponent implements OnInit {
         let checkUrl = '/api_device/';
         let deviceSel: any = [];
         deviceSel = $('#devViewTable').jqGrid('getGridParam', 'selarrrow');
-        alert(deviceSel);
         let checkInfo: any = {};
         checkInfo['id_list'] = deviceSel;
         if (deviceSel.length > 0) {
@@ -121,7 +120,6 @@ export class DeviceViewComponent implements OnInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    console.log(res);
                     if (status && status['status'].toLowerCase() === 'true') {
                         this.devViewTable$.GridUnload();
                         this.drawdevViewTable();
@@ -134,24 +132,5 @@ export class DeviceViewComponent implements OnInit {
         }
     }
     public CSVExport() {
-        console.log('werty');
-        // this.apiPrefix = '/v1';
-        // this.httpClient.setUrl(this.apiPrefix);
-        // this.httpClient
-        //     .toJson(this.httpClient.get('/v1/api_device/export'))
-        //     .subscribe(res => {
-        //         console.log('23r');
-        //         console.log(res);
-        //         let status = _.get(res, 'status');
-        //         if (status && status['status'].toString().toLowerCase() === 'true') {
-        //             alert('Download successfully');
-        //         } else {
-        //             alert('Download failed');
-        //         }
-        //     });
-        // this.http.get('/v1/api_device/export')
-        // .map(res => res.json())
-        // .subscribe(res =>
-        //     console.log(res));
     }
 }

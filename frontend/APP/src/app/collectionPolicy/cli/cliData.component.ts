@@ -131,10 +131,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         this.xOffsetNotNull = Validator.notNullCheck(this.xOffset.toString());
-        console.log(this.xOffset, this.xOffsetNotNull);
         if (this.xOffsetNotNull) {
             this.xOffsetFlg = Validator.xOffsetCheck(this.xOffset.toString());
-            console.log(this.xOffsetFlg);
         }
         if (this.selSplitChar === '3') {
             if (this.otherChar) {

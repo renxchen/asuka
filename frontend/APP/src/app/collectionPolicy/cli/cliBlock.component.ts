@@ -82,14 +82,13 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         }, 0);
     }
     public typeFomatter(param: any) {
-        console.log('para', param);
         if (param && param.toString() === '0') {
             return false;
         } else if (param && param.toString() === '1') {
             return true;
         } else if (param && param === false) {
             return '0';
-        } else if (param && param === false) {
+        } else if (param && param === true) {
             return '1';
         } else {
             return;
@@ -119,7 +118,6 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     this.isSerial = this.typeFomatter(_.get(data, 'is_serial'));
                     this.extractKey = _.get(data, 'extract_key');
                 }
-                // console.log(res['rule_is_used']);
                 if (res['rule_is_used'] || res['rule_is_used'].toString().toLowerCase() === 'true' && this.info['delFlg']) {
                     this.delBtn = false;
                 } else {
@@ -237,11 +235,9 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                 // same as marktring
                 rule_info['extract_key'] = this.extractKey;
                 rule_info['key_str'] = this.keyStr;
-                console.log('flg', this.isSerial, this.isInclude);
                 rule_info['is_serial'] = this.typeFomatter(this.isSerial);
                 rule_info['is_include'] = this.typeFomatter(this.isInclude);
                 sendRuleInfo['rule_info'] = rule_info;
-                console.log('sendRule', sendRuleInfo);
                 return sendRuleInfo;
             }
         } else if (this.ruleType === 'block_rule_4') {
@@ -265,7 +261,6 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         let createUrl = '/api_policy_tree_rule/';
         this.httpClient.setUrl(this.apiPrefix);
         let sendInfo = this.blockRulePrepare();
-        console.log('rule_test', sendInfo);
         if (this.actionType === 'create' && sendInfo !== '') {
             this.httpClient
                 .toJson(this.httpClient.post(createUrl, sendInfo))
