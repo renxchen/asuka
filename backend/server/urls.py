@@ -61,6 +61,7 @@ urlpatterns = [
     url(r'^v1/api_device_ostype/', resource_api.api_device_ostype),
     url(r'^v1/api_device_groups/', resource_api.api_device_groups),
     url(r'^v1/api_device/upload', resource_api.api_device_upload),
+    url(r'^v1/api_device/export', resource_api.api_device_export),
     url(r'^v1/api_device/', resource_api.api_device),
     url(r'^v1/api_device_pre/', resource_api.api_device_pre),
     # device view related end

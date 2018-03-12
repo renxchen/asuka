@@ -167,7 +167,7 @@ class DevicesTmp(models.Model):
     snmp_status = models.CharField(max_length=255, blank=True, null=True)
     device_type = models.CharField(max_length=255, blank=True, null=True)
     ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
-    group_name = models.CharField(max_length=2000)
+    group_name = models.CharField(max_length=2000, blank=True, null=True)
 
     class Meta:
         # managed = False

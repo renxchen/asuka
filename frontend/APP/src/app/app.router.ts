@@ -232,7 +232,65 @@ const routes: Routes = [
                     parentTitle: 'アクションポリシー',
                     title: 'アクション実行履歴'
                 }
+            },
+            //
+            // data collection
+          {
+            path: 'datacollectionview',
+            component: DataCollectionViewComponent,
+            data: {
+              parentTitle: 'データ取得',
+              title: 'データ取得一覧'
             }
+          },
+          {
+            path: 'policiesperdevice',
+            component: PoliciesPerDeviceComponent,
+            data: {
+              parentTitle: 'データ取得',
+              title: 'デバイス毎のデータ収集中の項目出力機能'
+            }
+          },
+          {
+            path: 'devicesperpolicy',
+            component: DevicesPerPolicyComponent,
+            data: {
+              parentTitle: 'データ取得',
+              title: 'コレクションポリシー毎のデバイス一覧出力機能'
+            }
+          },
+          {
+            path: 'datatableview',
+            component: DataTableViewComponent,
+            data: {
+              parentTitle: 'アクションポリシー',
+              title: 'テーブル一覧'
+            }
+          },
+          {
+            path: 'actionpolicyview',
+            component: ActionPolicyViewComponent,
+            data: {
+              parentTitle: 'アクションポリシー',
+              title: 'アクションポリシー一覧'
+            }
+          },
+          {
+            path: 'actionpolicylogin',
+            component: ActionPolicyLoginComponent,
+            data: {
+              parentTitle: 'アクションポリシー',
+              title: 'アクションポリシー編集'
+            }
+          },
+          {
+            path: 'actionpolicyhistory',
+            component: ActionPolicyHistoryComponent,
+            data: {
+              parentTitle: 'アクションポリシー',
+              title: 'アクション実行履歴'
+            }
+          }
         ]
     }
 ];
