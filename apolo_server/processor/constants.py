@@ -1,3 +1,4 @@
+import os
 class DevicesConstants(object):
     """
     Define value for devices service
@@ -64,3 +65,14 @@ class ParserConstants(object):
     Define constant value for parser service
     """
     TREE_PATH_SPLIT = "/"
+
+
+class ActionConstants(object):
+    """
+    Action constant value for action service
+    """
+    SNMP_TARGET_SERVER = "10.79.148.107"
+    DEFAULT_ENTERPRISE_OID = "1.3.6.1.4.1.2345"
+    BASE_SCRIPT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "script")
+    if os.path.exists(BASE_SCRIPT_PATH) is False:
+        os.mkdir(BASE_SCRIPT_PATH)
