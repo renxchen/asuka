@@ -23,7 +23,6 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
     selectedOsType: any;
     nameFlg: Boolean = true;
     cmdFlg: Boolean = true;
-    descFlg: Boolean = false;
     nameNotNull: Boolean = true;
     cmdNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
@@ -100,14 +99,13 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
         if (this.nameNotNull) {
             this.nameFlg = Validator.noSpecSymbol(this.name);
         }
-        this.descFlg = Validator.includeChinese(this.desc);
+
         this.cmdNotNull = Validator.notNullCheck(this.cliCommand);
         if (this.cmdNotNull) {
             this.cmdFlg = Validator.noCommsymbol(this.cliCommand);
         }
         if (this.nameNotNull && this.nameFlg
-            && this.cmdNotNull && this.cmdFlg
-            && !this.descFlg) {
+            && this.cmdNotNull && this.cmdFlg) {
             return true;
         } else {
             return false;
