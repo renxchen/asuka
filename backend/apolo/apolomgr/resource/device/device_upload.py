@@ -29,6 +29,7 @@ import string
 import time
 
 
+
 class DevicePreViewSet(APIView):
 
     parser_classes = (FileUploadParser,)
@@ -53,8 +54,12 @@ class DevicePreViewSet(APIView):
                 hostname_list = []
                 file_x = []
                 operation_id = int(time.time())
-                path_csv = os.path.abspath(os.path.join(os.path.abspath(os.path.join(os.getcwd(), "upload")),
-                                                        str(operation_id) + "_" + filename.name))
+                file_dir = os.path.abspath(os.path.join(os.getcwd(), "upload"))
+                if os.path.exists(file_dir):
+                    pass
+                else:
+                    os.mkdir(file_dir)
+                path_csv = os.path.abspath(os.path.join(file_dir, str(operation_id) + "_" + filename.name))
                 for f in reader:
                     file_x.append(f)
                     if f.get('Hostname')!='':
@@ -83,7 +88,7 @@ class DevicePreViewSet(APIView):
                         },
                     }
                     return api_return(data=data)
-                with open(path_csv,'w') as f:
+                with open(path_csv,'ab+') as f:
                     writer = csv.DictWriter(f, headers)
                     writer.writeheader()
                     writer.writerows(file_x)
