@@ -63,10 +63,10 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            component: CPViewComponent,
+            component: DeviceViewComponent,
             data: {
-              parentTitle: 'コレクションポリシー',
-              title: 'コレクションポリシー一覧',
+              parentTitle: 'デバイス',
+              title: 'デバイス閲覧',
             }
           },
           // device
