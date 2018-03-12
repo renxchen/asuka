@@ -1,4 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Http } from '@angular/http';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -27,7 +29,9 @@ export class DeviceViewComponent implements OnInit {
     devViewTable$: any;
     constructor(
         public httpClient: HttpClientComponent,
-        private modalService: BsModalService) { }
+        private modalService: BsModalService,
+        private http: Http,
+        private router: Router) { }
 
     ngOnInit() {
         this.drawdevViewTable();
@@ -72,6 +76,17 @@ export class DeviceViewComponent implements OnInit {
             //         $('#devViewTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
             //     }
             // },
+            loadComplete: function (res) {
+                let code = _.get(_.get(res, 'new_token'), 'code');
+                if (code === 102) {
+                    alert('Signature has expired,please login again.');
+                    _t.router.navigate(['/login/']);
+                }
+                if (code === 103) {
+                    alert('This user is not authorized to access, please login again.');
+                    _t.router.navigate(['/login']);
+                }
+            },
             pager: '#devViewPager',
             rowNum: 10,
             rowList: [5, 10, 15],
@@ -119,6 +134,24 @@ export class DeviceViewComponent implements OnInit {
         }
     }
     public CSVExport() {
-        alert('have not finished');
+        console.log('werty');
+        // this.apiPrefix = '/v1';
+        // this.httpClient.setUrl(this.apiPrefix);
+        // this.httpClient
+        //     .toJson(this.httpClient.get('/v1/api_device/export'))
+        //     .subscribe(res => {
+        //         console.log('23r');
+        //         console.log(res);
+        //         let status = _.get(res, 'status');
+        //         if (status && status['status'].toString().toLowerCase() === 'true') {
+        //             alert('Download successfully');
+        //         } else {
+        //             alert('Download failed');
+        //         }
+        //     });
+        // this.http.get('/v1/api_device/export')
+        // .map(res => res.json())
+        // .subscribe(res =>
+        //     console.log(res));
     }
 }

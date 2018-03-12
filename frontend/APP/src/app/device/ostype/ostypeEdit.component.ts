@@ -34,6 +34,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
+    regFlg: Boolean = true;
     telPromptFlg: Boolean = true;
     telPromptNotNull: Boolean = true;
     telTimeoutFlg: Boolean = true;
@@ -79,8 +80,10 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             'id': this.countLog,
             'name': '',
             'logFlg': false,
+            'logRegFlg': true
         };
         this.logs.push(firstLog);
+        return firstLog;
     }
     public getOstype(id: any) {
         this.apiPrefix = '/v1';
@@ -167,6 +170,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             logInfo = {
                 'id': i + 1,
                 'name': dataList[i],
+                'logRegFlg':true,
                 'logFlg': (i + 1) === len ? false : true
             };
             logs.push(logInfo);
@@ -261,12 +265,15 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         }
     }
     public ostypeCheck() {
-        console.log(this.name, this.telPrompt, this.telPrompt, this.telTimeout, this.snmpTimeout);
+        this.regFlg = this.multiLogsFomatter(this.logs);
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.noCommsymbol(this.name);
         }
         this.telPromptNotNull = Validator.notNullCheck(this.telPrompt);
+        if (this.telPromptNotNull) {
+            this.telPromptFlg = Validator.regTest(this.telPrompt);
+        }
         this.telTimeoutNotNull = Validator.notNullCheck(this.telTimeout);
         if (this.telTimeoutNotNull) {
             this.telTimeoutFlg = Validator.numRegCheck(this.telTimeout);
@@ -278,11 +285,35 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         if (this.nameNotNull && this.nameFlg
             && this.telTimeoutNotNull && this.telTimeoutFlg
             && this.snmpTimeoutNotNull && this.snmpTimeoutFlg
-            && this.telPromptNotNull) {
+            && this.telPromptNotNull && this.telPromptFlg
+            && this.regFlg) {
             return true;
         } else {
             return false;
         }
+    }
+    public multiLogsFomatter(multiLogs: any) {
+        let regFlgTmp = true;
+        let uniqData: any = _.uniqBy(multiLogs, 'name');
+        _.remove(uniqData, function (value) {
+            return value['name'] === '';
+        });
+        let len = uniqData.length;
+        if (len > 0) {
+            for (let i = 0; i < uniqData.length; i++) {
+                if (!Validator.regTest(uniqData[i].name)) {
+                    uniqData[i].logRegFlg = false;
+                    regFlgTmp = false;
+                } else {
+                    uniqData[i].logRegFlg = true;
+                }
+            }
+            uniqData[len - 1]['logFlg'] = false;
+        } else {
+            uniqData.push(this.logsInit());
+        }
+        this.logs = uniqData;
+        return regFlgTmp;
     }
     public multiDataFomatter(multiData: any) {
         let uniqData: any = _.uniqBy(multiData, 'name');
@@ -315,7 +346,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                 'desc': this.desc,
                 'start_default_commands': this.multiDataFomatter(this.startCmds),
                 'end_default_commands': this.multiDataFomatter(this.endCmds),
-                'log_fail_judges': this.multiDataFomatter(this.logs),
+                'log_fail_judges': this.logs,
                 'telnet_prompt': this.telPrompt,
                 'snmp_timeout': this.snmpTimeout,
                 'telnet_timeout': this.telTimeout,

@@ -130,12 +130,13 @@
                 <label
                     for="log"
                     class="col-sm-4 control-label"
+                    [ngClass]="{'text-warning': !regFlg}"
                 >
                     CLIエラー文字列
                 </label>
                 <div class="col-sm-8">
                     <div *ngFor="let log of logs" style="width:100%">
-                        <div class="multi-input">
+                        <div class="multi-input" [ngClass]="{'has-warning': !log.logRegFlg}">
                             <input 
                                 type="text" 
                                 class="form-control" 
@@ -171,12 +172,12 @@
                 <label 
                     for="telPrompt"
                     class="col-sm-4 control-label"
-                    [ngClass]="{'text-warning': !telPromptNotNull}"
+                    [ngClass]="{'text-warning': !telPromptNotNull||!telPromptFlg}"
                 >
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     CLIデフォルトプロンプト文字列:
                 </label>
-                <div class="col-sm-8" [ngClass]="{'has-warning': !telPromptNotNull}">
+                <div class="col-sm-8" [ngClass]="{'has-warning': !telPromptNotNull||!telPromptFlg}">
                     <input 
                         type="text" 
                         class="form-control"
@@ -241,8 +242,14 @@
             <div class="col-sm-12 text-warning" *ngIf='!uniqueFlg'>
                 OS Type名は重複しています。
             </div>
+            <div class="col-sm-12 text-warning" *ngIf='!regFlg'>
+                    CLIエラー文字列は正規表現形式です。
+            </div> 
             <div class="col-sm-12 text-warning" *ngIf='!telPromptNotNull'>
                 CLIデフォルトプロンプト文字列は必須入力です。
+            </div> 
+            <div class="col-sm-12 text-warning" *ngIf='telPromptNotNull&&!telPromptFlg'>
+                CLIデフォルトプロンプト文字列は正規表現形式です。
             </div> 
             <div class="col-sm-12 text-warning" *ngIf='!telTimeoutNotNull'>
                 CLI(Telnet) タイムアウト値は必須入力です。

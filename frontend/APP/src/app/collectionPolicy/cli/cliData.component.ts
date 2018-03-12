@@ -44,8 +44,9 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     lineNumsNotNull: Boolean = true;
     lineNumsFlg: Boolean = true;
     lineNumsUnqFlg: Boolean = true;
+    xOffsetNotNull: Boolean = true;
     xOffsetFlg: Boolean = true;
-    yOffsetFlg: Boolean = true;
+    yOffsetNotNull: Boolean = true;
     extKeyNotNull: Boolean = true;
     delBtn: Boolean = false;
     otherCharFlg: Boolean = true;
@@ -91,8 +92,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     }
     public getDataRule(cpId: any, ruleId: any) {
         this.commInfo(cpId, ruleId).subscribe(res => {
-                this.processFlg = _.get(res, 'is_processing');
-                this.lockFlg = _.get(res, 'is_locked');
+            this.processFlg = _.get(res, 'is_processing');
+            this.lockFlg = _.get(res, 'is_locked');
             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                 if (res['data']) {
                     let data = res['data'];
@@ -126,7 +127,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
-        this.xOffsetFlg = Number.isInteger(this.xOffset);
+        this.xOffsetNotNull = Validator.notNullCheck(this.xOffset.toString());
+        console.log(this.xOffset, this.xOffsetNotNull);
+        if (this.xOffsetNotNull) {
+            this.xOffsetFlg = Validator.xOffsetCheck(this.xOffset.toString());
+            console.log(this.xOffsetFlg);
+        }
         if (this.selSplitChar === '3') {
             if (this.otherChar) {
                 this.otherCharFlg = true;
@@ -137,7 +143,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         // this.yOffsetFlg = Number.isInteger(this.yOffset);
         if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull && this.xOffsetFlg && this.otherCharFlg) {
+            && this.mrkStrNotNull && this.xOffsetNotNull
+            && this.xOffsetFlg && this.otherCharFlg) {
             return true;
         } else {
             return false;
@@ -153,8 +160,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
-        this.xOffsetFlg = Number.isInteger(this.xOffset);
-        this.yOffsetFlg = Number.isInteger(this.yOffset);
+        this.xOffsetNotNull = Validator.notNullCheck(this.xOffset.toString());
+        this.yOffsetNotNull = Validator.notNullCheck(this.yOffset.toString());
+        // if (this.xOffsetNotNull) {
+        //     this.xOffsetFlg = Validator.xOffsetCheck(this.xOffset);
+        // }
+        // this.yOffsetFlg = Number.isInteger(this.yOffset);
         if (this.selSplitChar === '3') {
             if (this.otherChar) {
                 this.otherCharFlg = true;
@@ -162,7 +173,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                 this.otherCharFlg = false;
             }
         }
-        if (this.nameNotNull && this.nameFlg && this.yOffsetFlg
+        if (this.nameNotNull && this.nameFlg && this.yOffsetNotNull
             && this.keyStrNotNull && this.keyStrFlg
             && this.mrkStrNotNull && this.xOffsetFlg && this.otherCharFlg) {
             return true;
@@ -322,7 +333,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                             alert('保存しました。');
                             this.bsModalRef.hide();
                             this.modalService.setDismissReason(dataInfo);
-                        }3
+                        } 3
                     } else {
                         if (errMsg) {
                             if (!_.get(errMsg, 'rule_name')) {

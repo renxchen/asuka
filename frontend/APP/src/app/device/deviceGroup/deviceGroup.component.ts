@@ -93,6 +93,17 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             //     }
             // },
             // text-overflow: ellipsis;
+            loadComplete: function (res) {
+                let code = _.get(_.get(res, 'new_token'), 'code');
+                if (code === 102) {
+                    alert('Signature has expired,please login again.');
+                    _t.router.navigate(['/login/']);
+                }
+                if (code === 103) {
+                    alert('This user is not authorized to access, please login again.');
+                    _t.router.navigate(['/login']);
+                }
+            },
             pager: '#devicePager',
             rowNum: 10,
             rowList: [5, 10, 15],

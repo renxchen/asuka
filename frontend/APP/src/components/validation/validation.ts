@@ -5,9 +5,19 @@ export class Validator {
     static includeChineseReg: String = '[\u4e00-\u9fa5]';
     static oidReg: String = '[0-9]+?(\.[0-9]+?)+';
     static numReg: String = '[0-9]';
-    static regTest(reg: any, value: any) {
-        let regInstance = new RegExp(reg);
-        return regInstance.test(value);
+    static xOffsetReg = '^\-?[1-9]*$';
+    static regTest(reg: any, value?: any) {
+        if (value) {
+            let regInstance = new RegExp(reg);
+            return regInstance.test(value);
+        } else {
+            try {
+                let regInstance = new RegExp(reg);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
     }
     static noSpecSymbol(param: any): boolean {
         if (Validator.regTest(Validator.noSpecSymbolReg, param)) {
@@ -46,6 +56,13 @@ export class Validator {
     }
     static numRegCheck(param: any) {
         if (Validator.regTest(Validator.numReg, param)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    static xOffsetCheck(param: any) {
+        if (Validator.regTest(Validator.xOffsetReg, param)) {
             return true;
         } else {
             return false;
