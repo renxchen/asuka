@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
 
-@author: kaxiliu
+@author: kaixliu
 @contact: kaixliu@cisco.com
 @file: device_upload.py
-@time: 2017/03/01 14:19
+@time: 2017/03/06 14:19
 @desc:
 
 """
