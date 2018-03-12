@@ -108,11 +108,11 @@
                     </div>
                     <div 
                         class="form-group" 
-                        [ngClass]="{'has-warning': !xOffsetNotNull||!xOffsetFlg}"
+                        [ngClass]="{'has-warning': !xOffsetNotNull||!xOffsetFlg||!xOffsetFlgB}"
                     >
                         <label 
                             for="xOffset" 
-                            [ngClass]="{'text-warning': !xOffsetNotNull||!xOffsetFlg}"
+                            [ngClass]="{'text-warning': !xOffsetNotNull||!xOffsetFlg||!xOffsetFlgB}"
                         >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             基準文字列からの距離：
@@ -216,9 +216,9 @@
                     </div>
                     <div 
                         class="form-group" 
-                        [ngClass]="{'has-warning': !yOffsetNotNull}"
+                        [ngClass]="{'has-warning': !yOffsetNotNull||!yOffsetFlg}"
                     >
-                        <label for="yOffset" [ngClass]="{'text-warning': !yOffsetNotNull}">
+                        <label for="yOffset" [ngClass]="{'text-warning': !yOffsetNotNull||!yOffsetFlg}">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             基準文字列からの距離：
                         </label>
@@ -523,10 +523,19 @@
                     基準文字列は必須入力です。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='!xOffsetNotNull'>
-                    基準からの距離は必須入力です。
+                    基準からの距離（行）は必須入力です。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='xOffsetNotNull&&!xOffsetFlg'>
-                    基準からのint距離は"0"以外を入力してください。
+                    基準からの距離（行）は0”以外の整数を入力してください。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='xOffsetNotNull&&!xOffsetFlgB'>
+                    基準からの距離（行）は整数を入力してください。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='!yOffsetNotNull'>
+                    基準からの距離は必須入力です。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='yOffsetNotNull&&!yOffsetFlg'>
+                    基準からの距離は整数を入力してください。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='!keyStrNotNull'>
                     データ識別子名は必須入力です。

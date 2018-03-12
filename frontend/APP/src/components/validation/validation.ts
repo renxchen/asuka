@@ -6,6 +6,7 @@ export class Validator {
     static oidReg: String = '[0-9]+?(\.[0-9]+?)+';
     static numReg: String = '[0-9]';
     static xOffsetReg = '^\-?[1-9]*$';
+    static offsetReg = '^-?[1-9]\d*|0$';
     static regTest(reg: any, value?: any) {
         if (value) {
             let regInstance = new RegExp(reg);
@@ -63,6 +64,13 @@ export class Validator {
     }
     static xOffsetCheck(param: any) {
         if (Validator.regTest(Validator.xOffsetReg, param)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    static offsetCheck(param: any) {
+        if (Validator.regTest(Validator.offsetReg, param)) {
             return true;
         } else {
             return false;
