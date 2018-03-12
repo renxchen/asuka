@@ -46,7 +46,9 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     lineNumsUnqFlg: Boolean = true;
     xOffsetNotNull: Boolean = true;
     xOffsetFlg: Boolean = true;
+    xOffsetFlgB: Boolean = true;
     yOffsetNotNull: Boolean = true;
+    yOffsetFlg: Boolean = true;
     extKeyNotNull: Boolean = true;
     delBtn: Boolean = false;
     otherCharFlg: Boolean = true;
@@ -161,11 +163,13 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         this.xOffsetNotNull = Validator.notNullCheck(this.xOffset.toString());
+        if (this.xOffsetNotNull) {
+            this.xOffsetFlgB = Validator.offsetCheck(this.xOffset);
+        }
         this.yOffsetNotNull = Validator.notNullCheck(this.yOffset.toString());
-        // if (this.xOffsetNotNull) {
-        //     this.xOffsetFlg = Validator.xOffsetCheck(this.xOffset);
-        // }
-        // this.yOffsetFlg = Number.isInteger(this.yOffset);
+        if (this.yOffsetNotNull) {
+            this.yOffsetFlg = Validator.offsetCheck(this.yOffset);
+        }
         if (this.selSplitChar === '3') {
             if (this.otherChar) {
                 this.otherCharFlg = true;
@@ -175,7 +179,9 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
         if (this.nameNotNull && this.nameFlg && this.yOffsetNotNull
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull && this.xOffsetFlg && this.otherCharFlg) {
+            && this.mrkStrNotNull && this.xOffsetFlg
+            && this.xOffsetFlgB && this.otherCharFlg
+            && this.yOffsetNotNull && this.yOffsetFlg) {
             return true;
         } else {
             return false;
