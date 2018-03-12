@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { ProcessbarComponent } from '../../components/processbar/processbar.component';
 import { Observable } from 'rxjs/Rx';
 import * as _ from 'lodash';
 declare var $: any;
@@ -25,8 +26,16 @@ export class DeviceLoginComponent implements OnInit {
     actionFlg: Boolean = true;
     formData: FormData;
     modalRef: BsModalRef;
+    processbar: BsModalRef;
     closeMsg: any;
     modalMsg: any;
+    modalConfig = {
+        animated: true,
+        keyboard: false,
+        backdrop: true,
+        ignoreBackdropClick: true,
+        class: 'modal-md'
+    };
     constructor(
         public httpClient: HttpClientComponent,
         private modalService: BsModalService,
@@ -59,8 +68,8 @@ export class DeviceLoginComponent implements OnInit {
         if (this.devLoginTable$) {
             this.devLoginTable$.GridUnload();
         }
-        // this.modalMsg = 'Uploading...Please wait.';
-        // this.showAlertModal(this.modalMsg, this.closeMsg, this.errorDevices);
+        this.processbar = this.modalService.show(ProcessbarComponent, this.modalConfig);
+        this.processbar.content.message = 'uploading...';
         this.http.post('/v1/api_device/upload', this.formData)
             .map(res => res.json())
             .catch(error => Observable.throw(error))
@@ -71,13 +80,15 @@ export class DeviceLoginComponent implements OnInit {
                 let data: any = _.get(res, 'error_list');
                 this.optId = _.get(res, 'operation_id');
                 if (status && status['status'].toLowerCase() === 'true') {
+                    $('#bar').width('100%');
+                    $('.modal').hide();
                     this.drawDevLoginTable();
                     this.actionFlg = false;
                     if (data && data.length > 0) {
                         this.modalMsg = '';
                         this.closeMsg = '閉じる';
                         this.errorDevices = data;
-                        this.showAlertModal(this.modalMsg, this.closeMsg, this.errorDevices);
+                            this.showAlertModal(this.modalMsg, this.closeMsg, this.errorDevices);
                     }
                 } else {
                     this.actionFlg = true;
@@ -158,6 +169,8 @@ export class DeviceLoginComponent implements OnInit {
         checkInfo['id_list'] = deviceSel;
         checkInfo['operation_id'] = this.optId;
         if (deviceSel.length > 0) {
+            this.processbar = this.modalService.show(ProcessbarComponent, this.modalConfig);
+            this.processbar.content.message = 'uploading...';
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put(checkUrl, checkInfo))
@@ -165,6 +178,8 @@ export class DeviceLoginComponent implements OnInit {
                     let status = _.get(res, 'status');
                     // check upload status; if success, call the function draw table;
                     if (status && status['status'].toLowerCase() === 'true') {
+                        $('.bar').width('100%');
+                        $('.modal').hide();
                         this.devLoginTable$.GridUnload();
                         this.drawDevLoginTable();
                     } else {

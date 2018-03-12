@@ -8,6 +8,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 })
 export class ProcessbarComponent implements OnInit, AfterViewInit {
     message: any;
+    process: any = '50%';
     constructor(
         private bsModalRef: BsModalRef
     ) { }
