@@ -24,11 +24,11 @@ export class OstypeLoginComponent implements OnInit {
     telPrompt: any;
     telTimeout: any;
     snmpTimeout: any;
-    // status??? 
     status: any = 0;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
+    regFlg: Boolean = true;
     telPromptFlg: Boolean = true;
     telPromptNotNull: Boolean = true;
     telTimeoutFlg: Boolean = true;
@@ -70,8 +70,10 @@ export class OstypeLoginComponent implements OnInit {
             'id': this.countLog,
             'name': '',
             'logFlg': false,
+            'logRegFlg': true
         };
         this.logs.push(firstLog);
+        return firstLog;
     }
     public addStartCmd() {
         let startCmdInfo = {
@@ -135,7 +137,8 @@ export class OstypeLoginComponent implements OnInit {
         let logInfo = {
             'id': this.logs.length + 1,
             'name': '',
-            'logFlg': false
+            'logFlg': false,
+            'logRegFlg': true
         };
         let id: any = logInfo['id'];
         let penult = id - 1;
@@ -161,11 +164,15 @@ export class OstypeLoginComponent implements OnInit {
         }
     }
     public ostypeCheck() {
+        this.regFlg = this.multiLogsFomatter(this.logs);
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.noCommsymbol(this.name);
         }
         this.telPromptNotNull = Validator.notNullCheck(this.telPrompt);
+        if (this.telPromptNotNull) {
+            this.telPromptFlg = Validator.regTest(this.telPrompt);
+        }
         this.telTimeoutNotNull = Validator.notNullCheck(this.telTimeout);
         if (this.telTimeoutNotNull) {
             this.telTimeoutFlg = Validator.numRegCheck(this.telTimeout);
@@ -177,20 +184,40 @@ export class OstypeLoginComponent implements OnInit {
         if (this.nameNotNull && this.nameFlg
             && this.telTimeoutNotNull && this.telTimeoutFlg
             && this.snmpTimeoutNotNull && this.snmpTimeoutFlg
-            && this.telPromptNotNull) {
+            && this.telPromptNotNull && this.telPromptFlg
+            && this.regFlg) {
             return true;
         } else {
             return false;
         }
     }
+    public multiLogsFomatter(multiLogs: any) {
+        let regFlgTmp = true;
+        let uniqData: any = _.uniqBy(multiLogs, 'name');
+        _.remove(uniqData, function (value) {
+            return value['name'] === '';
+        });
+        let len = uniqData.length;
+        if (len > 0) {
+            for (let i = 0; i < uniqData.length; i++) {
+                if (!Validator.regTest(uniqData[i].name)) {
+                    uniqData[i].logRegFlg = false;
+                    regFlgTmp = false;
+                } else {
+                    uniqData[i].logRegFlg = true;
+                }
+            }
+            uniqData[len - 1]['logFlg'] = false;
+        } else {
+            uniqData.push(this.logsInit());
+        }
+        this.logs = uniqData;
+        return regFlgTmp;
+    }
     public multiDataFomatter(multiData: any) {
         let uniqData: any = _.uniqBy(multiData, 'name');
         _.remove(uniqData, function (value) {
             return value['name'] === '';
-        });
-        let dataString: String = '';
-        _.each(uniqData, function (value) {
-            dataString = dataString + value['name'] + ',';
         });
         return uniqData;
         // console.log('return data', uniqData);
@@ -214,7 +241,7 @@ export class OstypeLoginComponent implements OnInit {
                 'desc': this.desc,
                 'start_default_commands': this.multiDataFomatter(this.startCmds),
                 'end_default_commands': this.multiDataFomatter(this.endCmds),
-                'log_fail_judges': this.multiDataFomatter(this.logs),
+                'log_fail_judges': this.logs,
                 'telnet_prompt': this.telPrompt,
                 'snmp_timeout': this.snmpTimeout,
                 'telnet_timeout': this.telTimeout,

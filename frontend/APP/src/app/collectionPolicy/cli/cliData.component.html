@@ -108,11 +108,11 @@
                     </div>
                     <div 
                         class="form-group" 
-                        [ngClass]="{'has-warning': !xOffsetFlg}"
+                        [ngClass]="{'has-warning': !xOffsetNotNull||!xOffsetFlg}"
                     >
                         <label 
                             for="xOffset" 
-                            [ngClass]="{'text-warning': !xOffsetFlg}"
+                            [ngClass]="{'text-warning': !xOffsetNotNull||!xOffsetFlg}"
                         >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             基準文字列からの距離：
@@ -216,9 +216,9 @@
                     </div>
                     <div 
                         class="form-group" 
-                        [ngClass]="{'has-warning': !yOffsetFlg}"
+                        [ngClass]="{'has-warning': !yOffsetNotNull}"
                     >
-                        <label for="yOffset" [ngClass]="{'text-warning': !yOffsetFlg}">
+                        <label for="yOffset" [ngClass]="{'text-warning': !yOffsetNotNull}">
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             基準文字列からの距離：
                         </label>
@@ -269,11 +269,11 @@
                     <!-- sdfghjkl -->
                     <div 
                         class="form-group" 
-                        [ngClass]="{'has-warning': !xOffsetFlg}"
+                        [ngClass]="{'has-warning': !xOffsetNotNull||!xOffsetFlg}"
                     >
                         <label 
                             for="xOffset" 
-                            [ngClass]="{'text-warning': !xOffsetFlg}"
+                            [ngClass]="{'text-warning': !xOffsetNotNull||!xOffsetFlg}"
                         >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             先頭文字からの距離：
@@ -522,6 +522,12 @@
                 <div class="col-sm-12 text-warning" *ngIf='!mrkStrNotNull'>
                     基準文字列は必須入力です。
                 </div>
+                <div class="col-sm-12 text-warning" *ngIf='!xOffsetNotNull'>
+                    基準からの距離は必須入力です。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='xOffsetNotNull&&!xOffsetFlg'>
+                    基準からのint距離は"0"以外を入力してください。
+                </div>
                 <div class="col-sm-12 text-warning" *ngIf='!keyStrNotNull'>
                     データ識別子名は必須入力です。
                 </div>
@@ -538,11 +544,8 @@
                   <div class="col-sm-12 text-warning" *ngIf='commandNotNull&&!commandFlg'>データ識別子名は半角英数字のみで入力してください</div>
                   <div class="col-sm-12 text-warning" *ngIf='!commandUnqFlg'>データ名は重複しています。</div> -->
                   <!-- <div class="col-sm-12 text-warning" *ngIf='!extractKeyNotNull'>データ識別子名は必須入力です。</div> -->
-                <div class="col-sm-12 text-warning" *ngIf='!xOffsetFlg'>
-                      xOffsetFlg: int needed
-                </div>
-                <div class="col-sm-12 text-warning" *ngIf='!yOffsetFlg'>
-                      yOffsetFlg: int needed
+                <div class="col-sm-12 text-warning" *ngIf='!yOffsetNotNull'>
+                    先頭文字からの距離は必須入力です。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf="selSplitChar=='3'&&!otherCharFlg">
                       その他は必須入力です

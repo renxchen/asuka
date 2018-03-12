@@ -97,7 +97,7 @@
                         [(ngModel)]="selectedOsType" 
                         id="osType" 
                         name="selectedOsType" 
-                        disabled]="!ostypeFlg"
+                        [disabled]="!ostypeFlg"
                         >
                         <option 
                             *ngFor="let item of osType" 

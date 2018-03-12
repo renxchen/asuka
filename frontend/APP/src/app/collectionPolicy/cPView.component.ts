@@ -82,6 +82,17 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.editBtn();
                 _t.deleteBtn();
             },
+            loadComplete: function (res) {
+                let code = _.get(_.get(res, 'new_token'), 'code');
+                if (code === 102) {
+                    alert('Signature has expired,please login again.');
+                    _t.router.navigate(['/login/']);
+                }
+                if (code === 103) {
+                    alert('This user is not authorized to access, please login again.');
+                    _t.router.navigate(['/login']);
+                }
+            },
             beforeSelectRow: function (rowid, e) { return false; },
             // beforeRequest: function () {
             //     let currentPage: any = $('#cpTable').jqGrid('getGridParam', 'page');
@@ -214,18 +225,16 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         }
     }
     public loadCompleteFun(res) {
-        if (res && !res['data']) {
-            if (res['new_token']) {
-                let code = res['new_token']['code'];
-                if (code === 1023) {
-                    alert('用户过期，请重新登录');
-                    this.router.navigate(['/login']);
-                } else if (code === 103) {
-                    alert('该用户无权访问，请重新登录');
-                    this.router.navigate(['/login']);
-                }
-            }
+        let code = _.get(_.get(res, 'new_token'), 'code');
+        if (code === 102) {
+            alert('Signature has expired');
+            console.log(this.router);
+            this.router.navigate(['/login/']);
         }
+        // else if (token === 103) {
+        //     alert('该用户无权访问，请重新登录');
+        //     this.router.navigate(['/login']);
+        // }
     }
     public showAlertModal(modalMsg?: any, closeMsg?: any, data?: any) {
         this.modalRef = this.modalService.show(ModalComponent);
