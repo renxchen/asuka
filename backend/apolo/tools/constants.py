@@ -9,23 +9,23 @@
 LOG_PATH = 'logs/system_logger.log'
 CSV_PATH = 'export/apolo_export.csv'
 #########################################
-# API Debug Flag
+# API Debug Flag, True: if true, the system will print detail debug information
 #########################################
 DEBUG_FLAG = True
 #########################################
-# API token related define
+# API Common constant define
 #########################################
-REFRESH_CODE = 101
-NO_REFRESH_CODE = 100
-TOKEN_ALREADY_EXPIRED_CODE = 102
-TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE = 103
-TOKEN = 'token'
-NEW_TOKEN = "NEW_TOKEN"
-TOKEN_EXPIRED_MSG = 'Signature has expired.'
-TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = 'There was no token found for current user.'
-#########################################
-# API response status define
-#########################################
+NUMBER_ZERO = 0
+NUMBER_ONE = 1
+NUMBER_TWO = 2
+NUMBER_THREE = 3
+NUMBER_FOUR = 4
+NUMBER_FIVE = 5
+NUMBER_SIX = 6
+NUMBER_SEVEN = 7
+NUMBER_EIGHT = 8
+NUMBER_NINE = 9
+MESSAGE = 'message'
 STATUS = 'status'
 CODE = 'code'
 SUCCESS = 'Success'
@@ -33,17 +33,50 @@ FAILED = 'Failed'
 TRUE = 'True'
 FALSE = 'False'
 #########################################
-# API parameters define
+# Action Policy Related define
 #########################################
-USERNAME = 'username'
-PASSWORD = 'password'
-MESSAGE = 'message'
+EQUAL_SIGN = '='
+GREATER_THAN_SIGN = '>'
+LESS_THAN_SIGN = '<'
+GREATER_THAN_OR_EQUAL_SIGN = '>='
+LESS_THAN_OR_EQUAL_SIGN = '<='
+NOT_EQUAL_SIGN = '!='
+PRIORITY_CRITICAL = 'CRITICAL'
+PRIORITY_MAJOR = 'MAJOR'
+PRIORITY_MINOR = 'MINOR'
+TRIGGER_TYPE_EXPRESSION_COMPARE = '演算比較'
+TRIGGER_TYPE_INTEGER_COMPARE = '数値比較'
+TRIGGER_TYPE_STRING__COMPARE = '文字列比較'
+TRIGGER_TYPE_FAILED = '取得失敗'
+COLUMN_A_OR_COLUMN_B_NOT_EXIST = 'Column A(column_a as table id %s) or Column B(column_b as table id %s) is not exist in current system, please connect Administrator.'
+COLUMN_A_COLUMN_B_VERIFY_FAILED = 'Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).'
+EXPRESSION_ILLEGAL = 'There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1)'
+EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = 'A and B maybe do not have the same value type(String or Integer)'
+EXPRESSION_A_B_NOT_EXIST = 'There is not A or B in expression, should be at least A in expression'
+EXPRESSION_CONDITION_ILLEGAL = 'The expression condition should be in <=, >=, ==, !=, >, <'
+EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION = 'There is illegal format in current expression, illegal character %s exist in left expression'
+EXPRESSION_ILLEGAL_IN_RIGHT_EXPRESSION = 'There is illegal format in current expression, illegal character %s exist in right expression'
+EXPRESSION_EVAL_VERIFY_FAILED = 'The expression %s eval verification failed, error message: %s'
+EXPRESSION_VERIFY_FAILED = 'The expression verify failed'
+#########################################
+# API token related define
+#########################################
+REFRESH_CODE = 101
+NO_REFRESH_CODE = 100
+TOKEN_ALREADY_EXPIRED_CODE = 102
+TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE = 103
+TOKEN_TIMEDELTA = 120
+TOKEN = 'token'
+NEW_TOKEN = "NEW_TOKEN"
 SUPERUSER = 'superuser'
 ADMIN = 'admin'
 STAFF = 'staff'
 ROLE = 'role'
 ORIG_IAT = 'orig_iat'
-TIMEDELTA = 120
+USERNAME = 'username'
+PASSWORD = 'password'
+TOKEN_EXPIRED_MSG = 'Signature has expired.'
+TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = 'There was no token found for current user.'
 #########################################
 # API information define
 #########################################

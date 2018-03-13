@@ -216,8 +216,9 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                                                                      method)
         # major parameters end
         if request.method.lower() == 'post' or request.method.lower() == 'put':
-            self.expression = self.create_expression(self.trigger_type, self.column_a, self.column_b)
-            self.expression_detail_result = self.tableid_change_to_itemid(self.column_a, self.column_b)
+            if self.column_a is not '':
+                self.expression = self.create_expression(self.trigger_type, self.column_a, self.column_b)
+                self.expression_detail_result = self.tableid_change_to_itemid(self.column_a, self.column_b)
 
     @staticmethod
     def map_condition(value):
@@ -230,18 +231,18 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         @return condition_exp: string condition
         """
         condition_exp = ''
-        if value == 0:
-            condition_exp = '<='
-        if value == 1:
-            condition_exp = '=='
-        if value == 2:
-            condition_exp = '>='
-        if value == 3:
-            condition_exp = '!='
-        if value == 4:
-            condition_exp = '<'
-        if value == 5:
-            condition_exp = '>'
+        if value == constants.NUMBER_ZERO:
+            condition_exp = constants.LESS_THAN_OR_EQUAL_SIGN
+        if value == constants.NUMBER_ONE:
+            condition_exp = constants.EQUAL_SIGN
+        if value == constants.NUMBER_TWO:
+            condition_exp = constants.GREATER_THAN_OR_EQUAL_SIGN
+        if value == constants.NUMBER_THREE:
+            condition_exp = constants.NOT_EQUAL_SIGN
+        if value == constants.NUMBER_FOUR:
+            condition_exp = constants.LESS_THAN_SIGN
+        if value == constants.NUMBER_FIVE:
+            condition_exp = constants.GREATER_THAN_SIGN
         return condition_exp
 
     @staticmethod
@@ -255,12 +256,12 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         @return priority: string priority
         """
         priority = ''
-        if value == 0:
-            priority = 'critical'
-        if value == 1:
-            priority = 'major'
-        if value == 2:
-            priority = 'minor'
+        if value == constants.NUMBER_ZERO:
+            priority = constants.PRIORITY_CRITICAL
+        if value == constants.NUMBER_ONE:
+            priority = constants.PRIORITY_MAJOR
+        if value == constants.NUMBER_TWO:
+            priority = constants.PRIORITY_MINOR
         return priority
 
     @staticmethod
@@ -274,14 +275,14 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         @return trigger_type: string trigger type
         """
         trigger_type = ''
-        if value == 0:
-            trigger_type = str('演算比較')
-        if value == 1:
-            trigger_type = '数値比較'
-        if value == 2:
-            trigger_type = '文字列比較'
-        if value == 3:
-            trigger_type = '取得失敗'
+        if value == constants.NUMBER_ZERO:
+            trigger_type = str(constants.TRIGGER_TYPE_EXPRESSION_COMPARE)
+        if value == constants.NUMBER_ONE:
+            trigger_type = str(constants.TRIGGER_TYPE_INTEGER_COMPARE)
+        if value == constants.NUMBER_TWO:
+            trigger_type = str(constants.TRIGGER_TYPE_STRING__COMPARE)
+        if value == constants.NUMBER_THREE:
+            trigger_type = str(constants.TRIGGER_TYPE_FAILED)
         return trigger_type
 
     @staticmethod
@@ -362,7 +363,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         expression_major = None
         expression_minor = None
         # 0:演算比較
-        if value == 0:
+        if value == constants.NUMBER_ZERO:
             # Min(A/B[10]) != 1500
             # A/B(10) > 1500 , 有括号的情况10表示倒数第10次
             # Hex2Dec(Min(A/B[10])) > 1500
@@ -378,7 +379,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 expression_minor = self.minor_threshold.replace('A(', str(column_a) + '(').replace('A[', str(
                     column_a) + '[').replace('B(', str(column_b) + '(').replace('B[', str(column_b) + '[')
         # 1:数値比較-->{4} == 'ok', 2:文字列比較-->{4} > 1000
-        elif value == 1 or value == 2:
+        elif value == constants.NUMBER_ONE or value == constants.NUMBER_TWO:
             if self.critical_threshold is not '':
                 expression_critical = '{' + str(column_a) + '}' + self.map_condition(self.critical_condition) + str(
                     self.critical_threshold)
@@ -389,7 +390,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 expression_minor = '{' + str(column_a) + '}' + self.map_condition(self.minor_condition) + str(
                     self.minor_threshold)
         # 3:取得失敗-->Fail(1)
-        elif value == 3:
+        elif value == constants.NUMBER_THREE:
             if self.critical_threshold is not '':
                 expression_critical = 'Fail(' + str(column_a) + ')'
             if self.major_threshold is not '':
@@ -425,7 +426,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         kwargs_b = {'table_id': column_b, 'item__enable_status': 1}
         column_a_result = self.get_data_table_items(**kwargs_a)
         column_b_result = self.get_data_table_items(**kwargs_b)
-        if len(column_a_result) > 0:
+        if len(column_a_result) > constants.NUMBER_ZERO:
             if column_a is not None and column_b is not None:
                 for per_column_a in column_a_result:
                     device_id_a = per_column_a['item__device__device_id']
@@ -454,7 +455,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     critical_detail = expression_detail['expression_critical']
                     major_detail = expression_detail['expression_major']
                     minor_detail = expression_detail['expression_minor']
-                    if self.trigger_type == 1 or self.trigger_type == 2 or self.trigger_type == 3:
+                    if self.trigger_type == constants.NUMBER_ONE or self.trigger_type == constants.NUMBER_TWO or self.trigger_type == constants.NUMBER_THREE:
                         critical_detail_list.append(critical_detail)
                         major_detail_list.append(major_detail)
                         minor_detail_list.append(minor_detail)
@@ -489,37 +490,43 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     self.major_threshold = ''
                     self.minor_threshold = ''
                     self.trigger_type = per.trigger_type
-                    if per.priority == 0:
+                    if per.priority == constants.NUMBER_ZERO:
                         self.critical_threshold = per.value
                         self.critical_condition = per.condition
-                        critical_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)['critical']
+                        critical_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)
+                        if critical_dic is False:
+                            continue
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
-                            'expression': critical_dic,
+                            'expression': critical_dic['critical'],
                             'priority': per.priority,
                             'status': 1,
                             'expression_view': per.expression,
                         }
                         data.append(data_trigger_detail)
-                    if per.priority == 1:
+                    if per.priority == constants.NUMBER_ONE:
                         self.major_threshold = per.value
                         self.major_condition = per.condition
-                        major_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)['major']
+                        major_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)
+                        if major_dic is False:
+                            continue
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
-                            'expression': major_dic,
+                            'expression': major_dic['major'],
                             'priority': per.priority,
                             'status': 1,
                             'expression_view': per.expression,
                         }
                         data.append(data_trigger_detail)
-                    if per.priority == 2:
+                    if per.priority == constants.NUMBER_TWO:
                         self.minor_threshold = per.value
                         self.minor_condition = per.condition
-                        minor_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)['minor']
+                        minor_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)
+                        if minor_dic is False:
+                            continue
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
-                            'expression': minor_dic,
+                            'expression': minor_dic['minor'],
                             'priority': per.priority,
                             'status': 1,
                             'expression_view': per.expression,
@@ -1000,13 +1007,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             data_dic['trigger_type'] = self.map_trigger_type(result_in_trigger[0].trigger_type)
             data_dic['desc'] = result_in_trigger[0].descr
             for per_priority in priority_dic:
-                if per_priority == 0:
+                if per_priority == constants.NUMBER_ZERO:
                     data_dic['critical_priority'] = queryset_action_all.filter(trigger_id=priority_dic[0]).values(
                         'action_type').annotate(num=Count('action_type'))[0]['action_type']
-                if per_priority == 1:
+                if per_priority == constants.NUMBER_ONE:
                     data_dic['major_priority'] = queryset_action_all.filter(trigger_id=priority_dic[1]).values(
                         'action_type').annotate(num=Count('action_type'))[0]['action_type']
-                if per_priority == 2:
+                if per_priority == constants.NUMBER_TWO:
                     data_dic['minor_priority'] = queryset_action_all.filter(trigger_id=priority_dic[2]).values(
                         'action_type').annotate(num=Count('action_type'))[0]['action_type']
             view_list_data.append(data_dic)
@@ -1068,7 +1075,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             if per['trigger__columnB']:
                 result_common['columnB'] = DataTable.objects.get(table_id=int(per['trigger__columnB'])).name
             priority = per['trigger__priority']
-            if priority == 0:
+            if priority == constants.NUMBER_ZERO:
                 result_critical['priority'] = self.map_priority(priority)
                 result_critical['value'] = per['trigger__value']
                 result_critical['condition'] = self.map_condition(per['trigger__condition'])
@@ -1088,7 +1095,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 result_action_critical['script_path'] = per['script_path']
                 result_action_critical['status'] = per['status']
                 result_action_critical_list.append(result_action_critical)
-            if priority == 1:
+            if priority == constants.NUMBER_ONE:
                 result_major['priority'] = self.map_priority(priority)
                 result_major['value'] = per['trigger__value']
                 result_major['condition'] = self.map_condition(per['trigger__condition'])
@@ -1108,7 +1115,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 result_action_major['script_path'] = per['script_path']
                 result_action_major['status'] = per['status']
                 result_action_major_list.append(result_action_major)
-            if priority == 2:
+            if priority == constants.NUMBER_TWO:
                 result_minor['priority'] = self.map_priority(priority)
                 result_minor['value'] = per['trigger__value']
                 result_minor['condition'] = self.map_condition(per['trigger__condition'])
@@ -1160,8 +1167,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     data = {
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: 'Column A(column_a as table id %s) or Column B(column_b as table id %s) '
-                                               'is not exist in DB.' % (self.column_a, self.column_b)
+                            constants.MESSAGE: constants.COLUMN_A_OR_COLUMN_B_NOT_EXIST % (self.column_a, self.column_b)
                         }
                     }
                     return api_return(data=data)
@@ -1173,7 +1179,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 trigger_detail = data['insert_trigger_detail']
                 if self.action_policy_name is not '':
                     get_name_from_cp = self.get_action_policy_in_trigger(**{'name': self.action_policy_name})
-                    if len(get_name_from_cp) > 0:
+                    if len(get_name_from_cp) > constants.NUMBER_ZERO:
                         data = {
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
@@ -1251,7 +1257,6 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             transaction.rollback()
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
-            self.logger.error(e)
             return exception_handler(e)
 
     def put(self):

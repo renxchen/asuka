@@ -22,7 +22,8 @@ formatter = Formatter(
     fmt='%(asctime)s - %(name)s - %(levelname)s - %(thread)d - %(filename)s - %(threadName)s - %(funcName)s - %(message)s',
     datefmt='%Y/%m/%d %p %I:%M:%S')
 script_dir = os.path.split(os.path.realpath(__file__))[0]
-log_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))), constants.LOG_PATH)
+log_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))),
+                        constants.LOG_PATH)
 file_handler = TimedRotatingFileHandler(log_path, when="D", interval=1, backupCount=5)
 file_handler.level = logging.INFO
 file_handler.formatter = formatter
@@ -33,7 +34,7 @@ encoder = api_settings.JWT_ENCODE_HANDLER
 decoder = api_settings.JWT_DECODE_HANDLER
 
 
-class token_mgr(object):
+class TokenMgrAPI(object):
     def __init__(self, username, password):
         self.username = username
         self.password = password
@@ -200,7 +201,7 @@ class Auth(object):
 class TokenRefresh(object):
     def __init__(self, token):
         self.token = token
-        self.time_diff = timedelta(seconds=constants.TIMEDELTA)
+        self.time_diff = timedelta(seconds=constants.TOKEN_TIMEDELTA)
 
     def refresh_token(self):
         try:

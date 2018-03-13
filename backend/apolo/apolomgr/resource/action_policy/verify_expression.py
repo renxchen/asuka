@@ -72,7 +72,8 @@ class ExpressionVerify(viewsets.ViewSet):
         reg_string_chars = re.compile("[^AB\(\)\[\]\s\d\w]")
         reg_function_chars = re.compile("MAX|MIN|AVG|HEX2DEC")
 
-        reg_item_value = re.compile("([AB])\(\d+\)|([AB])\[\d+\]")  # 支持A[1], B[1], A(1), B(1)
+        # 支持A[1], B[1], A(1), B(1)
+        reg_item_value = re.compile("([AB])\(\d+\)|([AB])\[\d+\]")
         reg_fun_value = re.compile("(?:MAX|MIN|AVG|HEX2DEC)\(\{0\}\)")
 
         """
@@ -84,18 +85,18 @@ class ExpressionVerify(viewsets.ViewSet):
         keys = []
         # 判断表达式是否满足A[1], B[1], A(1), B(1)格式。
         item_list = reg_item_value.findall(value)
-        if len(item_list) <= 0:
+        if len(item_list) <= constants.NUMBER_ZERO:
             result = {
-                'msg': 'The expression not support, support expressions: A[1], B[1], A(1), B(1)',
-                'status': False,
+                constants.STATUS: constants.FALSE,
+                constants.MESSAGE: constants.EXPRESSION_ILLEGAL
             }
             return result
         for item in item_list:
             item = re.search("([AB])", str(item)).group()
             if item not in self.param:
                 result = {
-                    'msg': 'A and B not in expression',
-                    'status': False,
+                    constants.STATUS: constants.FALSE,
+                    constants.MESSAGE: constants.EXPRESSION_A_B_NOT_EXIST,
                 }
                 return result
             if item not in keys:
@@ -103,10 +104,10 @@ class ExpressionVerify(viewsets.ViewSet):
             if self.param[item].upper() == "STRING":
                 is_string_exp = True
         # 当表达式存在A,B时，判断A,B的类型是否都是String or int
-        if len(keys) == 2 and is_string_exp and self.param["A"].upper() != self.param["B"].upper():
+        if len(keys) == constants.NUMBER_TWO and is_string_exp and self.param["A"].upper() != self.param["B"].upper():
             result = {
-                'msg': 'A and B do not have the same type(both of A,B should be str or int)',
-                'status': False,
+                constants.STATUS: constants.FALSE,
+                constants.MESSAGE: constants.EXPRESSION_A_B_VALUE_TYPE_NOT_SAME,
             }
             return result
 
@@ -119,10 +120,10 @@ class ExpressionVerify(viewsets.ViewSet):
         """
         # 按照 <>|<=|>=|==|!=|<|> 分割表达式， 分为三个部分
         values = re.split(operators, value)
-        if len(values) != 3:
+        if len(values) != constants.NUMBER_THREE:
             result = {
-                'msg': 'The operation condition maybe not in (<=|>=|==|!=|>|<), so can not split as operation condition correctly',
-                'status': False,
+                constants.STATUS: constants.FALSE,
+                constants.MESSAGE: constants.EXPRESSION_CONDITION_ILLEGAL,
             }
             return result
         # 表达式左面部分
@@ -132,10 +133,10 @@ class ExpressionVerify(viewsets.ViewSet):
         # 表达式右面部分
         exp_right = values[2].strip()
         # 判断表达式条件是否在规定条件(<>|<=|>=|==|!=|<|>)里
-        if re.search(re.compile(operators), exp_operator) is None or len(exp_operator) >= 3:
+        if re.search(re.compile(operators), exp_operator) is None or len(exp_operator) >= constants.NUMBER_THREE:
             result = {
-                'msg': 'The operation should be (<=|>=|==|!=|>|<)',
-                'status': False,
+                constants.STATUS: constants.FALSE,
+                constants.MESSAGE: constants.EXPRESSION_CONDITION_ILLEGAL,
             }
             return result
         # 替换左表达式中的运算符(MAX|MIN|AVG|HEX2DEC)为""
@@ -152,13 +153,13 @@ class ExpressionVerify(viewsets.ViewSet):
             msg = ''
             if reg_check.search(result_left) is not None:
                 # illegal_left = reg_check.search(result_left).group()
-                msg = 'The expression verify failed, illegal character %s exist in left expression' % result_left
+                msg = constants.EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION % result_left
             if reg_check.search(result_right) is not None:
                 # illegal_right = reg_check.search(result_right).group()
-                msg = 'The expression verify failed, illegal character %s exist in right expression' % result_right
+                msg = constants.EXPRESSION_ILLEGAL_IN_RIGHT_EXPRESSION % result_right
             result = {
-                'msg': msg,
-                'status': False,
+                constants.MESSAGE: msg,
+                constants.STATUS: constants.FALSE,
             }
             return result
 
@@ -180,8 +181,8 @@ class ExpressionVerify(viewsets.ViewSet):
         # 此时，如果表达式符合规范，应该为完全替换成{0}， 则不会出现在reg_illegal_chars范围内。
         if reg_illegal_chars.search(value) is not None:
             result = {
-                'msg': 'The expression verify failed, \w{0} situation exist',
-                'status': False,
+                constants.STATUS: constants.FALSE,
+                constants.MESSAGE: constants.EXPRESSION_VERIFY_FAILED,
             }
             return result
         # 将{0}替换成-9999， 进行eval运算验证
@@ -193,14 +194,14 @@ class ExpressionVerify(viewsets.ViewSet):
             eval(value)
         except Exception, e:
             result = {
-                'msg': 'eval verify failed for expression %s, error message: %s' % (initial_expression, e),
-                'status': False,
+                constants.MESSAGE: constants.EXPRESSION_EVAL_VERIFY_FAILED % (initial_expression, e),
+                constants.STATUS: constants.FALSE,
             }
             return result
 
         result = {
-            'msg': 'successful',
-            'status': True,
+            constants.MESSAGE: constants.SUCCESS,
+            constants.STATUS: constants.TRUE,
         }
         return result
 
@@ -228,17 +229,5 @@ class ExpressionVerify(viewsets.ViewSet):
 
 
 if __name__ == "__main__":
-    # Min(A[10]) != 1500 or 1500 != Min(A[10])
-    # Hex2Dec(Min(A[10])) > 1500
-    # Avg(A[10]) + Max(B[9]) > 1500
-    # {4} == "$%^*())"
-    # {4} > 1000
-    # Fail(1)
-    # a = "({0} - Hex2Dec(MAX(B[3])))*8 > 1"
     exp_v = ExpressionVerify('')
     print exp_v.expression_verify()
-    # reg_chars = re.compile("[^AB\d\+\-\*/%\(\)\[\]]")
-    # print eval("3 != 3 !=4")
-    # reg_item_value = re.compile("[AB]\(\d+\)|[AB]\[\d+\]")
-    # lista = reg_item_value.findall(a)
-    # print re.search("([AB])", lista[0]).group()
