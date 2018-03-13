@@ -144,72 +144,10 @@ class Tool(object):
         json_data = json.dumps({"now_time": now_time, "item_type": -1})
         response = requests.post(constants.DATA_COLLECTION_POST_URL, data=json_data)
         return response.json()
-        # test_json = {
-        #     "status": "success",
-        #     "items": [{
-        #         "policy_group_name": "snmp_test",
-        #         "policy_group_id": 3,
-        #         "priority": 1,
-        #         "item_type": 1,
-        #         "valid_status": True,
-        #         "item_id": 5,
-        #         "coll_policy_id": 5,
-        #         "device_name": "test device name1",
-        #         "device_id": 5,
-        #         "policy_name": "cd 3",
-        #         "exec_interval": 300
-        #     },
-        #         {
-        #             "policy_group_name": "cli_test",
-        #             "policy_group_id": 1,
-        #             "priority": 0,
-        #             "item_type": 0,
-        #             "valid_status": True,
-        #             "item_id": 4,
-        #             "coll_policy_id": 5,
-        #             "device_name": "test device name3",
-        #             "device_id": 3,
-        #             "policy_name": "cd 3",
-        #             "exec_interval": 300
-        #         },
-        #         {
-        #             "policy_group_name": "cli_test1",
-        #             "policy_group_id": 1,
-        #             "priority": 1,
-        #             "item_type": 0,
-        #             "valid_status": False,
-        #             "item_id": 6,
-        #             "coll_policy_id": 5,
-        #             "device_name": "iso",
-        #             "device_id": 6,
-        #             "policy_name": "policy test 3",
-        #             "exec_interval": 60
-        #         },
-        #         {
-        #             "policy_group_name": "cli_test1",
-        #             "policy_group_id": 1,
-        #             "priority": 1,
-        #             "item_type": 0,
-        #             "valid_status": False,
-        #             "item_id": 6,
-        #             "coll_policy_id": 6,
-        #             "device_name": "cli",
-        #             "device_id": 4,
-        #             "policy_name": "policy test 1",
-        #             "exec_interval": 30
-        #         },
-        #     ],
-        #     "message": ""
-        # }
-        # return test_json
 
     @staticmethod
     def get_policy_status(policy_id):
-        # {
-        #     "now_time": 1513312116,
-        #     "param": 2,
-        #     "param_type": 0  # 0: group 1: policy
-        # }
+
         req_body = {'now_time': time.time(), 'param': policy_id, 'param_type': 1}
         headers = {'content-type': 'application/json'}
         resp = requests.post(url=constants.POLICY_POST_URL, data=json.dumps(req_body), headers=headers)
@@ -221,14 +159,8 @@ class Tool(object):
                 return False
             else:
                 # is being used
-                return False
+                return True
 
-    # @staticmethod
-    # def get_policy_status_api(cp_id):
-    #     now_time = int(time.time())
-    #     json_data = json.dumps({"now_time": now_time, "param": cp_id, "param_type": 1})
-    #     response = requests.post(constants.POLICY_POST_URL, data=json_data)
-    #     return response.json()
 
     @staticmethod
     def replace_escape_char(escapeString):

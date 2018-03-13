@@ -45,6 +45,7 @@ class CollPolicyCliRuleSerializer(serializers.ModelSerializer):
         instance.rule_type = validated_data.get('rule_type', instance.rule_type)
         instance.end_mark_string = validated_data.get('end_mark_string', instance.end_mark_string)
         instance.start_line_num = validated_data.get('start_line_num', instance.start_line_num)
+        instance.end_line_num = validated_data.get('end_line_num', instance.end_line_num)
         instance.desc = validated_data.get('desc', instance.desc)
         instance.is_serial = validated_data.get('is_serial', instance.is_serial)
         instance.is_include = validated_data.get('is_include', instance.is_include)

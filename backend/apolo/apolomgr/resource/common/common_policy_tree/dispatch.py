@@ -52,8 +52,9 @@ class Dispatch(object):
                     rule_id = self.path[work_follow_num]
                     input_dict = self.rules[rule_id]
                     input_dict['deep'] = work_follow_num
-                    input_dict['start_line'] = 0
-                    input_dict['end_line'] = len(result)-1
+                    input_dict['rule_d_line_num'] = len(result[0]['reg_match_context'])
+                    input_dict['start_line'] =result[0]['start_line']
+                    input_dict['end_line'] = result[0]['end_line']
                     input_dict['block_path'] = result[0]['block_path']
                     setattr(self.instance, 'extract_policy', input_dict)
                     self.dispatch(work_follow_num)
