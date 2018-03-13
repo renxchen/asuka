@@ -11,7 +11,7 @@ import * as _ from 'lodash';
     templateUrl: './ostypeLogin.component.html',
     styleUrls: ['.././device.component.less']
 })
-export class OstypeLoginComponent implements OnInit {
+export class OstypeLoginComponent implements OnInit,AfterViewInit {
     apiPrefix: any;
     name: any;
     desc: any;
@@ -46,6 +46,7 @@ export class OstypeLoginComponent implements OnInit {
         this.endCmdsInit();
         this.logsInit();
     }
+    ngAfterViewInit() { }
     public startCmdsInit() {
         this.countStart = 1;
         let firstStartCmd = {
