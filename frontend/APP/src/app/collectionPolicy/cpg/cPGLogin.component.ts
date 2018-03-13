@@ -213,10 +213,10 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                         let policyId = rowObject.policy;
                         let cpType: any = rowObject.policy_policy_type;
                         if (cpType.toString() === '0') {
-                            return '<a href="/index/cliCPDetail?id=' + policyId
+                            return '<a href="/index/clicpdetail?id=' + policyId
                                 + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
                         } else if (cpType.toString() === '1') {
-                            return '<a href="/index/snmpCPDetail?id=' + policyId
+                            return '<a href="/index/snmpcpdetail?id=' + policyId
                                 + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
                         } else {
                             return;
