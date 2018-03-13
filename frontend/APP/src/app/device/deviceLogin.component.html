@@ -1,6 +1,6 @@
 <div class="ibox-content text-center p-md">
-    <div class="row">
-        <div class="col-lg-2 text-left">
+    <div class="row" style="width:100%">
+        <div class="col-lg-2 text-left" style="width:16%;padding-right:0px">
             <label 
                 title="Import CSV file" 
                 for="uploadInfo"
@@ -16,7 +16,7 @@
                     CSVによるデバイス登録
             </label>
         </div>
-        <div class="col-lg-10 text-left">
+        <div class="col-lg-10 text-left" style="width:84%">
             <button 
                 class="btn btn-primary" 
                 (click)="uploadFile()" 
@@ -49,8 +49,8 @@
             <div id='devLoginPager'></div>
         </div>
     </div>
-    <div class="row" style="margin-top:20px;" [hidden]="actionFlg">
-        <div class="col-lg-10 text-right">
+    <div class="row" style="margin-top:20px;"[hidden]="actionFlg">
+        <div class="col-lg-10 text-right" style="width:84%;padding-right:0px">
             <button 
                 class="btn btn-primary"
                 (click)="deviceLogin()"
@@ -59,7 +59,7 @@
                 デバイス登録を実施
             </button>
         </div>
-        <div class="col-lg-2 text-right">
+        <div class="col-lg-2 text-right" style="width:16%">
             <button 
                 class="btn btn-primary"
                 (click)="deviceCheck()"

@@ -57,7 +57,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
          * @param cellvalue: value of the cell;
                   options:includes attributes such as RowId,colModel;
                   rowObject:json data of the row
-         * @pre called during calling function drawCPTable
+         * @pre called during calling the function of drawCPTable
          * @return renturn action buttons with rowId
          * @author Dan Lv
          * @date 2018/01/23
@@ -96,7 +96,6 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         * @author Dan Lv
         * @date 2018/01/23
         */
-
         let _t = this;
         _t.cPTable = $('#cpTable').jqGrid({
             url: '/v1/api_collection_policy/',
@@ -160,6 +159,11 @@ export class CPViewComponent implements OnInit, AfterViewInit {
     }
 
     public detailBtn() {
+        /**
+        * @brief get the collection policy id and jump to detail page
+        * @author Dan Lv
+        * @date 2018/01/23
+        */
         let _t = this;
         $('.detail').click(function (event) {
             let id = $(event)[0].target.id;
@@ -173,16 +177,15 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         });
     }
     public editBtn() {
+        /**
+        * @brief get the collection policy id and jump to edit page
+        * @author Dan Lv
+        * @date 2018/01/23
+        */
         let _t = this;
         _t.apiPrefix = '/v1';
-        // let url = '/api_collection_policy/?policy_type=' + parseInt(this.cPType, 0);
         $('.edit').click(function (event) {
             let id = $(event)[0].target.id;
-            // _t.httpClient.setUrl(_t.apiPrefix);
-            // _t.httpClient
-            //     .toJson(_t.httpClient.get(url + '?id=' + id))
-            //     .subscribe(res => {
-            //         if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
             if (_t.cPType === '0') {
                 _t.router.navigate(['/index/clicpedit'],
                     { queryParams: { 'id': id } });
@@ -190,25 +193,15 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.router.navigate(['/index/snmpcpedit'],
                     { queryParams: { 'id': id } });
             }
-            // } else {
-            //     if (res['status'] && res['status']['message']) {
-            //                 alert(res['status']['message']);
-            //             }
-            // check this cp occupation, add 'occupation' feedback
-            // if (res['status']['message'] && res['status']['message'] === 'occupation') {
-            //     this.modalMsg = 'This collection policy is being occupied';
-            //     this.closeMsg = 'close';
-            //     _t.showAlertModal(this.modalMsg, this.closeMsg);
-            // } else {
-            //     if (res['status'] && fres['status']['message']) {
-            //         alert(res['status']['message']);
-            //     }
-            // }
-            // }
-            // });
         });
     }
     public deleteBtn() {
+        /**
+        * @brief get the collection policy id and delete this collection policy
+        * @post must call the function of drawCPTable to refresh gird if delete sucessfully
+        * @author Dan Lv
+        * @date 2018/01/23
+        */
         let _t = this;
         _t.apiPrefix = '/v1';
         let url = '/api_collection_policy/';
@@ -233,16 +226,13 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                                 $('#cpTable').jqGrid().trigger('reloadGrid');
                             });
                         } else {
-                            // check this cp occupation, add 'occupation' feedback
                             if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
-                                // let msgTmp = msg.split('_IN_')[1].toLowerCase();
-                                // console.log(msg, msgTmp);
                                 this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
                                 this.closeMsg = 'close';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
                             } else {
-                                if (res['status'] && res['status']['message']) {
-                                    alert(res['status']['message']);
+                                if (msg) {
+                                    alert(msg);
                                 }
                             }
                         }
@@ -251,6 +241,11 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         });
     }
     public cpLogin() {
+        /**
+        * @brief get the type of collection policy and jump to login page
+        * @author Dan Lv
+        * @date 2018/01/23
+        */
         if (this.cPType === '0') {
             this.router.navigate(['/index/clicplogin'],
                 { queryParams: { 'cPType': parseInt(this.cPType, 0) } });
@@ -260,6 +255,11 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         }
     }
     public showAlertModal(modalMsg?: any, closeMsg?: any, data?: any) {
+        /**
+        * @brief show modal dialog
+        * @author Dan Lv
+        * @date 2018/01/23
+        */
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
