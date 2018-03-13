@@ -216,7 +216,7 @@ def api_action_policy(request):
     return HttpResponse(run_request_method(resource_object))
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))
 def api_regenerate_trigger_detail(request):

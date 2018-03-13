@@ -75,7 +75,7 @@ class ActionPolicyColumnVerifyViewSet(viewsets.ViewSet):
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.FALSE,
-                        constants.MESSAGE: constants.FAILED
+                        constants.MESSAGE: constants.COLUMN_A_COLUMN_B_VERIFY_FAILED
                     },
                 }
                 return api_return(data=data)
