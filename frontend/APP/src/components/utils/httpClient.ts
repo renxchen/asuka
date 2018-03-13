@@ -97,7 +97,7 @@ export class HttpClientComponent {
         .map(v => v)
         .catch((res: any) => {
           if (localStorage.getItem('requestFailed') !== 'failed') {
-            alert('Server request failed! Please contact the administrator.');
+            alert('Request failed! Please contact the administrator.');
           }
           localStorage.setItem('requestFailed', 'failed');
           return Observable.of({
