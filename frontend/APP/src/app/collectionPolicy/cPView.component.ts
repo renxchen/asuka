@@ -1,6 +1,13 @@
-import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
+/**
+ * @author: Dan Lv
+ * @contact: danlv@cisco.com
+ * @file: cPView.component.ts
+ * @time: 2018/01/23
+ * @desc: collection policy summary
+ */
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../components/modal/modal.component';
@@ -9,7 +16,7 @@ declare var $: any;
 @Component({
     selector: 'cp-view',
     templateUrl: './cPView.component.html',
-    styleUrls: ['collectionPolicy.component.less']
+    styleUrls: ['./collectionPolicy.component.less']
 })
 export class CPViewComponent implements OnInit, AfterViewInit {
     cPType: any;
@@ -30,16 +37,31 @@ export class CPViewComponent implements OnInit, AfterViewInit {
     constructor(
         private httpClient: HttpClientComponent,
         private router: Router,
+        private activedRoute: ActivatedRoute,
         private modalService: BsModalService
     ) { }
     ngOnInit() {
-        this.cPType = '0';
+        let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cptype'];
+        if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
+            this.cPType = cPTypeTmp;
+        } else {
+            this.cPType = '0';
+        }
     }
     ngAfterViewInit() {
-        this.drawCPTable('コマンド', 'cli_command', this.cPType);
+        this.drawCPTable('show コマンド', 'cli_command', this.cPType);
     }
-    // btn formatter
     public formatterBtn(cellvalue, options, rowObject) {
+        /**
+         * @brief format the action buttons
+         * @param cellvalue: value of the cell;
+                  options:includes attributes such as RowId,colModel;
+                  rowObject:json data of the row
+         * @pre called during calling function drawCPTable
+         * @return renturn action buttons with rowId
+         * @author Dan Lv
+         * @date 2018/01/23
+         */
         return '<button class="btn btn-xs btn-primary detail" id='
             + rowObject['coll_policy_id'] + '><i class="fa fa-info-circle"></i> 確認</button>&nbsp;'
             + '<button class="btn btn-xs btn-success edit" id='
@@ -47,20 +69,34 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             + '<button class="btn btn-xs btn-warning delete" id='
             + rowObject['coll_policy_id'] + '><i class="fa fa-minus-square"></i> 削除</button>';
     }
-    // change the type of policy
     public changeCPType(event) {
+        /**
+         * @brief used to switch button
+         * @param event:data of the click event
+         * @author Dan Lv
+         * @date 2018/01/23
+         */
         event.stopPropagation();
         this.cPType = $(event.target).val();
         if (this.cPType === '0') {
             this.cPTable.GridUnload();
-            this.drawCPTable('コマンド', 'cli_command', this.cPType);
+            this.drawCPTable('show コマンド', 'cli_command', this.cPType);
         } else {
             this.cPTable.GridUnload();
             this.drawCPTable('OID', 'snmp_oid', this.cPType);
         }
     }
-    // init table
     public drawCPTable(thirdCol?: any, thirdName?: any, cPType?: any) {
+        /**
+        * @brief get data and display it in the grid
+        * @param thirdCol:the label of the grid;
+                 thirdName:the third name of the grid;
+                 cpType：the type of collection policy
+        * @pre called after the Dom has been ready
+        * @author Dan Lv
+        * @date 2018/01/23
+        */
+
         let _t = this;
         _t.cPTable = $('#cpTable').jqGrid({
             url: '/v1/api_collection_policy/',
@@ -222,17 +258,6 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             this.router.navigate(['/index/snmpcplogin'],
                 { queryParams: { 'cPType': parseInt(this.cPType, 0) } });
         }
-    }
-    public loadCompleteFun(res) {
-        let code = _.get(_.get(res, 'new_token'), 'code');
-        if (code === 102) {
-            alert('Signature has expired');
-            this.router.navigate(['/login/']);
-        }
-        // else if (token === 103) {
-        //     alert('该用户无权访问，请重新登录');
-        //     this.router.navigate(['/login']);
-        // }
     }
     public showAlertModal(modalMsg?: any, closeMsg?: any, data?: any) {
         this.modalRef = this.modalService.show(ModalComponent);
