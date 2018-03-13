@@ -16,14 +16,14 @@
             <div class="form-group">
                 <label
                     for="name" 
-                    class="col-sm-4 control-label" 
+                    class="col-sm-3 control-label" 
                     [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
                 >
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     コレクションポリシー名：
                 </label>
                 <div 
-                    class="col-sm-7" 
+                    class="col-sm-9" 
                     [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
                 >
                     <input 
@@ -41,11 +41,11 @@
             <div class="form-group">
                 <label
                     for="desc" 
-                    class="col-sm-4 control-label" 
+                    class="col-sm-3 control-label" 
                 >
                     概要：
                 </label>
-                <div class="col-sm-7">
+                <div class="col-sm-9">
                     <textarea
                         class="form-control" 
                         id="desc" 
@@ -60,14 +60,14 @@
             <div class="form-group">
                 <label 
                     for="cliCommand" 
-                    class="col-sm-4 control-label" 
+                    class="col-sm-3 control-label" 
                     [ngClass]="{'text-warning': !cmdFlg||!cmdNotNull}"
                 >
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     実行コマンド:
                 </label>
                 <div 
-                    class="col-sm-7" 
+                    class="col-sm-9" 
                     [ngClass]="{'has-warning': !cmdFlg||!cmdNotNull}"
                     >
                     <input 
@@ -84,12 +84,12 @@
             <div class="form-group">
                 <label 
                     for="osType" 
-                    class="col-sm-4 control-label"
+                    class="col-sm-3 control-label"
                 >
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     OS Type：
                 </label>
-                <div class="col-sm-7">
+                <div class="col-sm-9">
                     <select 
                         class="form-control" 
                         [(ngModel)]="selectedOsType" 
@@ -142,7 +142,7 @@
     </div>
     <div class="modal-footer">
         <div class="form-group">
-            <div class="col-sm-11 text-right">
+            <div class="col-sm-12 text-right">
                 <button class="btn btn-primary" id="add" (click)="cPEdit()">
                     <i class="fa fa-check-square-o"></i>
                     保存する
