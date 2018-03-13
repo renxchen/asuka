@@ -170,7 +170,7 @@ export class DeviceLoginComponent implements OnInit {
         checkInfo['operation_id'] = this.optId;
         if (deviceSel.length > 0) {
             this.processbar = this.modalService.show(ProcessbarComponent, this.modalConfig);
-            this.processbar.content.message = 'uploading...';
+            this.processbar.content.message = 'ステータスチェック中...';
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put(checkUrl, checkInfo))

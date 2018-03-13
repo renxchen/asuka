@@ -160,7 +160,7 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                         this.closeMsg = '一覧へ戻る';
                         this.showAlertModal(this.modalMsg, this.closeMsg);
                         $('#modalButton').on('click', function () {
-                            _t.router.navigate(['/index/']);
+                            _t.router.navigate(['/index/cpview/'], { queryParams: { 'cptype': 1 } });
                         });
                     } else {
                         if (res['status']['message'] === 'CP_NAME_DUPLICATE') {
