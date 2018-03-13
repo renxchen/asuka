@@ -9,7 +9,9 @@ from __future__ import unicode_literals
 
 import time
 from django.db import models
+
 app_label = "db_units"
+
 
 class User(models.Model):
     name = models.CharField(max_length=32, blank=True)
@@ -125,8 +127,9 @@ class DataTable(models.Model):
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING, db_column="coll_policy")
     groups = models.ForeignKey('Groups', models.DO_NOTHING, db_column="groups")
     tree = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
-                                                     db_column='tree_id',
-                                                     blank=True, null=True)
+                             db_column='tree_id',
+                             blank=True, null=True)
+
     class Meta:
         # managed = False
         db_table = 'data_table'
@@ -355,7 +358,7 @@ class Items(models.Model):
     # add 1.17
     policys_groups = models.ForeignKey('PolicysGroups', models.DO_NOTHING)
 
-    #add 2.28 v1.5
+    # add 2.28 v1.5
     enable_status = models.IntegerField(blank=True, null=True)
     groups = models.ForeignKey(Groups, models.DO_NOTHING)
 
@@ -465,8 +468,6 @@ class Schedules(models.Model):
                 return 0
 
 
-
-
 class TriggerDetail(models.Model):
     trigger_detail_id = models.AutoField(primary_key=True)
     expression = models.CharField(max_length=255, blank=True, null=True)
@@ -494,6 +495,7 @@ class Triggers(models.Model):
     expression = models.CharField(max_length=255, blank=True, null=True)
     columnA = models.CharField(max_length=255, blank=True, null=True)
     columnB = models.CharField(max_length=255, blank=True, null=True)
+
     class Meta:
         # managed = False
         db_table = 'triggers'
