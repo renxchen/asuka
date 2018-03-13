@@ -52,7 +52,6 @@ class DevicePreViewSet(APIView):
                 filename.open()
                 reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8"), delimiter=',', dialect=dialect)
                 headers = reader.fieldnames
-                print type(headers)
                 if json.dumps(headers,encoding="utf-8",ensure_ascii=False) == json.dumps(headers_expect,encoding="utf-8",ensure_ascii=False):
                     pass
                 else:
