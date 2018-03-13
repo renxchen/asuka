@@ -409,6 +409,10 @@ class PolicysGroups(models.Model):
     def policy_name(self):
         return self.policy.name
 
+    @property
+    def policy_policy_type(self):
+        return self.policy.policy_type
+
 
 class Schedules(models.Model):
     schedule_id = models.AutoField(primary_key=True)
