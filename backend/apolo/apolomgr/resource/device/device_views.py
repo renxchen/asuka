@@ -129,8 +129,6 @@ class DevicesViewSet(viewsets.ViewSet):
 
     def get(self):
         try:
-            act = ActionPolicyViewSet(request=self.request)
-            act.regenerate_trigger_detail()
             devices_id = []
             if self.group_id != '':
                 if self.group_id == "-1":
