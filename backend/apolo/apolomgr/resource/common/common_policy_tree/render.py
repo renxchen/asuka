@@ -105,6 +105,7 @@ class Render(Tool, DBOpt):
             color_index = 0
             # leaf node area
             node = self.dispatch_result[deep]
+            print node
             for item in node:
                 # mark the extracted data
                 # get the returned value
@@ -113,6 +114,7 @@ class Render(Tool, DBOpt):
                     if not item['extract_match_flag']:
                         pass
                     else:
+                        # command xml tag
                         basic_character_index = item['basic_character_index']
                         basic_character = item['basic_character']
                         extract_data_pair = item['extract_data_result']
@@ -144,6 +146,7 @@ class Render(Tool, DBOpt):
                             replace_char = basic_character
                             if split_char in basic_character:
                                 replace_char = basic_character.replace(split_char, constants.INSTEAD)
+
                             basic_character_line_num = item['basic_character_line_num']
                             data_list[basic_character_line_num] = data_list[basic_character_line_num].\
                                 replace(basic_character, '{}{}{}'.format(constants.REPLACE_START_MARK,
@@ -152,9 +155,12 @@ class Render(Tool, DBOpt):
                             # combine to new text
                             element_index = 0
                             is_chanced = 0
+                            # there is Regular expression special chars in split char
+                            sp_char = Tool.replace_escape_char(split_char)
                             for i in range(len(data_list)):
                                 line = data_list[i]
-                                line_arry = re.split(split_char, line)
+                                line_arry = re.split(sp_char, line)
+                                #line_arry = re.split(split_char, line)
                                 for j in range(len(line_arry)):
                                     if element_index == basic_character_index:
                                         basic_character_new = line_arry[j]
@@ -186,7 +192,6 @@ class Render(Tool, DBOpt):
                                         break
                                     element_index += 1
                             html_context = '\n'.join(data_list)
-                            print html_context
                     # replace block
                         html_context_list = html_context.split('\n')
                         j = 0
@@ -211,26 +216,41 @@ class Render(Tool, DBOpt):
                                                              constants.HTML_FONT_END))
 
                         if i == start_line:
-                            all_data[i] = '<div style="background-color:{};display: inline-block;">{}'.format(
-                                self.colors[deep][color_index], all_data[i])
-                            #color_index += 1
-                            if color_index ==1:
-                                color_index = 0
-                            else:
-                                color_index=1
-                            # block rule by regular
+                            if item['rule_type'] != 8:
+                                all_data[i] = '<div style="background-color:{};display: inline-block;">{}'.format(
+                                    self.colors[deep][color_index], all_data[i])
+
+                                if color_index ==1:
+                                    color_index = 0
+                                else:
+                                    color_index=1
+                            # if  block rule is block_rule_by_regular
                             if item.has_key('reg_match_context'):
-                                (lm, match_string) =item['reg_match_context']
-                                if constants.EXTRACT_DATA_HTML_FONT_START not in all_data[lm]:
+                                for tuple_item in item['reg_match_context']:
+
+                                    (lm, match_string) = tuple_item
+                                    if constants.EXTRACT_DATA_HTML_FONT_START in all_data[lm]:
+                                        extract_match=re.search('{}(.*){}'.format(constants.EXTRACT_DATA_HTML_FONT_START,
+                                                                   constants.EXTRACT_DATA_HTML_FONT_END),
+                                                  all_data[lm])
+                                        if extract_match is not None:
+                                            buffer_data = extract_match.group(1)
+                                            if buffer_data in match_string or match_string in buffer_data:
+                                                all_data[lm] = '<div style="background-color:{};' \
+                                                               'display: inline-block;">{}</div>' \
+                                                    .format(self.colors[deep][color_index], all_data[lm])
+                                                continue
+
                                     all_data[lm] = all_data[lm].replace(match_string,
                                                                       '{}{}{}'.format(
                                                                           constants.BLOCK_START_HTML_FONT_START,
                                                                           match_string,
                                                                           constants.HTML_FONT_END))
+                                    all_data[lm] = '<div style="background-color:{};display: inline-block;">{}</div>'\
+                                        .format(self.colors[deep][color_index], all_data[lm])
 
 
-
-                        if i == end_line:
+                        if i == end_line and item['rule_type']!=8:
                             if item.has_key('is_include'):
                                 if item['is_include']:
                                     all_data[i] = all_data[i].replace(item['block_end_characters'],

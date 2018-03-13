@@ -14,7 +14,8 @@ import traceback
 from django.db.models import Q
 from rest_framework import viewsets
 
-from backend.apolo.models import CollPolicyCliRule, CollPolicy, CollPolicyRuleTree
+from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.models import CollPolicyCliRule, CollPolicy, CollPolicyRuleTree, DataTable
 from backend.apolo.serializer.policytree_serializer import CollPolicyCliRuleSerializer
 from backend.apolo.tools import views_helper, constants
 from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree
@@ -37,10 +38,13 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         try:
             coll_policy_id = views_helper.get_request_value(self.request, key='coll_policy_id', method_type='GET')
             rule_id = views_helper.get_request_value(self.request, key='rule_id', method_type='GET')
-            print coll_policy_id
             query_set = CollPolicyRuleTree.objects.filter(rule=rule_id, coll_policy=coll_policy_id)
             is_used = False
+            is_processing = False
+            is_locked = False
             if len(query_set) > 0:
+                is_processing = self.__judge_rule_is_processing(coll_policy_id)
+                is_locked = self.__judge_rule_is_locked(rule_id, coll_policy_id)
                 is_used = True
             rule_info = CollPolicyCliRule.objects.get(ruleid=rule_id)
             result_dict = CollPolicyCliRuleSerializer(rule_info).data
@@ -62,6 +66,8 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
             data = {
                 'rule_is_used': is_used,
+                'is_processing': is_processing,
+                'is_locked': is_locked,
                 'data': result_dict,
                 'new_token': self.new_token,
                 constants.STATUS: {
@@ -254,7 +260,6 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
     @staticmethod
     def __set_input_rule_data(front_data):
-        print front_data
         rule_data_dict = {'name': front_data['name']}
         if front_data.has_key('key_str'):
             rule_data_dict['key_str'] = front_data['key_str']
@@ -371,3 +376,18 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             return True
         else:
             return False
+
+    @staticmethod
+    def __judge_rule_is_processing(coll_policy_id):
+        return Tool.get_policy_status(coll_policy_id)
+
+    @staticmethod
+    def __judge_rule_is_locked(rule_id, coll_policy_id):
+        tree_id = CollPolicyRuleTree.objects.filter(rule=rule_id, coll_policy=coll_policy_id).values('treeid')
+        tree_count =DataTable.objects.filter(tree__in=tree_id).count()
+        print tree_count
+        if tree_count> 0:
+            return True
+        else:
+            return False
+
