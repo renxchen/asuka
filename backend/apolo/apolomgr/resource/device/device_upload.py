@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
 
-@author: kaixliu
+@author: kaxiliu
 @contact: kaixliu@cisco.com
 @file: device_upload.py
-@time: 2018/03/06 14:19
+@time: 2017/03/01 14:19
 @desc:
 
 """
@@ -45,11 +45,27 @@ class DevicePreViewSet(APIView):
         try:
             with transaction.atomic():
                 import os
+                headers_expect = ["Hostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
+                                  "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
                 filename = self.request.FILES['file']
                 dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8").read(1024))
                 filename.open()
                 reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8"), delimiter=',', dialect=dialect)
                 headers = reader.fieldnames
+                print type(headers)
+                if json.dumps(headers,encoding="utf-8",ensure_ascii=False) == json.dumps(headers_expect,encoding="utf-8",ensure_ascii=False):
+                    pass
+                else:
+                    message = 'the title in csv_flie is wrong, please check '
+                    data = {
+                        'data': [],
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: message
+                        },
+                    }
+                    return api_return(data=data)
                 error_list = []
                 hostname_list = []
                 file_x = []

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
 
-@author: kimli
-@contact: kimli@cisco.com
-@file: ostype_views.py
-@time: 2017/12/19 14:19
+@author: kaixliu
+@contact: kaixliu@cisco.com
+@file: device_views.py
+@time: 2018/03/01 14:19
 @desc:
 
 """
@@ -25,6 +25,8 @@ from django.db.models.query import QuerySet
 import requests
 from multiprocessing.dummy import Pool as ThreadPool
 from backend.apolo.apolomgr.resource.data_collection.data_collection import DataCollectionOptCls
+from backend.apolo.apolomgr.resource.action_policy.action_policy_views import ActionPolicyViewSet
+# from backend.apolo.apolomgr.resource.action_policy import action_policy_views
 import collections
 CLI_THREADPOOL_SIZE = 20
 TIME_OUT = 5
@@ -127,6 +129,8 @@ class DevicesViewSet(viewsets.ViewSet):
 
     def get(self):
         try:
+            act = ActionPolicyViewSet(request=self.request)
+            act.regenerate_trigger_detail()
             devices_id = []
             if self.group_id != '':
                 if self.group_id == "-1":
@@ -390,6 +394,9 @@ class DevicesViewSet(viewsets.ViewSet):
                     data_check["items"] = group_list
                     opt = DataCollectionOptCls(**data_check)
                     opt.update_items()
+                    # for kim check
+                    act = ActionPolicyViewSet(request=self.request)
+                    act.regenerate_trigger_detail()
                 data = {
                         'new_token': self.new_token,
                         constants.STATUS: {
