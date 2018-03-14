@@ -24,7 +24,7 @@ export class OstypeLoginComponent implements OnInit,AfterViewInit {
     telPrompt: any;
     telTimeout: any;
     snmpTimeout: any;
-    status: any = 0;
+    status: any = 1;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
@@ -248,7 +248,7 @@ export class OstypeLoginComponent implements OnInit,AfterViewInit {
                 'telnet_timeout': this.telTimeout,
                 'status': this.status
             };
-            console.log(ostypeInfo);
+            // console.log(ostypeInfo);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post('/api_device_ostype/', ostypeInfo))

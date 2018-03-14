@@ -30,7 +30,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
     telPrompt: any;
     telTimeout: any;
     snmpTimeout: any;
-    status: any = 0;
+    status: any = 1;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
@@ -131,7 +131,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
     public startCmdsToList(data: any) {
         let startCmds: any = [];
         let dataList: any = data.split('，');
-        console.log(data, dataList);
         let len = dataList.length;
         for (let i = 0; i < dataList.length; i++) {
             let startCmdInfo: any = {};
@@ -163,14 +162,13 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
     public logsToList(data: any) {
         let logs: any = [];
         let dataList: any = data.split('，');
-        console.log('3', data, dataList);
         let len = dataList.length;
         for (let i = 0; i < dataList.length; i++) {
             let logInfo: any = {};
             logInfo = {
                 'id': i + 1,
                 'name': dataList[i],
-                'logRegFlg':true,
+                'logRegFlg': true,
                 'logFlg': (i + 1) === len ? false : true
             };
             logs.push(logInfo);
@@ -189,10 +187,8 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             this.startCmds[penult - 1]['startCmdFlg'] = true;
         }
         this.startCmds.push(_.cloneDeep(startCmdInfo));
-        console.log('add--last', this.startCmds);
     }
     public delStartCmd(startCmd: any) {
-        console.log('del', startCmd);
         for (let i = 0; i < this.startCmds.length; i++) {
             if (this.startCmds.length > 1 && this.startCmds[i]['id'] === startCmd['id']) {
                 this.startCmds.splice(i, 1);
@@ -218,10 +214,8 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             this.endCmds[penult - 1]['endCmdFlg'] = true;
         }
         this.endCmds.push(_.cloneDeep(endCmdInfo));
-        console.log('add--last', this.endCmds);
     }
     public delEndCmd(endCmd: any) {
-        console.log('del', endCmd);
         for (let i = 0; i < this.endCmds.length; i++) {
             if (this.endCmds.length > 1 && this.endCmds[i]['id'] === endCmd['id']) {
                 this.endCmds.splice(i, 1);
@@ -247,10 +241,8 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             this.logs[penult - 1]['logFlg'] = true;
         }
         this.logs.push(_.cloneDeep(logInfo));
-        console.log('add--last', this.logs);
     }
     public delLogCmd(log: any) {
-        console.log('del', log);
         for (let i = 0; i < this.logs.length; i++) {
             if (this.logs.length > 1 && this.logs[i]['id'] === log['id']) {
                 this.logs.splice(i, 1);
@@ -352,7 +344,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                 'telnet_timeout': this.telTimeout,
                 'status': this.status
             };
-            console.log(ostypeInfo);
+            // console.log(ostypeInfo);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put('/api_device_ostype/', ostypeInfo))
