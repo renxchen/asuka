@@ -1,3 +1,10 @@
+/**
+* @author: Dan Lv
+* @contact: danlv@cisco.com
+* @file: cPGDetail.component.ts
+* @time: 2018/03/13
+* @desc: display collection policy group in detail
+*/
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
@@ -30,7 +37,7 @@ export class CPGDetailComponent implements OnInit {
         let cPIdTmp = this.activatedRoute.snapshot.queryParams['id'];
         if (cPIdTmp) {
             this.cPGId = cPIdTmp;
-            this.getCPGInfo( this.cPGId);
+            this.getCPGInfo(this.cPGId);
         } else {
             this.router.navigate(['/index/cpgview/']);
         }
@@ -42,6 +49,12 @@ export class CPGDetailComponent implements OnInit {
     }
 
     public getCPGInfo(id: any) {
+        /**
+        * @brief get the specified collection policy group data and assignment variable
+        * @param id:collection policy id
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.apiPrefix = '/v1';
         let url = '/api_collection_policy_group/?id=';
         this.httpClient.setUrl(this.apiPrefix);
@@ -66,6 +79,11 @@ export class CPGDetailComponent implements OnInit {
             });
     }
     public getOsType() {
+        /**
+        * @brief get all of the ostype data
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -85,6 +103,11 @@ export class CPGDetailComponent implements OnInit {
             });
     }
     public getCPNames() {
+        /**
+        * @brief get all of the collection policy  data
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -102,6 +125,13 @@ export class CPGDetailComponent implements OnInit {
             });
     }
     public moreInfoTable(data: any) {
+        /**
+        * @brief display data in the grid
+        * @param data:the data displayed in the grid
+        * @pre called after calling the function of getCPGInfo
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
         this.cpgActionGrid$ = $('#moreInfoTable').jqGrid({
             datatype: 'local',
@@ -135,30 +165,30 @@ export class CPGDetailComponent implements OnInit {
                         }
                     }
                 },
-                { name: 'exec_interval', index: 'exec_interval', width: 30, align: 'center', formatter: _t.execIntervalFomatter },
+                { name: 'exec_interval', index: 'exec_interval', width: 30, align: 'center', formatter: _t.execIntervalFormatter },
             ],
 
             beforeSelectRow: function (rowid, e) { return false; },
-            beforeRequest: function () {
-                let currentPage: any = $('#cpTable').jqGrid('getGridParam', 'page');
-                let rowNum: any = $('#cpTable').jqGrid('getGridParam', 'rowNum');
-                let records: any = $('#cpTable').jqGrid('getGridParam', 'records');
-                let totalPages = records % rowNum;
-                if (records > 0 && currentPage > totalPages) {
-                    $('#cpTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
-                }
-            },
+            // beforeRequest: function () {
+            //     let currentPage: any = $('#cpTable').jqGrid('getGridParam', 'page');
+            //     let rowNum: any = $('#cpTable').jqGrid('getGridParam', 'rowNum');
+            //     let records: any = $('#cpTable').jqGrid('getGridParam', 'records');
+            //     let totalPages = records % rowNum;
+            //     if (records > 0 && currentPage > totalPages) {
+            //         $('#cpTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
+            //     }
+            // },
             pager: '#cPGPager',
             rowNum: 5,
             rowList: [5, 10, 15],
-            width: 840,
+            autowidth: true,
             height: 150,
             viewrecords: true,
-            emptyrecords: 'Nothing to display',
+            emptyrecords: 'No data to display',
         });
         $('#cpglogintable').jqGrid({ searchOnEnter: true, defaultSearch: 'cn' });
     }
-    public execIntervalFomatter(id: any) {
+    public execIntervalFormatter(id: any) {
         if (id.toString() === '1') {
             return '1分';
         } else if (id.toString() === '2') {
@@ -174,6 +204,14 @@ export class CPGDetailComponent implements OnInit {
         }
     }
     public navCPDetail(cellvalue, options, rowObject) {
+        /**
+        * @brief jump to the specified collection policy detail page
+        * @param cellvalue: value of cell;
+                options:includes attributes such as RowId,colModel;
+                rowObject:json data of the row
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let policyId = rowObject.policy;
         let cpType: any;
         let cpNames: any = this.cpNames;
@@ -194,6 +232,11 @@ export class CPGDetailComponent implements OnInit {
         }
     }
     public cPGEdit() {
+        /**
+        * @brief jump to collection policy group edit page
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.router.navigate(['/index/cpgedit'],
             { queryParams: { 'id': this.cPGId } });
     }

@@ -1,3 +1,11 @@
+/**
+* @author: Dan Lv
+* @contact: danlv@cisco.com
+* @file: cPGView.component.ts
+* @time: 2018/03/13
+* @desc: collection policy group summary
+*/
+
 import { Component, OnInit, AfterViewInit, ComponentFactory } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Router } from '@angular/router';
@@ -41,6 +49,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         this.drawCPGTable();
     }
     public drawCPGTable() {
+        console.log(1);
         let _t = this;
         this.cpgTable$ = $('#cpgTable').jqGrid({
             url: '/v1/api_collection_policy_group/',
@@ -62,17 +71,17 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 _t.deleteBtn();
             },
             beforeSelectRow: function (rowid, e) { return false; },
-            beforeRequest: function () {
-                let currentPage: any = $('#cpgTable').jqGrid('getGridParam', 'page');
-                let rowNum: any = $('#cpgTable').jqGrid('getGridParam', 'rowNum');
-                let records: any = $('#cpgTable').jqGrid('getGridParam', 'records');
-                let totalPages = records % rowNum;
-                if (records > 0 && currentPage > totalPages) {
-                    $('#cpgTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
-                }
-            },
+            // beforeRequest: function () {
+            //     let currentPage: any = $('#cpgTable').jqGrid('getGridParam', 'page');
+            //     let rowNum: any = $('#cpgTable').jqGrid('getGridParam', 'rowNum');
+            //     let records: any = $('#cpgTable').jqGrid('getGridParam', 'records');
+            //     let totalPages = records % rowNum;
+            //     if (records > 0 && currentPage > totalPages) {
+            //         $('#cpgTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
+            //     }
+            // },
             pager: '#cpgPager',
-            rowNum: 5,
+            rowNum: 10,
             rowList: [5, 10, 15],
             autowidth: true,
             height: 340,

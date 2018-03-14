@@ -71,11 +71,29 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                 { name: 'ip', index: 'ip', width: 50, align: 'center', search: true },
                 { name: 'telnet_port', index: 'telnet_port', width: 40, align: 'center', search: true },
                 { name: 'snmp_port', index: 'snmp_port', width: 40, align: 'center', search: true },
-                { name: 'snmp_community', index: 'snmp_community', width: 50, align: 'center', search: true },
-                { name: 'snmp_version', index: 'snmp_version', width: 50, align: 'center', search: true },
+                {
+                    name: 'snmp_community', index: 'snmp_community', width: 50, align: 'center', search: true,
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (cellvalue === null) {
+                            return '-';
+                        }
+                    }
+                },
+                {
+                    name: 'snmp_version', index: 'snmp_version', width: 50, align: 'center', search: true,
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (cellvalue === null) {
+                            return '-';
+                        }
+                    }
+                },
                 {
                     name: 'login_expect', index: 'login_expect', width: 50, align: 'center', search: true,
-                    // formatter: _t.loginExpFormmater
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (cellvalue === null) {
+                            return '-';
+                        }
+                    }
                 },
                 { name: 'device_type', index: 'device_type', width: 40, align: 'center', search: true },
                 { name: 'telnet_status', index: 'telnet_status', width: 50, align: 'center', search: true },
@@ -196,6 +214,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
         let group$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
                 this.getGroups();
+                this.getGroupInfo(id);
             }
             this.unsubscribe(group$);
         });
@@ -221,6 +240,10 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                     if (status && status['status'].toLowerCase() === 'true') {
                         alert('Delete successfully');
                         this.getGroups();
+                        if (id = this.groupId) {
+                            this.drawDeviceTable('-1');
+                            this.getPanelData('-1');
+                        }
                     } else {
                         if (msg) {
                             alert(msg);

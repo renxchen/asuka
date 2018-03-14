@@ -14,9 +14,6 @@ import * as _ from 'lodash';
 })
 
 export class OstypeEditComponent implements OnInit, AfterViewInit {
-    /*
-    @brif:
-    **/
     id: any;
     apiPrefix: any;
     name: any;
@@ -120,7 +117,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                         }
                         this.snmpTimeout = _.get(data[0], 'snmp_timeout');
                         this.telTimeout = _.get(data[0], 'telnet_timeout');
-                        console.log(this.startCmds, this.endCmds, this.logs);
                     }
                 } else {
                     alert(msg);
@@ -146,7 +142,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
     public endCmdsToList(data: any) {
         let endCmds: any = [];
         let dataList: any = data.split('，');
-        console.log('2', data, dataList);
         let len = dataList.length;
         for (let i = 0; i < dataList.length; i++) {
             let endCmdInfo: any = {};
@@ -312,10 +307,10 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         _.remove(uniqData, function (value) {
             return value['name'] === '';
         });
-        let dataString: String = '';
-        _.each(uniqData, function (value) {
-            dataString = dataString + value['name'] + ',';
-        });
+        // let dataString: String = '';
+        // _.each(uniqData, function (value) {
+        //     dataString = dataString + value['name'] + ',';
+        // });
         return uniqData;
         // // 返回格式以逗号分隔“，”包含“，”这种情况是否考虑;只能是数字和机会记号（指的是什么）
         // if (dataString !== '') {
@@ -329,7 +324,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         // }
     }
     public ostypeLogin() {
-        this.multiDataFomatter(this.startCmds);
         if (this.ostypeCheck()) {
             this.apiPrefix = '/v1';
             let ostypeInfo: any = {
@@ -338,7 +332,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                 'desc': this.desc,
                 'start_default_commands': this.multiDataFomatter(this.startCmds),
                 'end_default_commands': this.multiDataFomatter(this.endCmds),
-                'log_fail_judges': this.logs,
+                'log_fail_judges': this.multiDataFomatter(this.logs),
                 'telnet_prompt': this.telPrompt,
                 'snmp_timeout': this.snmpTimeout,
                 'telnet_timeout': this.telTimeout,

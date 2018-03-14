@@ -106,7 +106,14 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 { label: 'コレクションポリシー名', name: 'name', index: 'name', width: 50, align: 'center', search: true },
                 { label: 'OS Type', name: 'ostype_name', index: 'ostype', width: 50, align: 'center', search: true },
                 { label: thirdCol, name: thirdName, index: thirdName, width: 50, align: 'center', search: true },
-                { label: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true },
+                {
+                    abel: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true,
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (cellvalue === null) {
+                            return '-';
+                        }
+                    }
+                },
                 {
                     label: 'アクション', name: 'action', width: 50, align: 'center', search: false,
                     formatter: this.formatterBtn, resizable: false
@@ -219,7 +226,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                         let msg: any = _.get(status, 'message');
                         let data = _.get(res, 'data');
                         if (status && status['status'].toLowerCase() === 'true') {
-                            this.modalMsg = '削除に成功しました。';
+                            this.modalMsg = '削除しました。';
                             this.closeMsg = '閉じる';
                             _t.showAlertModal(this.modalMsg, this.closeMsg);
                             $('#modalButton').on('click', function () {

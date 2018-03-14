@@ -1,12 +1,12 @@
 export class Validator {
     // need modify noSpecSymbolReg
-    static noSpecSymbolReg: String = '[\x00-\xff]+';
-    static noCommsymbolReg: String = '[\x00-\xff]+';
-    static includeChineseReg: String = '[\u4e00-\u9fa5]';
-    static oidReg: String = '[0-9]+?(\.[0-9]+?)+';
-    static numReg: String = '[0-9]';
-    static xOffsetReg = '^\-?[1-9]*$';
-    static offsetReg = '^-?[0-9]\d*$';
+    static noSpecSymbolReg: RegExp = /[\x00-\xff]+/;
+    static noCommsymbolReg: RegExp = /[\x00-\xff]+/;
+    static includeChineseReg: RegExp = /[\u4e00-\u9fa5]/;
+    static oidReg: RegExp = /[0-9]+?(\.[0-9]+?)+/;
+    static numReg: RegExp = /[0-9]/;
+    static xOffsetReg: RegExp = /^-?[1-9]\d*$/;
+    static offsetReg: RegExp = /^-?[0-9]\d*$/;
     static regTest(reg: any, value?: any) {
         if (value) {
             let regInstance = new RegExp(reg);

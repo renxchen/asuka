@@ -338,7 +338,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                             alert('保存しました。');
                             this.bsModalRef.hide();
                             this.modalService.setDismissReason(dataInfo);
-                        } 3
+                        }
                     } else {
                         if (errMsg) {
                             if (!_.get(errMsg, 'rule_name')) {
@@ -371,7 +371,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                             let dataInfo: any = {};
                             dataInfo['dataTree'] = _.get(data, 'data_rule_tree_json');
                             dataInfo['ruleName'] = _.get(data, 'new_name');
-                            alert('編集しました。');
+                            alert('保存しました。');
                             this.bsModalRef.hide();
                             this.modalService.setDismissReason(dataInfo);
                         }

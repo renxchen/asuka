@@ -1,3 +1,10 @@
+/**
+* @author: Dan Lv
+* @contact: danlv@cisco.com
+* @file: snmpCPDetail.component.ts
+* @time: 2017/01/25
+* @desc: display snmp collection policy in detail
+*/
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
