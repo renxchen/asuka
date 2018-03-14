@@ -57,7 +57,7 @@ class OsTypeViewSet(viewsets.ViewSet):
         except Exception, e:
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
-            return False
+            return exception_handler(e)
 
     def get(self):
         try:
