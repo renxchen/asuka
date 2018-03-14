@@ -42,7 +42,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         self.id = views_helper.get_request_value(self.request, 'id', method)
         self.name = views_helper.get_request_value(self.request, 'name', method)
         self.desc = views_helper.get_request_value(self.request, 'desc', method)
-        self.ostype = views_helper.get_request_value(self.request, 'ostype', method)
+        self.ostype = views_helper.get_request_value(self.request, 'ostype_name', method)
         self.execute_ing = True
         # verify execute_ing status
         self.get_execute_ing()
