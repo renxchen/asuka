@@ -235,6 +235,8 @@ class DevicePreViewSet(APIView):
                             flag_err += 1
                         else:
                             dict_check['group'] = True
+                    else:
+                        dict_check['group'] = True
                     if flag_err > 0:
                         error_list.append(dict_check)
                     else:
