@@ -88,10 +88,8 @@ export class OstypeLoginComponent implements OnInit,AfterViewInit {
             this.startCmds[penult - 1]['startCmdFlg'] = true;
         }
         this.startCmds.push(_.cloneDeep(startCmdInfo));
-        console.log('add--last', this.startCmds);
     }
     public delStartCmd(startCmd: any) {
-        console.log('del', startCmd);
         for (let i = 0; i < this.startCmds.length; i++) {
             if (this.startCmds.length > 1 && this.startCmds[i]['id'] === startCmd['id']) {
                 this.startCmds.splice(i, 1);
@@ -117,10 +115,8 @@ export class OstypeLoginComponent implements OnInit,AfterViewInit {
             this.endCmds[penult - 1]['endCmdFlg'] = true;
         }
         this.endCmds.push(_.cloneDeep(endCmdInfo));
-        console.log('add--last', this.endCmds);
     }
     public delEndCmd(endCmd: any) {
-        console.log('del', endCmd);
         for (let i = 0; i < this.endCmds.length; i++) {
             if (this.endCmds.length > 1 && this.endCmds[i]['id'] === endCmd['id']) {
                 this.endCmds.splice(i, 1);
@@ -147,10 +143,8 @@ export class OstypeLoginComponent implements OnInit,AfterViewInit {
             this.logs[penult - 1]['logFlg'] = true;
         }
         this.logs.push(_.cloneDeep(logInfo));
-        console.log('add--last', this.logs);
     }
     public delLogCmd(log: any) {
-        console.log('del', log);
         for (let i = 0; i < this.logs.length; i++) {
             if (this.logs.length > 1 && this.logs[i]['id'] === log['id']) {
                 this.logs.splice(i, 1);
@@ -234,7 +228,6 @@ export class OstypeLoginComponent implements OnInit,AfterViewInit {
         // }
     }
     public ostypeLogin() {
-        this.multiDataFomatter(this.startCmds);
         if (this.ostypeCheck()) {
             this.apiPrefix = '/v1';
             let ostypeInfo: any = {
@@ -242,7 +235,7 @@ export class OstypeLoginComponent implements OnInit,AfterViewInit {
                 'desc': this.desc,
                 'start_default_commands': this.multiDataFomatter(this.startCmds),
                 'end_default_commands': this.multiDataFomatter(this.endCmds),
-                'log_fail_judges': this.logs,
+                'log_fail_judges': this.multiDataFomatter(this.logs),
                 'telnet_prompt': this.telPrompt,
                 'snmp_timeout': this.snmpTimeout,
                 'telnet_timeout': this.telTimeout,
