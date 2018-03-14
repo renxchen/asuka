@@ -183,9 +183,9 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         """
         try:
             pgs = self.get_policy_group(**kwargs)
-            if len(pgs) > 0:
-                pgs.delete()
-                return True
+            # if len(pgs) > 0:
+            pgs.delete()
+                # return True
         except Exception, e:
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
@@ -360,6 +360,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                     'desc': self.desc,
                     'ostypeid': self.ostype,
                 }
+                print data
                 # collection policy group is running, just name, desc and on/off in table can modify.
                 if self.execute_ing:
                     if isinstance(queryset, str):
@@ -399,32 +400,32 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                         return api_return(data=data)
                 # collection policy group not exist in schedule, cpg name, cpg desc, cpg ostype and all the data in table can modify
                 else:
-                    result = self.del_policy_group(**kwargs)
-                    if result is True:
-                        serializer = CollPolicyGroupSerializer(queryset, data=data)
-                        if serializer.is_valid(Exception):
-                            serializer.save()
-                            policy_group_data = []
-                            for per_cp in cps:
-                                per_cp['policy_group'] = int(serializer.data.get('policy_group_id'))
-                                per_cp['history'] = time.time()
-                                per_cp['policy'] = per_cp['policy']
-                                policy_group_data.append(per_cp)
-                            serializer_related = PolicyGroupSerializer(data=policy_group_data, many=True)
-                            if serializer_related.is_valid(Exception):
-                                serializer_related.save()
-                            data = {
-                                'data': {
-                                    'data_coll_policy': serializer.data,
-                                    'data_policys_groups': serializer_related.data,
-                                },
-                                'new_token': self.new_token,
-                                constants.STATUS: {
-                                    constants.STATUS: constants.TRUE,
-                                    constants.MESSAGE: constants.SUCCESS
-                                }
+                    self.del_policy_group(**kwargs)
+                    # if result is True:
+                    serializer = CollPolicyGroupSerializer(queryset, data=data)
+                    if serializer.is_valid(Exception):
+                        serializer.save()
+                        policy_group_data = []
+                        for per_cp in cps:
+                            per_cp['policy_group'] = int(serializer.data.get('policy_group_id'))
+                            per_cp['history'] = time.time()
+                            per_cp['policy'] = per_cp['policy']
+                            policy_group_data.append(per_cp)
+                        serializer_related = PolicyGroupSerializer(data=policy_group_data, many=True)
+                        if serializer_related.is_valid(Exception):
+                            serializer_related.save()
+                        data = {
+                            'data': {
+                                'data_coll_policy': serializer.data,
+                                'data_policys_groups': serializer_related.data,
+                            },
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.TRUE,
+                                constants.MESSAGE: constants.SUCCESS
                             }
-                            return api_return(data=data)
+                        }
+                        return api_return(data=data)
         except Exception, e:
             transaction.rollback()
             if constants.DEBUG_FLAG:
