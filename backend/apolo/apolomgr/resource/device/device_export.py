@@ -66,7 +66,7 @@ class ExportDevicesViewSet(viewsets.ViewSet):
         try:
             queryset = Devices.objects.filter(status=1)
             header = [u'Hostname', u'IP Address', u'Telnet Port', u'SNMP Port', u'SNMP Community', u'SNMP Version',
-                    u'Login Expect', u'Device Type', u'Os Type', u'Group']
+                    u'Login Expect', u'Device Type', u'OS Type', u'Group']
             csv_data = []
             csv_data.insert(0, header)
             for i in queryset:
