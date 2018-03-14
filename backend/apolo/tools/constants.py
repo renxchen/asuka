@@ -56,7 +56,7 @@ EXPRESSION_A_B_NOT_EXIST = 'There is not A or B in expression, should be at leas
 EXPRESSION_CONDITION_ILLEGAL = 'The expression condition should be in <=, >=, ==, !=, >, <'
 EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION = 'There is illegal format in current expression, illegal character %s exist in left expression'
 EXPRESSION_ILLEGAL_IN_RIGHT_EXPRESSION = 'There is illegal format in current expression, illegal character %s exist in right expression'
-EXPRESSION_EVAL_VERIFY_FAILED = 'The expression %s eval verification failed, error message: %s'
+EXPRESSION_EVAL_VERIFY_FAILED = 'The expression %s eval verification failed.'
 EXPRESSION_VERIFY_FAILED = 'The expression verify failed'
 #########################################
 # API token related define
