@@ -85,6 +85,7 @@ class DevicesSerializer(serializers.ModelSerializer):
         instance.telnet_port = validated_data.get('telnet_port', instance.telnet_port)
         instance.snmp_port = validated_data.get('snmp_port', instance.snmp_port)
         instance.snmp_version = validated_data.get('snmp_version', instance.snmp_version)
+        instance.snmp_community = validated_data.get('snmp_community', instance.snmp_community)
         instance.login_expect = validated_data.get('login_expect', instance.login_expect)
         instance.status = validated_data.get('status', instance.status)
         instance.device_type = validated_data.get('device_type', instance.device_type)

@@ -45,15 +45,19 @@ class DevicePreViewSet(APIView):
         try:
             with transaction.atomic():
                 import os
-                headers_expect = ["Hostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
+                headers_expect1 = ["\xef\xbb\xbfHostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
+                                  "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
+                headers_expect2 = ["Hostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
                                   "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
                 filename = self.request.FILES['file']
                 dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8").read(1024))
                 filename.open()
                 reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8"), delimiter=',', dialect=dialect)
                 headers = reader.fieldnames
-                if json.dumps(headers,encoding="utf-8",ensure_ascii=False) == json.dumps(headers_expect,encoding="utf-8",ensure_ascii=False):
-                    pass
+                if headers == headers_expect1:
+                    hostname = "\xef\xbb\xbfHostname"
+                elif headers == headers_expect2:
+                    hostname = "Hostname"
                 else:
                     message = 'the title in csv_flie is wrong, please check '
                     data = {
@@ -77,8 +81,8 @@ class DevicePreViewSet(APIView):
                 path_csv = os.path.abspath(os.path.join(file_dir, str(operation_id) + "_" + filename.name))
                 for f in reader:
                     file_x.append(f)
-                    if f.get('Hostname')!='':
-                        hostname_list.append(f.get('Hostname'))
+                    if f.get(hostname)!='':
+                        hostname_list.append(f.get(hostname))
                     else:
                         message = 'Empty Hostname'
                         data = {
@@ -113,7 +117,7 @@ class DevicePreViewSet(APIView):
                     flag_err = 0
                     # ipv4 check
                     dict_check = {}
-                    dict_check['hostname'] = f.get('Hostname')
+                    dict_check['hostname'] = f.get(hostname)
                     ip = f.get('IP Address')
                     pattern_ip = "((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))"
                     if re.match(pattern_ip, ip) is None:
@@ -231,13 +235,15 @@ class DevicePreViewSet(APIView):
                             flag_err += 1
                         else:
                             dict_check['group'] = True
+                    else:
+                        dict_check['group'] = True
                     if flag_err > 0:
                         error_list.append(dict_check)
                     else:
                         ostype = groups_views.GroupsViewSet.get_ostype({'name':f.get('OS Type')})
                         valid_device = {
                             'operation_id': operation_id,
-                            'hostname': f.get('Hostname'),
+                            'hostname': f.get(hostname),
                             'ip': f.get('IP Address'),
                             'telnet_port': int(f.get('Telnet Port')),
                             'snmp_port': int(f.get('SNMP Port')),

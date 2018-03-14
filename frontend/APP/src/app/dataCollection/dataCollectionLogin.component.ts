@@ -119,13 +119,26 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     // if (res['data']) {
                     this.deviceGroups = res['device_groups'];
                     this.policyGroups = res['cp_groups'];
-                    if (this.id == -1) {
-                        this.deviceGroup = this.deviceGroups[0]['group_id'].toString();
-                        this.policyGroup = this.policyGroups[0]['policy_group_id'].toString();
+
+                    if (this.deviceGroups.length == 0){
+                        this.deviceGroup = 0;
+                    } else {
+                        if (this.id == -1) {
+                            this.deviceGroup = this.deviceGroups[0]['group_id'].toString();
+                        }
                     }
-                    if (this.priority == 1){
-                        this.policyGroups.unshift({policy_group_id:-1, name: '全機能OFF'});
+
+                    if (this.policyGroups.length == 0){
+                        this.policyGroup = 0;
+                    } else {
+                        if (this.id == -1) {
+                            this.policyGroup = this.policyGroups[0]['policy_group_id'].toString();
+                        }
+                        if (this.priority == 1){
+                            this.policyGroups.unshift({policy_group_id:-1, name: '全機能OFF'});
+                        }
                     }
+
                     // }
                 } else {
                     if (res['status'] && res['status']['message']) {
@@ -140,15 +153,18 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     }
 
     changePriority(){
-        if (this.priority == 1 && this.policyGroups[0]['policy_group_id'] != -1) {
-            this.policyGroups.unshift({policy_group_id:-1, name: '全機能OFF'});
-        } else if(this.priority == 0 && this.policyGroups[0]['policy_group_id'] == -1) {
-            this.policyGroups.shift();
-            $('input[name="dataScheduleType"][value="1"]').attr('disabled', false);
-            if (this.policyGroup == -1) {
-                this.policyGroup = this.policyGroups[0]['policy_group_id'].toString();
+        if (this.policyGroups.length != 0){
+            if (this.priority == 1 && this.policyGroups[0]['policy_group_id'] != -1) {
+                this.policyGroups.unshift({policy_group_id:-1, name: '全機能OFF'});
+            } else if(this.priority == 0 && this.policyGroups[0]['policy_group_id'] == -1) {
+                this.policyGroups.shift();
+                $('input[name="dataScheduleType"][value="1"]').attr('disabled', false);
+                if (this.policyGroup == -1) {
+                    this.policyGroup = this.policyGroups[0]['policy_group_id'].toString();
+                }
             }
         }
+
     }
 
     changeCPG(){
@@ -443,6 +459,10 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         console.log(startDate, endDate);
         console.log(this.startDateTime.getTime(), this.endDateTime.getTime());
         // check date and time when valid period type is 1 (with period)
+        if (this.policyGroup == 0 || this.deviceGroup == 0){
+            flag = false;
+            message += "Please make sure correct group is selected.";
+        }
         if (this.validPeriodType == 1) {
             let reg = /^\d{4}-\d{2}-\d{2}$/;
             if(startDate == "" || endDate == ""){
