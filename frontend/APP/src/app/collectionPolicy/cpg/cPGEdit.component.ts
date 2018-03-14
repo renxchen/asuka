@@ -1,3 +1,10 @@
+/**
+* @author: Dan Lv
+* @contact: danlv@cisco.com
+* @file: cPGEdit.component.ts
+* @time: 2018/03/13
+* @desc: edit collection policy group
+*/
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
@@ -64,6 +71,12 @@ export class CPGEditComponent implements OnInit {
     }
 
     public getCPGInfo(id: any) {
+        /**
+        * @brief get the specified collection policy group data and assignment variable
+        * @param id:collection policy id
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.apiPrefix = '/v1';
         let url = '/api_collection_policy_group/?id=';
         this.httpClient.setUrl(this.apiPrefix);
@@ -94,6 +107,11 @@ export class CPGEditComponent implements OnInit {
             });
     }
     public getOsType() {
+        /**
+        * @brief get all of the ostype data
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -113,6 +131,11 @@ export class CPGEditComponent implements OnInit {
             });
     }
     public getCPNames() {
+        /**
+        * @brief get all of the collection policy  data
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -196,7 +219,7 @@ export class CPGEditComponent implements OnInit {
         let cpList = this.cpList;
         for (let i = 0; i < cpList.length; i++) {
             if (cpList[i].policy.toString() === this.selCPName) {
-                alert('Can not add the same cp');
+                alert('Can not add the same collection policy.');
                 return;
             }
         }
@@ -232,6 +255,13 @@ export class CPGEditComponent implements OnInit {
         return -1;
     }
     public moreInfoTable(data: any) {
+        /**
+        * @brief display data in the grid
+        * @param data:the data displayed in the grid
+        * @pre called after calling the function of getCPGInfo
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
         this.cpgActionGrid$ = $('#moreInfoTable').jqGrid({
             datatype: 'local',
@@ -294,8 +324,8 @@ export class CPGEditComponent implements OnInit {
             pager: '#cPGPager',
             rowNum: 5,
             rowList: [5, 10, 15],
-            width: 840,
-            height: 100,
+            autowidth: true,
+            height: 150,
             viewrecords: true,
             emptyrecords: 'Nothing to display',
         });
@@ -317,6 +347,12 @@ export class CPGEditComponent implements OnInit {
         }
     }
     public doCheck(): boolean {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.noSpecSymbol(this.name);
@@ -328,13 +364,18 @@ export class CPGEditComponent implements OnInit {
         }
     }
     public cPGLogin() {
+        /**
+        * @brief get and check the input infomation, then save
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.apiPrefix = '/v1';
         let groups: any = {};
         if (this.doCheck()) {
             groups['id'] = this.cPGId;
             groups['cps'] = this.cpList;
             groups['name'] = this.name;
-            groups['ostype'] = this.selectedOsType;
+            groups['ostype_name'] = this.selectedOsType;
             groups['desc'] = this.desc;
             // console.log(this.cpList, groups);
             let url = '/api_collection_policy_group/';
@@ -346,8 +387,7 @@ export class CPGEditComponent implements OnInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'msg');
                     if (status && status['status'].toLowerCase() === 'true') {
-                        console.log(res);
-                        alert('編集しました。');
+                        alert('保存しました。');
                         this.router.navigate(['/index/cpgview/']);
                     } else {
                         if (msg) {

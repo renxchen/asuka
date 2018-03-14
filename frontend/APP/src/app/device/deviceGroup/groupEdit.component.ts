@@ -114,7 +114,7 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toLowerCase() === 'true') {
-                        alert('編集しました。');
+                        alert('保存しました。');
                         this.bsModalRef.hide();
                         this.modalService.setDismissReason('true');
                     } else {

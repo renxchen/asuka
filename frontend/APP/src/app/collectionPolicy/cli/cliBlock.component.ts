@@ -309,7 +309,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                             let blockInfo: any = {};
                             blockInfo['blockTree'] = _.get(data, 'block_rule_tree_json');
                             blockInfo['ruleName'] = _.get(data, 'new_name');
-                            alert('編集しました。');
+                            alert('保存しました。');
                             this.bsModalRef.hide();
                             this.modalService.setDismissReason(blockInfo);
                         }

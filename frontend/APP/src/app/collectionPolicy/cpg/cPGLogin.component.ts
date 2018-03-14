@@ -1,3 +1,10 @@
+/**
+* @author: Dan Lv
+* @contact: danlv@cisco.com
+* @file: cPGLogin.component.ts
+* @time: 2018/03/13
+* @desc: create collection policy group
+*/
 import { Component, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
@@ -41,7 +48,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         private router: Router,
         private bsModalRef: BsModalRef,
         private modalService: BsModalService
-    ) {}
+    ) { }
 
     ngOnInit() {
         this.selCPName = 'null';
@@ -253,10 +260,10 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             pager: '#cPGPager',
             rowNum: 5,
             rowList: [5, 10, 15],
-            width: 720,
-            height: 100,
-            viewrecords: true,
-            emptyrecords: 'Nothing to display',
+            autowidth: true,
+            height: 150,
+            // viewrecords: true,
+            // emptyrecords: 'Nothing to display',
         });
         $('#moreInfoTable').jqGrid({ searchOnEnter: true, defaultSearch: 'cn' });
     }
@@ -292,9 +299,9 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         if (this.doCheck()) {
             groups['cps'] = this.cpList;
             groups['name'] = this.name;
-            groups['ostype'] = this.selectedOsType;
+            groups['ostype_name'] = this.selectedOsType;
             groups['desc'] = this.desc;
-             // console.log(this.cpList, groups);
+            // console.log(this.cpList, groups);
             let url = '/api_collection_policy_group/';
             // console.log(url + '---' + groups);
             this.httpClient.setUrl(this.apiPrefix);

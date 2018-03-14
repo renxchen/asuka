@@ -61,18 +61,43 @@ export class DeviceViewComponent implements OnInit {
                 { name: 'ip', index: 'ip', width: 50, align: 'center', search: true },
                 { name: 'telnet_port', index: 'telnet_port', width: 50, align: 'center', search: true },
                 { name: 'snmp_port', index: 'snmp_port', width: 50, align: 'center', search: true },
-                { name: 'snmp_community', index: 'snmp_community', width: 50, align: 'center', search: true },
-                { name: 'snmp_version', index: 'snmp_version', width: 50, align: 'center', search: true },
+                {
+                    name: 'snmp_community', index: 'snmp_community', width: 50, align: 'center', search: true,
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (cellvalue === null) {
+                            return '-';
+                        }
+                    }
+                },
+                {
+                    name: 'snmp_version', index: 'snmp_version', width: 50, align: 'center', search: true,
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (cellvalue === null) {
+                            return '-';
+                        }
+                    }
+                },
                 {
                     name: 'login_expect', index: 'login_expect', width: 50, align: 'center', search: true,
-                    // formatter: _t.loginExpFormmater
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (cellvalue === null) {
+                            return '-';
+                        }
+                    }
                 },
                 { name: 'device_type', index: 'device_type', width: 50, align: 'center', search: true },
                 {
                     name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true
                 },
                 // { name: 'group', index: 'group', width: 50, align: 'center', search: true },
-                { name: 'group_list', index: 'group_list', width: 50, align: 'center', search: true },
+                {
+                    name: 'group_list', index: 'group_list', width: 50, align: 'center', search: true,
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (cellvalue === null) {
+                            return '-';
+                        }
+                    }
+                },
                 { name: 'telnet_status', index: 'telnet_status', width: 50, align: 'center', search: true },
                 { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
             ],
@@ -133,11 +158,12 @@ export class DeviceViewComponent implements OnInit {
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toLowerCase() === 'true') {
                         this.devViewTable$.GridUnload();
-                        $('.bar').width('100%');
-                        $('.modal').hide();
+                        // $('.bar').width('100%');
                         this.drawdevViewTable();
+                        $('.modal').hide();
                     } else {
-                        alert('msg');
+                        $('.modal').hide();
+                        alert(msg);
                     }
                 });
         } else {
