@@ -270,7 +270,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 'desc': self.desc,
                 'ostypeid__name': self.ostype,
             }
-            search_fields = ['name', 'ostypeid', 'desc']
+            search_fields = ['name', 'ostype_name', 'desc']
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                           query_data, search_fields)
             total_num = len(CollPolicyGroups.objects.all())
