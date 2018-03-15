@@ -138,7 +138,7 @@ class DataCollectionOptCls(object):
     def __insert_data_check(self, devices, coll_policies):
 
         try:
-            select_sql = 'select item_id,schedule_id from Items where'
+            select_sql = 'select item_id,schedule_id from items where'
             for i in range(len(devices)):
                 device_id = devices[i]['device_id']
                 for j in range(len(coll_policies)):
