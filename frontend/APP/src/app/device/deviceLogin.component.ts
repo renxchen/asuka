@@ -171,7 +171,7 @@ export class DeviceLoginComponent implements OnInit {
         $('#devLoginTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
     }
     public noDataFormatter(cellvalue, options, rowObject) {
-        if (cellvalue === null) {
+        if (cellvalue === null|| cellvalue === '') {
             return '-';
         } else {
             return cellvalue;

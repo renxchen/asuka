@@ -138,7 +138,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
     }
     // </br> formatter
     public brFormatter(cellvalue, options, rowObject) {
-        if (cellvalue !== null) {
+        if (cellvalue !== null && cellvalue !== '') {
             return cellvalue.replace(/，/g, '</br>');
         } else {
             return '-';
@@ -146,7 +146,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
     }
     // no data formatter
     public noDataFormatter(cellvalue, options, rowObject) {
-        if (cellvalue === null) {
+        if (cellvalue === null || cellvalue === '') {
             return '-';
         } else {
             return cellvalue;

@@ -130,7 +130,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
     }
     // no data formatter
     public noDataFormatter(cellvalue, options, rowObject) {
-        if (cellvalue === null) {
+        if (cellvalue === null || cellvalue === '') {
             return '-';
         } else {
             return cellvalue;

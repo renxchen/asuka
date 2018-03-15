@@ -125,7 +125,7 @@ export class DeviceViewComponent implements OnInit {
         $('#devViewTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
     }
     public noDataFormatter(cellvalue, options, rowObject) {
-        if (cellvalue === null) {
+        if (cellvalue === null || cellvalue === '') {
             return '-';
         } else {
             return cellvalue;
