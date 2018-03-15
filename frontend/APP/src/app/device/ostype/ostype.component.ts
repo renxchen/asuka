@@ -157,12 +157,12 @@ export class OstypeComponent implements OnInit, AfterViewInit {
         _t.apiPrefix = '/v1';
         // let url = '/api_device_ostype/?id=';
         $('.edit').click(function (event) {
-            let id = $(event)[0].target.id;
-            if (id) {
+            let editId = $(event)[0].target.id;
+            if (editId) {
                 // _t.router.navigate(['/index/ostypedit'],
                 //     { queryParams: { 'id': id } });
                 _t.modalRef = _t.modalService.show(OstypeEditComponent, _t.modalConfig);
-                _t.modalRef.content.id = id;
+                _t.modalRef.content.id = editId;
                 _t.modalRef.content.actionType = 'edit';
                 let ostypeEdit$ = _t.modalService.onHidden.subscribe(o => {
                     if (o) {
@@ -180,13 +180,13 @@ export class OstypeComponent implements OnInit, AfterViewInit {
         let url = '/api_device_ostype/?id=';
         $('.delete').click(function (event) {
             event.stopPropagation();
-            let id = $(event)[0].target.id;
-            let name = $('#ostypeTable').jqGrid().getRowData(id)['name'];
-            let alt = confirm(name + 'を削除します。よろしいですか？');
+            let delId = $(event)[0].target.id;
+            let delName = $('#ostypeTable').jqGrid().getRowData(delId)['name'];
+            let alt = confirm(delName + 'を削除します。よろしいですか？');
             if (alt) {
                 _t.httpClient.setUrl(_t.apiPrefix);
                 _t.httpClient
-                    .toJson(_t.httpClient.delete(url + id))
+                    .toJson(_t.httpClient.delete(url + delId))
                     .subscribe(res => {
                         let status = _.get(res, 'status');
                         let msg = _.get(status, 'message');

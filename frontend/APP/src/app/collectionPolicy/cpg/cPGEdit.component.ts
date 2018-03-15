@@ -59,7 +59,7 @@ export class CPGEditComponent implements OnInit {
             this.cPGId = cPIdTmp;
             this.getCPGInfo(this.cPGId);
         } else {
-            this.router.navigate(['/index/cpgview/']);
+            this.router.navigate(['/index/cpgview']);
         }
     }
 
@@ -171,6 +171,7 @@ export class CPGEditComponent implements OnInit {
                     }
                 }
                 _t.cpList = cpList;
+                event.stopPropagation();
             });
         } else {
             alert('can not be deleted when policy is used');
@@ -200,7 +201,7 @@ export class CPGEditComponent implements OnInit {
             }
         });
     }
-    private addBtn() {
+    public addBtn() {
         this.addFlg = !this.addFlg;
     }
     public cpNameFomatter(id: any) {
@@ -213,6 +214,21 @@ export class CPGEditComponent implements OnInit {
                 return cpName;
             }
         }
+    }
+    public toCPDetail() {
+        let _t = this;
+        $('.cp-span').click(function (event) {
+            let idTmp = $(event)[0].target.id.split('_');
+            let type: any = _.indexOf(idTmp, 0);
+            if (_.indexOf(idTmp, 'cli', 0) !== -1) {
+                _t.router.navigate(['/index/clicpdetail'],
+                    { queryParams: { 'id': idTmp[1] } });
+            } else if (_.indexOf(idTmp, 'snmp', 0) !== -1) {
+                _t.router.navigate(['/index/snmpcpdetail'],
+                    { queryParams: { 'id': idTmp[1] } });
+            }
+            event.stopPropagation();
+        });
     }
     public addMoreInfo() {
         let cpInfo: any = {};
@@ -229,7 +245,7 @@ export class CPGEditComponent implements OnInit {
             cpInfo['exec_interval'] = this.selExecInterval;
             // cpInfo['expired_durantion'] = this.selExpiDurantion;
             cpInfo['policy'] = this.selCPName;
-            cpInfo['status'] = '0';
+            cpInfo['status'] = '1';
             cpInfo['policy_group'] = this.cPGId;
             cpInfo['policy_policy_type'] = cpName.type;
             // console.log('cpInfo', cpInfo);
@@ -283,12 +299,21 @@ export class CPGEditComponent implements OnInit {
                     formatter: function (cellvalue, options, rowObject) {
                         let policyId = rowObject.policy;
                         let cpType: any = rowObject.policy_policy_type;
+                        // if (cpType.toString() === '0') {
+                        //     return '<a href="/index/clicpdetail?id=' + policyId
+                        //         + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
+                        // } else if (cpType.toString() === '1') {
+                        //     return '<a href="/index/snmpcpdetail?id=' + policyId
+                        //         + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
+                        // } else {
+                        //     return;
+                        // }
                         if (cpType.toString() === '0') {
-                            return '<a href="/index/clicpdetail?id=' + policyId
-                                + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
+                            return '<a class="cp-span" id=' + 'cli_' + policyId +
+                                ' style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
                         } else if (cpType.toString() === '1') {
-                            return '<a href="/index/snmpcpdetail?id=' + policyId
-                                + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
+                            return '<a class="cp-span" id=' + 'snmp_' + policyId +
+                                ' style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
                         } else {
                             return;
                         }
@@ -302,6 +327,7 @@ export class CPGEditComponent implements OnInit {
             ],
             gridComplete: function () {
                 _t.deleteBtn();
+                _t.toCPDetail();
             },
             loadComplete: function () {
                 let iCol = _t.getColumnIndexByName($(this), 'status');
