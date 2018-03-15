@@ -29,7 +29,6 @@ import csv, codecs, re
 import string, copy
 from multiprocessing.dummy import Pool as ThreadPool
 import requests
-TIME_OUT = 5
 
 class DevicePreViewSet(APIView):
 
@@ -66,7 +65,9 @@ class DevicePreViewSet(APIView):
     @staticmethod
     def telnet_status_check(device_id):
         device = DevicesTmp.objects.get(device_id=device_id)
-        default_commands = Ostype.objects.get(ostypeid=device.ostype_id).start_default_commands
+        ostype = Ostype.objects.get(ostypeid=device.ostype_id)
+        default_commands = ostype.start_default_commands
+        time_out = ostype.telnet_timeout
 
         payload = {
             "commands": [
@@ -76,7 +77,7 @@ class DevicePreViewSet(APIView):
             "ip": device.ip,
             "platform": "ios",
             "expect": device.login_expect,
-            "timeout": TIME_OUT,
+            "timeout": time_out,
             "task_timestamp": 1519796623,
             "method": "telnet"
         }
@@ -87,6 +88,8 @@ class DevicePreViewSet(APIView):
     @staticmethod
     def snmp_status_check(device_id):
         device = DevicesTmp.objects.get(device_id=device_id)
+        ostype = Ostype.objects.get(ostypeid=device.ostype_id)
+        time_out = ostype.snmp_timeout
         payload = {
             "commands": {
                 "operate": "bulk_get",
@@ -94,7 +97,7 @@ class DevicePreViewSet(APIView):
                     "SNMPv2-MIB::sysObjectID.0"
                 ]
             },
-            "timeout": 5,
+            "timeout": time_out,
             "ip": device.ip,
             "task_timestamp": 1519796765,
             "community": device.snmp_community
