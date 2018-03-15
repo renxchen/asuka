@@ -139,7 +139,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
     // </br> formatter
     public brFormatter(cellvalue, options, rowObject) {
         if (cellvalue !== null && cellvalue !== '') {
-            return '</br><i class="fa fa-genderless"></i> ' + cellvalue.replace(/，/g, '</br><i class="fa fa-genderless"></i> ');
+            return '<i class="fa fa-genderless"></i> ' + cellvalue.replace(/，/g, '</br><i class="fa fa-genderless"></i> ');
         } else {
             return '-';
         }
