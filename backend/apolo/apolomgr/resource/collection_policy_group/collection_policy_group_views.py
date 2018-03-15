@@ -261,7 +261,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 return api_return(data=data)
             field_relation_ships = {
                 'id': 'policy_group_id',
-                'name': 'name',
+                'ostype_name': 'name',
                 'desc': 'desc',
                 'ostypeid': 'ostypeid__name',
             }
