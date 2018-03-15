@@ -62,16 +62,16 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                 },
                 {
                     label: 'CLI情報取得前</br>デフォルト実行コマンド', name: 'start_default_commands',
-                    index: 'start_default_commands', align: 'center', search: true, formatter: _t.brFormatter
+                    index: 'start_default_commands', align: 'left', search: true, formatter: _t.brFormatter
                 },
                 {
                     label: 'CLI情報取得完了後</br>デフォルト実行コマンド', name: 'end_default_commands',
-                    index: 'end_default_commands', width: 140, align: 'center', search: true,
+                    index: 'end_default_commands', width: 140, align: 'left', search: true,
                     formatter: _t.brFormatter
                 },
                 {
                     label: 'CLIエラー文字列', name: 'log_fail_judges', index: 'log_fail_judges',
-                    width: 140, align: 'center', search: true, formatter: _t.brFormatter
+                    width: 140, align: 'left', search: true, formatter: _t.brFormatter
                 },
                 {
                     label: 'CLIデフォルト</br>プロンプト文字列', name: 'telnet_prompt', index: 'telnet_prompt',
@@ -139,7 +139,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
     // </br> formatter
     public brFormatter(cellvalue, options, rowObject) {
         if (cellvalue !== null && cellvalue !== '') {
-            return cellvalue.replace(/，/g, '</br>');
+            return '<i class="fa fa-genderless"></i> ' + cellvalue.replace(/，/g, '</br><i class="fa fa-genderless"></i> ');
         } else {
             return '-';
         }
