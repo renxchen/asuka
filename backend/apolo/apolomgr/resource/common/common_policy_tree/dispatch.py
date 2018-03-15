@@ -91,6 +91,8 @@ class Dispatch(object):
                 self.work_follow.update({work_follow_num: "extract_block_by_string_range"})
             elif self.rules[rule_id]['rule_type'] == 8:
                 self.work_follow .update({work_follow_num: "extract_block_by_regular"})
+            elif self.rules[rule_id]['rule_type'] == 9:
+                self.work_follow .update({work_follow_num: "all_extract"})
             else:
                 return {"errorMsg": "the rule type is not exist"}
             work_follow_num +=1
