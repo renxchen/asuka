@@ -366,7 +366,6 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                     'desc': self.desc,
                     'ostypeid': self.ostype,
                 }
-                print data
                 # collection policy group is running, just name, desc and on/off in table can modify.
                 if self.execute_ing:
                     if isinstance(queryset, str):

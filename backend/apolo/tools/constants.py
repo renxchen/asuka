@@ -91,7 +91,7 @@ TRIGGER_TYPE_STRING__COMPARE = '文字列比較'
 TRIGGER_TYPE_FAILED = '取得失敗'
 COLUMN_A_OR_COLUMN_B_NOT_EXIST = 'Column A(column_a as table id %s) or Column B(column_b as table id %s) is not exist in current system, please connect Administrator.'
 COLUMN_A_COLUMN_B_VERIFY_FAILED = 'Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).'
-EXPRESSION_ILLEGAL = 'There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1)'
+EXPRESSION_ILLEGAL = gettext('There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1)')
 EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = 'A and B maybe do not have the same value type(String or Integer)'
 EXPRESSION_A_B_NOT_EXIST = 'There is not A or B in expression, should be at least A in expression'
 EXPRESSION_CONDITION_ILLEGAL = 'The expression condition should be in <=, >=, ==, !=, >, <'
