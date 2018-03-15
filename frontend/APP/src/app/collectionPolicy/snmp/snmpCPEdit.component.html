@@ -26,6 +26,7 @@
                                     id="name"  
                                     name="name" 
                                     [(ngModel)]="name" 
+                                    maxlength="256"
                                     placeholder="英数字のみ" 
                                 />
                             </div>
@@ -69,6 +70,7 @@
                                     id="snmpOid" 
                                     name="snmpOid" 
                                     [(ngModel)]="snmpOid" 
+                                    maxlength="30"
                                     placeholder="数字とドットのみ" 
                                     [disabled]="!snmpFlg"
                                 />
@@ -172,7 +174,7 @@
                                     (click)="cPLogin()"
                                 >
                                     <i class="fa fa-check-square-o"></i>
-                                    保存する
+                                    保存
                                 </button>
                             </div>
                         </div>

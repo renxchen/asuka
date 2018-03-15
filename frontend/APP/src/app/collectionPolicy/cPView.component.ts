@@ -177,14 +177,17 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         */
         let _t = this;
         $('.detail').click(function (event) {
-            let id = $(event)[0].target.id;
-            if (_t.cPType === '0') {
-                _t.router.navigate(['/index/clicpdetail'],
-                    { queryParams: { 'id': id } });
-            } else {
-                _t.router.navigate(['/index/snmpcpdetail'],
-                    { queryParams: { 'id': id } });
+            let detailId = $(event)[0].target.id;
+            if (detailId) {
+                if (_t.cPType === '0') {
+                    _t.router.navigate(['/index/clicpdetail'],
+                        { queryParams: { 'id': detailId } });
+                } else {
+                    _t.router.navigate(['/index/snmpcpdetail'],
+                        { queryParams: { 'id': detailId } });
+                }
             }
+            event.stopPropagation();
         });
     }
     public editBtn() {
@@ -196,14 +199,17 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         let _t = this;
         _t.apiPrefix = '/v1';
         $('.edit').click(function (event) {
-            let id = $(event)[0].target.id;
-            if (_t.cPType === '0') {
-                _t.router.navigate(['/index/clicpedit'],
-                    { queryParams: { 'id': id } });
-            } else {
-                _t.router.navigate(['/index/snmpcpedit'],
-                    { queryParams: { 'id': id } });
+            let editId = $(event)[0].target.id;
+            if (editId) {
+                if (_t.cPType === '0') {
+                    _t.router.navigate(['/index/clicpedit'],
+                        { queryParams: { 'id': editId } });
+                } else {
+                    _t.router.navigate(['/index/snmpcpedit'],
+                        { queryParams: { 'id': editId } });
+                }
             }
+            event.stopPropagation();
         });
     }
     public deleteBtn() {
@@ -217,38 +223,40 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         _t.apiPrefix = '/v1';
         let url = '/api_collection_policy/';
         $('.delete').click(function (event) {
-            event.stopPropagation();
-            let id = $(event)[0].target.id;
-            let name = $('#cpTable').jqGrid().getRowData(id)['name'];
-            let alt = confirm(name + 'を削除します。よろしいですか？');
-            if (alt) {
-                _t.httpClient.setUrl(_t.apiPrefix);
-                _t.httpClient
-                    .toJson(_t.httpClient.delete(url + '?id=' + id))
-                    .subscribe(res => {
-                        let status = _.get(res, 'status');
-                        let msg: any = _.get(status, 'message');
-                        let data = _.get(res, 'data');
-                        if (status && status['status'].toLowerCase() === 'true') {
-                            this.modalMsg = '削除しました。';
-                            this.closeMsg = '閉じる';
-                            _t.showAlertModal(this.modalMsg, this.closeMsg);
-                            $('#modalButton').on('click', function () {
-                                $('#cpTable').jqGrid().trigger('reloadGrid');
-                            });
-                        } else {
-                            if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
-                                this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
-                                this.closeMsg = 'close';
+            let delId = $(event)[0].target.id;
+            if (delId) {
+                let delIdname = $('#cpTable').jqGrid().getRowData(delId)['name'];
+                let alt = confirm(delIdname + 'を削除します。よろしいですか？');
+                if (alt) {
+                    _t.httpClient.setUrl(_t.apiPrefix);
+                    _t.httpClient
+                        .toJson(_t.httpClient.delete(url + '?id=' + delId))
+                        .subscribe(res => {
+                            let status = _.get(res, 'status');
+                            let msg: any = _.get(status, 'message');
+                            let data = _.get(res, 'data');
+                            if (status && status['status'].toLowerCase() === 'true') {
+                                this.modalMsg = '削除しました。';
+                                this.closeMsg = '閉じる';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                $('#modalButton').on('click', function () {
+                                    $('#cpTable').jqGrid().trigger('reloadGrid');
+                                });
                             } else {
-                                if (msg) {
-                                    alert(msg);
+                                if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
+                                    this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
+                                    this.closeMsg = 'close';
+                                    _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                } else {
+                                    if (msg) {
+                                        alert(msg);
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
+                }
             }
+            event.stopPropagation();
         });
     }
     public cpLogin() {

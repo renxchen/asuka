@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Http } from '@angular/http';
 import { HttpClientComponent } from '../../components/utils/httpClient';
@@ -26,6 +26,8 @@ export class DeviceViewComponent implements OnInit {
     @author Zizhuang Jiang
     @date 03/08/2018
      */
+    @ViewChild(ProcessbarComponent)
+    proBar: ProcessbarComponent;
     apiPrefix: any;
     devViewTable$: any;
     processbar: BsModalRef;
@@ -151,9 +153,9 @@ export class DeviceViewComponent implements OnInit {
                         this.devViewTable$.GridUnload();
                         // $('.bar').width('100%');
                         this.drawdevViewTable();
-                        $('.modal').hide();
+                        this.processbar.hide();
                     } else {
-                        $('.modal').hide();
+                        this.processbar.hide();
                         alert(msg);
                     }
                 });

@@ -39,7 +39,7 @@ export class CPGDetailComponent implements OnInit {
             this.cPGId = cPIdTmp;
             this.getCPGInfo(this.cPGId);
         } else {
-            this.router.navigate(['/index/cpgview/']);
+            this.router.navigate(['/index/cpgview']);
         }
     }
 
@@ -133,7 +133,7 @@ export class CPGDetailComponent implements OnInit {
         * @date 2018/03/13
         */
         let _t = this;
-        this.cpgActionGrid$ = $('#moreInfoTable').jqGrid({
+        _t.cpgActionGrid$ = $('#moreInfoTable').jqGrid({
             datatype: 'local',
             data: data,
             colNames: ['No', 'PolicyID', 'PolicyType', '機能ON/OFF', 'コレクションポリシー名', '監視間隔'],
@@ -153,13 +153,21 @@ export class CPGDetailComponent implements OnInit {
                     formatter: function (cellvalue, options, rowObject) {
                         let policyId = rowObject.policy;
                         let cpType: any = rowObject.policy_policy_type;
-
+                        // if (cpType.toString() === '0') {
+                        //     return '<a href="/index/clicpdetail?id=' + policyId
+                        //         + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
+                        // } else if (cpType.toString() === '1') {
+                        //     return '<a href="/index/snmpcpdetail?id=' + policyId
+                        //         + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
+                        // } else {
+                        //     return;
+                        // }
                         if (cpType.toString() === '0') {
-                            return '<a href="/index/clicpdetail?id=' + policyId
-                                + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
+                            return '<a class="cp-span" id=' + 'cli_' + policyId +
+                                ' style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
                         } else if (cpType.toString() === '1') {
-                            return '<a href="/index/snmpcpdetail?id=' + policyId
-                                + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
+                            return '<a class="cp-span" id=' + 'snmp_' + policyId +
+                                ' style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
                         } else {
                             return;
                         }
@@ -167,7 +175,9 @@ export class CPGDetailComponent implements OnInit {
                 },
                 { name: 'exec_interval', index: 'exec_interval', width: 30, align: 'center', formatter: _t.execIntervalFormatter },
             ],
-
+            gridComplete: function () {
+                _t.toCPDetail();
+            },
             beforeSelectRow: function (rowid, e) { return false; },
             // beforeRequest: function () {
             //     let currentPage: any = $('#cpTable').jqGrid('getGridParam', 'page');
@@ -203,33 +213,20 @@ export class CPGDetailComponent implements OnInit {
             return 'null';
         }
     }
-    public navCPDetail(cellvalue, options, rowObject) {
-        /**
-        * @brief jump to the specified collection policy detail page
-        * @param cellvalue: value of cell;
-                options:includes attributes such as RowId,colModel;
-                rowObject:json data of the row
-        * @author Dan Lv
-        * @date 2018/03/13
-        */
-        let policyId = rowObject.policy;
-        let cpType: any;
-        let cpNames: any = this.cpNames;
-        if (cpNames !== '') {
-            for (let i = 0; i < cpNames.length; i++) {
-                if (cpNames[i].coll_policy_id.toString() === policyId) {
-                    cpType = cpNames[i].type;
-                    break;
-                }
+    public toCPDetail() {
+        let _t = this;
+        $('.cp-span').click(function (event) {
+            let idTmp = $(event)[0].target.id.split('_');
+            let type: any = _.indexOf(idTmp, 0);
+            if (_.indexOf(idTmp, 'cli', 0) !== -1) {
+                _t.router.navigate(['/index/clicpdetail'],
+                    { queryParams: { 'id': idTmp[1] } });
+            } else if (_.indexOf(idTmp, 'snmp', 0) !== -1) {
+                _t.router.navigate(['/index/snmpcpdetail'],
+                    { queryParams: { 'id': idTmp[1] } });
             }
-        }
-        if (cpType === '0') {
-            return '<a href="/index/cliDetail/?id="' + options.collection_policy_id + '>' + cellvalue + '</a>';
-        } else if (cpType === '1') {
-            return '<a href="/index/snmpDetail/?id="' + options.collection_policy_id + '>' + cellvalue + '</a>';
-        } else {
-            return;
-        }
+            event.stopPropagation();
+        });
     }
     public cPGEdit() {
         /**

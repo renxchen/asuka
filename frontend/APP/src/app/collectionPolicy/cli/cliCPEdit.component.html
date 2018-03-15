@@ -3,11 +3,7 @@
     <h5>
         コレクションポリシー名：<span>{{cPName}}</span>
     </h5>
-    <button 
-        type="button" 
-        class="btn btn-info btn-outline btn-sm pull-right" 
-        (click)="cPEdit()"
-    >
+    <button type="button" class="btn btn-info btn-outline btn-sm pull-right" (click)="cPEdit()">
         <i class="fa fa-clipboard"></i> 編集
     </button>
 </div>
@@ -17,8 +13,7 @@
         <!-- block tree -->
         <div class="panel panel-danger">
             <div class="panel-heading">
-                <i class="fa fa-cubes fa-lg"></i>&nbsp;
-                ブロックルール
+                <i class="fa fa-cubes fa-lg"></i>&nbsp; ブロックルール
             </div>
             <div class="panel-body">
                 <div id="blockTree" class="jstree"></div>
@@ -30,8 +25,7 @@
         <!-- data tree -->
         <div class="panel panel-success">
             <div class="panel-heading">
-                <i class="fa fa-text-height fa-lg"></i>&nbsp;
-                データ抽出ルール
+                <i class="fa fa-text-height fa-lg"></i>&nbsp; データ抽出ルール
             </div>
             <div class="panel-body">
                 <div id="dataTree" class="jstree"></div>
@@ -40,23 +34,19 @@
                 <div>概要が表示されます。</div>
             </div>
         </div>
-        
+
     </div>
     <!-- "policy tree -->
     <div class="col-md-4 col-xs-6">
         <div class="panel panel-default">
-            <div class="panel-body">
-                <div id="policyTree" class="jstree" ></div>
+            <div class="panel-body" style="max-height:none;overflow:hidden">
+                <div id="policyTree" class="jstree"></div>
             </div>
         </div>
     </div>
     <!-- simple -->
     <div class="col-md-4 col-xs-6">
-        <textarea 
-            class="form-control" 
-            id="input-wrap" 
-            placeholder="ここの文章をハイライト変換します。"
-        >
+        <textarea class="form-control" id="input-wrap" placeholder="ここの文章をハイライト変換します。">
         </textarea>
         <hr>
         <div>
@@ -69,14 +59,10 @@
                 <div id="highlight"></div>
             </div>
         </div>
-    </div> 
+    </div>
     <div class="row">
         <div class="col-xs-12 text-right">
-            <button 
-                type="button" 
-                class="btn btn-primary" 
-                (click)="savePlyTree()"
-            >
+            <button type="button" class="btn btn-primary" (click)="savePlyTree()">
                 <i class="fa fa-edit"></i>
                 保存
             </button>

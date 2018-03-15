@@ -76,7 +76,8 @@
                         id="cliCommand" 
                         name="cliCommand"
                         [(ngModel)]="cliCommand" 
-                        placeholder="英数字のみ" 
+                        placeholder="英数字のみ"
+                        maxlength="256" 
                         [disabled]="!cliCmdFlg"
                     />
                 </div>
@@ -145,7 +146,7 @@
             <div class="col-sm-12 text-right">
                 <button class="btn btn-primary" id="add" (click)="cPEdit()">
                     <i class="fa fa-check-square-o"></i>
-                    保存する
+                    保存
                 </button>
             </div>
         </div>

@@ -53,7 +53,7 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
             this.cPId = cPIdeTmp;
             this.getSNMPCPInfo(this.cPId);
         } else {
-            this.router.navigate(['/index/']);
+            this.router.navigate(['/index/cpview'], { queryParams: { 'cptype': '1' } });
         }
     }
     ngOnInit() {
