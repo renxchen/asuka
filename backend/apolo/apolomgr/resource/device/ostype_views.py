@@ -57,7 +57,7 @@ class OsTypeViewSet(viewsets.ViewSet):
         except Exception, e:
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
-            return False
+            return exception_handler(e)
 
     def get(self):
         try:
@@ -395,11 +395,15 @@ class OsTypeViewSet(viewsets.ViewSet):
                             }
                         }
                         return api_return(data=data)
+                    if start_default_commands is not None:
+                        start_default_commands = start_default_commands[:-1]
+                    if end_default_commands is not None:
+                        end_default_commands = end_default_commands[:-1]
                     data = {
                         'name': self.os_type_name,
                         'desc': self.desc,
-                        'start_default_commands': start_default_commands[:-1],
-                        'end_default_commands': end_default_commands[:-1],
+                        'start_default_commands': start_default_commands,
+                        'end_default_commands': end_default_commands,
                         'log_fail_judges': cli_error_context,
                         'status': self.status,
                         'telnet_prompt': self.telnet_prompt,
