@@ -63,27 +63,15 @@ export class DeviceViewComponent implements OnInit {
                 { name: 'snmp_port', index: 'snmp_port', width: 50, align: 'center', search: true },
                 {
                     name: 'snmp_community', index: 'snmp_community', width: 50, align: 'center', search: true,
-                    formatter: function (cellvalue, options, rowObject) {
-                        if (cellvalue === null) {
-                            return '-';
-                        }
-                    }
+                    formatter: _t.noDataFormatter
                 },
                 {
                     name: 'snmp_version', index: 'snmp_version', width: 50, align: 'center', search: true,
-                    formatter: function (cellvalue, options, rowObject) {
-                        if (cellvalue === null) {
-                            return '-';
-                        }
-                    }
+                    formatter: _t.noDataFormatter
                 },
                 {
                     name: 'login_expect', index: 'login_expect', width: 50, align: 'center', search: true,
-                    formatter: function (cellvalue, options, rowObject) {
-                        if (cellvalue === null) {
-                            return '-';
-                        }
-                    }
+                    formatter: _t.noDataFormatter
                 },
                 { name: 'device_type', index: 'device_type', width: 50, align: 'center', search: true },
                 {
@@ -92,11 +80,7 @@ export class DeviceViewComponent implements OnInit {
                 // { name: 'group', index: 'group', width: 50, align: 'center', search: true },
                 {
                     name: 'group_list', index: 'group_list', width: 50, align: 'center', search: true,
-                    formatter: function (cellvalue, options, rowObject) {
-                        if (cellvalue === null) {
-                            return '-';
-                        }
-                    }
+                    formatter: _t.noDataFormatter
                 },
                 { name: 'telnet_status', index: 'telnet_status', width: 50, align: 'center', search: true },
                 { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
@@ -139,6 +123,13 @@ export class DeviceViewComponent implements OnInit {
             },
         });
         $('#devViewTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
+    }
+    public noDataFormatter(cellvalue, options, rowObject) {
+        if (cellvalue === null) {
+            return '-';
+        } else {
+            return cellvalue;
+        }
     }
     public deviceCheck() {
         this.apiPrefix = '/v1';

@@ -58,11 +58,11 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             colModel: [
                 { label: 'No', hidden: true, name: 'policy_group_id', index: 'policy_group_id', search: false, key: true },
                 { label: 'コレクションポリシー名', name: 'name', index: 'name', width: 50, align: 'center', search: true },
-                { label: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true },
+                { label: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true, formatter: _t.noDataFormatter },
                 { label: 'OS Type', name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true },
                 {
                     label: 'アクション', name: 'action', width: 50, align: 'center', search: false,
-                    formatter: this.formatterBtn, resizable: false
+                    formatter: _t.formatterBtn, resizable: false
                 }
             ],
             gridComplete: function () {
@@ -107,6 +107,14 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             + '<button class="btn btn-xs btn-warning delete" id='
             + rowObject['policy_group_id'] + '><i class="fa fa-minus-square"></i> 削除</button>';
     }
+    // no data formatter
+    public noDataFormatter(cellvalue, options, rowObject) {
+        if (cellvalue === null) {
+            return '-';
+        } else {
+            return cellvalue;
+        }
+    }
     public checkCPGRun(id: any): any {
         this.apiPrefix = '/v1';
         let url = '/api_collection_policy_group/?id=';
@@ -142,7 +150,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             let id = $(event)[0].target.id;
             if (id) {
                 _t.router.navigate(['/index/cpgdetail'],
-                { queryParams: { 'id': id } });
+                    { queryParams: { 'id': id } });
                 // _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
                 // _t.modalRef.content.actionType = 'detail';
                 // _t.modalRef.content.id = id;
@@ -157,7 +165,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             let id = $(event)[0].target.id;
             if (id) {
                 _t.router.navigate(['/index/cpgedit'],
-                { queryParams: { 'id': id } });
+                    { queryParams: { 'id': id } });
                 // _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
                 // _t.modalRef.content.id = id;
                 // _t.modalRef.content.actionType = 'edit';
