@@ -69,6 +69,14 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             + '<button class="btn btn-xs btn-warning delete" id='
             + rowObject['coll_policy_id'] + '><i class="fa fa-minus-square"></i> 削除</button>';
     }
+    // no data formatter
+    public noDataFormatter(cellvalue, options, rowObject) {
+        if (cellvalue === null || cellvalue === '') {
+            return '-';
+        } else {
+            return cellvalue;
+        }
+    }
     public changeCPType(event) {
         /**
          * @brief used to switch button
@@ -108,15 +116,11 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 { label: thirdCol, name: thirdName, index: thirdName, width: 50, align: 'center', search: true },
                 {
                     abel: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true,
-                    formatter: function (cellvalue, options, rowObject) {
-                        if (cellvalue === null) {
-                            return '-';
-                        }
-                    }
+                    formatter: _t.noDataFormatter
                 },
                 {
                     label: 'アクション', name: 'action', width: 50, align: 'center', search: false,
-                    formatter: this.formatterBtn, resizable: false
+                    formatter: _t.formatterBtn, resizable: false
                 }
             ],
             gridComplete: function () {
