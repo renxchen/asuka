@@ -31,7 +31,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
 
     # get information of rules from db
-    # http://127.0.0.1:8000/v1/api_policy_tree_rule/?rule_id=1&coll_pollicy_id=1
+    # http://127.0.0.1:8000/v1/api_policy_tree_rule/?rule_id=1&coll_policy_id=1
 
     def get(self):
 
@@ -52,7 +52,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             if split_char:
                 if split_char == '@space@':
                     result_dict['split_char'] = 4
-                    result_dict['other_char'] =None
+                    result_dict['other_char'] = None
                 elif split_char == ',':
                     result_dict['split_char'] = 1
                     result_dict['other_char'] = None
@@ -171,7 +171,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             #     query_set_len = len(query_set)
             query_set_len = len(CollPolicyCliRule.objects.filter(Q(name=name) &
                                                                  Q(coll_policy=policy_id) &
-                                                               ~Q(ruleid=rule_id)))
+                                                                 ~Q(ruleid=rule_id)))
 
             error_msg_list = {}
             if query_set_len > 0:
@@ -202,7 +202,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
                 serializer = CollPolicyCliRuleSerializer(instance=old_rule_obj, data=rule_data_dict)
                 if serializer.is_valid(Exception):
                     serializer.save()
-                    new_name= serializer.data['name']
+                    new_name = serializer.data['name']
                     policy_tree = Policy_tree(policy_id)
                     rule_tree_tuple = policy_tree.get_rules_tree()
                     data = {
@@ -258,8 +258,8 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             print traceback.format_exc(e)
             return exception_handler(e)
 
-    @staticmethod
-    def __set_input_rule_data(front_data):
+
+    def __set_input_rule_data(self,front_data):
         rule_data_dict = {'name': front_data['name']}
         if front_data.has_key('key_str'):
             rule_data_dict['key_str'] = front_data['key_str']
@@ -350,28 +350,37 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
         if front_data.has_key('extract_key'):
             rule_data_dict['extract_key'] = front_data['extract_key']
-            # if front_data['extract_key']:
-            #     rule_data_dict['extract_key'] = front_data['extract_key']
-            # else:
-            #     # if rule_data_dict['rule_type'] >4:
-            #     #     rule_data_dict['extract_key'] = None
-            #     # else:
-            #     rule_data_dict['extract_key'] = '.*'
         else:
             rule_data_dict['extract_key'] = None
 
-        if front_data.has_key('value_type'):
-            rule_data_dict['value_type'] = front_data['value_type']
-        else:
-            rule_data_dict['value_type'] = None
+        rule_data_dict['value_type'] = self.__get_value_type(rule_data_dict['rule_type'],
+                                                             rule_data_dict['extract_key'])
 
         return rule_data_dict
 
     @staticmethod
+    def __get_value_type(rule_type, extract_data_reg):
+        int_reg = ['\d+', '\d', '\d+$', '\d$', '-\d+', '-\d', '-\d+$', '-\d$']
+        float_reg = ['\d\.\d', '\d\.\d+', '\d+\.\d', '\d+\.\d+', '\d\.\d$', '\d\.\d+$', '\d+\.\d$', '\d+\.\d+$',
+                     '-\d\.\d', '-\d\.\d+', '-\d+\.\d', '-\d+\.\d+', '-\d\.\d$', '-\d\.\d+$', '-\d+\.\d$', '-\d+\.\d+$'
+                     ]
+        if rule_type == '4':
+            return constants.VALUE_TYPE_INT
+        elif rule_type == '9':
+            return constants.VALUE_TYPE_TEXT
+        else:
+            if extract_data_reg in int_reg:
+                return constants.VALUE_TYPE_INT
+            elif extract_data_reg in float_reg:
+                return constants.VALUE_TYPE_FLOAT
+            else:
+                return constants.VALUE_TYPE_STRING
+
+    @staticmethod
     def __judge_identifier_name_exist(identifier_name, policy_id, rule_id=0):
         query_result = CollPolicyCliRule.objects.filter(Q(key_str=identifier_name) &
-                                                       Q(coll_policy=policy_id) &
-                                                       ~Q(ruleid=rule_id))
+                                                        Q(coll_policy=policy_id) &
+                                                        ~Q(ruleid=rule_id))
         if len(query_result) > 0:
             return True
         else:
@@ -384,10 +393,9 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
     @staticmethod
     def __judge_rule_is_locked(rule_id, coll_policy_id):
         tree_id = CollPolicyRuleTree.objects.filter(rule=rule_id, coll_policy=coll_policy_id).values('treeid')
-        tree_count =DataTable.objects.filter(tree__in=tree_id).count()
+        tree_count = DataTable.objects.filter(tree__in=tree_id).count()
         print tree_count
-        if tree_count> 0:
+        if tree_count > 0:
             return True
         else:
             return False
-

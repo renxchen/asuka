@@ -144,6 +144,13 @@ DB_EXCEPTION = 'there is an db exception'
 RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
 CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 #########################################
+# value_type of policy tree rule
+#########################################
+VALUE_TYPE_INT = 1
+VALUE_TYPE_FLOAT = 2
+VALUE_TYPE_STRING = 3
+VALUE_TYPE_TEXT = 4
+#########################################
 # data collection value setting
 #########################################
 SCHEDULE_STATUS_DEFAULT = 1
@@ -196,8 +203,8 @@ POLICY_POST_URL = 'http://10.71.244.134:7777/api/v1/valid'
 #########################################
 # render
 #########################################
-REPLACE_START_MARK = '@start@'
-REPLACE_END_MARK = '@end@'
+REPLACE_START_MARK = '☆start☆'
+REPLACE_END_MARK = '☆end☆'
 MARK_STRING_HTML_FONT_START = '<font color="blue">'
 HTML_FONT_END = '</font>'
 EXTRACT_DATA_HTML_FONT_START = '<font color="green"><u>'
@@ -207,7 +214,8 @@ X_OFFSET_ERROR = 'XOffset is too long'
 Y_OFFSET_ERROR = 'YOffset is too long'
 NOT_MATCH_BASIC_CHAR = 'can not find the basic char'
 NO_EXTRACT_LINE_NUM = 'no lines'
+NO_EXTRACT_DATA = 'no extract data'
 BLOCK_START_HTML_FONT_START = '<font color="red">'
-LINE_NUM_MSG_REPLACE = '@##@'
+LINE_NUM_MSG_REPLACE = '◇◎◎◇' #'@##@'
 LEAF_IS_BLOCK_RULE = 'LEAF_IS_BLOCK_RULE'
 POLICY_TREE_IS_GROUPED = 'policy tree is grouped'

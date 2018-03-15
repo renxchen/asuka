@@ -33,7 +33,9 @@ class CollectionPolicyEditViewSet(viewsets.ViewSet):
         # v1/api_collection_policy_edit_page/?coll_policy_id=1
         coll_policy_id = views_helper.get_request_value(self.request, "coll_policy_id", "GET")
         obj = CollPolicy.objects.get(coll_policy_id=coll_policy_id)
-        policy_status = Tool.get_policy_status(coll_policy_id)
+        is_used = False
+        if not Tool.get_policy_status(coll_policy_id):
+            is_used = True
         is_not_in_group = True
         if len(PolicysGroups.objects.filter(policy=coll_policy_id)) > 0:
             is_not_in_group = False
@@ -41,7 +43,7 @@ class CollectionPolicyEditViewSet(viewsets.ViewSet):
             'name': True,
             'desc': True,
             'ostype': is_not_in_group,
-            'cli_command': policy_status
+            'cli_command': is_used
         }
         serializer = CollPolicyEditSerializer(obj)
         data = {
