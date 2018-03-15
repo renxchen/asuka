@@ -80,17 +80,18 @@ export class DeviceLoginComponent implements OnInit {
                 let data: any = _.get(res, 'error_list');
                 this.optId = _.get(res, 'operation_id');
                 if (status && status['status'].toLowerCase() === 'true') {
-                    $('#bar').width('100%');
-                    $('.modal').hide();
+                    // $('#bar').width('100%');
                     this.drawDevLoginTable();
                     this.actionFlg = false;
+                    $('.modal').hide();
                     if (data && data.length > 0) {
                         this.modalMsg = '';
                         this.closeMsg = '閉じる';
                         this.errorDevices = data;
-                            this.showAlertModal(this.modalMsg, this.closeMsg, this.errorDevices);
+                        this.showAlertModal(this.modalMsg, this.closeMsg, this.errorDevices);
                     }
                 } else {
+                    $('.modal').hide();
                     this.actionFlg = true;
                     alert(msg);
                 }
@@ -113,11 +114,17 @@ export class DeviceLoginComponent implements OnInit {
                 { name: 'ip', index: 'ip', width: 50, align: 'center', search: true },
                 { name: 'telnet_port', index: 'telnet_port', width: 50, align: 'center', search: true },
                 { name: 'snmp_port', index: 'snmp_port', width: 50, align: 'center', search: true },
-                { name: 'snmp_community', index: 'snmp_community', width: 50, align: 'center', search: true },
-                { name: 'snmp_version', index: 'snmp_version', width: 50, align: 'center', search: true },
+                {
+                    name: 'snmp_community', index: 'snmp_community', width: 50, align: 'center', search: true,
+                    formatter: _t.noDataFormatter
+                },
+                {
+                    name: 'snmp_version', index: 'snmp_version', width: 50, align: 'center', search: true,
+                    formatter: _t.noDataFormatter
+                },
                 {
                     name: 'login_expect', index: 'login_expect', width: 50, align: 'center', search: true,
-                    // formatter: _t.loginExpFormmater
+                    formatter: _t.noDataFormatter
                 },
                 { name: 'device_type', index: 'device_type', width: 50, align: 'center', search: true },
                 {
@@ -126,7 +133,10 @@ export class DeviceLoginComponent implements OnInit {
                         return cellvalue['name'];
                     }
                 },
-                { name: 'group_name', index: 'group_name', width: 50, align: 'center', search: true },
+                {
+                    name: 'group_name', index: 'group_name', width: 50, align: 'center', search: true,
+                    formatter: _t.noDataFormatter
+                },
                 { name: 'telnet_status', index: 'telnet_status', width: 50, align: 'center', search: true },
                 { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
             ],
@@ -160,6 +170,13 @@ export class DeviceLoginComponent implements OnInit {
         });
         $('#devLoginTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
     }
+    public noDataFormatter(cellvalue, options, rowObject) {
+        if (cellvalue === null|| cellvalue === '') {
+            return '-';
+        } else {
+            return cellvalue;
+        }
+    }
     public deviceCheck() {
         this.apiPrefix = '/v1';
         let checkUrl = '/api_device_pre/';
@@ -178,11 +195,12 @@ export class DeviceLoginComponent implements OnInit {
                     let status = _.get(res, 'status');
                     // check upload status; if success, call the function draw table;
                     if (status && status['status'].toLowerCase() === 'true') {
-                        $('.bar').width('100%');
-                        $('.modal').hide();
+                        // $('.bar').width('100%');
                         this.devLoginTable$.GridUnload();
                         this.drawDevLoginTable();
+                        $('.modal').hide();
                     } else {
+                        $('.modal').hide();
                         alert('check data failed');
                     }
                 });

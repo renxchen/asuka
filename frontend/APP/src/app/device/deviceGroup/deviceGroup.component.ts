@@ -71,11 +71,17 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                 { name: 'ip', index: 'ip', width: 50, align: 'center', search: true },
                 { name: 'telnet_port', index: 'telnet_port', width: 40, align: 'center', search: true },
                 { name: 'snmp_port', index: 'snmp_port', width: 40, align: 'center', search: true },
-                { name: 'snmp_community', index: 'snmp_community', width: 50, align: 'center', search: true },
-                { name: 'snmp_version', index: 'snmp_version', width: 50, align: 'center', search: true },
+                {
+                    name: 'snmp_community', index: 'snmp_community', width: 50, align: 'center', search: true,
+                    formatter: _t.noDataFormatter
+                },
+                {
+                    name: 'snmp_version', index: 'snmp_version', width: 50, align: 'center', search: true,
+                    formatter: _t.noDataFormatter
+                },
                 {
                     name: 'login_expect', index: 'login_expect', width: 50, align: 'center', search: true,
-                    // formatter: _t.loginExpFormmater
+                    formatter: _t.noDataFormatter
                 },
                 { name: 'device_type', index: 'device_type', width: 40, align: 'center', search: true },
                 { name: 'telnet_status', index: 'telnet_status', width: 50, align: 'center', search: true },
@@ -121,6 +127,14 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             },
         });
         $('#deviceTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
+    }
+    // no data formatter
+    public noDataFormatter(cellvalue, options, rowObject) {
+        if (cellvalue === null || cellvalue === '') {
+            return '-';
+        } else {
+            return cellvalue;
+        }
     }
     public loginExpFormmater(cellvalue, options, rowObject) {
         let cell: any;
@@ -184,6 +198,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
         // let id = event.target.id;
         this.deviceTable$.GridUnload();
         if (id) {
+            this.groupId = id;
             this.getPanelData(id);
             this.drawDeviceTable(id);
         }
@@ -196,6 +211,9 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
         let group$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
                 this.getGroups();
+                if (id = this.groupId) {
+                    this.getGroupInfo(id);
+                }
             }
             this.unsubscribe(group$);
         });
@@ -221,6 +239,11 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                     if (status && status['status'].toLowerCase() === 'true') {
                         alert('Delete successfully');
                         this.getGroups();
+                        if (id = this.groupId) {
+                            this.deviceTable$.GridUnload();
+                            this.drawDeviceTable('-1');
+                            this.getPanelData('-1');
+                        }
                     } else {
                         if (msg) {
                             alert(msg);

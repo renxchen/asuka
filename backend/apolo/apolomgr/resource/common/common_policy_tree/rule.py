@@ -117,7 +117,7 @@ class Policy(object):
             m = re.search(pattern, self.raw_data_list[i])
             if m is not None:
                 basic_character = m.group()
-                # replace the space in basic character to @@
+                # replace the split char in basic character to @@
                 # self.render_b_c = self.instead.join(basic_character.split())
                 self.render_b_c = basic_character.replace(self.split_characters, self.instead)
                 self.raw_data_list[i] = self.raw_data_list[i].replace(basic_character, self.render_b_c)
@@ -143,14 +143,14 @@ class Policy(object):
         buffer_render_b_c = r'{}'.format(Tool.replace_escape_char(self.render_b_c))
         pattern = re.compile(buffer_render_b_c)
         for i in range(len(new_list)):
-            m = re.search(pattern, new_list[i])
-            if m is not None:
-                basic_character = m.group()
-                # find the basic character
-                basic_c_find_flag = True
-                # record the index(position) of the basic character
-                basic_character_index = i
-                continue
+            # find the basic character and the record the index of the basic character
+            if not basic_c_find_flag:
+                m = re.search(pattern, new_list[i])
+                if m is not None:
+                    basic_character = m.group()
+                    basic_c_find_flag = True
+                    basic_character_index = i
+                    continue
             if new_list[i].isspace() or new_list[i] == '':
                 continue
             if basic_c_find_flag and new_list[i] is not '':
@@ -332,6 +332,7 @@ class Policy(object):
             self.res['extract_match_flag'] = True
             self.res['extract_data_result'] = exp_result
             self.res['extract_data'] = extract_data
+            self.res['block_path'] = self.block_path
         else:
             self.res['extract_match_flag'] = False
             self.res['error_msg'] = constants.NO_MATCH_EXTRACT_DATA_REGEXP
@@ -349,6 +350,7 @@ class Policy(object):
             self.res['extract_data'] = len(self.raw_data_list)
             self.res['extract_data_result'] = [(0, line_num)]
             self.res['extract_match_flag'] = True
+            self.res['block_path'] = self.block_path
         else:
             self.res['extract_match_flag'] = False
             self.res['error_msg'] = constants.NO_EXTRACT_LINE_NUM
@@ -356,28 +358,15 @@ class Policy(object):
 
     def all_extract(self):
         self.__set_input__()
-        extract_data_index = []
-        new_list = ''.join(self.raw_data_list).split(' ')
-        for i in range(len(new_list)):
-            if new_list[i].isspace() or new_list[i] == '':
-                continue
-            else:
-                first_character_flag = True
-                first_character_index = i
-            if first_character_flag:
-                extract_data_index.append(first_character_index)
-                break
-        for i in range(len(new_list)):
-            if new_list[len(new_list) - 1 - i].isspace() or new_list[len(new_list) - 1 - i] == '':
-                continue
-            else:
-                last_character_flag = True
-                last_character_index = len(new_list) - 1 - i
-            if last_character_flag:
-                extract_data_index.append(last_character_index)
-                break
-        self.res['extract_data_index'] = extract_data_index
-        return self.res
+        if len(self.raw_data_list) >0:
+            self.res['extract_data'] = '\n'.join(self.raw_data_list)
+            self.res['extract_data_result'] = [(0, self.res['extract_data'])]
+            self.res['extract_match_flag'] = True
+            self.res['block_path'] = self.block_path
+        else:
+            self.res['extract_match_flag'] = False
+            self.res['error_msg'] = constants.NO_EXTRACT_DATA
+        return [self.res]
 
     @staticmethod
     def __get_space_count__(input_str):
@@ -518,6 +507,7 @@ class Policy(object):
                     result.append(res_dict)
                     start_mark = False
             line_num += 1
+
         return result
 
     def extract_block_by_string_range(self):

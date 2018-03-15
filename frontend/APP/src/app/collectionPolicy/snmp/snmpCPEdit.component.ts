@@ -1,3 +1,10 @@
+/**
+* @author: Dan Lv
+* @contact: danlv@cisco.com
+* @file: snmpCPEdit.component.ts
+* @time: 2017/01/25
+* @desc: edit snmp collection policy
+*/
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
@@ -55,6 +62,11 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {
     }
     public getSNMPCPInfo(id: any) {
+        /**
+        * @brief get snmp collection policy data and assignment variable
+        * @author Dan Lv
+        * @date 2018/01/25
+        */
         this.apiPrefix = '/v1';
         let url = '/api_collection_policy/?id=' + id;
         this.httpClient.setUrl(this.apiPrefix);
@@ -86,6 +98,11 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
             });
     }
     public getOsType() {
+        /**
+        * @brief get ostype data
+        * @author Dan Lv
+        * @date 2018/01/25
+        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -103,6 +120,12 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
             });
     }
     public doCheck() {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/01/25
+        */
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.noSpecSymbol(this.name);
@@ -120,21 +143,32 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
             return false;
         }
     }
-    public labelParentAlert() {
-        let _t = this;
-        $('a[id ="labelParent"]').click(function () {
-            let r = confirm('作業中の内容は破棄されます。よろしいですか？');
-            if (r) {
-                _t.router.navigate(['/index/cpview/']);
-            }
-        });
-    }
+    // public labelParentAlert() {
+    //     let _t = this;
+    //     $('a[id ="labelParent"]').click(function () {
+    //         let r = confirm('作業中の内容は破棄されます。よろしいですか？');
+    //         if (r) {
+    //             _t.router.navigate(['/index/cpview/']);
+    //         }
+    //     });
+    // }
     public showAlertModal(modalMsg: any, closeMsg: any) {
+        /**
+        * @brief show modal dialog
+        * @author Dan Lv
+        * @date 2018/01/25
+        */
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
     }
     public cPLogin() {
+        /**
+        * @brief get and check the input infomation, then save
+        * @post navigate to collection policy summary page
+        * @author Dan Lv
+        * @date 2018/01/25
+        */
         let _t = this;
         let cPInfo: any = {};
         this.apiPrefix = '/v1';

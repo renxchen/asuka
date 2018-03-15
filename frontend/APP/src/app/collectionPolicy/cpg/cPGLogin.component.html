@@ -24,7 +24,7 @@
                     コレクションポリシーグループ名:
                 </label>
                 <div 
-                    class="col-sm-7 cpg-div" 
+                    class="col-sm-7" 
                     [ngClass]="{'has-warning': !nameFlg||!nameNotNull}"
                 >
                     <input 
@@ -33,10 +33,11 @@
                         id="name" 
                         name="name" 
                         [(ngModel)]="name" 
-                        placeholder="英数字のみ" 
+                        placeholder="日本語、英数字、記号可" 
                         maxlength="256"
                     />
                 </div>
+                <div class="col-sm-1"></div>
             </div>
             <!-- 概要 -->
             <div class="form-group">
@@ -46,7 +47,7 @@
                 >
                     概要：
                 </label>
-                <div class="col-sm-7 cpg-div">
+                <div class="col-sm-7">
                     <textarea 
                         class="form-control" 
                         id="desc" 
@@ -56,6 +57,7 @@
                     >
                     </textarea>
                 </div>
+                <div class="col-sm-1"></div>
             </div>
             <!-- ostype -->
             <div class="form-group unuse_east">
@@ -66,7 +68,7 @@
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     OS Type：
                 </label>
-                <div class="col-sm-7 cpg-div">
+                <div class="col-sm-7">
                     <select 
                         class="form-control" 
                         id="osType" 
@@ -81,22 +83,26 @@
                         </option>
                     </select>
                 </div>
+                <div class="col-sm-1"></div>
             </div>
             <div class="form-group">
-                <div class="col-sm-1 add-btn">
+                <div class="col-sm-4 text-right">
                     <button 
                         class="btn btn-xs btn-primary" 
                         id="add" 
                         (click)="addBtn()"
                     >
-                        &nbsp;&nbsp;&nbsp;
-                        <i class="fa fa-plus-square"></i>
-                        &nbsp;&nbsp;&nbsp;
+                    <i class="fa fa-plus-square"></i>
+                    対応コレクションポリシー追加
+                        <!-- &nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp; -->
                     </button>
                 </div>
-                <div class="col-sm-10" *ngIf="addFlg">
+                <div class="col-sm-7"></div>
+                <div class="col-sm-1"></div>
+                <!-- <div class="col-sm-10" *ngIf="addFlg">
                     <strong>対応コレクションポリシー追加</strong>
-                </div>
+                </div> -->
             </div>
             <div class="form-group" *ngIf="addFlg">
                 <label 
@@ -105,7 +111,7 @@
                 >
                     コレクションポリシー名:
                 </label>
-                <div class="col-sm-7 cpg-div">
+                <div class="col-sm-7">
                     <select 
                         class="form-control" 
                         id="selCPName" 
@@ -133,7 +139,7 @@
                 >
                     取得間隔:
                 </label>
-                <div class="col-sm-7 cpg-div">
+                <div class="col-sm-7">
                     <select 
                         class="form-control" 
                         id="execInterval" 
@@ -149,6 +155,7 @@
                         <option value="5">1日</option>
                     </select>
                 </div>
+                <div class="col-sm-1"></div>
             </div>
             <!-- <div class="form-group">
                 <label 
@@ -174,11 +181,11 @@
                 </div>
             </div> -->
             <!-- 追加btn -->
-            <div class="form-group cpg-div">
+            <div class="form-group" *ngIf="addFlg">
                 <div class="col-sm-4"></div>
                 <div class="col-sm-7 text-right">
                     <button 
-                        class="btn btn-xs btn-warning add" 
+                        class="btn btn-xs btn-warning" 
                         id="addMoreInfo" 
                         (click)="addMoreInfo()"
                         style="margin-right:-6px"
@@ -187,12 +194,21 @@
                         追加
                     </button>
                 </div>
+                <div class="col-sm-1"></div>
             </div>
             <!-- jqgrid-table -->
-            <div class="cpg-login-grid" >
+            <div class="form-group">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-7">
+                    <table id="moreInfoTable"></table>
+                    <div id="cPGPager"></div>
+                </div>
+                <div class="col-sm-1"></div>
+            </div>
+            <!-- <div class="cpg-login-grid" >
                 <table id="moreInfoTable"></table>
                 <div id="cPGPager"></div>
-            </div> 
+            </div>  -->
             <!-- alert -->
             <div class="form-group" [ngClass]="{'hidden':msgFlg}">
                 <div 

@@ -56,23 +56,32 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             colModel: [
                 { label: 'No', hidden: true, name: 'ostypeid', index: 'ostypeid', search: false, key: true },
                 { label: 'OS Type名', name: 'name', index: 'name', width: 140, align: 'center', search: true },
-                { label: '概要', name: 'desc', index: 'desc', width: 140, align: 'center', search: true },
+                {
+                    label: '概要', name: 'desc', index: 'desc', width: 140, align: 'center', search: true,
+                    formatter: _t.noDataFormatter
+                },
                 {
                     label: 'CLI情報取得前</br>デフォルト実行コマンド', name: 'start_default_commands',
-                    index: 'start_default_commands', align: 'center', search: true
+                    index: 'start_default_commands', align: 'center', search: true, formatter: _t.brFormatter
                 },
                 {
                     label: 'CLI情報取得完了後</br>デフォルト実行コマンド', name: 'end_default_commands',
-                    index: 'end_default_commands', width: 140, align: 'center', search: true
+                    index: 'end_default_commands', width: 140, align: 'center', search: true,
+                    formatter: _t.brFormatter
                 },
-                { label: 'CLIエラー文字列', name: 'log_fail_judges', index: 'log_fail_judges', width: 140, align: 'center', search: true },
-                { label: 'CLIデフォルト</br>プロンプト文字列', name: 'telnet_prompt', index: 'telnet_prompt',
-                width: 140, align: 'center', search: true },
+                {
+                    label: 'CLIエラー文字列', name: 'log_fail_judges', index: 'log_fail_judges',
+                    width: 140, align: 'center', search: true, formatter: _t.brFormatter
+                },
+                {
+                    label: 'CLIデフォルト</br>プロンプト文字列', name: 'telnet_prompt', index: 'telnet_prompt',
+                    width: 140, align: 'center', search: true
+                },
                 { label: 'CLI タイムアウト値', name: 'telnet_timeout', index: 'telnet_timeout', width: 140, align: 'center', search: true },
                 { label: 'SNMP タイムアウト値', name: 'snmp_timeout', index: 'snmp_timeout', width: 140, align: 'center', search: true },
                 {
                     label: 'アクション', name: 'action', width: 120, align: 'center', search: false,
-                    formatter: this.formatterBtn
+                    formatter: _t.formatterBtn
                 }
             ],
             gridComplete: function () {
@@ -118,7 +127,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             },
         });
         $('#ostypeTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
-        $('.ui-jqgrid .ui-jqgrid-htable th div').css({'height': '27px'});
+        $('.ui-jqgrid .ui-jqgrid-htable th div').css({ 'height': '27px' });
     }
     // btn formatter
     public formatterBtn(cellvalue, options, rowObject) {
@@ -126,6 +135,22 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             + rowObject['ostypeid'] + '><i class="fa fa-pencil-square"></i> 編集</button>&nbsp;'
             + '<button class="btn btn-xs btn-warning delete" id='
             + rowObject['ostypeid'] + '><i class="fa fa-minus-square"></i> 削除</button>';
+    }
+    // </br> formatter
+    public brFormatter(cellvalue, options, rowObject) {
+        if (cellvalue !== null && cellvalue !== '') {
+            return cellvalue.replace(/，/g, '</br>');
+        } else {
+            return '-';
+        }
+    }
+    // no data formatter
+    public noDataFormatter(cellvalue, options, rowObject) {
+        if (cellvalue === null || cellvalue === '') {
+            return '-';
+        } else {
+            return cellvalue;
+        }
     }
     public editBtn() {
         let _t = this;
@@ -167,7 +192,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                         let msg = _.get(status, 'message');
                         let data = _.get(res, 'data');
                         if (status && status['status'].toLowerCase() === 'true') {
-                            _t.modalMsg = '削除に成功しました。';
+                            _t.modalMsg = '削除しました。';
                             _t.closeMsg = '閉じる';
                             _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                             $('#modalButton').on('click', function () {
