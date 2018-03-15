@@ -29,7 +29,6 @@ from backend.apolo.apolomgr.resource.action_policy.action_policy_views import Ac
 # from backend.apolo.apolomgr.resource.action_policy import action_policy_views
 import collections
 CLI_THREADPOOL_SIZE = 20
-TIME_OUT = 5
 
 
 
@@ -65,47 +64,51 @@ class DevicesViewSet(viewsets.ViewSet):
     @staticmethod
     def telnet_status_check(device_id):
         device = Devices.objects.get(device_id=device_id)
-        default_commands = Ostype.objects.get(ostypeid=device.ostype_id).start_default_commands
+        ostype = Ostype.objects.get(ostypeid=device.ostype_id)
+        default_commands = ostype.start_default_commands
+        time_out = ostype.telnet_timeout
 
         payload = {
-                  "commands": [
-                    "show version"
-                  ],
-                  "default_commands": default_commands,
-                  "ip": device.ip,
-                  "platform": "ios",
-                  "expect": device.login_expect,
-                  "timeout": TIME_OUT,
-                  "task_timestamp": 1519796623,
-                  "method": "telnet"
-                }
+            "commands": [
+                "show version"
+            ],
+            "default_commands": default_commands,
+            "ip": device.ip,
+            "platform": "ios",
+            "expect": device.login_expect,
+            "timeout": time_out,
+            "task_timestamp": 1519796623,
+            "method": "telnet"
+        }
         r = requests.post("http://10.71.244.134:8080/api/v1/sync/cli", data=json.dumps(payload))
         response = json.loads(r.text)
-        return response.get('status'),device_id
+        return response.get('status'), device_id
 
     @staticmethod
     def snmp_status_check(device_id):
         device = Devices.objects.get(device_id=device_id)
+        ostype = Ostype.objects.get(ostypeid=device.ostype_id)
+        time_out = ostype.snmp_timeout
         payload = {
-                  "commands": {
-                    "operate": "bulk_get",
-                    "oids": [
-                      "SNMPv2-MIB::sysObjectID.0"
-                    ]
-                  },
-                  "timeout": 5,
-                  "ip": device.ip,
-                  "task_timestamp": 1519796765,
-                  "community": device.snmp_community
-                }
+            "commands": {
+                "operate": "bulk_get",
+                "oids": [
+                    "SNMPv2-MIB::sysObjectID.0"
+                ]
+            },
+            "timeout": time_out,
+            "ip": device.ip,
+            "task_timestamp": 1519796765,
+            "community": device.snmp_community
+        }
         r = requests.post("http://10.71.244.134:8080/api/v1/sync/snmp", data=json.dumps(payload))
         response = json.loads(r.text)
         for x in response.get('output'):
             if 'message' in x.keys():
-                if x.get('message').find('timeout')>-1:
+                if x.get('message').find('timeout') > -1:
                     return 'fali', device_id
                 else:
-                    return 'success',device_id
+                    return 'success', device_id
             else:
                 return 'success', device_id
 
