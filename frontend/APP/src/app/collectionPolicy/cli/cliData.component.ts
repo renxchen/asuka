@@ -299,7 +299,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                 sendRuleInfo['rule_info'] = rule_info;
                 return sendRuleInfo;
             }
-        } else if (this.ruleType === 'data_rule_5') {
+        } else if (this.ruleType === 'data_rule_9') {
             if (this.dataRuleDCheck()) {
                 rule_info['coll_policy'] = this.cpId;
                 rule_info['rule_type'] = this.ruleType;
