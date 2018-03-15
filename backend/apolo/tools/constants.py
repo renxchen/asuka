@@ -3,8 +3,11 @@
 
 # Copyright 2017 Cisco Systems, Inc.
 # All rights reserved.
+
+from django.utils.translation import gettext
+
 #########################################
-# PATHS
+# Logs and CSV export paths
 #########################################
 LOG_PATH = 'logs/system_logger.log'
 CSV_PATH = 'export/apolo_export.csv'
@@ -32,32 +35,9 @@ SUCCESS = 'Success'
 FAILED = 'Failed'
 TRUE = 'True'
 FALSE = 'False'
-#########################################
-# Action Policy Related define
-#########################################
-EQUAL_SIGN = '='
-GREATER_THAN_SIGN = '>'
-LESS_THAN_SIGN = '<'
-GREATER_THAN_OR_EQUAL_SIGN = '>='
-LESS_THAN_OR_EQUAL_SIGN = '<='
-NOT_EQUAL_SIGN = '!='
-PRIORITY_CRITICAL = 'CRITICAL'
-PRIORITY_MAJOR = 'MAJOR'
-PRIORITY_MINOR = 'MINOR'
-TRIGGER_TYPE_EXPRESSION_COMPARE = '演算比較'
-TRIGGER_TYPE_INTEGER_COMPARE = '数値比較'
-TRIGGER_TYPE_STRING__COMPARE = '文字列比較'
-TRIGGER_TYPE_FAILED = '取得失敗'
-COLUMN_A_OR_COLUMN_B_NOT_EXIST = 'Column A(column_a as table id %s) or Column B(column_b as table id %s) is not exist in current system, please connect Administrator.'
-COLUMN_A_COLUMN_B_VERIFY_FAILED = 'Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).'
-EXPRESSION_ILLEGAL = 'There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1)'
-EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = 'A and B maybe do not have the same value type(String or Integer)'
-EXPRESSION_A_B_NOT_EXIST = 'There is not A or B in expression, should be at least A in expression'
-EXPRESSION_CONDITION_ILLEGAL = 'The expression condition should be in <=, >=, ==, !=, >, <'
-EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION = 'There is illegal format in current expression, illegal character %s exist in left expression'
-EXPRESSION_ILLEGAL_IN_RIGHT_EXPRESSION = 'There is illegal format in current expression, illegal character %s exist in right expression'
-EXPRESSION_EVAL_VERIFY_FAILED = 'The expression %s eval verification failed.'
-EXPRESSION_VERIFY_FAILED = 'The expression verify failed'
+VERIFY_WHETHER_EXECUTING_SERVER_URL = "http://%s:%s/api/v1/valid"
+VERIFY_WHETHER_EXECUTING_SERVER_IP = '10.71.244.134'
+VERIFY_WHETHER_EXECUTING_SERVER_PORT = '7777'
 #########################################
 # API token related define
 #########################################
@@ -75,37 +55,59 @@ ROLE = 'role'
 ORIG_IAT = 'orig_iat'
 USERNAME = 'username'
 PASSWORD = 'password'
-TOKEN_EXPIRED_MSG = 'Signature has expired.'
+TOKEN_EXPIRED_MSG = gettext('Token has expired.')
 TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = 'There was no token found for current user.'
-#########################################
-# API information define
-#########################################
+NO_USERNAME_OR_PASSWORD_FONUD_ERROR = "No username or password found, username is %s, password is %s."
+LOGIN_FAILED_ERROR = "Login failed with incorrect username %s or password %s."
+REFRESH_EXPIRED = "Refresh has expired."
+ORIG_IAT_REQUIRED = "orig_iat field is required."
+USERNAME_INACTIVE_ERROR = "Username %s is inactive."
+LOGIN_SUCCESSFUL = "Login successful with username %s and password %s."
 NO_USERNAME_OR_PASSWORD = "No user or password found."
 USER_AND_PASSWD_INCORRECT = "User or password is incorrect."
 USER_DISABLED = "User is disabled."
 USER_LOGOUT_SUCCESSFUL = "User logout successful."
-COLLECTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
-ACTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
-DATA_TABLE_NAME_DUPLICATE = 'DATA_TABLE_NAME_DUPLICATE'
-COLL_POLICY_GROUP_EXIST_IN_SCHEDULE = 'COLL_POLICY_GROUP_EXIST_IN_SCHEDULE'
-COLL_POLICY_EXIST_IN_ITEM = 'COLL_POLICY_EXIST_IN_ITEM'
-COLL_POLICY_EXIST_IN_POLICYS_GROUPS = 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS'
+#########################################
+# Action Policy Related define
+#########################################
+EQUAL_SIGN = '='
+GREATER_THAN_SIGN = '>'
+LESS_THAN_SIGN = '<'
+GREATER_THAN_OR_EQUAL_SIGN = '>='
+LESS_THAN_OR_EQUAL_SIGN = '<='
+NOT_EQUAL_SIGN = '!='
+PRIORITY_CRITICAL = 'CRITICAL'
+PRIORITY_MAJOR = 'MAJOR'
+PRIORITY_MINOR = 'MINOR'
+SNMP = 'snmp'
+CLI = 'cli'
+FLOAT = 'float'
+STRING = 'string'
+TEXT = 'text'
+INTEGER = 'int'
+TRIGGER_TYPE_EXPRESSION_COMPARE = '演算比較'
+TRIGGER_TYPE_INTEGER_COMPARE = '数値比較'
+TRIGGER_TYPE_STRING__COMPARE = '文字列比較'
+TRIGGER_TYPE_FAILED = '取得失敗'
+COLUMN_A_OR_COLUMN_B_NOT_EXIST = 'Column A(column_a as table id %s) or Column B(column_b as table id %s) is not exist in current system, please connect Administrator.'
+COLUMN_A_COLUMN_B_VERIFY_FAILED = 'Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).'
+EXPRESSION_ILLEGAL = 'There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1)'
+EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = 'A and B maybe do not have the same value type(String or Integer)'
+EXPRESSION_A_B_NOT_EXIST = 'There is not A or B in expression, should be at least A in expression'
+EXPRESSION_CONDITION_ILLEGAL = 'The expression condition should be in <=, >=, ==, !=, >, <'
+EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION = 'There is illegal format in current expression, illegal character %s exist in left expression'
+EXPRESSION_ILLEGAL_IN_RIGHT_EXPRESSION = 'There is illegal format in current expression, illegal character %s exist in right expression'
+EXPRESSION_EVAL_VERIFY_FAILED = 'The expression %s eval verification failed.'
+EXPRESSION_VERIFY_FAILED = 'The expression verify failed'
+ACTION_POLICY_NAME_DUPLICATE = 'The action name is exist in current system, please change name.'
+DATA_TABLE_NAME_DUPLICATE = 'The table name is exist in current system, please change name.'
 OSTYPE_EXIST_IN_SCHEDULE = 'OSTYPE_EXIST_IN_SCHEDULE'
+DEVICE_GROUP_NOT_EXIST = 'Current device group is not exist in current system.'
+DEVICE_GROUP_NOT_EXIST_IN_SCHEDULE = gettext('Current device group is not exist in Schedule Table.')
 #########################################
-# API log or exception define
+# Collection Policy Related define
 #########################################
-REFRESH_EXPIRED = "Refresh has expired."
-ORIG_IAT_REQUIRED = "orig_iat field is required."
-KEY_ERROR = "Mapping key of %s not found."
-PAGE_NOT_INTEGER = "That page number is not an integer."
-EMPTY_PAGE = "That page number is less than 1."
-NO_USERNAME_OR_PASSWORD_FONUD_ERROR = "No username or password found, username is %s, password is %s."
-LOGIN_FAILED_ERROR = "Login failed with incorrect username %s or password %s."
-USERNAME_INACTIVE_ERROR = "Username %s is inactive."
-LOGIN_SUCCESSFUL = "Login successful with username %s and password %s."
-#########################################
-# API Collection policy
-#########################################
+# data extra related
 SPLIT_RULE_SPACE = 'space'
 SPLIT_RULE_COMMA = 'comma'
 SPLIT_RULE_SLASH = 'slash'
@@ -113,6 +115,16 @@ SPLIT_RULE_OTHER = 'other'
 INSTEAD = '@@'
 NO_MATCH_EXTRACT_DATA_REGEXP = 'Can not match the provided regular Expression.'
 
+# collection policy functional related
+COLLECTION_POLICY_NOT_EXIST = 'The collection policy is not exist with id %s.'
+COLLECTION_POLICY_IS_EXECUTING = 'The Collection policy is running in system with id %s.'
+COLL_POLICY_EXIST_IN_ITEM = 'COLL_POLICY_EXIST_IN_ITEM'
+COLL_POLICY_EXIST_IN_POLICYS_GROUPS = 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS'
+COLLECTION_POLICY_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
+#########################################
+# Collection Policy Group Related define
+#########################################
+COLL_POLICY_GROUP_EXIST_IN_SCHEDULE = 'COLL_POLICY_GROUP_EXIST_IN_SCHEDULE'
 #########################################
 # Policy Tree Node's information
 # Rule Tree Node's information
@@ -216,6 +228,13 @@ NOT_MATCH_BASIC_CHAR = 'can not find the basic char'
 NO_EXTRACT_LINE_NUM = 'no lines'
 NO_EXTRACT_DATA = 'no extract data'
 BLOCK_START_HTML_FONT_START = '<font color="red">'
-LINE_NUM_MSG_REPLACE = '◇◎◎◇' #'@##@'
+LINE_NUM_MSG_REPLACE = '◇◎◎◇'  # '@##@'
 LEAF_IS_BLOCK_RULE = 'LEAF_IS_BLOCK_RULE'
 POLICY_TREE_IS_GROUPED = 'policy tree is grouped'
+#########################################
+# API log and exception related define
+#########################################
+
+#########################################
+# Other API information define
+#########################################
