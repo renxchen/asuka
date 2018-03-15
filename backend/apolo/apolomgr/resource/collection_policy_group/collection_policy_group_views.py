@@ -44,7 +44,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         self.desc = views_helper.get_request_value(self.request, 'desc', method)
         self.ostype = views_helper.get_request_value(self.request, 'ostype_name', method)
         self.execute_ing = True
-        # verify execute_ing status
+        # verify whether is executing status
         self.get_execute_ing()
 
     def get_execute_ing(self):
@@ -59,15 +59,21 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         #     "param": 2,
         #     "param_type": 0  # 0: group 1: policy
         # }
-        req_body = {'now_time': time.time(), 'param': self.id, 'param_type': 0}
-        url = "http://%s:%s/api/v1/valid" % ('10.71.244.134', '7777')
-        headers = {'content-type': 'application/json'}
-        resp = requests.post(url=url, data=json.dumps(req_body), headers=headers)
-        if 200 <= resp.status_code <= 299:
-            resp_body = json.loads(resp.text)
-            item = resp_body.get('items')
-            if item == 0:
-                self.execute_ing = False
+        try:
+            req_body = {'now_time': time.time(), 'param': self.id, 'param_type': 0}
+            url = constants.VERIFY_WHETHER_EXECUTING_SERVER_URL % (
+                constants.VERIFY_WHETHER_EXECUTING_SERVER_IP, constants.VERIFY_WHETHER_EXECUTING_SERVER_PORT)
+            headers = {'content-type': 'application/json'}
+            resp = requests.post(url=url, data=json.dumps(req_body), headers=headers)
+            if 200 <= resp.status_code <= 299:
+                resp_body = json.loads(resp.text)
+                item = resp_body.get('items')
+                if item == constants.NUMBER_ZERO:
+                    self.execute_ing = False
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
 
     @staticmethod
     def get_cp_group(**kwargs):
@@ -185,7 +191,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             pgs = self.get_policy_group(**kwargs)
             # if len(pgs) > 0:
             pgs.delete()
-                # return True
+            # return True
         except Exception, e:
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
@@ -236,7 +242,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 serializer = CollPolicyGroupSerializer(queryset, many=True)
                 serializer_pg = PolicyGroupSerializer(queryset_pg, many=True)
                 for per in serializer_pg.data:
-                    if per['policy_policy_type'] == 1:
+                    if per['policy_policy_type'] == constants.NUMBER_ONE:
                         # SNMP
                         per['policy_name'] = '[SNMP]' + per['policy_name']
                     else:
@@ -442,11 +448,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 kwargs = {'policy_group_id': self.id}
                 verify_result = self.get_schedule(**kwargs)
                 if self.execute_ing:
-                    message = 'Collection policy group is running in system with id %s.' % self.id
                     data = {
-                        'data': {
-                            'data': message,
-                        },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,

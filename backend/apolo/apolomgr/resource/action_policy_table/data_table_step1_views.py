@@ -112,18 +112,18 @@ class TableViewsSet(viewsets.ViewSet):
         """
         # value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
         code_meaning = ''
-        if code == 0:
-            code_meaning = 'snmp'
-        if code == 1:
-            code_meaning = 'cli'
-        if code == 2:
-            code_meaning = 'float'
-        if code == 3:
-            code_meaning = 'string'
-        if code == 4:
-            code_meaning = 'text'
-        if code == 5:
-            code_meaning = 'int'
+        if code == constants.NUMBER_ZERO:
+            code_meaning = constants.SNMP
+        if code == constants.NUMBER_ONE:
+            code_meaning = constants.CLI
+        if code == constants.NUMBER_TWO:
+            code_meaning = constants.FLOAT
+        if code == constants.NUMBER_THREE:
+            code_meaning = constants.STRING
+        if code == constants.NUMBER_FOUR:
+            code_meaning = constants.TEXT
+        if code == constants.NUMBER_FIVE:
+            code_meaning = constants.INTEGER
         return code_meaning
 
     def get_history(self, item_id, value_type, policy_type):

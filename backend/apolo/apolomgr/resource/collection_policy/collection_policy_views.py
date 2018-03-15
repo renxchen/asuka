@@ -49,7 +49,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
         self.snmp_oid = views_helper.get_request_value(self.request, 'snmp_oid', method)
         self.value_type = views_helper.get_request_value(self.request, 'value_type', method)
         self.execute_ing = True
-        # verify execute_ing status
+        # verify whether is executing status
         self.get_execute_ing()
 
     def get_execute_ing(self):
@@ -64,15 +64,21 @@ class CollPolicyViewSet(viewsets.ViewSet):
         #     "param": 2,
         #     "param_type": 0  # 0: group 1: policy
         # }
-        req_body = {'now_time': time.time(), 'param': self.id, 'param_type': 0}
-        url = "http://%s:%s/api/v1/valid" % ('10.71.244.134', '7777')
-        headers = {'content-type': 'application/json'}
-        resp = requests.post(url=url, data=json.dumps(req_body), headers=headers)
-        if 200 <= resp.status_code <= 299:
-            resp_body = json.loads(resp.text)
-            item = resp_body.get('items')
-            if item == 0:
-                self.execute_ing = False
+        try:
+            req_body = {'now_time': time.time(), 'param': self.id, 'param_type': 0}
+            url = constants.VERIFY_WHETHER_EXECUTING_SERVER_URL % (
+                constants.VERIFY_WHETHER_EXECUTING_SERVER_IP, constants.VERIFY_WHETHER_EXECUTING_SERVER_PORT)
+            headers = {'content-type': 'application/json'}
+            resp = requests.post(url=url, data=json.dumps(req_body), headers=headers)
+            if 200 <= resp.status_code <= 299:
+                resp_body = json.loads(resp.text)
+                item = resp_body.get('items')
+                if item == constants.NUMBER_ZERO:
+                    self.execute_ing = False
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
 
     @staticmethod
     def get_cp(**kwargs):
@@ -287,7 +293,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                             }
                         }
                         return api_return(data=data)
-                if int(self.policy_type) == 1:
+                if int(self.policy_type) == constants.NUMBER_ONE:
                     data['value_type'] = self.value_type
                 serializer = CollPolicySerializer(data=data)
                 if serializer.is_valid(Exception):
@@ -326,15 +332,11 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     'value_type': self.value_type,
                 }
                 if queryset is False:
-                    message = 'There is no result in CollPolicy table with id %s.' % self.id
                     data = {
-                        'data': {
-                            'data': message
-                        },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.FAILED
+                            constants.MESSAGE: constants.COLLECTION_POLICY_NOT_EXIST % self.id
                         }
                     }
                     return api_return(data=data)
@@ -371,10 +373,9 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 cp_cli_rule = self.get_tree_from_coll_policy_cli_rule(**kwargs)
                 pg = self.get_cp_from_policys_groups(**{'policy_id': self.id})
                 if self.execute_ing:
-                    message = 'Collection policy is running in system with id %s.' % self.id
                     data = {
                         'data': {
-                            'data': message
+                            'data': constants.COLLECTION_POLICY_IS_EXECUTING % self.id
                         },
                         'new_token': self.new_token,
                         constants.STATUS: {
@@ -384,24 +385,16 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     }
                     return api_return(data=data)
                 if collection_policy_in_cp is False:
-                    message = 'There is no result in CollPolicy table with id %s.' % self.id
                     data = {
-                        'data': {
-                            'data': message
-                        },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.FAILED
+                            constants.MESSAGE: constants.COLLECTION_POLICY_NOT_EXIST % self.id
                         }
                     }
                     return api_return(data=data)
                 if len(pg) > 0:
-                    message = 'Collection policy exists in PolicysGroups table with id %s.' % self.id
                     data = {
-                        'data': {
-                            'data': message
-                        },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,

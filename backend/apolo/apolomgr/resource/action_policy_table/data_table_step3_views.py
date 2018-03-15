@@ -97,7 +97,7 @@ class DataTableCoulumnViewsSet(viewsets.ViewSet):
                     data = {
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: 'Current device group is not exist in Schedule Table.'
+                            constants.MESSAGE: constants.DEVICE_GROUP_NOT_EXIST_IN_SCHEDULE
                         },
                     }
                     return api_return(data=data)
@@ -105,7 +105,7 @@ class DataTableCoulumnViewsSet(viewsets.ViewSet):
                 data = {
                     constants.STATUS: {
                         constants.STATUS: constants.FALSE,
-                        constants.MESSAGE: 'Current device group is not exist.'
+                        constants.MESSAGE: constants.DEVICE_GROUP_NOT_EXIST
                     },
                 }
                 return api_return(data=data)
