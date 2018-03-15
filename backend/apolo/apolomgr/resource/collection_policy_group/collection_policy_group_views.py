@@ -263,7 +263,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 'id': 'policy_group_id',
                 'name': 'name',
                 'desc': 'desc',
-                'ostypeid': 'ostypeid__name',
+                'ostype_name': 'ostypeid__name',
             }
             query_data = {
                 'name': self.name,
