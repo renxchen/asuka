@@ -49,7 +49,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         this.drawCPGTable();
     }
     public drawCPGTable() {
-        console.log(1);
         let _t = this;
         this.cpgTable$ = $('#cpgTable').jqGrid({
             url: '/v1/api_collection_policy_group/',
@@ -147,14 +146,12 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         _t.apiPrefix = '/v1';
         let url = '/api_collection_policy_group/?id=';
         $('.detail').click(function (event) {
-            let id = $(event)[0].target.id;
-            if (id) {
+            let detaiId = $(event)[0].target.id;
+            if (detaiId) {
                 _t.router.navigate(['/index/cpgdetail'],
-                    { queryParams: { 'id': id } });
-                // _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
-                // _t.modalRef.content.actionType = 'detail';
-                // _t.modalRef.content.id = id;
+                    { queryParams: { 'id': detaiId } });
             }
+            event.stopPropagation();
         });
     }
     public editBtn() {
@@ -162,10 +159,10 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         _t.apiPrefix = '/v1';
         let url = '/api_collection_policy_group/?id=';
         $('.edit').click(function (event) {
-            let id = $(event)[0].target.id;
-            if (id) {
+            let editId = $(event)[0].target.id;
+            if (editId) {
                 _t.router.navigate(['/index/cpgedit'],
-                    { queryParams: { 'id': id } });
+                    { queryParams: { 'id': editId } });
                 // _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
                 // _t.modalRef.content.id = id;
                 // _t.modalRef.content.actionType = 'edit';
@@ -177,6 +174,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 //     _t.unsubscribe(cpgEdit$);
                 // });
             }
+            event.stopPropagation();
         });
     }
     public deleteBtn() {
@@ -184,37 +182,39 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         _t.apiPrefix = '/v1';
         let url = '/api_collection_policy_group/?id=';
         $('.delete').click(function (event) {
-            event.stopPropagation();
-            let id = $(event)[0].target.id;
-            let name = $('#cpgTable').jqGrid().getRowData(id)['name'];
-            let alt = confirm(name + 'を削除します。よろしいですか？');
-            if (alt) {
-                _t.httpClient.setUrl(_t.apiPrefix);
-                _t.httpClient
-                    .toJson(_t.httpClient.delete(url + id))
-                    .subscribe(res => {
-                        let status = _.get(res, 'status');
-                        let msg = _.get(status, 'message');
-                        let data = _.get(res, 'data');
-                        if (status && status['status'].toLowerCase() === 'true') {
-                            _t.modalMsg = '削除に成功しました。';
-                            _t.closeMsg = '閉じる';
-                            _t.showAlertModal(_t.modalMsg, _t.closeMsg);
-                            $('#modalButton').on('click', function () {
-                                $('#cpgTable').jqGrid().trigger('reloadGrid');
-                            });
-                        } else {
-                            // check this cp occupation
-                            if (msg && msg === 'POLICY_GROUP_EXIST_IN_SCHEDULE') {
-                                this.modalMsg = 'Can not been delete when policy group exits in schedule';
-                                this.closeMsg = 'close';
-                                _t.showAlertModal(this.modalMsg, this.closeMsg);
+            let delId = $(event)[0].target.id;
+            if (delId) {
+                let delName = $('#cpgTable').jqGrid().getRowData(delId)['name'];
+                let alt = confirm(delName + 'を削除します。よろしいですか？');
+                if (alt) {
+                    _t.httpClient.setUrl(_t.apiPrefix);
+                    _t.httpClient
+                        .toJson(_t.httpClient.delete(url + delId))
+                        .subscribe(res => {
+                            let status = _.get(res, 'status');
+                            let msg = _.get(status, 'message');
+                            let data = _.get(res, 'data');
+                            if (status && status['status'].toLowerCase() === 'true') {
+                                _t.modalMsg = '削除に成功しました。';
+                                _t.closeMsg = '閉じる';
+                                _t.showAlertModal(_t.modalMsg, _t.closeMsg);
+                                $('#modalButton').on('click', function () {
+                                    $('#cpgTable').jqGrid().trigger('reloadGrid');
+                                });
                             } else {
-                                alert(msg);
+                                // check this cp occupation
+                                if (msg && msg === 'POLICY_GROUP_EXIST_IN_SCHEDULE') {
+                                    this.modalMsg = 'Can not been delete when policy group exits in schedule';
+                                    this.closeMsg = 'close';
+                                    _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                } else {
+                                    alert(msg);
+                                }
                             }
-                        }
-                    });
+                        });
+                }
             }
+            event.stopPropagation();
         });
     }
     public cpLogin() {

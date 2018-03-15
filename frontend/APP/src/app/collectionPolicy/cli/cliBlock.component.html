@@ -173,6 +173,7 @@
                             id="startLnNum"
                             name="startLnNum" 
                             [(ngModel)]=startLnNum 
+                            maxlength="11"
                             value="0" 
                             [disabled]="processFlg"
                         >
@@ -194,7 +195,8 @@
                             id="endLnNum" 
                             name="endLnNum"
                             [(ngModel)]="endLnNum" 
-                            value="0"  
+                            value="0"
+                            maxlength="11"  
                             [disabled]="processFlg"
                         >
                     </div>  
@@ -424,7 +426,8 @@
             class="btn btn-primary" 
             (click)="saveRule()"
         >
-            <i class="fa fa-clipboard"></i> 保存
+            <i class="fa fa-check-square-o"></i>
+            保存
         </button>
     </div>
 </div>

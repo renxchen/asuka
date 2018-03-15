@@ -67,7 +67,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
             this.cPId = cPIdTmp;
             this.getCPDetailInfo(this.cPId);
         } else {
-            this.router.navigate(['/index/']);
+            this.router.navigate(['/index/cpview']);
         }
     }
     ngOnInit() {

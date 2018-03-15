@@ -34,7 +34,7 @@
                         name="name" 
                         [(ngModel)]="name" 
                         placeholder="日本語、英数字、記号可" 
-                        maxlength="256"
+                        maxlength="30"
                     />
                 </div>
                 <div class="col-sm-1"></div>
@@ -92,7 +92,8 @@
                         id="add" 
                         (click)="addBtn()"
                     >
-                    <i class="fa fa-plus-square"></i>
+                    <i class="fa fa-plus-square" *ngIf="!addFlg"></i>
+                    <i class="fa fa-minus-square" *ngIf="addFlg"></i>
                     対応コレクションポリシー追加
                         <!-- &nbsp;&nbsp;&nbsp;
                         &nbsp;&nbsp;&nbsp; -->

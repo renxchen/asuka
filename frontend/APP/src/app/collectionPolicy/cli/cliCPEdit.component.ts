@@ -49,7 +49,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
             this.cPId = cPIdeTmp;
             this.getCPInfo(this.cPId);
         } else {
-            this.router.navigate(['/index/']);
+            this.router.navigate(['/index/cpview']);
         }
 
     }

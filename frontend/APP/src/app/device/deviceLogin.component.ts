@@ -83,7 +83,7 @@ export class DeviceLoginComponent implements OnInit {
                     // $('#bar').width('100%');
                     this.drawDevLoginTable();
                     this.actionFlg = false;
-                    $('.modal').hide();
+                    this.processbar.hide();
                     if (data && data.length > 0) {
                         this.modalMsg = '';
                         this.closeMsg = '閉じる';
@@ -91,7 +91,7 @@ export class DeviceLoginComponent implements OnInit {
                         this.showAlertModal(this.modalMsg, this.closeMsg, this.errorDevices);
                     }
                 } else {
-                    $('.modal').hide();
+                    this.processbar.hide();
                     this.actionFlg = true;
                     alert(msg);
                 }
@@ -171,7 +171,7 @@ export class DeviceLoginComponent implements OnInit {
         $('#devLoginTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
     }
     public noDataFormatter(cellvalue, options, rowObject) {
-        if (cellvalue === null|| cellvalue === '') {
+        if (cellvalue === null || cellvalue === '') {
             return '-';
         } else {
             return cellvalue;
@@ -198,9 +198,9 @@ export class DeviceLoginComponent implements OnInit {
                         // $('.bar').width('100%');
                         this.devLoginTable$.GridUnload();
                         this.drawDevLoginTable();
-                        $('.modal').hide();
+                        this.processbar.hide();
                     } else {
-                        $('.modal').hide();
+                        this.processbar.hide();
                         alert('check data failed');
                     }
                 });
