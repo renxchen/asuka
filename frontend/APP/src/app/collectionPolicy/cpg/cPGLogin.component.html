@@ -149,11 +149,11 @@
                         (change)="execIntervalChange(selExecInterval)"
                     >
                         <option value="null">Please choose monitor time </option>
-                        <option value="1" *ngIf="cliFlg">1分</option>
-                        <option value="2">5分</option>
-                        <option value="3">15分</option>
-                        <option value="4">1時間</option>
-                        <option value="5">1日</option>
+                        <option value="60" *ngIf="cliFlg">1分</option>
+                        <option value="300">5分</option>
+                        <option value="900">15分</option>
+                        <option value="3600">1時間</option>
+                        <option value="86400">1日</option>
                     </select>
                 </div>
                 <div class="col-sm-1"></div>
