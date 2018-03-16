@@ -120,7 +120,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         });
     }
     public execIntervalChange(selExecInterval: any) {
-        if (selExecInterval === '1') {
+        if (selExecInterval === '60') {
             let snmpNameTmp: any = [];
             _.each(this.cpNames, function (cpName) {
                 if (cpName.policy_type.toString() === '1') {
