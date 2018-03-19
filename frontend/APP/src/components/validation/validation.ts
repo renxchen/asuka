@@ -2,8 +2,7 @@ export class Validator {
     // need modify noSpecSymbolReg
     static noSpecSymbolReg: RegExp = /[\x00-\xff]+/;
     static noCommsymbolReg: RegExp = /[\x00-\xff]+/;
-    static includeChineseReg: RegExp = /[\u4e00-\u9fa5]/;
-    static oidReg: RegExp = /[0-9]+?(\.[0-9]+?)+/;
+    static oidReg: RegExp = /^[1-9]+\d+(\.[1-9]+\d+)*$/;
     static numReg: RegExp = /[0-9]/;
     static xOffsetReg: RegExp = /^-?[1-9]\d*$/;
     static offsetReg: RegExp = /^-?[0-9]\d*$/;
@@ -36,13 +35,6 @@ export class Validator {
     }
     static noCommsymbol(param: any) {
         if (Validator.regTest(Validator.noCommsymbolReg, param)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    static includeChinese(param: any) {
-        if (Validator.regTest(Validator.includeChineseReg, param)) {
             return true;
         } else {
             return false;
