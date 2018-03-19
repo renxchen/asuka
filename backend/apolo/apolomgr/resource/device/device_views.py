@@ -191,6 +191,8 @@ class DevicesViewSet(viewsets.ViewSet):
                     sorts = ['devicesgroups__group__name' if x == 'group' else x for x in sorts]
                 if '-group' in sorts:
                     sorts = ['-devicesgroups__group__name' if x == '-group' else x for x in sorts]
+            else:
+                sorts = ['device_id']
             if search_conditions:
                 condition_group = search_conditions.get('group__contains')
                 if condition_group is not None:

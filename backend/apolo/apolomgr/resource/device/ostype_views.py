@@ -99,6 +99,8 @@ class OsTypeViewSet(viewsets.ViewSet):
                                  'start_default_commands', 'end_default_commands', 'desc']
                 sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                               query_data, search_fields)
+                if len(sorts) == 0:
+                    sorts = ['ostypeid']
                 if search_conditions:
                     queryset = Ostype.objects.filter(**search_conditions).order_by(*sorts)
                 else:
