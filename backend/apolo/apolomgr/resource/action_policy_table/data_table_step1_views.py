@@ -78,7 +78,8 @@ class TableViewsSet(viewsets.ViewSet):
             dt = DataTable.objects.filter(**kwargs)
             return dt
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     @staticmethod
@@ -97,7 +98,8 @@ class TableViewsSet(viewsets.ViewSet):
                                                                                   'item__coll_policy_rule_tree_treeid__rule__key_str')
             return data_table_item_info
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     @staticmethod
@@ -117,7 +119,8 @@ class TableViewsSet(viewsets.ViewSet):
                                                                                                  'item__coll_policy_rule_tree_treeid__rule__key_str')
             return data_table_history_item_info
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     @staticmethod
@@ -282,7 +285,9 @@ class TableViewsSet(viewsets.ViewSet):
                 result = sorted(result, key=lambda result: result[self.sort_by], reverse=reverse)
         # table detail page sort end
         data = {
-            'data': result,
+            'data': {
+                'data': result
+            },
             'new_token': self.new_token,
             'num_page': paginator.num_pages,
             'page_range': list(paginator.page_range),
@@ -300,9 +305,9 @@ class TableViewsSet(viewsets.ViewSet):
         try:
             if self.id is not '':
                 data = self.get_info_by_table_id(self.id)
-                title = ['デバイス名', 'Time Stamp', 'Path', data['data'][0]['checkitem']]
+                title = ['デバイス名', 'Time Stamp', 'Path', data['data']['data'][0]['checkitem']]
                 csv_data = []
-                for per in data['data']:
+                for per in data['data']['data']:
                     csv_data.append([per['hostname'], per['date'], per['path'], per['value']])
                 script_dir = os.path.split(os.path.realpath(__file__))[0]
                 csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))),
@@ -355,7 +360,9 @@ class TableViewsSet(viewsets.ViewSet):
             paginator = Paginator(serializer.data, int(self.max_size_per_page))
             contacts = paginator.page(int(self.page_from))
             data = {
-                'data': contacts.object_list,
+                'data': {
+                    'data': contacts.object_list,
+                },
                 'new_token': self.new_token,
                 'num_page': paginator.num_pages,
                 'page_range': list(paginator.page_range),
@@ -408,8 +415,10 @@ class TableViewsSet(viewsets.ViewSet):
                     if serializer_data_table_item.is_valid(Exception):
                         serializer_data_table_item.save()
                         data = {
-                            'data_table': serializer.data,
-                            'data_table_item': serializer_data_table_item.data,
+                            'data': {
+                                'data_table': serializer.data,
+                                'data_table_item': serializer_data_table_item.data,
+                            },
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.TRUE,
@@ -433,15 +442,14 @@ class TableViewsSet(viewsets.ViewSet):
                 kwargs = {'table_id': self.id}
                 data_in_dp = self.get_data_table(**kwargs)
                 if len(data_in_dp) <= 0:
-                    if json.loads(data_in_dp)['message'] is not '':
-                        data = {
-                            'new_token': self.new_token,
-                            constants.STATUS: {
-                                constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: json.loads(data_in_dp)['message']
-                            }
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.DATA_TABLE_NOT_EXIST_IN_SYSTEM
                         }
-                        return api_return(data=data)
+                    }
+                    return api_return(data=data)
                 data_in_dp.delete()
                 data = {
                     'new_token': self.new_token,
