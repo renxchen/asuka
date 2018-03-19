@@ -41,15 +41,16 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         private modalService: BsModalService
     ) { }
     ngOnInit() {
+    }
+    ngAfterViewInit() {
         let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cptype'];
         if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
             this.cPType = cPTypeTmp;
+            this.drawCPTable('OID', 'snmp_oid', this.cPType);
         } else {
             this.cPType = '0';
+            this.drawCPTable('show コマンド', 'cli_command', this.cPType);
         }
-    }
-    ngAfterViewInit() {
-        this.drawCPTable('show コマンド', 'cli_command', this.cPType);
     }
     public formatterBtn(cellvalue, options, rowObject) {
         /**
