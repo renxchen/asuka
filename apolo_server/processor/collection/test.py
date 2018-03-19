@@ -1,4 +1,20 @@
-from pandas.io import data, wb # becomes
-from pandas_datareader import data, wb
-import pandas_datareader as pdr
-pdr.get_data_yahoo('AAPL')
+
+
+
+
+print str(24*60*60)
+
+
+
+
+a = {}
+
+k = a["m"] = {}
+
+k["df"] = "asdf"
+
+
+print k
+
+for map in adsf:
+    print a

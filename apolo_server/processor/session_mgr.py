@@ -19,11 +19,29 @@ class SessionManager(Thread):
     def put(self, k, v):
         self.data_set[k] = v
 
+    def update_device(self,task_id,device_info):
+        try:
+            self.data_set[task_id].update(dict(device_info=device_info))
+        except KeyError:
+            pass
+
+
     def update(self, k, v):
         try:
             self.data_set[k].update(v)
         except KeyError:
             pass
+
+    #def get_by_device
+
+    def update_command_result(self,task_id,result):
+        data = self.data_set.get(task_id)
+        if "commands_result" not in data:
+            data.update(dict(commands_result={}))
+        command = result["command"]
+
+        data.get("commands_result")[command] = result
+
 
     def get(self, k):
         data = self.data_set.get(k)
