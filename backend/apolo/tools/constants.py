@@ -104,6 +104,7 @@ DATA_TABLE_NAME_DUPLICATE = 'The table name is exist in current system, please c
 OSTYPE_EXIST_IN_SCHEDULE = 'OSTYPE_EXIST_IN_SCHEDULE'
 DEVICE_GROUP_NOT_EXIST = 'Current device group is not exist in current system.'
 DEVICE_GROUP_NOT_EXIST_IN_SCHEDULE = gettext('Current device group is not exist in Schedule Table.')
+DATA_TABLE_NOT_EXIST_IN_SYSTEM = gettext('Current data table is not exist in system.')
 #########################################
 # Collection Policy Related define
 #########################################

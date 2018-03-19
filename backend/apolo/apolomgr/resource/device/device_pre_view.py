@@ -9,12 +9,12 @@
 
 """
 
-from backend.apolo.serializer.devices_groups_serializer import DevicesTmpSerializer,DevicesGroupsSerializer
-from backend.apolo.models import Groups, Ostype, DevicesTmp,DevicesGroups
+from backend.apolo.serializer.devices_groups_serializer import DevicesTmpSerializer, DevicesGroupsSerializer
+from backend.apolo.models import Groups, Ostype, DevicesTmp, DevicesGroups
 from backend.apolo.tools import constants
 from rest_framework.views import APIView
 from rest_framework import viewsets
-from backend.apolo.apolomgr.resource.device import groups_views,device_views
+from backend.apolo.apolomgr.resource.device import groups_views, device_views
 from backend.apolo.tools.views_helper import api_return
 from django.core.paginator import Paginator
 from backend.apolo.tools import views_helper
@@ -30,8 +30,8 @@ import string, copy
 from multiprocessing.dummy import Pool as ThreadPool
 import requests
 
-class DevicePreViewSet(APIView):
 
+class DevicePreViewSet(APIView):
     parser_classes = (FileUploadParser,)
 
     def __init__(self, request, **kwargs):
@@ -145,7 +145,7 @@ class DevicePreViewSet(APIView):
                 'ostype': self.ostype_name,
             }
             search_fields = ['hostname', 'ip', 'telnet_port', 'snmp_port', 'snmp_community', 'snmp_version',
-                             'login_expect', 'device_type', 'telnet_status', 'status_type','group_name','ostype']
+                             'login_expect', 'device_type', 'telnet_status', 'status_type', 'group_name', 'ostype']
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                           query_data, search_fields)
             if sorts != []:
@@ -153,6 +153,8 @@ class DevicePreViewSet(APIView):
                     sorts = ['ostype__name' if x == 'ostype' else x for x in sorts]
                 if '-ostype' in sorts:
                     sorts = ['-ostype__name' if x == '-ostype' else x for x in sorts]
+            else:
+                sorts = ['device_id']
             if search_conditions:
                 ostype_condition = search_conditions.get('ostype__contains')
                 if ostype_condition is not None:
@@ -199,7 +201,7 @@ class DevicePreViewSet(APIView):
                 for x in res_telnet:
                     device_pre = DevicesTmp.objects.get(device_id=x[1])
                     telnet_res = x[0]
-                    data ={
+                    data = {
                         'telnet_status': telnet_res,
                     }
                     serializer = DevicesTmpSerializer(device_pre, data=data, partial=True)
@@ -235,7 +237,3 @@ class DevicePreViewSet(APIView):
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
             return exception_handler(e)
-
-
-
-

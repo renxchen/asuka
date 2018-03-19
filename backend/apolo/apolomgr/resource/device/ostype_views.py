@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-#!/usr/bin/env python
+# !/usr/bin/env python
 """
 
 @author: kaixliu
@@ -11,7 +11,7 @@
 """
 
 from backend.apolo.serializer.collection_policy_serializer import OstypeSerializer
-from backend.apolo.models import Ostype,Devices,Schedules,CollPolicy
+from backend.apolo.models import Ostype, Devices, Schedules, CollPolicy
 from backend.apolo.tools import constants
 from rest_framework import viewsets
 from backend.apolo.tools.views_helper import api_return
@@ -85,7 +85,7 @@ class OsTypeViewSet(viewsets.ViewSet):
                     'desc': 'desc',
                 }
                 query_data = {
-                    'name':self.os_type_name,
+                    'name': self.os_type_name,
                     'log_fail_judges': self.log_fail_judges,
                     'status': self.status,
                     'snmp_timeout': self.snmp_timeout,
@@ -99,6 +99,8 @@ class OsTypeViewSet(viewsets.ViewSet):
                                  'start_default_commands', 'end_default_commands', 'desc']
                 sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                               query_data, search_fields)
+                if len(sorts) == 0:
+                    sorts = ['ostypeid']
                 if search_conditions:
                     queryset = Ostype.objects.filter(**search_conditions).order_by(*sorts)
                 else:
