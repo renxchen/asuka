@@ -153,6 +153,8 @@ class DevicePreViewSet(APIView):
                     sorts = ['ostype__name' if x == 'ostype' else x for x in sorts]
                 if '-ostype' in sorts:
                     sorts = ['-ostype__name' if x == '-ostype' else x for x in sorts]
+            else:
+                sorts = ['device_id']
             if search_conditions:
                 ostype_condition = search_conditions.get('ostype__contains')
                 if ostype_condition is not None:
