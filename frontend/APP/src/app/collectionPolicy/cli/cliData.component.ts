@@ -63,8 +63,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     }
     ngOnInit() {
         this.selSplitChar = '4';
-        this.xOffset = 0;
-        this.yOffset = 0;
+        this.xOffset = 1;
+        this.yOffset = 1;
         this.selectedRtnType = '1';
     }
     ngAfterViewInit() {
