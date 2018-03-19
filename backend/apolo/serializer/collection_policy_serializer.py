@@ -8,7 +8,8 @@ class CollPolicySerializer(serializers.ModelSerializer):
         # fields = (
         #     'coll_policy_id', 'name', 'cli_command', 'cli_command_result', 'desc', 'policy_type', 'snmp_oid', 'history',
         #     'ostype', 'value_type', 'ostype_name')
-        fields = ('coll_policy_id', 'ostype', 'name', 'cli_command', 'desc', 'snmp_oid', 'ostype_name')
+        fields = ('coll_policy_id', 'ostype', 'name', 'cli_command', 'desc', 'snmp_oid', 'value_type', 'policy_type',
+                  'ostype_name')
         # fields = '__all__'
 
     def create(self, validated_data):
