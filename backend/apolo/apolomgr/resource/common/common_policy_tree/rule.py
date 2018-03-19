@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 '''
 
 @author: kimli
@@ -116,11 +115,13 @@ class Policy(object):
             pattern = re.compile(self.basic_c)
             m = re.search(pattern, self.raw_data_list[i])
             if m is not None:
+                # get the basic character
                 basic_character = m.group()
                 # replace the split char in basic character to @@
-                # self.render_b_c = self.instead.join(basic_character.split())
-                self.render_b_c = basic_character.replace(self.split_characters, self.instead)
+                # mark the basic character with $basic character$
+                self.render_b_c = '${}$'.format(basic_character.replace(self.split_characters, self.instead))
                 self.raw_data_list[i] = self.raw_data_list[i].replace(basic_character, self.render_b_c)
+                # get the line num of basic character
                 basic_character_line_num = i
                 is_match_basic_char = True
                 break
@@ -143,16 +144,18 @@ class Policy(object):
         buffer_render_b_c = r'{}'.format(Tool.replace_escape_char(self.render_b_c))
         pattern = re.compile(buffer_render_b_c)
         for i in range(len(new_list)):
-            # find the basic character and the record the index of the basic character
+            # the record the index of the basic character
             if not basic_c_find_flag:
                 m = re.search(pattern, new_list[i])
                 if m is not None:
-                    basic_character = m.group()
+                    # basic_character = m.group()
                     basic_c_find_flag = True
                     basic_character_index = i
                     continue
+
             if new_list[i].isspace() or new_list[i] == '':
                 continue
+
             if basic_c_find_flag and new_list[i] is not '':
                 count += 1
             # match the offset and should find the extract data
@@ -181,7 +184,8 @@ class Policy(object):
             # the position of basic character
             self.res['basic_character_index'] = basic_character_index
             # the value of basic character
-            self.res['basic_character'] = basic_character.replace(constants.INSTEAD, self.split_characters)
+            # self.res['basic_character'] = basic_character.replace(constants.INSTEAD, self.split_characters)
+            self.res['basic_character'] = basic_character
             # the pair of extract data and the position of extract data
             self.res['extract_data_result'] = [(extract_data_index, extract_data[0])]
             # the value of extract data

@@ -71,6 +71,7 @@ class DataCollectionOptCls(object):
                     combination = item.copy()
                     policy_device_combinations.append(combination)
 
+
             item_serializer = ItemsSerializer(data=policy_device_combinations, many=True)
             if item_serializer.is_valid(raise_exception=BaseException):
                 item_serializer.save()

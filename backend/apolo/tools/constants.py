@@ -206,7 +206,7 @@ CP_STATUS_ON_VAULE = 1
 # data collection Error Message
 #########################################
 # 各グループにおけるあるデバイスとあるコレクションポリシーが紐付いています。かつ、同じ優先度が同じです。追加不可です。
-POLICY_DEVICE_COMBINATION = 'the combination of policy and device  is used'
+POLICY_DEVICE_COMBINATION = 'the combination of policy and device is used' # device id and policy id の組み合わせが利用されている
 CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
 CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
 NO_ITEMS_IN_GROUP = 'no items in group,please check the group'
@@ -215,26 +215,31 @@ POLICY_POST_URL = 'http://10.71.244.134:7777/api/v1/valid'
 #########################################
 # render
 #########################################
-REPLACE_START_MARK = '☆start☆'
-REPLACE_END_MARK = '☆end☆'
-MARK_STRING_HTML_FONT_START = '<font color="blue">'
-HTML_FONT_END = '</font>'
-EXTRACT_DATA_HTML_FONT_START = '<font color="green"><u>'
-EXTRACT_DATA_HTML_FONT_END = '</u></font>'
-EXTRACT_LINE_NUM = '<font color="blue">all <font color="green"><u>{}</u></font>lines:</font>'
 X_OFFSET_ERROR = 'XOffset is too long'
 Y_OFFSET_ERROR = 'YOffset is too long'
 NOT_MATCH_BASIC_CHAR = 'can not find the basic char'
 NO_EXTRACT_LINE_NUM = 'no lines'
 NO_EXTRACT_DATA = 'no extract data'
-BLOCK_START_HTML_FONT_START = '<font color="red">'
-LINE_NUM_MSG_REPLACE = '◇◎◎◇'  # '@##@'
 LEAF_IS_BLOCK_RULE = 'LEAF_IS_BLOCK_RULE'
 POLICY_TREE_IS_GROUPED = 'policy tree is grouped'
-#########################################
-# API log and exception related define
-#########################################
-
+#################################################################
+# instead mark string
+REPLACE_START_MARK = '☆start☆'
+REPLACE_END_MARK = '☆end☆'
+LINE_NUM_MSG_REPLACE = '◇◎◎◇' #'@##@'
+# css style of data rule
+BASIC_CHAR_STYLE = '<span style="color:#6066c9;text-shadow: 0 0 1px #9c9ff9;">'
+EXTRACT_DATA_STYLE = '<span style="color:#0f9f6f;text-decoration: underline;">'
+# all line numbers style
+EXTRACT_LINE_NUM_STYLE = u'<font color="blue">全 <font color="green"><u>{}</u></font> 行:</font>'
+# css style of block rule
+BLOCK_BASIC_CHAR_STYLE = '<span style="color:#cf6360;text-shadow: 0 0 1px #cf90cf;">'
+BLOCK_RULE_ODD_STYLE = '<div style="background-color:rgba(245, 180, 145, 0.15);display: inline-block;">'
+BLOCK_RULE_EVEN_STYLE = '<div style="background-color:rgba(250, 155, 190, 0.15);display: inline-block;">'
+REGEXP_BLOCK_RULE_STYLE = '<div style="background-color:rgba(220, 200, 100, 0.2);display: inline-block;">{}</div>'
+# end mark
+DIV_END = '</div>'
+SPAN_END = '</span>'
 #########################################
 # Other API information define
 #########################################

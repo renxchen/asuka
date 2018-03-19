@@ -120,7 +120,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         });
     }
     public execIntervalChange(selExecInterval: any) {
-        if (selExecInterval === '1') {
+        if (selExecInterval === '60') {
             let snmpNameTmp: any = [];
             _.each(this.cpNames, function (cpName) {
                 if (cpName.policy_type.toString() === '1') {
@@ -296,15 +296,15 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         $('#moreInfoTable').jqGrid({ searchOnEnter: true, defaultSearch: 'cn' });
     }
     public execIntervalFomatter(id: any) {
-        if (id.toString() === '1') {
+        if (id.toString() === '60') {
             return '1分';
-        } else if (id.toString() === '2') {
+        } else if (id.toString() === '300') {
             return '5分';
-        } else if (id.toString() === '3') {
+        } else if (id.toString() === '900') {
             return '15分';
-        } else if (id.toString() === '4') {
+        } else if (id.toString() === '3600') {
             return '1時間';
-        } else if (id.toString() === '5') {
+        } else if (id.toString() === '86400') {
             return '1日';
         } else {
             return 'null';

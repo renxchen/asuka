@@ -33,14 +33,9 @@ class Render(Tool, DBOpt):
         self.rule_context = {}
 
         self.dispatch_result = {}
-        # self.colors = [
-        #                 ["#FDEDEC", "#EBF5FB", "#F5EEF8", "#FEF9E7", "#F8F9F9"],
-        #                 ["#FADBD8", "#D6EAF8", "#EBDEF0", "#FCF3CF", "#F2F3F4"],
-        #                 ["#F5B7B1", "#AED6F1", "#D7BDE2", "#F9E79F", "#E5E7E9"]
-        #               ]
         self.colors = [
-            ["#FDEDEC", "#EBF5FB", "#F5EEF8", "#FEF9E7", "#F8F9F9"],
-            ["#FADBD8", "#D6EAF8", "#EBDEF0", "#FCF3CF", "#F2F3F4"],
+            ["rgba(245, 180, 145, 0.15)", "rgba(250, 155, 190, 0.15)"],
+            ["rgba(245, 180, 145, 0.15)", "rgba(250, 155, 190, 0.15)"],
             ["#F5B7B1", "#AED6F1", "#D7BDE2", "#F9E79F", "#E5E7E9"]
         ]
 
@@ -84,7 +79,6 @@ class Render(Tool, DBOpt):
         p = Dispatch(arry, self.rule_context, self.data)
         p.dispatch()
         arry = p.get_result()
-        # print 'rule.py 82 line result:{}'.format(arry)
         # save format as like {deep:[{startline, endline..},{}]}
         for parent_item in arry:
             for child_item in parent_item:
@@ -126,9 +120,9 @@ class Render(Tool, DBOpt):
                             for pair in extract_data_pair:
                                 extract_data = pair[1]
                                 line_index = pair[0]
-                                replace_extract_data = '{}{}{}'.format(constants.EXTRACT_DATA_HTML_FONT_START,
+                                replace_extract_data = '{}{}{}'.format(constants.EXTRACT_DATA_STYLE,
                                                                        extract_data,
-                                                                       constants.EXTRACT_DATA_HTML_FONT_END)
+                                                                       constants.SPAN_END)
                                 data_list[line_index] = data_list[line_index].replace(
                                     extract_data, replace_extract_data)
                             html_context = '\n'.join(data_list)
@@ -136,7 +130,7 @@ class Render(Tool, DBOpt):
                             # there is one layer
                             if deep == 0:
                                 extract_data = extract_data_pair[0][1]
-                                show_line_num = constants.EXTRACT_LINE_NUM.format(extract_data)
+                                show_line_num = constants.EXTRACT_LINE_NUM_STYLE.format(extract_data)
                                 all_data[0] = str(show_line_num) + constants.LINE_NUM_MSG_REPLACE + str(all_data[0])
                                 continue
                             # there is two layers
@@ -144,13 +138,13 @@ class Render(Tool, DBOpt):
                                 before_node = self.dispatch_result[0][0]
                                 if before_node['rule_type'] == 8:
                                     extract_data = extract_data_pair[0][1]
-                                    show_line_num = constants.EXTRACT_LINE_NUM.format(extract_data)
+                                    show_line_num = constants.EXTRACT_LINE_NUM_STYLE.format(extract_data)
                                     all_data[0] = str(show_line_num) + constants.LINE_NUM_MSG_REPLACE + str(all_data[0])
                                     continue
                                 else:
                                     html_context = '\n'.join(data_list)
                                     extract_data = extract_data_pair[0][1]
-                                    show_line_num = constants.EXTRACT_LINE_NUM.format(extract_data)
+                                    show_line_num = constants.EXTRACT_LINE_NUM_STYLE.format(extract_data)
                                     html_context = str(show_line_num) + constants.LINE_NUM_MSG_REPLACE + str(
                                         html_context)
                             elif deep == 2:
@@ -158,7 +152,7 @@ class Render(Tool, DBOpt):
                                 before_node = self.dispatch_result[1][0]
                                 if before_node['rule_type'] == 8:
                                     extract_data = extract_data_pair[0][1]
-                                    show_line_num = constants.EXTRACT_LINE_NUM.format(extract_data)
+                                    show_line_num = constants.EXTRACT_LINE_NUM_STYLE.format(extract_data)
                                     ln = top_node['start_line']
                                     all_data[ln] = str(show_line_num) + constants.LINE_NUM_MSG_REPLACE + str(
                                         all_data[ln])
@@ -166,15 +160,15 @@ class Render(Tool, DBOpt):
                                 else:
                                     html_context = '\n'.join(data_list)
                                     extract_data = extract_data_pair[0][1]
-                                    show_line_num = constants.EXTRACT_LINE_NUM.format(extract_data)
+                                    show_line_num = constants.EXTRACT_LINE_NUM_STYLE.format(extract_data)
                                     html_context = str(show_line_num) + constants.LINE_NUM_MSG_REPLACE + str(
                                         html_context)
                             else:
                                 continue
 
                         elif rule_type == 9:
-                            data_list[0] = '{}{}'.format(constants.EXTRACT_DATA_HTML_FONT_START, data_list[0])
-                            data_list[-1] = '{}{}'.format(data_list[-1], constants.EXTRACT_DATA_HTML_FONT_END)
+                            data_list[0] = '{}{}'.format(constants.EXTRACT_DATA_STYLE, data_list[0])
+                            data_list[-1] = '{}{}'.format(data_list[-1], constants.SPAN_END)
                             html_context = '\n'.join(data_list)
                         else:
                             extract_data_index = extract_data_pair[0][0]
@@ -208,18 +202,18 @@ class Render(Tool, DBOpt):
                                                                                               split_char)
                                         basic_character_new = basic_character_new.replace(
                                             constants.REPLACE_START_MARK,
-                                            constants.MARK_STRING_HTML_FONT_START
+                                            constants.BASIC_CHAR_STYLE
                                         )
                                         basic_character_new = basic_character_new.replace(
                                             constants.REPLACE_END_MARK,
-                                            constants.HTML_FONT_END
+                                            constants.SPAN_END
                                         )
                                         line_arry[j] = basic_character_new
                                         is_chanced += 1
                                     elif element_index == extract_data_index:
-                                        replace_extract_data = '{}{}{}'.format(constants.EXTRACT_DATA_HTML_FONT_START,
+                                        replace_extract_data = '{}{}{}'.format(constants.EXTRACT_DATA_STYLE,
                                                                                extract_data,
-                                                                               constants.EXTRACT_DATA_HTML_FONT_END)
+                                                                               constants.SPAN_END)
                                         line_arry[j] = line_arry[j].replace(extract_data, replace_extract_data)
                                         is_chanced += 1
                                     else:
@@ -249,10 +243,10 @@ class Render(Tool, DBOpt):
                     for i in range(len(all_data)):
                         if item.has_key('identifier_line_num'):
                             if i == item['identifier_line_num']:
-                                if constants.EXTRACT_DATA_HTML_FONT_START in all_data[i]:
+                                if constants.EXTRACT_DATA_STYLE in all_data[i]:
                                     extract_match = re.search(
-                                        '{}(.*){}'.format(constants.EXTRACT_DATA_HTML_FONT_START,
-                                                          constants.EXTRACT_DATA_HTML_FONT_END),
+                                        '{}(.*){}'.format(constants.EXTRACT_DATA_STYLE,
+                                                          constants.SPAN_END),
                                         all_data[i])
                                     if extract_match is not None:
                                         buffer_data = extract_match.group(1)
@@ -261,14 +255,17 @@ class Render(Tool, DBOpt):
                                             continue
 
                                 all_data[i] = all_data[i].replace(item['block_start_characters'],
-                                                              '{}{}{}'.format(constants.BLOCK_START_HTML_FONT_START,
+                                                              '{}{}{}'.format(constants.BLOCK_BASIC_CHAR_STYLE,
                                                                               item['block_start_characters'],
-                                                                              constants.HTML_FONT_END))
+                                                                              constants.SPAN_END))
 
                         if i == start_line:
+                            block_rule_style = constants.BLOCK_RULE_EVEN_STYLE
+                            if color_index==1:
+                                block_rule_style = constants.BLOCK_RULE_ODD_STYLE
+
                             if item['rule_type'] != 8:
-                                all_data[i] = '<div style="background-color:{};display: inline-block;">{}'.format(
-                                    self.colors[deep][color_index], all_data[i])
+                                all_data[i] = '{}{}'.format(block_rule_style, all_data[i])
 
                                 if color_index == 1:
                                     color_index = 0
@@ -279,41 +276,38 @@ class Render(Tool, DBOpt):
                                 for tuple_item in item['reg_match_context']:
 
                                     (lm, match_string) = tuple_item
-                                    if constants.EXTRACT_DATA_HTML_FONT_START in all_data[lm]:
+                                    if constants.EXTRACT_DATA_STYLE in all_data[lm]:
                                         extract_match = re.search(
-                                            '{}(.*){}'.format(constants.EXTRACT_DATA_HTML_FONT_START,
-                                                              constants.EXTRACT_DATA_HTML_FONT_END),
+                                            '{}(.*){}'.format(constants.EXTRACT_DATA_STYLE, constants.SPAN_END),
                                             all_data[lm])
                                         if extract_match is not None:
                                             buffer_data = extract_match.group(1)
                                             if buffer_data in match_string or match_string in buffer_data:
-                                                all_data[lm] = '<div style="background-color:{};' \
-                                                               'display: inline-block;">{}</div>' \
-                                                    .format(self.colors[deep][color_index], all_data[lm])
+                                                all_data[lm] = constants.REGEXP_BLOCK_RULE_STYLE.format(all_data[lm])
                                                 continue
 
                                     all_data[lm] = all_data[lm].replace(match_string,
                                                                         '{}{}{}'.format(
-                                                                            constants.BLOCK_START_HTML_FONT_START,
+                                                                            constants.BLOCK_BASIC_CHAR_STYLE,
                                                                             match_string,
-                                                                            constants.HTML_FONT_END))
-                                    all_data[lm] = '<div style="background-color:{};display: inline-block;">{}</div>' \
-                                        .format(self.colors[deep][color_index], all_data[lm])
+                                                                            constants.SPAN_END))
+                                    all_data[lm] = constants.REGEXP_BLOCK_RULE_STYLE.format(all_data[lm])
+
 
                         if i == end_line and item['rule_type'] != 8:
                             if item.has_key('is_include'):
                                 if item['is_include']:
                                     all_data[i] = all_data[i].replace(item['block_end_characters'],
                                                                       '{}{}{}'.format(
-                                                                          constants.BLOCK_START_HTML_FONT_START,
+                                                                          constants.BLOCK_BASIC_CHAR_STYLE,
                                                                           item['block_end_characters'],
-                                                                          constants.HTML_FONT_END))
+                                                                          constants.SPAN_END))
 
                             if all_data[i]:
-                                all_data[i] = all_data[i] + '</div>'
+                                all_data[i] = all_data[i] + constants.DIV_END
                             else:
                                 # there is only enter key in the end line
-                                all_data[i] = all_data[i] + ' </div>'
+                                all_data[i] = all_data[i] + ' ' + constants.DIV_END
             deep = deep - 1
         html_data_list = []
         for k in range(len(all_data)):

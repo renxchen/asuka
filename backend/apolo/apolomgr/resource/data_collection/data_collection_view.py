@@ -291,7 +291,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
 
     @staticmethod
     def __check_is_lock(arry):
-        queryset = DataTableItems.objects.exclude(item__in=arry)
+        queryset = DataTableItems.objects.filter(item__in=arry)
         if queryset.count() > 0:
             return True
         else:
