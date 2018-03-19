@@ -569,20 +569,21 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button
-            *ngIf="delBtn" 
-            type="button" 
-            class="btn btn-danger" 
-            (click)="deleteRule()"
-        >
-            <i class="fa fa-minus-square"></i>削除
-        </button>
+        <span *ngIf="delBtn" >
+            <button
+                type="button" 
+                class="btn btn-danger" 
+                (click)="deleteRule()"
+            >
+                <i class="fa fa-minus-square"></i>&nbsp;削除
+            </button>
+        </span>
         <button 
             type="button" 
             class="btn btn-primary" 
             (click)="saveRule()"
         >
-        <i class="fa fa-check-square-o"></i>保存
+        <i class="fa fa-check-square-o"></i>&nbsp;保存
         </button>
     </div>
 </div>
