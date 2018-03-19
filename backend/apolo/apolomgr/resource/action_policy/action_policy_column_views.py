@@ -48,7 +48,7 @@ class ActionPolicyColumnViewSet(viewsets.ViewSet):
         try:
             if self.table_id is not '':
                 tvs = TableViewsSet(request=self.request)
-                data_history = tvs.get_info_by_table_id(self.table_id)
+                data_history = tvs.get_info_by_table_id(self.table_id, history_need_flag=False)
                 # get tree information
                 pt = Policy_tree(self.policy_id)
                 pt_data = pt.get_policy_tree()
