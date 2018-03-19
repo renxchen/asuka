@@ -10,8 +10,8 @@
 """
 
 from backend.apolo.serializer.data_collection_serializer import DeviceGroupIDNameSerializer, OstypeSerializer
-from backend.apolo.models import Groups, Ostype,Schedules,DevicesGroups
-from backend.apolo.apolomgr.resource.device import device_views,ostype_views
+from backend.apolo.models import Groups, Ostype, Schedules, DevicesGroups
+from backend.apolo.apolomgr.resource.device import device_views, ostype_views
 from backend.apolo.tools import constants
 from rest_framework import viewsets
 from backend.apolo.tools.views_helper import api_return
@@ -22,6 +22,7 @@ from backend.apolo.tools.exception import exception_handler
 import simplejson as json
 from django.forms.models import model_to_dict
 from django.db import transaction
+
 
 class GroupsViewSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):
@@ -106,17 +107,17 @@ class GroupsViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def post(self):
-        kwargs_groupname = {'name':self.name}
+        kwargs_groupname = {'name': self.name}
         groups = self.get_group(kwargs_groupname)
         if groups:
             message = 'GROUPNAME_ALREADY_EXISTS'
             data = {
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: message
-                        }
-                    }
+                'new_token': self.new_token,
+                constants.STATUS: {
+                    constants.STATUS: constants.FALSE,
+                    constants.MESSAGE: message
+                }
+            }
             return api_return(data=data)
         kwargs_ostypeid = {"ostypeid": self.ostype_id}
         ostype = self.get_ostype(kwargs_ostypeid)
@@ -168,7 +169,7 @@ class GroupsViewSet(viewsets.ViewSet):
                 group = self.get_group(kwargs_group)
                 kwargs_ostype = {'ostypeid': self.ostype_id}
                 ostype = self.get_ostype(kwargs_ostype)
-                if not isinstance(ostype,str):
+                if not isinstance(ostype, str):
                     data = {
                         'name': self.name,
                         'desc': self.desc,
@@ -223,9 +224,9 @@ class GroupsViewSet(viewsets.ViewSet):
         try:
             with transaction.atomic():
                 if self.group_id:
-                    kwards_schedules = {'device_group_id':self.group_id}
+                    kwards_schedules = {'device_group_id': self.group_id}
                     queryset_schedules = Schedules.objects.filter(**kwards_schedules)
-                    if queryset_schedules.count() != 0 :
+                    if queryset_schedules.count() != 0:
                         message = 'ALREADY_EXISTS_IN_SCHEDULES'
                         data = {
                             'new_token': self.new_token,
