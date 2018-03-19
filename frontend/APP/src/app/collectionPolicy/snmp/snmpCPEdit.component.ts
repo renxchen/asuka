@@ -35,7 +35,6 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
     closeMsg: any;
     nameNotNull: Boolean = true;
     nameFlg: Boolean = true;
-    descFlg: Boolean = false;
     oidNotNull: Boolean = true;
     oidFlg: Boolean = true;
     uniqueFlg: Boolean = true;
@@ -130,14 +129,12 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
         if (this.nameNotNull) {
             this.nameFlg = Validator.noSpecSymbol(this.name);
         }
-        this.descFlg = Validator.includeChinese(this.desc);
         this.oidNotNull = Validator.notNullCheck(this.snmpOid);
         if (this.oidNotNull) {
             this.oidFlg = Validator.oidRegCheck(this.snmpOid);
         }
         if (this.nameNotNull && this.nameFlg
-            && this.oidNotNull && this.oidFlg
-            && !this.descFlg) {
+            && this.oidNotNull && this.oidFlg) {
             return true;
         } else {
             return false;

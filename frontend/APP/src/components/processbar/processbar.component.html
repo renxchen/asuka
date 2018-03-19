@@ -4,7 +4,7 @@
 <div class="modal-content">
     <div class="modal-body" style="padding:30px">
         <div class="progress" style="margin-bottom:0px;width:100%">
-            <div 
+            <!-- <div 
                 id="bar"
                 class="progress-bar progress-bar-success progress-bar-striped" 
                 role="progressbar" 
@@ -14,6 +14,9 @@
                 style="width:100%"
             >
             </div>
-        </div>
+        </div> -->
+        <div class="mb-2">
+            <progressbar max="100" [value]="100" type="danger" [striped]="true" [animate]="true"><i>166 / 200</i></progressbar>
+          </div>
     </div>
 </div>

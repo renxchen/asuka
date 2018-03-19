@@ -40,13 +40,6 @@ export class Validator {
             return false;
         }
     }
-    static includeChinese(param: any) {
-        if (Validator.regTest(Validator.includeChineseReg, param)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
     static oidRegCheck(param: any) {
         if (Validator.regTest(Validator.oidReg, param)) {
             return true;
