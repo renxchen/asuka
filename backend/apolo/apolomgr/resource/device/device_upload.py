@@ -29,9 +29,7 @@ import string
 import time
 
 
-
 class DevicePreViewSet(APIView):
-
     parser_classes = (FileUploadParser,)
 
     def __init__(self, request, **kwargs):
@@ -46,9 +44,9 @@ class DevicePreViewSet(APIView):
             with transaction.atomic():
                 import os
                 headers_expect1 = ["\xef\xbb\xbfHostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
-                                  "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
+                                   "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
                 headers_expect2 = ["Hostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
-                                  "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
+                                   "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
                 filename = self.request.FILES['file']
                 dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8").read(1024))
                 filename.open()
@@ -81,7 +79,7 @@ class DevicePreViewSet(APIView):
                 path_csv = os.path.abspath(os.path.join(file_dir, str(operation_id) + "_" + filename.name))
                 for f in reader:
                     file_x.append(f)
-                    if f.get(hostname)!='':
+                    if f.get(hostname) != '':
                         hostname_list.append(f.get(hostname))
                     else:
                         message = 'Empty Hostname'
@@ -107,7 +105,7 @@ class DevicePreViewSet(APIView):
                         },
                     }
                     return api_return(data=data)
-                with open(path_csv,'ab+') as f:
+                with open(path_csv, 'ab+') as f:
                     writer = csv.DictWriter(f, headers)
                     writer.writeheader()
                     writer.writerows(file_x)
@@ -171,7 +169,7 @@ class DevicePreViewSet(APIView):
                     if snmp_version == '':
                         dict_check['snmp_version'] = True
                     else:
-                        if snmp_version != 'v1' and snmp_version !='v2c':
+                        if snmp_version != 'v1' and snmp_version != 'v2c':
                             dict_check['snmp_version'] = False
                             flag_err += 1
                         else:
@@ -184,7 +182,8 @@ class DevicePreViewSet(APIView):
                         flag_expect = 0
                         for symbol in login_expect:
                             for letter in symbol:
-                                if not (str(letter).isalnum() or str(letter) in string.punctuation or str(letter) == ' '):
+                                if not (str(letter).isalnum() or str(letter) in string.punctuation or str(
+                                        letter) == ' '):
                                     flag_expect += 1
                         if flag_expect > 0:
                             dict_check['login_expect'] = False
@@ -228,7 +227,8 @@ class DevicePreViewSet(APIView):
                             for g in group:
                                 if g == group_one.name:
                                     ostype_id = group_one.ostype_id
-                                    if f.get('OS Type') == groups_views.GroupsViewSet.get_ostype({"ostypeid":ostype_id}).name:
+                                    if f.get('OS Type') == groups_views.GroupsViewSet.get_ostype(
+                                            {"ostypeid": ostype_id}).name:
                                         flag_group += 1
                         if not flag_group == len(group):
                             dict_check['group'] = False
@@ -240,7 +240,7 @@ class DevicePreViewSet(APIView):
                     if flag_err > 0:
                         error_list.append(dict_check)
                     else:
-                        ostype = groups_views.GroupsViewSet.get_ostype({'name':f.get('OS Type')})
+                        ostype = groups_views.GroupsViewSet.get_ostype({'name': f.get('OS Type')})
                         valid_device = {
                             'operation_id': operation_id,
                             'hostname': f.get(hostname),
@@ -255,7 +255,7 @@ class DevicePreViewSet(APIView):
                             'snmp_status': 'No Data',
                             'device_type': f.get('Device Type'),
                             'group_name': f.get('Group'),
-                            'ostype':ostype.__dict__
+                            'ostype': ostype.__dict__
                         }
                         serializer = DevicesTmpSerializer(data=valid_device)
                         if serializer.is_valid():
