@@ -172,10 +172,20 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         if (operation === 'copy_node') {
             node_parent.state.opened = true;
         }
-        // block_rule_4 can not have the type of 'block_rule' children
-        if (node['data']['rule_type'] && node['data']['rule_type'].indexOf('block_rule') !== -1
+        // block_rule_4 can not have the type of 'block_rule' children except block_rule_4
+        // if (node['data']['rule_type']
+        //     && node['data']['rule_type'].indexOf('block_rule') !== -1
+        //     && node_parent['data']['rule_type']
+        //     && node_parent['data']['rule_type'] === 'block_rule_4') {
+        //     return false;
+        // }
+        if (node['data']['rule_type']
+            && node['data']['rule_type'].indexOf('block_rule') !== -1
             && node_parent['data']['rule_type']
             && node_parent['data']['rule_type'] === 'block_rule_4') {
+            if (node['data']['rule_type'] === 'block_rule_4') {
+                return true;
+            }
             return false;
         }
         return true;
@@ -228,6 +238,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // highlight
     public hightLight(param: any) {
+        console.log('high light');
         this.apiPrefix = '/v1';
         let highLightUrl = '/api_policy_tree_highlight/';
         this.httpClient.setUrl(this.apiPrefix);
@@ -329,7 +340,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         // .bind('move_node.jstree', function (e, data) {
         // }).bind('activate_node.jstree', function (e, node) {
 
-
         //     show_detail(node);
         // });
     }
@@ -393,6 +403,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         // });
     }
     public policyTree(data: any) {
+        console.log('test');
         let _t = this;
         $('#policyTree').jstree({
             'core': {
@@ -436,6 +447,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                             'tree_id': event.data.node['id'],
                             'raw_data': $('#input-wrap').val()
                         };
+                        console.log('hi1');
                         // highlight;
                         if (param.raw_data) {
                             _t.hightLight(param);
@@ -446,14 +458,18 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             ],
         })
-            .bind('move_node.jstree', function (e, data) { })
+            .bind('move_node.jstree', function (e, data) {
+                console.log(0);
+            })
             .on('copy_node.jstree', function (e, data) {
+                console.log(1);
                 data.node.original = $.extend(true, data.node.original, data.original.original);
                 data.node.data = $.extend(true, data.node.data, data.original.data);
             })
             .bind('activate_node.jstree', function (e, node) {
+                console.log(2);
             }).on('select_node.jstree', function (e, data) {
-
+                console.log(4);
             });
     }
     public blockRuleAction(sendInfo: any) {
@@ -464,12 +480,17 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 $('#blockTree').jstree('destroy');
                 let tree = _.get(res, 'blockTree');
                 let nodes = sendInfo.node;
+                console.log('nodes', nodes);
                 let text = _.get(res, 'ruleName');
+                console.log(tree);
                 this.blockTree(tree);
                 if (nodes && nodes.length > 0 && text) {
-                    _.each(nodes, function (node) {
-                        $('#policyTree').jstree('rename_node', node, text);
-                    });
+                    // _.each(nodes, function (node) {
+                    //     console.log('node', node);
+                    $('#policyTree').jstree('rename_node', nodes[0], text);
+                    // this.policyTree($('#policyTree').jstree(true).get_json());
+                    // $('#policyTree').jstree(true).refresh();
+                    // });
                 }
             }
             this.unsubscribe(blockTree$);
@@ -488,9 +509,9 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 let text = _.get(res, 'ruleName');
                 this.dataTree(tree);
                 if (nodes && nodes.length > 0 && text) {
-                    _.each(nodes, function (node) {
-                        $('#policyTree').jstree('rename_node', node, text);
-                    });
+                    // _.each(nodes, function (node) {
+                    $('#policyTree').jstree('rename_node', nodes[0], text);
+                    // });
                 }
             }
             this.unsubscribe(dataTree$);

@@ -76,11 +76,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                 this.ruleType = this.info['ruleType'];
                 this.actionType = this.info['actionType'];
                 if (this.actionType === 'edit') {
-                    if (this.info['delFlg']) {
-                        this.delBtn = false;
-                    } else {
-                        this.delBtn = true;
-                    }
                     this.ruleId = this.info['ruleId'];
                     this.getDataRule(this.cpId, this.ruleId);
                 }
@@ -97,6 +92,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         this.commInfo(cpId, ruleId).subscribe(res => {
             this.processFlg = _.get(res, 'is_processing');
             this.lockFlg = _.get(res, 'is_locked');
+            let isUsed = _.get(res, 'rule_is_used');
             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                 if (res['data']) {
                     let data = res['data'];
@@ -113,7 +109,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                     this.otherChar = _.get(data, 'other_char');
                 }
             }
-            if (res['rule_is_used'] || res['rule_is_used'].toString().toLowerCase() === 'true' && this.info['delFlg']) {
+            if (isUsed || this.info['delFlg']) {
+                console.log(33);
                 this.delBtn = false;
             } else {
                 this.delBtn = true;

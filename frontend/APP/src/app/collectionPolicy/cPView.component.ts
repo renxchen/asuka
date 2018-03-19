@@ -112,7 +112,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             colModel: [
                 { label: 'No', hidden: true, name: 'coll_policy_id', index: 'coll_policy_id', search: false, key: true },
                 { label: 'コレクションポリシー名', name: 'name', index: 'name', width: 50, align: 'center', search: true },
-                { label: 'OS Type', name: 'ostype_name', index: 'ostype', width: 50, align: 'center', search: true },
+                { label: 'OS Type', name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true },
                 { label: thirdCol, name: thirdName, index: thirdName, width: 50, align: 'center', search: true },
                 {
                     abel: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true,
@@ -136,7 +136,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 }
                 if (code === 103) {
                     alert('This user is not authorized to access, please login again.');
-                    _t.router.navigate(['/login']);
+                    _t.router.navigate(['/login/']);
                 }
             },
             beforeSelectRow: function (rowid, e) { return false; },
