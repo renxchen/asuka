@@ -57,9 +57,10 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         self.critical_threshold = views_helper.get_request_value(self.request, 'critical_threshold', method)
         self.critical_condition = views_helper.get_request_value(self.request, 'critical_condition', method)
         self.critical_limit_nums = views_helper.get_request_value(self.request, 'critical_limit_nums', method)
-        self.critical_action_type = views_helper.get_request_value(self.request, 'critical_action_type', method)
+        self.critical_action_type_1 = views_helper.get_request_value(self.request, 'critical_action_type_1', method)
+        self.critical_action_type_2 = views_helper.get_request_value(self.request, 'critical_action_type_2', method)
         # critical action type is SNMP Trap
-        self.action_multi = views_helper.get_request_value(self.request, 'action_multi', method)
+        # self.action_multi = views_helper.get_request_value(self.request, 'action_multi', method)
         # 1
         self.critical_snmp_version_1 = views_helper.get_request_value(self.request, 'critical_snmp_version_1', method)
         self.critical_snmp_comminute_1 = views_helper.get_request_value(self.request, 'critical_snmp_comminute_1',
@@ -112,7 +113,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         self.minor_threshold = views_helper.get_request_value(self.request, 'minor_threshold', method)
         self.minor_condition = views_helper.get_request_value(self.request, 'minor_condition', method)
         self.minor_limit_nums = views_helper.get_request_value(self.request, 'minor_limit_nums', method)
-        self.minor_action_type = views_helper.get_request_value(self.request, 'minor_action_type', method)
+        self.minor_action_type_1 = views_helper.get_request_value(self.request, 'minor_action_type_1', method)
+        self.minor_action_type_2 = views_helper.get_request_value(self.request, 'minor_action_type_2', method)
         # minor action type is SNMP Trap
         # 1
         self.minor_snmp_version_1 = views_helper.get_request_value(self.request, 'minor_snmp_version_1', method)
@@ -166,7 +168,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         self.major_threshold = views_helper.get_request_value(self.request, 'major_threshold', method)
         self.major_condition = views_helper.get_request_value(self.request, 'major_condition', method)
         self.major_limit_nums = views_helper.get_request_value(self.request, 'major_limit_nums', method)
-        self.major_action_type = views_helper.get_request_value(self.request, 'major_action_type', method)
+        self.major_action_type_1 = views_helper.get_request_value(self.request, 'major_action_type_1', method)
+        self.major_action_type_2 = views_helper.get_request_value(self.request, 'major_action_type_2', method)
         # major action type is SNMP Trap
         # 1
         self.major_snmp_version_1 = views_helper.get_request_value(self.request, 'major_snmp_version_1', method)
@@ -586,7 +589,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         data_action_1 = {
             'action_name': self.action_policy_name,
-            'action_type': self.critical_action_type,  # アクションタイプ
+            'action_type': self.critical_action_type_1,  # アクションタイプ
             'param': '',  #
             'priority': self.critical_priority,  # 重要度
             'snmp_version': self.critical_snmp_version_1,  # SNMP Version
@@ -606,7 +609,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         data_action_2 = {
             'action_name': self.action_policy_name,
-            'action_type': self.critical_action_type,  # アクションタイプ
+            'action_type': self.critical_action_type_2,  # アクションタイプ
             'param': '',  #
             'priority': self.critical_priority,  # 重要度
             'snmp_version': self.critical_snmp_version_2,  # SNMP Version
@@ -627,12 +630,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         trigger_data = {}
         trigger_detail_data = {}
         action_data = []
-        if self.critical_threshold is not '':
+        if self.critical_priority is not '':
             trigger_data = dict(data_common.items() + data_trigger.items())
             trigger_detail_data = data_trigger_detail
-            action_data = [data_action_1]
-            if self.action_multi.upper() == 'TRUE':
+            if self.critical_action_type_1 is not '' and self.critical_action_type_2 is not '':
                 action_data = [data_action_1, data_action_2]
+            elif self.critical_action_type_1 is not '':
+                action_data = [data_action_1]
+            elif self.critical_action_type_2 is not '':
+                action_data = [data_action_2]
         result = {
             'data_trigger': trigger_data,
             'trigger_detail_data': trigger_detail_data,
@@ -674,7 +680,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         data_action_1 = {
             'action_name': self.action_policy_name,
-            'action_type': self.major_action_type,  # アクションタイプ
+            'action_type': self.major_action_type_1,  # アクションタイプ
             'param': '',  #
             'priority': self.major_priority,  # 重要度
             'snmp_version': self.major_snmp_version_1,  # SNMP Version
@@ -695,7 +701,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
         data_action_2 = {
             'action_name': self.action_policy_name,
-            'action_type': self.major_action_type,  # アクションタイプ
+            'action_type': self.major_action_type_2,  # アクションタイプ
             'param': '',  #
             'priority': self.major_priority,  # 重要度
             'snmp_version': self.major_snmp_version_2,  # SNMP Version
@@ -717,13 +723,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         trigger_data = {}
         trigger_detail_data = {}
         action_data = []
-        if self.major_threshold is not '':
+        if self.major_priority is not '':
             trigger_data = dict(data_common.items() + data_trigger.items())
             trigger_detail_data = data_trigger_detail
-            action_data = [data_action_1]
-            if self.action_multi.upper() == 'TRUE':
+            if self.major_action_type_1 is not '' and self.major_action_type_2 is not '':
                 action_data = [data_action_1, data_action_2]
-
+            elif self.major_action_type_1 is not '':
+                action_data = [data_action_1]
+            elif self.major_action_type_2 is not '':
+                action_data = [data_action_2]
         result = {
             'data_trigger': trigger_data,
             'trigger_detail_data': trigger_detail_data,
@@ -764,7 +772,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         data_action_1 = {
             'action_name': self.action_policy_name,
-            'action_type': self.minor_action_type,  # アクションタイプ
+            'action_type': self.minor_action_type_1,  # アクションタイプ
             'param': '',  #
             'priority': self.minor_priority,  # 重要度
             'snmp_version': self.minor_snmp_version_1,  # SNMP Version
@@ -784,7 +792,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         data_action_2 = {
             'action_name': self.action_policy_name,
-            'action_type': self.minor_action_type,  # アクションタイプ
+            'action_type': self.minor_action_type_2,  # アクションタイプ
             'param': '',  #
             'priority': self.minor_priority,  # 重要度
             'snmp_version': self.minor_snmp_version_2,  # SNMP Version
@@ -806,13 +814,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         trigger_data = {}
         trigger_detail_data = {}
         action_data = []
-        if self.minor_threshold is not '':
+        if self.minor_priority is not '':
             trigger_data = dict(data_common.items() + data_trigger.items())
             trigger_detail_data = data_trigger_detail
-            action_data = [data_action_1]
-            if self.action_multi.upper() == 'TRUE':
+            if self.minor_action_type_1 is not '' and self.minor_action_type_2 is not '':
                 action_data = [data_action_1, data_action_2]
-
+            elif self.minor_action_type_1 is not '':
+                action_data = [data_action_1]
+            elif self.minor_action_type_2 is not '':
+                action_data = [data_action_2]
         result = {
             'data_trigger': trigger_data,
             'trigger_detail_data': trigger_detail_data,
