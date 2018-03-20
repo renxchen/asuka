@@ -241,11 +241,15 @@ class CollPolicyViewSet(viewsets.ViewSet):
                                                                           query_data, search_fields)
             total_num = len(CollPolicy.objects.filter(**{'policy_type': self.policy_type}))
             if search_conditions:
-                queryset = CollPolicy.objects.filter(**search_conditions).order_by(*sorts)
+                queryset = CollPolicy.objects.filter(**search_conditions).values(
+                    *['coll_policy_id', 'ostype', 'name', 'cli_command', 'desc', 'snmp_oid', 'value_type',
+                      'policy_type', 'ostype__name']).order_by(*sorts)
             else:
-                queryset = CollPolicy.objects.filter(**{'policy_type': self.policy_type}).order_by(*sorts)
-            serializer = CollPolicySerializer(queryset, many=True)
-            paginator = Paginator(serializer.data, int(self.max_size_per_page))
+                queryset = CollPolicy.objects.filter(**{'policy_type': self.policy_type}).values(
+                    *['coll_policy_id', 'ostype', 'name', 'cli_command', 'desc', 'snmp_oid', 'value_type',
+                      'policy_type', 'ostype__name']).order_by(*sorts)
+            # serializer = CollPolicySerializer(queryset, many=True)
+            paginator = Paginator(list(queryset), int(self.max_size_per_page))
             contacts = paginator.page(int(self.page_from))
             data = {
                 'data': {
@@ -253,7 +257,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 },
                 'new_token': self.new_token,
                 'num_page': paginator.num_pages,
-                'page_range': list(paginator.page_range),
+                # 'page_range': list(paginator.page_range),
                 'page_has_next': contacts.has_next(),
                 'total_num': total_num,
                 'current_page_num': contacts.number,
