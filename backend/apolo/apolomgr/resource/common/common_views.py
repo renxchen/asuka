@@ -67,9 +67,9 @@ class CollPolicyViewSet(viewsets.ViewSet):
 
     def get(self):
         try:
-            queryset = CollPolicy.objects.all()
-            serializer = CollPolicyNameSerializer(queryset, many=True)
-            for per in serializer.data:
+            queryset = CollPolicy.objects.all().values('name', 'policy_type')
+            # serializer = CollPolicyNameSerializer(queryset, many=True)
+            for per in queryset:
                 if per['policy_type'] == 1:
                     # SNMP
                     per['name'] = '[SNMP]' + per['name']
@@ -77,7 +77,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     # CLI
                     per['name'] = '[CLI]' + per['name']
             data = {
-                'data': serializer.data,
+                'data': list(queryset),
                 'new_token': self.new_token,
                 constants.STATUS: {
                     constants.STATUS: constants.TRUE,
@@ -86,8 +86,9 @@ class CollPolicyViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
-            # return exception_handler(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
 
     def post(self):
         pass
