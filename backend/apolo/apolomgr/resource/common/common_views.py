@@ -67,7 +67,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
 
     def get(self):
         try:
-            queryset = CollPolicy.objects.all().values('coll_policy_id', 'name', 'policy_type')
+            queryset = CollPolicy.objects.all().values('coll_policy_id', 'value_type', 'name', 'policy_type')
             # serializer = CollPolicyNameSerializer(queryset, many=True)
             for per in queryset:
                 if per['policy_type'] == 1:
