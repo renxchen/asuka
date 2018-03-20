@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Validator } from './validation';
 
 @NgModule({
-    declarations: [Validator],
+    declarations: [],
     imports: [ CommonModule ],
     exports: [],
     providers: [Validator],

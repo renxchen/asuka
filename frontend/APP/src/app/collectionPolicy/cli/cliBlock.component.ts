@@ -184,7 +184,8 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         // }
         if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull_A && this.endMrkStrFlg && this.extractKeyNotNull) {
+            && this.mrkStrNotNull_A && this.endMrkNotNull
+            && this.extractKeyNotNull) {
             return true;
         } else {
             return false;

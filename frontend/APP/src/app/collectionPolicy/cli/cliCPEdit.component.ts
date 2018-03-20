@@ -238,7 +238,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // highlight
     public hightLight(param: any) {
-        console.log('high light');
         this.apiPrefix = '/v1';
         let highLightUrl = '/api_policy_tree_highlight/';
         this.httpClient.setUrl(this.apiPrefix);
@@ -403,7 +402,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         // });
     }
     public policyTree(data: any) {
-        console.log('test');
         let _t = this;
         $('#policyTree').jstree({
             'core': {
@@ -447,7 +445,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                             'tree_id': event.data.node['id'],
                             'raw_data': $('#input-wrap').val()
                         };
-                        console.log('hi1');
                         // highlight;
                         if (param.raw_data) {
                             _t.hightLight(param);
@@ -458,18 +455,15 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             ],
         })
-            .bind('move_node.jstree', function (e, data) {
-                console.log(0);
-            })
+            .bind('move_node.jstree', function (e, data) {})
             .on('copy_node.jstree', function (e, data) {
-                console.log(1);
                 data.node.original = $.extend(true, data.node.original, data.original.original);
                 data.node.data = $.extend(true, data.node.data, data.original.data);
             })
-            .bind('activate_node.jstree', function (e, node) {
-                console.log(2);
-            }).on('select_node.jstree', function (e, data) {
-                console.log(4);
+            .bind('activate_node.jstree', function (e, node) {})
+            .on('select_node.jstree', function (e, data) {})
+            .on('rename_node.jstree', function (node, obj) {
+                $('#policyTree').jstree(true).redraw(true);
             });
     }
     public blockRuleAction(sendInfo: any) {
@@ -480,9 +474,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 $('#blockTree').jstree('destroy');
                 let tree = _.get(res, 'blockTree');
                 let nodes = sendInfo.node;
-                console.log('nodes', nodes);
                 let text = _.get(res, 'ruleName');
-                console.log(tree);
                 this.blockTree(tree);
                 if (nodes && nodes.length > 0 && text) {
                     // _.each(nodes, function (node) {
