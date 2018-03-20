@@ -281,11 +281,13 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                                                                           query_data, search_fields)
             total_num = len(CollPolicyGroups.objects.all())
             if search_conditions:
-                queryset = CollPolicyGroups.objects.filter(**search_conditions).order_by(*sorts)
+                queryset = CollPolicyGroups.objects.filter(**search_conditions).values(
+                    *['policy_group_id', 'ostypeid', 'name', 'desc', 'ostypeid__name']).order_by(*sorts)
             else:
-                queryset = CollPolicyGroups.objects.all().order_by(*sorts)
-            serializer = CollPolicyGroupSerializer(queryset, many=True)
-            paginator = Paginator(serializer.data, self.max_size_per_page)
+                queryset = CollPolicyGroups.objects.all().values(
+                    *['policy_group_id', 'ostypeid', 'name', 'desc', 'ostypeid__name']).order_by(*sorts)
+            # serializer = CollPolicyGroupSerializer(queryset, many=True)
+            paginator = Paginator(list(queryset), self.max_size_per_page)
             contacts = paginator.page(self.page_from)
             data = {
                 'data': {
@@ -293,7 +295,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 },
                 'new_token': self.new_token,
                 'num_page': paginator.num_pages,
-                'page_range': list(paginator.page_range),
+                # 'page_range': list(paginator.page_range),
                 'page_has_next': contacts.has_next(),
                 'total_num': total_num,
                 'current_page_num': contacts.number,

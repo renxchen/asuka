@@ -353,11 +353,13 @@ class TableViewsSet(viewsets.ViewSet):
                                                                           query_data, search_fields)
             total_num = len(DataTable.objects.all())
             if search_conditions:
-                queryset = DataTable.objects.filter(**search_conditions).order_by(*sorts)
+                queryset = DataTable.objects.filter(**search_conditions).values(
+                    *['table_id', 'descr', 'name', 'coll_policy', 'groups', 'tree']).order_by(*sorts)
             else:
-                queryset = DataTable.objects.all().order_by(*sorts)
-            serializer = ActionPolicyDataTableSerializer(queryset, many=True)
-            paginator = Paginator(serializer.data, int(self.max_size_per_page))
+                queryset = DataTable.objects.all().values(
+                    *['table_id', 'descr', 'name', 'coll_policy', 'groups', 'tree']).order_by(*sorts)
+            # serializer = ActionPolicyDataTableSerializer(queryset, many=True)
+            paginator = Paginator(list(queryset), int(self.max_size_per_page))
             contacts = paginator.page(int(self.page_from))
             data = {
                 'data': {
@@ -365,7 +367,7 @@ class TableViewsSet(viewsets.ViewSet):
                 },
                 'new_token': self.new_token,
                 'num_page': paginator.num_pages,
-                'page_range': list(paginator.page_range),
+                # 'page_range': list(paginator.page_range),
                 'page_has_next': contacts.has_next(),
                 'total_num': total_num,
                 'current_page_num': contacts.number,
