@@ -24,6 +24,8 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
         ignoreBackdropClick: true
     };
 
+    isNew: boolean = true;
+
     selectingColumn:string;
 
     editingAction: string;
@@ -83,82 +85,81 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
 
     criticalActionSelectedType1: number = 0;
     criticalSnmpVersion1: number = 1;
-    criticalCommunity1: string;
-    criticalAgentAddress1: string;
-    criticalIp1: string;
-    criticalOid1: string;
-    criticalMessage1: string;
-    criticalScript1: string;
-    criticalRundeckIp1: string;
-    criticalUser1: string;
-    criticalPassword1: string;
-    criticalCommand1: string;
+    criticalCommunity1: string = "";
+    criticalAgentAddress1: string = "";
+    criticalIp1: string = "";
+    criticalOid1: string = "";
+    criticalMessage1: string = "";
+    criticalScript1: string = "";
+    criticalRundeckIp1: string = "";
+    criticalUser1: string = "";
+    criticalPassword1: string = "";
+    criticalCommand1: string = "";
 
     criticalActionSelectedType2: number = 0;
     criticalSnmpVersion2: number = 1;
-    criticalCommunity2: string;
-    criticalAgentAddress2: string;
-    criticalIp2: string;
-    criticalOid2: string;
-    criticalMessage2: string;
-    criticalScript2: string;
-    criticalRundeckIp2: string;
-    criticalUser2: string;
-    criticalPassword2: string;
-    criticalCommand2: string;
+    criticalCommunity2: string = "";
+    criticalAgentAddress2: string = "";
+    criticalIp2: string = "";
+    criticalOid2: string = "";
+    criticalMessage2: string = "";
+    criticalScript2: string = "";
+    criticalRundeckIp2: string = "";
+    criticalUser2: string = "";
+    criticalPassword2: string = "";
+    criticalCommand2: string = "";
 
     majorActionSelectedType1: number = 0;
     majorSnmpVersion1: number = 1;
-    majorCommunity1: string;
-    majorAgentAddress1: string;
-    majorIp1: string;
-    majorOid1: string;
-    majorMessage1: string;
-    majorScript1: string;
-    majorRundeckIp1: string;
-    majorUser1: string;
-    majorPassword1: string;
-    majorCommand1: string;
+    majorCommunity1: string = "";
+    majorAgentAddress1: string = "";
+    majorIp1: string = "";
+    majorOid1: string = "";
+    majorMessage1: string = "";
+    majorScript1: string = "";
+    majorRundeckIp1: string = "";
+    majorUser1: string = "";
+    majorPassword1: string = "";
+    majorCommand1: string = "";
 
     majorActionSelectedType2: number = 0;
     majorSnmpVersion2: number = 1;
-    majorCommunity2: string;
-    majorAgentAddress2: string;
-    majorIp2: string;
-    majorOid2: string;
-    majorMessage2: string;
-    majorScript2: string;
-    majorRundeckIp2: string;
-    majorUser2: string;
-    majorPassword2: string;
-    majorCommand2: string;
+    majorCommunity2: string = "";
+    majorAgentAddress2: string = "";
+    majorIp2: string = "";
+    majorOid2: string = "";
+    majorMessage2: string = "";
+    majorScript2: string = "";
+    majorRundeckIp2: string = "";
+    majorUser2: string = "";
+    majorPassword2: string = "";
+    majorCommand2: string = "";
 
     minorActionSelectedType1: number = 0;
     minorSnmpVersion1: number = 1;
-    minorCommunity1: string;
-    minorAgentAddress1: string;
-    minorIp1: string;
-    minorOid1: string;
-    minorMessage1: string;
-    minorScript1: string;
-    minorRundeckIp1: string;
-    minorUser1: string;
-    minorPassword1: string;
-    minorCommand1: string;
+    minorCommunity1: string = "";
+    minorAgentAddress1: string = "";
+    minorIp1: string = "";
+    minorOid1: string = "";
+    minorMessage1: string = "";
+    minorScript1: string = "";
+    minorRundeckIp1: string = "";
+    minorUser1: string = "";
+    minorPassword1: string = "";
+    minorCommand1: string = "";
 
     minorActionSelectedType2: number = 0;
     minorSnmpVersion2: number = 1;
-    minorCommunity2: string;
-    minorAgentAddress2: string;
-    minorIp2: string;
-    minorOid2: string;
-    minorMessage2: string;
-    minorScript2: string;
-    minorRundeckIp2: string;
-    minorUser2: string;
-    minorPassword2: string;
-    minorCommand2: string;
-
+    minorCommunity2: string = "";
+    minorAgentAddress2: string = "";
+    minorIp2: string = "";
+    minorOid2: string = "";
+    minorMessage2: string = "";
+    minorScript2: string = "";
+    minorRundeckIp2: string = "";
+    minorUser2: string = "";
+    minorPassword2: string = "";
+    minorCommand2: string = "";
 
     constructor(
         public httpClient: HttpClientComponent,
@@ -169,7 +170,7 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
 
     ngOnInit(){
         this.httpClient.setUrl(this.apiPrefix);
-        // this.init();
+        this.init();
 
     }
 
@@ -178,8 +179,44 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
     }
 
     init(){
-        // this.triggerType = 2;
+        let name = this.route.snapshot.queryParams['name'];
+        let column = this.route.snapshot.queryParams['column'];
+        if (name != ""){
+            this.actionPolicyName = name;
+            this.isNew = false;
+            this.initForExist(name);
+        } else {
 
+        }
+
+
+    }
+
+    initForExist(name){
+        let url = 'api_action_policy/?name='+name;
+        this.httpClient
+            .toJson(this.httpClient.get(url))
+            .subscribe(res => {
+                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                    if (res['data']) {
+                        this.initVariable(res['data']);
+                    }
+                } else {
+                    if (res['status'] && res['status']['message']) {
+                        alert(res['status']['message']);
+                        // jump to view
+                    }
+                }
+        });
+    }
+
+    initVariable(data){
+        this.actionPolicyName = data['name'];
+        this.actionPolicyDescription = data['desc'];
+
+        if (data['trigger_type']){
+
+        }
     }
 
     resetAll(){
@@ -420,6 +457,35 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
         } else if (type == 3) {
             actionPolicyInfo = this.saveFailedType(actionPolicyInfo, checkResult['filledField']);
         }
+
+        console.log(actionPolicyInfo);
+
+        if (this.isNew){
+            this.httpClient
+                .toJson(this.httpClient.post(url, actionPolicyInfo))
+                .subscribe(res => {
+                    if (res['status']['status'].toString().toLowerCase() === 'true') {
+                        if (res['status']['message'] == "Success") {
+                           alert('アクションポリシー追加しました。');
+                        }
+                    } else {
+                        alert(res['status']['message']);
+                    }
+            });
+        } else{
+            this.httpClient
+                .toJson(this.httpClient.put(url, actionPolicyInfo))
+                .subscribe(res => {
+                    if (res['status']['status'].toString().toLowerCase() === 'true') {
+                        if (res['status']['message'] == "Success") {
+                           alert('アクションポリシー更新しました。');
+                        }
+                    } else {
+                        alert(res['status']['message']);
+                    }
+            });
+        }
+
 
 
     }
