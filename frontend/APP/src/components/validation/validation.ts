@@ -2,7 +2,10 @@ export class Validator {
     // need modify noSpecSymbolReg
     static noSpecSymbolReg: RegExp = /[\x00-\xff]+/;
     static noCommsymbolReg: RegExp = /[\x00-\xff]+/;
-    static oidReg: RegExp = /^[1-9]+(\.[1-9]*|\.[1-9][0-9]|\.[1-9][0-9][0-9])*$/;
+    // static oidReg: RegExp = /^[1-9]+(\.[1-9]*|\.[1-9][0-9]|\.[1-9][0-9][0-9])*$/;
+    // static oidReg: RegExp = /^[1-9](\.(?!0+)\d+)*$/;
+    // static oidReg: RegExp = /^1(\.(?!0)\d+)*$/;
+    static oidReg: RegExp = /^1(\.(?!0+)\d+)*$/;
     static numReg: RegExp = /[0-9]/;
     static xOffsetReg: RegExp = /^-?[1-9]\d*$/;
     static offsetReg: RegExp = /^-?[0-9]\d*$/;
