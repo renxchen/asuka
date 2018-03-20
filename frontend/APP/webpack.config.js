@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const ProgressPlugin = require('webpack/lib/ProgressPlugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -370,6 +371,12 @@ module.exports = {
   },
   "plugins": [
     new NoEmitOnErrorsPlugin(),
+    new UglifyJsPlugin({
+        uglifyOptions: {
+            "compress":false,
+            "warnings": false
+          }
+    }),
     new CopyWebpackPlugin([
       {
         "context": "src",
@@ -436,20 +443,20 @@ module.exports = {
       ],
       "minChunks": null
     }),
-    // new CommonsChunkPlugin({
-    //   "name": [
-    //     "vendor"
-    //   ],
-    //   "minChunks": (module) => {
-    //             return module.resource
-    //                 && (module.resource.startsWith(nodeModules)
-    //                     || module.resource.startsWith(genDirNodeModules)
-    //                     || module.resource.startsWith(realNodeModules));
-    //         },
-    //   "chunks": [
-    //     "main"
-    //   ]
-    // }),
+    new CommonsChunkPlugin({
+      "name": [
+        "vendor"
+      ],
+      "minChunks": (module) => {
+                return module.resource
+                    && (module.resource.startsWith(nodeModules)
+                        || module.resource.startsWith(genDirNodeModules)
+                        || module.resource.startsWith(realNodeModules));
+            },
+      "chunks": [
+        "main"
+      ]
+    }),
     new SourceMapDevToolPlugin({
       "filename": "[file].map[query]",
       "moduleFilenameTemplate": "[resource-path]",
