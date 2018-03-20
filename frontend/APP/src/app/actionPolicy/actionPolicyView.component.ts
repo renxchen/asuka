@@ -68,13 +68,13 @@ export class ActionPolicyViewComponent implements OnInit, AfterViewInit {
     drawActionPolicyTable(){
         let _this = this;
         $('#actionPolicyTable').jqGrid({
-            // url: '/v1/api_data_collection/',
-            // datatype: 'JSON',
-            datatype: 'local',
-            // mtype: 'get',
+            url: '/v1/api_action_policy/',
+            datatype: 'JSON',
+            // datatype: 'local',
+            mtype: 'get',
             colModel: _this.actionPolicyModel,
             // postData: { '': '' },
-            data: _this.testData,
+            // data: _this.testData,
             // viewrecords: true,
             loadComplete: function() {
                 // _this.showDataTable();
@@ -86,14 +86,14 @@ export class ActionPolicyViewComponent implements OnInit, AfterViewInit {
             beforeSelectRow: function(rowid, e) { return false; },
             height: 230,
             pager: '#actionPolicyPager',
-            // jsonReader: {
-            //     root: 'data',
-            //     page: 'current_page_num',
-            //     total: 'num_page',
-            //     records: 'total_num',
-            //     userData: 'status',
-            //     repeatitems: false,
-            // },
+            jsonReader: {
+                root: 'data',
+                page: 'current_page_num',
+                total: 'num_page',
+                records: 'total_num',
+                userData: 'status',
+                repeatitems: false,
+            },
         });
         $('#actionPolicyTable').jqGrid('filterToolbar', {defaultSearch: 'cn'});
     }
