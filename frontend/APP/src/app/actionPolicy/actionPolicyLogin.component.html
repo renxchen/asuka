@@ -42,7 +42,7 @@
                     <input class="form-control" type="text" readonly="readonly" [(ngModel)]="columnOne">
                 </div>
                 <div class="col-sm-2" style="padding-right: 0px">
-                    <button class="btn btn-primary btn-sm pull-right">select</button>
+                    <button class="btn btn-primary btn-sm pull-right" (click)="selectColumn(columnTable, 'column_one')">select</button>
                 </div>
 
             </div>
@@ -89,26 +89,26 @@
                 <tbody>
                     <tr *ngIf="triggerType == 2 || triggerType == 1">
                         <th style="text-align: center">閾値</th>
-                        <td><input class="form-control" type="text"></td>
-                        <td><input class="form-control" type="text"></td>
-                        <td><input class="form-control" type="text"></td>
+                        <td><input class="form-control" type="text" [(ngModel)]="critical_value"></td>
+                        <td><input class="form-control" type="text" [(ngModel)]="major_value"></td>
+                        <td><input class="form-control" type="text" [(ngModel)]="minor_value"></td>
                     </tr>
                     <tr *ngIf="triggerType == 2">
                         <th style="text-align: center">条件</th>
                         <td>
-                            <select class="form-control">
+                            <select class="form-control" [(ngModel)]="critical_string_condition">
                                 <option value="1">等しい</option>
                                 <option value="3">等しくない</option>
                             </select>
                         </td>
                         <td>
-                            <select class="form-control">
+                            <select class="form-control" [(ngModel)]="major_string_condition">
                                 <option value="1">等しい</option>
                                 <option value="3">等しくない</option>
                             </select>
                         </td>
                         <td>
-                            <select class="form-control">
+                            <select class="form-control" [(ngModel)]="minor_string_condition">
                                 <option value="1">等しい</option>
                                 <option value="3">等しくない</option>
                             </select>
@@ -117,21 +117,21 @@
                     <tr *ngIf="triggerType == 1">
                         <th style="text-align: center">条件</th>
                         <td>
-                            <select class="form-control">
+                            <select class="form-control" [(ngModel)]="critical_number_condition">
                                 <option *ngFor="let item of conditionList" value="{{item.id}}">
                                     {{item.value}}
                                 </option>
                             </select>
                         </td>
                         <td>
-                            <select class="form-control">
+                            <select class="form-control" [(ngModel)]="major_number_condition">
                                 <option *ngFor="let item of conditionList" value="{{item.id}}">
                                     {{item.value}}
                                 </option>
                             </select>
                         </td>
                         <td>
-                            <select class="form-control">
+                            <select class="form-control" [(ngModel)]="minor_number_condition">
                                 <option *ngFor="let item of conditionList" value="{{item.id}}">
                                     {{item.value}}
                                 </option>
@@ -140,28 +140,28 @@
                     </tr>
                     <tr *ngIf="triggerType == 0">
                         <th style="text-align: center">演算式</th>
-                        <td><input class="form-control" type="text"></td>
-                        <td><input class="form-control" type="text"></td>
-                        <td><input class="form-control" type="text"></td>
+                        <td><input class="form-control" type="text" [(ngModel)]="critical_function"></td>
+                        <td><input class="form-control" type="text" [(ngModel)]="major_function"></td>
+                        <td><input class="form-control" type="text" [(ngModel)]="minor_function"></td>
                     </tr>
                     <tr *ngIf="triggerType != 3">
                         <th style="text-align: center">連続超過条件</th>
                         <td>
-                            <select class="form-control">
+                            <select class="form-control" [(ngModel)]="critical_continuous_condition">
                                 <option *ngFor="let item of continuousOverList" value="{{item.id}}">
                                     {{item.value}}
                                 </option>
                             </select>
                         </td>
                         <td>
-                            <select class="form-control">
+                            <select class="form-control" [(ngModel)]="major_continuous_condition">
                                 <option *ngFor="let item of continuousOverList" value="{{item.id}}">
                                     {{item.value}}
                                 </option>
                             </select>
                         </td>
                         <td>
-                            <select class="form-control">
+                            <select class="form-control" [(ngModel)]="minor_continuous_condition">
                                 <option *ngFor="let item of continuousOverList" value="{{item.id}}">
                                     {{item.value}}
                                 </option>
@@ -214,6 +214,18 @@
     </div>
 </div>
 
+<ng-template #columnTable>
+    <div class="modal-header" style="padding-bottom: 30px;">
+        <h3 class="modal-title pull-left">カラム選択</h3>
+        <button type="button" class="close pull-right" (click)="modalRef.hide()">
+          <span style="font-size: 30px">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body form-horizontal" style="padding: 15px 5px 40px 5px;">
+        <table id="columnTable"></table>
+    </div>
+</ng-template>
+
 <ng-template #actionDetails>
     <div class="modal-header" style="padding-bottom: 30px;">
         <h3 class="modal-title pull-left">{{actionSelectTitle}}</h3>
@@ -251,7 +263,7 @@
                 Community名:
             </label>
             <div class="col-sm-6">
-                <input class="form-control">
+                <input class="form-control" [(ngModel)]="snmpCommunity">
             </div>
         </div>
         <div class="form-group" *ngIf="actionSelectedType == 0 && snmpVersion == 1">
@@ -259,7 +271,7 @@
                 Agent Address(v1のみ):
             </label>
             <div class="col-sm-6">
-                <input class="form-control">
+                <input class="form-control" [(ngModel)]="snmpAgent">
             </div>
         </div>
         <div class="form-group" *ngIf="actionSelectedType == 0">
@@ -267,7 +279,7 @@
                 宛先IPアドレス:
             </label>
             <div class="col-sm-6">
-                <input class="form-control">
+                <input class="form-control" [(ngModel)]="snmpIp">
             </div>
         </div>
         <div class="form-group" *ngIf="actionSelectedType == 0">
@@ -275,7 +287,7 @@
                 OID:
             </label>
             <div class="col-sm-6">
-                <input class="form-control">
+                <input class="form-control" [(ngModel)]="snmpOid">
             </div>
         </div>
         <div class="form-group" *ngIf="actionSelectedType == 0">
@@ -283,7 +295,7 @@
                 メッセージ:
             </label>
             <div class="col-sm-6">
-                <input class="form-control">
+                <input class="form-control" [(ngModel)]="snmpMessage">
             </div>
         </div>
 
@@ -292,7 +304,7 @@
                 実行スクリプト:
             </label>
             <div class="col-sm-6">
-                <input class="form-control">
+                <input class="form-control" [(ngModel)]="script">
             </div>
         </div>
         <div class="form-group" *ngIf="actionSelectedType == 2">
@@ -300,7 +312,7 @@
                 Rundeck IP アドレス:
             </label>
             <div class="col-sm-6">
-                <input class="form-control">
+                <input class="form-control" [(ngModel)]="rundeckIp">
             </div>
         </div>
         <div class="form-group" *ngIf="actionSelectedType == 2">
@@ -308,15 +320,15 @@
                 Rundeck ユーザ名:
             </label>
             <div class="col-sm-6">
-                <input class="form-control">
+                <input class="form-control" [(ngModel)]="rundeckUser">
             </div>
         </div>
         <div class="form-group" *ngIf="actionSelectedType == 2">
             <label class="col-sm-3 control-label">
-                RRundeck パスワード:
+                Rundeck パスワード:
             </label>
             <div class="col-sm-6">
-                <input class="form-control">
+                <input class="form-control" [(ngModel)]="rundeckPassword">
             </div>
         </div>
         <div class="form-group" *ngIf="actionSelectedType == 2">
@@ -324,7 +336,7 @@
                 RUN COMMAND:
             </label>
             <div class="col-sm-6">
-                <input class="form-control">
+                <input class="form-control" [(ngModel)]="rundeckCommand">
             </div>
         </div>
 
