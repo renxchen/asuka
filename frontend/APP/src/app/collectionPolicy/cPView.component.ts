@@ -113,7 +113,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             colModel: [
                 { label: 'No', hidden: true, name: 'coll_policy_id', index: 'coll_policy_id', search: false, key: true },
                 { label: 'コレクションポリシー名', name: 'name', index: 'name', width: 50, align: 'center', search: true },
-                { label: 'OS Type', name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true },
+                { label: 'OS Type', name: 'ostype__name', index: 'ostype__name', width: 50, align: 'center', search: true },
                 { label: thirdCol, name: thirdName, index: thirdName, width: 50, align: 'center', search: true },
                 {
                     abel: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true,
