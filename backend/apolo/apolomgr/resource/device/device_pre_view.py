@@ -64,6 +64,13 @@ class DevicePreViewSet(APIView):
 
     @staticmethod
     def telnet_status_check(device_id):
+        """@brief
+        check the device_tmp status in Devive_Tmp table whether it can telnet success
+        @param device_id: the device_id in Device_Tmp table to confirm the device which need to check
+        @pre call when need to check the telnet_status
+        @post return the telnet result with post Gin`s API
+        @return: the telnet_status and device_id
+        """
         device = DevicesTmp.objects.get(device_id=device_id)
         ostype = Ostype.objects.get(ostypeid=device.ostype_id)
         default_commands = ostype.start_default_commands
@@ -87,6 +94,13 @@ class DevicePreViewSet(APIView):
 
     @staticmethod
     def snmp_status_check(device_id):
+        """@brief
+        check the device_tmp status in Devive_Tmp table whether it can snmp success
+        @param device_id: the device_id in Device_Tmp table to confirm the device which need to check
+        @pre call when need to check the snmp_status
+        @post return the snmp result with post Gin`s API
+        @return: the snmp_status and device_id
+        """
         device = DevicesTmp.objects.get(device_id=device_id)
         ostype = Ostype.objects.get(ostypeid=device.ostype_id)
         time_out = ostype.snmp_timeout
@@ -114,6 +128,10 @@ class DevicePreViewSet(APIView):
                 return 'success', device_id
 
     def get(self):
+        """@brief
+        get the data in Device_Tmp table by the operation_id
+        @return: the data of Device_Tmp table
+        """
         try:
             queryset_devices = DevicesTmp.objects.filter(operation_id=self.operation_id)
             field_relation_ships = {
@@ -187,8 +205,11 @@ class DevicePreViewSet(APIView):
                 print traceback.format_exc(e)
             return exception_handler(e)
 
-    # todo
     def put(self):
+        """@brief
+        check and change the status of telnet and snmp in Device_Tmp table by the list of device_id
+        @return: the status of check result
+        """
         try:
             with transaction.atomic():
                 data_list = self.data_list

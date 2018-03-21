@@ -4,7 +4,7 @@
 @author: kaixliu
 @contact: kaixliu@cisco.com
 @file: device_export.py
-@time: 2017/12/19 14:19
+@time: 2018/03/08 14:19
 @desc:
 
 """
@@ -62,6 +62,12 @@ class ExportDevicesViewSet(viewsets.ViewSet):
         self.status_type = views_helper.get_request_value(self.request, 'status_type', method)
 
     def export(self):
+        """@brief
+        Get the data of Device table and generate csv with the
+        right format that can be imported again
+        @post return data of Device table
+        @return: the csv file
+        """
         try:
             queryset = Devices.objects.filter(status=1)
             header = [u'Hostname', u'IP Address', u'Telnet Port', u'SNMP Port', u'SNMP Community', u'SNMP Version',

@@ -4,7 +4,7 @@
 @author: kaixliu
 @contact: kaixliu@cisco.com
 @file: device_upload.py
-@time: 2018/03/06 14:19
+@time: 2017/03/06 14:19
 @desc:
 
 """
@@ -12,17 +12,12 @@ from backend.apolo.serializer.devices_groups_serializer import DevicesTmpSeriali
 from backend.apolo.models import Groups, Ostype, DevicesTmp
 from backend.apolo.tools import constants
 from rest_framework.views import APIView
-from rest_framework import viewsets
 from backend.apolo.apolomgr.resource.device import groups_views
 from backend.apolo.tools.views_helper import api_return
-from django.core.paginator import Paginator
 from backend.apolo.tools import views_helper
 import traceback
 from backend.apolo.tools.exception import exception_handler
-from itertools import chain
-import simplejson as json
 from django.db import transaction
-from rest_framework.decorators import parser_classes
 from rest_framework.parsers import FileUploadParser
 import csv, codecs, re
 import string
@@ -40,6 +35,10 @@ class DevicePreViewSet(APIView):
         self.max_size_per_page = views_helper.get_request_value(self.request, 'rows', 'GET')
 
     def post(self):
+        """@brief
+        check the upload csv file format and save the data with the right format in the Device_Tmp table
+        @return: the list of the error upload format and mark the wrong style of the field
+        """
         try:
             with transaction.atomic():
                 import os
@@ -57,13 +56,12 @@ class DevicePreViewSet(APIView):
                 elif headers == headers_expect2:
                     hostname = "Hostname"
                 else:
-                    message = 'the title in csv_flie is wrong, please check '
                     data = {
                         'data': [],
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: message
+                            constants.MESSAGE: constants.CSV_TITLE_ERROR
                         },
                     }
                     return api_return(data=data)
@@ -82,26 +80,24 @@ class DevicePreViewSet(APIView):
                     if f.get(hostname) != '':
                         hostname_list.append(f.get(hostname))
                     else:
-                        message = 'Empty Hostname'
                         data = {
                             'data': [],
                             'error_list': error_list,
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: message
+                                constants.MESSAGE: constants.CSV_HOSTNAME_EMPTY
                             },
                         }
                         return api_return(data=data)
                 if len(hostname_list) != len(set(hostname_list)):
-                    message = 'Duplicate Hostname'
                     data = {
                         'data': [],
                         'error_list': error_list,
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: message
+                            constants.MESSAGE: constants.CSV_HOSTNAME_DUPLICATE
                         },
                     }
                     return api_return(data=data)

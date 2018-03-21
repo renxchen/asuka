@@ -63,6 +63,13 @@ class DevicesViewSet(viewsets.ViewSet):
 
     @staticmethod
     def telnet_status_check(device_id):
+        """@brief
+        check the device status in Devices table whether it can telnet success
+        @param device_id: the device_id in Devices table to confirm the device which need to check
+        @pre call when need to check the telnet_status
+        @post return the telnet result with post Gin`s API
+        @return: the telnet_status and device_id
+        """
         device = Devices.objects.get(device_id=device_id)
         ostype = Ostype.objects.get(ostypeid=device.ostype_id)
         default_commands = ostype.start_default_commands
@@ -86,6 +93,13 @@ class DevicesViewSet(viewsets.ViewSet):
 
     @staticmethod
     def snmp_status_check(device_id):
+        """@brief
+        check the device status in Devices table whether it can snmp success
+        @param device_id: the device_id in Devices table to confirm the device which need to check
+        @pre call when need to check the snmp_status
+        @post return the telnet result with post Gin`s API
+        @return: the snmp_status and device_id
+        """
         device = Devices.objects.get(device_id=device_id)
         ostype = Ostype.objects.get(ostypeid=device.ostype_id)
         time_out = ostype.snmp_timeout
@@ -118,6 +132,13 @@ class DevicesViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_device_group(kwargs):
+        """@brief
+        get the data of the Devices_Groups table
+        @param kwargs: the condition to query the table
+        @pre call when need to get the data of Devices_Groups table
+        @post return the data when queryset exits and False when queryset not exit
+        @return: the data when queryset exits and False when queryset not exit
+        """
         try:
             return DevicesGroups.objects.filter(**kwargs)
         except DevicesGroups.DoesNotExist:
@@ -125,12 +146,23 @@ class DevicesViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_device_all(kwargs):
+        """@brief
+        get the data of the Groups table
+        @param kwargs: the condition to query the table
+        @pre call when need to get the data of Groups table
+        @post return the data when queryset exits and False when queryset not exit
+        @return: the data when queryset exits and False when queryset not exit
+        """
         try:
             return Devices.objects.filter(**kwargs)
         except Devices.DoesNotExist:
             return False
 
     def get(self):
+        """@brief
+        get the data of the Devices table with the status = 1
+        @return: the data of Device table
+        """
         try:
             devices_id = []
             if self.group_id != '':
@@ -264,6 +296,11 @@ class DevicesViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def post(self):
+        """@brief
+        reset the Devices table and Devices_Groups table from Devices_Tmp table and
+        check the related influence on other tables
+        @return: the status whether reset success
+        """
         try:
             with transaction.atomic():
                 devices = Devices.objects.filter(status=1)
@@ -415,6 +452,10 @@ class DevicesViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def put(self):
+        """@brief
+        check and change the status of telnet and snmp in Devices table by the list of device_id
+        @return: the status of check result
+        """
         try:
             with transaction.atomic():
                 data_list = self.data_list

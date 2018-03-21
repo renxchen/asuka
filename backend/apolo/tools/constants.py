@@ -91,7 +91,8 @@ TRIGGER_TYPE_STRING__COMPARE = '文字列比較'
 TRIGGER_TYPE_FAILED = '取得失敗'
 COLUMN_A_OR_COLUMN_B_NOT_EXIST = 'Column A(column_a as table id %s) or Column B(column_b as table id %s) is not exist in current system, please connect Administrator.'
 COLUMN_A_COLUMN_B_VERIFY_FAILED = 'Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).'
-EXPRESSION_ILLEGAL = gettext('There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1)')
+EXPRESSION_ILLEGAL = gettext(
+    'There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1)')
 EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = 'A and B maybe do not have the same value type(String or Integer)'
 EXPRESSION_A_B_NOT_EXIST = 'There is not A or B in expression, should be at least A in expression'
 EXPRESSION_CONDITION_ILLEGAL = 'The expression condition should be in <=, >=, ==, !=, >, <'
@@ -207,7 +208,7 @@ CP_STATUS_ON_VAULE = 1
 # data collection Error Message
 #########################################
 # 各グループにおけるあるデバイスとあるコレクションポリシーが紐付いています。かつ、同じ優先度が同じです。追加不可です。
-POLICY_DEVICE_COMBINATION = 'the combination of policy and device is used' # device id and policy id の組み合わせが利用されている
+POLICY_DEVICE_COMBINATION = 'the combination of policy and device is used'  # device id and policy id の組み合わせが利用されている
 CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
 CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
 NO_ITEMS_IN_GROUP = 'no items in group,please check the group'
@@ -227,7 +228,7 @@ POLICY_TREE_IS_GROUPED = 'policy tree is grouped'
 # instead mark string
 REPLACE_START_MARK = '☆start☆'
 REPLACE_END_MARK = '☆end☆'
-LINE_NUM_MSG_REPLACE = '◇◎◎◇' #'@##@'
+LINE_NUM_MSG_REPLACE = '◇◎◎◇'  # '@##@'
 # css style of data rule
 BASIC_CHAR_STYLE = '<span style="color:#6066c9;text-shadow: 0 0 1px #9c9ff9;">'
 EXTRACT_DATA_STYLE = '<span style="color:#0f9f6f;text-decoration: underline;">'
@@ -241,6 +242,28 @@ REGEXP_BLOCK_RULE_STYLE = '<div style="background-color:rgba(220, 200, 100, 0.2)
 # end mark
 DIV_END = '</div>'
 SPAN_END = '</span>'
+#########################################
+# device, group and ostype information define
+#########################################
+CSV_TITLE_ERROR = 'the title in csv_flie is wrong, please check '
+CSV_HOSTNAME_EMPTY = 'Empty Hostname'
+CSV_HOSTNAME_DUPLICATE = 'Duplicate Hostname'
+GROUP_NOT_EXIST = 'There is no result for current query.'
+GROUP_NAME_FORMAT_ERROR = "GROUP NAME FORMAT ERROR"
+EXISTS_IN_DEVICESGROUPS = 'ALREADY_EXISTS_IN_DEVICESGROUPS'
+EXISTS_IN_SCHEDULES = 'ALREADY_EXISTS_IN_SCHEDULES'
+GROUP_ALREADY_EXISTS = 'GROUPNAME_ALREADY_EXISTS'
+END_DEFAULT_COMMANDS_ERROR = "END_DEFAULT_COMMANDS_ERROR"
+START_DEFAULT_COMMANDS_ERROR = "START_DEFAULT_COMMANDS_ERROR"
+LOG_FAIL_JUDGES_ERROR = "LOG_FAIL_JUDGES_ERROR"
+TELNET_PROMPT_EMPTY_ERROR = "TELNET_PROMPT_EMPTY_ERROR"
+TELNET_PROMPT_FORMAT_ERROR = "TELNET_PROMPT_FORMAT_ERROR"
+TELNET_TIMEOUT_FORMAT_ERROR = "TELNET_TIMEOUT_FORMAT_ERROR"
+SNMP_TIMEOUT_FORMAT_ERROR = "SNMP_TIMEOUT_FORMAT_ERROR"
+OSTYPE_NAME_EXISTS = "NAME_IS_EXISTENCE"
+OSTYPE_NAME_EMPTY = "NAME_IS_EMPTY"
+OSTYPE_EXIST_IN_DEVICES = "EXIST_IN_DEVICES"
+OSTYPE_EXISTS_IN_COLL_POLICY = "EXIST_IN_COLL_POLICY"
 #########################################
 # Other API information define
 #########################################
