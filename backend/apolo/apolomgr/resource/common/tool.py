@@ -148,18 +148,21 @@ class Tool(object):
     @staticmethod
     def get_policy_status(policy_id):
 
-        req_body = {'now_time': time.time(), 'param': policy_id, 'param_type': 1}
-        headers = {'content-type': 'application/json'}
-        resp = requests.post(url=constants.POLICY_POST_URL, data=json.dumps(req_body), headers=headers)
-        if 200 <= resp.status_code <= 299:
-            resp_body = json.loads(resp.text)
-            item = resp_body.get('items')
-            if item == 0:
-                # not used
-                return False
-            else:
-                # is being used
-                return True
+        try:
+            req_body = {'now_time': time.time(), 'param': policy_id, 'param_type': 1}
+            headers = {'content-type': 'application/json'}
+            resp = requests.post(url=constants.POLICY_POST_URL, data=json.dumps(req_body), headers=headers)
+            if 200 <= resp.status_code <= 299:
+                resp_body = json.loads(resp.text)
+                item = resp_body.get('items')
+                if item == 0:
+                    # not used
+                    return False
+                else:
+                    # is being used
+                    return True
+        except:
+            return False
 
 
     @staticmethod

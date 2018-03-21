@@ -16,7 +16,7 @@
 import re
 
 from backend.apolo.apolomgr.resource.common.common_policy_tree.dispatch import Dispatch
-from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.apolomgr.resource.common.tool import Tool
 from backend.apolo.db_utils.db_opt import DBOpt
 from backend.apolo.tools import constants
 
@@ -62,7 +62,7 @@ class Render(Tool, DBOpt):
     # get the dispatch executed result
     def execute_dispatch(self):
         for rule_id in self.leaf_path:
-            rule_context = self.__get_rule_from_db__(rule_id)
+            rule_context = self.__get_rule_from_db(rule_id)
             # save the data as input of rules
             if not self.rule_context.has_key(rule_id):
                 self.rule_context.update({rule_id: rule_context})
@@ -100,13 +100,13 @@ class Render(Tool, DBOpt):
                     if not item['extract_match_flag']:
                         pass
                     else:
-
                         basic_character_index = item['basic_character_index']
                         basic_character = Tool.replace_xml_mark(item['basic_character'])
                         extract_data_pair = item['extract_data_result']
                         start_line = item['start_line']
                         end_line = item['end_line']
-                        split_char = item['split_characters']
+                        split_char_reg = item['split_characters']
+                        split_char = self.__get_split_char(split_char_reg)
                         rule_type = item['rule_type']
                         # get block text
                         data_list = all_data[start_line:end_line + 1]
@@ -163,9 +163,8 @@ class Render(Tool, DBOpt):
 
                         elif rule_type == 9:
                             for i in range(len(data_list)):
-                                data_list[i] = '{}{}{}'.format(constants.EXTRACT_DATA_STYLE, data_list[i],constants.SPAN_END)
-                            # data_list[0] = '{}{}'.format(constants.EXTRACT_DATA_STYLE, data_list[0])
-                            # data_list[-1] = '{}{}'.format(data_list[-1], constants.SPAN_END)
+                                data_list[i] = '{}{}{}'.format(constants.EXTRACT_DATA_STYLE, data_list[i],
+                                                               constants.SPAN_END)
                             html_context = '\n'.join(data_list)
                         else:
                             extract_data_index = extract_data_pair[0][0]
@@ -185,12 +184,9 @@ class Render(Tool, DBOpt):
                             # combine to new text
                             element_index = 0
                             is_chanced = 0
-                            # there is Regular expression special chars in split char
-                            sp_char = Tool.replace_escape_char(split_char)
                             for i in range(len(data_list)):
                                 line = data_list[i]
-                                line_arry = re.split(sp_char, line)
-                                # line_arry = re.split(split_char, line)
+                                line_arry = re.split(split_char_reg, line)
                                 for j in range(len(line_arry)):
                                     if element_index == basic_character_index:
                                         basic_character_new = line_arry[j]
@@ -252,14 +248,14 @@ class Render(Tool, DBOpt):
 
                     if not extract_data_in_block_basic:
                         all_data[basic_char_line] = all_data[basic_char_line].replace(block_start_char,
-                                                      '{}{}{}'.format(constants.BLOCK_BASIC_CHAR_STYLE,
-                                                                      block_start_char,
-                                                                      constants.SPAN_END))
-
+                                                                                      '{}{}{}'.format(
+                                                                                          constants.BLOCK_BASIC_CHAR_STYLE,
+                                                                                          block_start_char,
+                                                                                          constants.SPAN_END))
 
                     # add block start html mark for a block
                     block_rule_style = constants.BLOCK_RULE_EVEN_STYLE
-                    if color_index==1:
+                    if color_index == 1:
                         block_rule_style = constants.BLOCK_RULE_ODD_STYLE
 
                     if item['rule_type'] != 8:
@@ -310,10 +306,10 @@ class Render(Tool, DBOpt):
                                             is_marked = True
                                 if not is_marked:
                                     all_data[end_line] = all_data[end_line].replace(block_end_char,
-                                                                      '{}{}{}'.format(
-                                                                          constants.BLOCK_BASIC_CHAR_STYLE,
-                                                                          block_end_char,
-                                                                          constants.SPAN_END))
+                                                                                    '{}{}{}'.format(
+                                                                                        constants.BLOCK_BASIC_CHAR_STYLE,
+                                                                                        block_end_char,
+                                                                                        constants.SPAN_END))
 
                         if all_data[end_line]:
                             all_data[end_line] = all_data[end_line] + constants.DIV_END
@@ -333,6 +329,16 @@ class Render(Tool, DBOpt):
         html_data = "\n".join(html_data_list)
         return html_data
 
-    def __get_rule_from_db__(self, rule_id):
+    def __get_rule_from_db(self, rule_id):
         obj = self.get_rule_detail_from_db(rule_id)
         return self.get_rule_value(obj)
+
+    def __get_split_char(self, split_char_reg):
+        if split_char_reg:
+            m = re.search(split_char_reg, self.data)
+            if m is not None:
+                return m.group()
+            else:
+                return split_char_reg
+        else:
+            return split_char_reg
