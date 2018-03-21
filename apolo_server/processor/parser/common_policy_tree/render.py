@@ -16,9 +16,8 @@
 import re
 
 from backend.apolo.apolomgr.resource.common.common_policy_tree.dispatch import Dispatch
-from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.apolomgr.resource.common.tool import Tool
 from backend.apolo.db_utils.db_opt import DBOpt
-from backend.apolo.models import CollPolicyCliRule
 from backend.apolo.tools import constants
 
 

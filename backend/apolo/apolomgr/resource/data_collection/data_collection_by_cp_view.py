@@ -12,7 +12,7 @@
 from django.core.paginator import Paginator
 from rest_framework import viewsets
 
-from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.apolomgr.resource.common.tool import Tool
 from backend.apolo.models import CollPolicy
 from backend.apolo.tools import views_helper, constants
 from backend.apolo.tools.views_helper import api_return

@@ -12,7 +12,7 @@
 from django.db import transaction
 from rest_framework import viewsets
 
-from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.apolomgr.resource.common.tool import Tool
 from backend.apolo.models import Devices, Items, PolicysGroups
 from backend.apolo.tools import views_helper, constants
 from backend.apolo.tools.exception import exception_handler

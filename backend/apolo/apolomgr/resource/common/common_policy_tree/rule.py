@@ -10,8 +10,7 @@
 
 '''
 import re
-
-from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.apolomgr.resource.common.tool import Tool
 from backend.apolo.tools import constants
 
 
@@ -20,7 +19,7 @@ class Policy(object):
         self.extract_policy = extract_policy
         self.data = extract_policy['data']
 
-    def __set_input__(self):
+    def __set_input(self):
         self.start_line = self.extract_policy['start_line']
         self.end_line = self.extract_policy['end_line']
         self.x_offset = self.extract_policy['x_offset']
@@ -78,7 +77,7 @@ class Policy(object):
             'block_path': None
         }
 
-    def __set_block_path__(self, identifier):
+    def __set_block_path(self, identifier):
 
         if self.block_path:
             return '{},{}'.format(self.block_path, identifier)
@@ -87,7 +86,7 @@ class Policy(object):
 
     def x_offset_extract(self):
 
-        self.__set_input__()
+        self.__set_input()
         # the value of basic character
         basic_character = ''
         # the value of extract data
@@ -118,7 +117,7 @@ class Policy(object):
                 # replace the split char in basic character to @@
                 # mark the basic character with $basic character$
                 # only replace the first pattern in the line
-                self.render_b_c = '${}$'.format(basic_character.replace(self.split_characters, self.instead, 1))
+                self.render_b_c = '${}$'.format(re.sub(self.split_characters, self.instead, basic_character, 1))
                 self.raw_data_list[i] = self.raw_data_list[i].replace(basic_character, self.render_b_c, 1)
                 # get the line num of basic character
                 basic_character_line_num = i
@@ -131,10 +130,8 @@ class Policy(object):
             return [self.res]
 
         new_list = []
-        sp_char = r'{}'.format(Tool.replace_escape_char(self.split_characters))
         for arry in self.raw_data_list:
-            # new_list.extend(re.split(self.split_characters, arry))
-            new_list.extend(re.split(sp_char, arry))
+            new_list.extend(re.split(self.split_characters, arry))
 
         if self.x_offset < 0:
             # reverse the list
@@ -183,7 +180,6 @@ class Policy(object):
             # the position of basic character
             self.res['basic_character_index'] = basic_character_index
             # the value of basic character
-            # self.res['basic_character'] = basic_character.replace(constants.INSTEAD, self.split_characters)
             self.res['basic_character'] = basic_character
             # the pair of extract data and the position of extract data
             self.res['extract_data_result'] = [(extract_data_index, extract_data[0])]
@@ -199,11 +195,10 @@ class Policy(object):
             self.res['extract_data'] = extract_data
             self.res['extract_match_flag'] = extract_data_match_flag
             self.res['error_msg'] = msg
-
         return [self.res]
 
     def y_offset_extract(self):
-        self.__set_input__()
+        self.__set_input()
         # the line number of the basic character belong
         basic_character_line_num = None
         # value of basic character
@@ -229,9 +224,9 @@ class Policy(object):
                 basic_character = m.group()
                 # find the line number for the basic character
                 basic_character_line_num = i
-                self.render_b_c = basic_character.replace(self.split_characters, self.instead)
+                self.render_b_c = '${}$'.format(re.sub(self.split_characters, self.instead, basic_character, 1))
                 # replace the space in basic character to @@
-                self.raw_data_list[i] = self.raw_data_list[i].replace(basic_character, self.render_b_c)
+                self.raw_data_list[i] = self.raw_data_list[i].replace(basic_character, self.render_b_c, 1)
                 # destination line num
                 target_line_num = basic_character_line_num + self.y_offset
                 if target_line_num > len(self.raw_data_list) or target_line_num < 0:
@@ -251,11 +246,9 @@ class Policy(object):
         is_start_count = False
         match_count = 0
         basic_character_find_flag = False
-        sp_char = r'{}'.format(Tool.replace_escape_char(self.split_characters))
         for i in range(len(self.raw_data_list)):
             one_line = self.raw_data_list[i]
-            arry = re.split(sp_char, one_line)
-            # arry = re.split(self.split_characters, one_line)
+            arry = re.split(self.split_characters, one_line)
             if i == target_line_num:
                 is_start_count = True
             for j in range(len(arry)):
@@ -282,7 +275,6 @@ class Policy(object):
                     m = re.search(pattern, arry[j])
                     if m is not None:
                         match_count += 1
-                        basic_character = m.group()
                         # find the basic character
                         basic_character_find_flag = True
                         # record the index(position) of the basic character
@@ -300,7 +292,7 @@ class Policy(object):
             # the position of basic character
             self.res['basic_character_index'] = basic_character_index
             # the value of basic character
-            self.res['basic_character'] = basic_character.replace(constants.INSTEAD, self.split_characters)
+            self.res['basic_character'] = basic_character
             # the pair of extract data and the position of extract data
             self.res['extract_data_result'] = [(extract_data_index, extract_data[0])]
             # the value of extract data
@@ -318,7 +310,7 @@ class Policy(object):
         return [self.res]
 
     def regexp_extract(self):
-        self.__set_input__()
+        self.__set_input()
         exp_result = []
         # value of extract data
         extract_data = []
@@ -343,7 +335,7 @@ class Policy(object):
         return [self.res]
 
     def expect_line_extract(self):
-        self.__set_input__()
+        self.__set_input()
         if self.block_rule_D_line_num > 0:
             # get the line nums of regex block rule
             line_num = self.block_rule_D_line_num
@@ -361,7 +353,7 @@ class Policy(object):
         return [self.res]
 
     def all_extract(self):
-        self.__set_input__()
+        self.__set_input()
         if len(self.raw_data_list) >0:
             self.res['extract_data'] = '\n'.join(self.raw_data_list)
             self.res['extract_data_result'] = [(0, self.res['extract_data'])]
@@ -373,7 +365,7 @@ class Policy(object):
         return [self.res]
 
     @staticmethod
-    def __get_space_count__(input_str):
+    def __get_space_count(input_str):
         space_count = 0
         for s in input_str:
             if s.isspace():
@@ -383,7 +375,7 @@ class Policy(object):
         return space_count
 
     def extract_block_by_indent(self):
-        self.__set_input__()
+        self.__set_input()
         start_match_pattern = self.block_start_characters
         start_mark = False
         block_start_line_num = 0
@@ -401,7 +393,7 @@ class Policy(object):
                 block_start_line_num = line_num
                 start_string = start_reg_match.group()
                 identifier = start_string
-                base_space_num = self.__get_space_count__(one_line)
+                base_space_num = self.__get_space_count(one_line)
                 line_num += 1
                 # get the first block identifier
                 if self.is_serial:
@@ -409,7 +401,7 @@ class Policy(object):
                     serial_num += 1
                 continue
             if start_mark:
-                cur_space_num = self.__get_space_count__(one_line)
+                cur_space_num = self.__get_space_count(one_line)
                 # the line is block end line
                 if cur_space_num <= base_space_num:
                     block_end_line_num = line_num - 1
@@ -422,7 +414,7 @@ class Policy(object):
                         'end_line': block_end_line_num,
                         'block_basic_line_num': block_start_line_num,
                         'block_start_characters': start_string,
-                        'block_path': self.__set_block_path__(identifier),
+                        'block_path': self.__set_block_path(identifier),
                         'deep': self.deep,
                         'rule_type': 5
                     }
@@ -436,7 +428,7 @@ class Policy(object):
                         if self.is_serial:
                             identifier = '{}_{}'.format(start_string, serial_num)
                             serial_num += 1
-                        base_space_num = self.__get_space_count__(one_line)
+                        base_space_num = self.__get_space_count(one_line)
             line_num += 1
 
         # if the last line is the last block end
@@ -448,7 +440,7 @@ class Policy(object):
                 'end_line': block_end_line_num,
                 'block_basic_line_num': block_start_line_num,
                 'block_start_characters': start_string,
-                'block_path': self.__set_block_path__(identifier),
+                'block_path': self.__set_block_path(identifier),
                 'deep': self.deep,
                 'rule_type': 5
             }
@@ -457,7 +449,7 @@ class Policy(object):
         return result
 
     def extract_block_by_line_num(self):
-        self.__set_input__()
+        self.__set_input()
         start_match_pattern = self.block_start_characters
         block_start_line_num = 0
         start_string = ''
@@ -499,7 +491,7 @@ class Policy(object):
                         'end_line': block_end_line_num,
                         'block_basic_line_num': block_basic_line_num,
                         'block_start_characters': start_string,
-                        'block_path': self.__set_block_path__(identifier),
+                        'block_path': self.__set_block_path(identifier),
                         'deep': self.deep,
                         'rule_type': 6
                     }
@@ -509,7 +501,7 @@ class Policy(object):
         return result
 
     def extract_block_by_string_range(self):
-        self.__set_input__()
+        self.__set_input()
         start_match_pattern = self.block_start_characters
         end_match_pattern = self.block_end_characters
         identifier_match_pattern = self.extract_regexp
@@ -543,7 +535,7 @@ class Policy(object):
                         'block_start_characters': start_string,
                         'block_end_characters': end_string,
                         'block_basic_line_num': block_start_line_num,
-                        'block_path': self.__set_block_path__(identifier),
+                        'block_path': self.__set_block_path(identifier),
                         'is_include': self.is_include_end_characters,
                         'deep': self.deep,
                         'rule_type': 7
@@ -582,7 +574,7 @@ class Policy(object):
                 'block_basic_line_num': block_start_line_num,
                 'block_start_characters': start_string,
                 'block_end_characters': end_string,
-                'block_path': self.__set_block_path__(identifier),
+                'block_path': self.__set_block_path(identifier),
                 'is_include': self.is_include_end_characters,
                 'deep': self.deep,
                 'rule_type': 7
@@ -592,7 +584,7 @@ class Policy(object):
         return result
 
     def extract_block_by_regular(self):
-        self.__set_input__()
+        self.__set_input()
         basic_pattern = self.basic_c
         block_start_line_num = 0
         block_end_line_num = 0
@@ -618,7 +610,7 @@ class Policy(object):
             'end_line': block_end_line_num,
             'block_basic_line_num': block_start_line_num,
             'block_start_characters': self.basic_c,
-            'block_path': self.__set_block_path__(self.basic_c),
+            'block_path': self.__set_block_path(self.basic_c),
             'deep': self.deep,
             'reg_match_context': lineNum_list,
             'rule_type': 8
