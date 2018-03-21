@@ -130,6 +130,8 @@ class DataTable(models.Model):
                              db_column='tree_id',
                              blank=True, null=True)
 
+    policy_group = models.ForeignKey(CollPolicyGroups, models.DO_NOTHING)
+
     class Meta:
         # managed = False
         db_table = 'data_table'
