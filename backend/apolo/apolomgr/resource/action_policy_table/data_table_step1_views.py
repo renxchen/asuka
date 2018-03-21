@@ -44,6 +44,7 @@ class TableViewsSet(viewsets.ViewSet):
             method = 'BODY'
         self.name = views_helper.get_request_value(self.request, 'name', method)
         self.coll_policy_id = views_helper.get_request_value(self.request, 'coll_policy_id', method)
+        self.coll_policy_group_id = views_helper.get_request_value(self.request, 'coll_policy_group_id', method)
         self.tree_id = views_helper.get_request_value(self.request, 'tree_id', method)
         self.group_id = views_helper.get_request_value(self.request, 'group_id', method)
         self.desc = views_helper.get_request_value(self.request, 'desc', method)
@@ -393,6 +394,7 @@ class TableViewsSet(viewsets.ViewSet):
                     'name': self.name,
                     'descr': self.desc,
                     'coll_policy': self.coll_policy_id,
+                    'policy_group': self.coll_policy_group_id,
                     'tree': self.tree_id,
                     'groups': self.group_id,
                 }

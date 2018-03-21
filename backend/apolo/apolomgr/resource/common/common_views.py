@@ -9,16 +9,15 @@
 
 """
 
-from backend.apolo.serializer.collection_policy_serializer import OstypeSerializer, CollPolicyNameSerializer
-from backend.apolo.serializer.devices_groups_serializer import DevicesGroupsSerializer
-from backend.apolo.models import Ostype, CollPolicy, DevicesGroups
+from backend.apolo.serializer.collection_policy_serializer import OstypeSerializer
+from backend.apolo.serializer.devices_groups_serializer import GroupsSerializer
+from backend.apolo.models import Ostype, CollPolicy, Groups
 from backend.apolo.tools import constants
 from rest_framework import viewsets
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import views_helper
 import traceback
 from backend.apolo.tools.exception import exception_handler
-import simplejson as json
 
 
 class OsTypeViewSet(viewsets.ViewSet):
@@ -105,15 +104,15 @@ class DeviceGroupViewSet(viewsets.ViewSet):
         super(DeviceGroupViewSet, self).__init__(**kwargs)
         self.request = request
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
-        self.id = views_helper.get_request_value(self.request, 'id', 'GET')
+        self.device_group_id = views_helper.get_request_value(self.request, 'id', 'GET')
 
     def get(self):
         try:
-            queryset = DevicesGroups.objects.all()
-            if self.id:
-                query_conditions = {'devicegroup_id': self.id}
-                queryset = DevicesGroups.objects.filter(**query_conditions)
-            serializer = DevicesGroupsSerializer(queryset, many=True)
+            queryset = Groups.objects.all()
+            if self.device_group_id:
+                query_conditions = {'group_id': self.device_group_id}
+                queryset = Groups.objects.filter(**query_conditions)
+            serializer = GroupsSerializer(queryset, many=True)
             data = {
                 'data': serializer.data,
                 'new_token': self.new_token,
