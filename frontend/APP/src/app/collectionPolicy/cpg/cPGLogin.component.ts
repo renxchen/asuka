@@ -71,8 +71,8 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         this.osType = res['data'];
-                        let osTypeTmp = _.clone(res['data']);
                         this.selectedOsType = res['data'][0]['ostypeid'].toString();
+                        // let osTypeTmp = _.clone(res['data']);
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
@@ -174,7 +174,6 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             event.stopPropagation();
         });
     }
-    
     public addMoreInfo() {
         let cpInfo: any = {};
         let cpList = this.cpList;

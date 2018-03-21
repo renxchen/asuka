@@ -58,7 +58,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 { label: 'No', hidden: true, name: 'policy_group_id', index: 'policy_group_id', search: false, key: true },
                 { label: 'コレクションポリシー名', name: 'name', index: 'name', width: 50, align: 'center', search: true },
                 { label: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true, formatter: _t.noDataFormatter },
-                { label: 'OS Type', name: 'ostype__name', index: 'ostype__name', width: 50, align: 'center', search: true },
+                { label: 'OS Type', name: 'ostypeid__name', index: 'ostypeid__name', width: 50, align: 'center', search: true },
                 {
                     label: 'アクション', name: 'action', width: 50, align: 'center', search: false,
                     formatter: _t.formatterBtn, resizable: false
