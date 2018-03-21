@@ -8,7 +8,7 @@
 @desc:
 
 """
-from backend.apolo.serializer.devices_groups_serializer import DevicesSerializer,DevicesGroupsSerializer
+from backend.apolo.serializer.devices_groups_serializer import DevicesSerializer, DevicesGroupsSerializer
 from backend.apolo.models import Devices
 from backend.apolo.tools import constants
 from rest_framework.views import APIView
@@ -32,7 +32,6 @@ from backend.apolo.apolomgr.resource.common import csv_export
 import csv, os
 
 
-
 class ExportDevicesViewSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):
         super(ExportDevicesViewSet, self).__init__(**kwargs)
@@ -49,7 +48,7 @@ class ExportDevicesViewSet(viewsets.ViewSet):
         self.operation_id = views_helper.get_request_value(self.request, 'operation_id', method)
         self.group_name = views_helper.get_request_value(self.request, 'group_name', method)
         self.ostype_name = views_helper.get_request_value(self.request, 'ostype_name', method)
-        self.data_list =views_helper.get_request_value(self.request, 'id_list', method)
+        self.data_list = views_helper.get_request_value(self.request, 'id_list', method)
         self.group_id = views_helper.get_request_value(self.request, 'group_id', method)
         self.hostname = views_helper.get_request_value(self.request, 'hostname', method)
         self.ip = views_helper.get_request_value(self.request, 'ip', method)
@@ -72,7 +71,7 @@ class ExportDevicesViewSet(viewsets.ViewSet):
         try:
             queryset = Devices.objects.filter(status=1)
             header = [u'Hostname', u'IP Address', u'Telnet Port', u'SNMP Port', u'SNMP Community', u'SNMP Version',
-                    u'Login Expect', u'Device Type', u'OS Type', u'Group']
+                      u'Login Expect', u'Device Type', u'OS Type', u'Group']
             csv_data = []
             csv_data.insert(0, header)
             for i in queryset:
@@ -116,20 +115,3 @@ class ExportDevicesViewSet(viewsets.ViewSet):
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
             return exception_handler(e)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

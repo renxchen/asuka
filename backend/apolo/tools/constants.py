@@ -91,7 +91,8 @@ TRIGGER_TYPE_STRING__COMPARE = '文字列比較'
 TRIGGER_TYPE_FAILED = '取得失敗'
 COLUMN_A_OR_COLUMN_B_NOT_EXIST = 'Column A(column_a as table id %s) or Column B(column_b as table id %s) is not exist in current system, please connect Administrator.'
 COLUMN_A_COLUMN_B_VERIFY_FAILED = 'Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).'
-EXPRESSION_ILLEGAL = gettext('There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1)')
+EXPRESSION_ILLEGAL = gettext(
+    'There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1)')
 EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = 'A and B maybe do not have the same value type(String or Integer)'
 EXPRESSION_A_B_NOT_EXIST = 'There is not A or B in expression, should be at least A in expression'
 EXPRESSION_CONDITION_ILLEGAL = 'The expression condition should be in <=, >=, ==, !=, >, <'
@@ -207,7 +208,7 @@ CP_STATUS_ON_VAULE = 1
 # data collection Error Message
 #########################################
 # 各グループにおけるあるデバイスとあるコレクションポリシーが紐付いています。かつ、同じ優先度が同じです。追加不可です。
-POLICY_DEVICE_COMBINATION = 'the combination of policy and device is used' # device id and policy id の組み合わせが利用されている
+POLICY_DEVICE_COMBINATION = 'the combination of policy and device is used'  # device id and policy id の組み合わせが利用されている
 CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
 CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
 NO_ITEMS_IN_GROUP = 'no items in group,please check the group'
@@ -227,7 +228,7 @@ POLICY_TREE_IS_GROUPED = 'policy tree is grouped'
 # instead mark string
 REPLACE_START_MARK = '☆start☆'
 REPLACE_END_MARK = '☆end☆'
-LINE_NUM_MSG_REPLACE = '◇◎◎◇' #'@##@'
+LINE_NUM_MSG_REPLACE = '◇◎◎◇'  # '@##@'
 # css style of data rule
 BASIC_CHAR_STYLE = '<span style="color:#6066c9;text-shadow: 0 0 1px #9c9ff9;">'
 EXTRACT_DATA_STYLE = '<span style="color:#0f9f6f;text-decoration: underline;">'

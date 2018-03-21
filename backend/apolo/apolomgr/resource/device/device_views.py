@@ -9,8 +9,8 @@
 
 """
 
-from backend.apolo.serializer.devices_groups_serializer import DevicesSerializer,DevicesGroupsSerializer
-from backend.apolo.models import DevicesGroups,Devices,Groups,Ostype,DevicesTmp
+from backend.apolo.serializer.devices_groups_serializer import DevicesSerializer, DevicesGroupsSerializer
+from backend.apolo.models import DevicesGroups, Devices, Groups, Ostype, DevicesTmp
 from backend.apolo.tools import constants
 from rest_framework import viewsets
 from backend.apolo.tools.views_helper import api_return
@@ -28,6 +28,7 @@ from backend.apolo.apolomgr.resource.data_collection.data_collection import Data
 from backend.apolo.apolomgr.resource.action_policy.action_policy_views import ActionPolicyViewSet
 # from backend.apolo.apolomgr.resource.action_policy import action_policy_views
 import collections
+
 CLI_THREADPOOL_SIZE = 20
 
 
@@ -47,7 +48,7 @@ class DevicesViewSet(viewsets.ViewSet):
         self.operation_id = views_helper.get_request_value(self.request, 'operation_id', method)
         self.group_name = views_helper.get_request_value(self.request, 'group_list', method)
         self.ostype_name = views_helper.get_request_value(self.request, 'ostype_name', method)
-        self.data_list =views_helper.get_request_value(self.request, 'id_list', method)
+        self.data_list = views_helper.get_request_value(self.request, 'id_list', method)
         self.group_id = views_helper.get_request_value(self.request, 'group_id', method)
         self.hostname = views_helper.get_request_value(self.request, 'hostname', method)
         self.ip = views_helper.get_request_value(self.request, 'ip', method)
@@ -188,11 +189,11 @@ class DevicesViewSet(viewsets.ViewSet):
                 'snmp_community': 'snmp_community',
                 'snmp_version': 'snmp_version',
                 'login_expect': 'login_expect',
-                'device_type':'device_type',
-                'telnet_status':'telnet_status',
-                'status_type':'snmp_status',
-                'group_list':'group',
-                'ostype_name':'ostype',
+                'device_type': 'device_type',
+                'telnet_status': 'telnet_status',
+                'status_type': 'snmp_status',
+                'group_list': 'group',
+                'ostype_name': 'ostype',
             }
             query_data = {
                 'hostname': self.hostname,
@@ -209,7 +210,7 @@ class DevicesViewSet(viewsets.ViewSet):
                 'ostype': self.ostype_name,
             }
             search_fields = ['hostname', 'ip', 'telnet_port', 'snmp_port', 'snmp_community', 'snmp_version',
-                             'login_expect', 'device_type', 'telnet_status', 'status_type','group_list','ostype_name']
+                             'login_expect', 'device_type', 'telnet_status', 'status_type', 'group_list', 'ostype_name']
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                           query_data, search_fields)
 
@@ -227,16 +228,16 @@ class DevicesViewSet(viewsets.ViewSet):
             if search_conditions:
                 condition_group = search_conditions.get('group__contains')
                 if condition_group is not None:
-                    groups = Groups.objects.filter(**{"name__contains":condition_group})
-                    groupid_list =[]
+                    groups = Groups.objects.filter(**{"name__contains": condition_group})
+                    groupid_list = []
                     for group_detail in groups:
                         groupid_list.append(group_detail.group_id)
-                    devicesgroups = DevicesGroups.objects.filter(**{"group_id__in":groupid_list})
+                    devicesgroups = DevicesGroups.objects.filter(**{"group_id__in": groupid_list})
                     search_conditions['devicesgroups__in'] = devicesgroups
                     del search_conditions['group__contains']
                 condition_ostype = search_conditions.get('ostype__contains')
                 if condition_ostype is not None:
-                    ostype_list = Ostype.objects.filter(**{"name__contains":condition_ostype})
+                    ostype_list = Ostype.objects.filter(**{"name__contains": condition_ostype})
                     oid_list = []
                     for ostype in ostype_list:
                         oid_list.append(ostype.ostypeid)
@@ -315,7 +316,7 @@ class DevicesViewSet(viewsets.ViewSet):
                             group_id_list.append(group.group_id)
                     device_group_old["group_old"] = group_id_list
                     device_group_before.append(device_group_old)
-                #delete devicegroups
+                # delete devicegroups
                 DevicesGroups.objects.all().delete()
                 # update
                 devices_tmp = DevicesTmp.objects.filter(operation_id=self.operation_id)
@@ -324,14 +325,14 @@ class DevicesViewSet(viewsets.ViewSet):
                 group_list = []
                 if len(devices) == 0:
                     for tmp in devices_tmp:
-                        group_list.append((tmp.hostname,tmp.group_name))
+                        group_list.append((tmp.hostname, tmp.group_name))
                         tmp.device_id = None
                         insert_list.append(tmp)
                     Devices.objects.bulk_create(insert_list)
                     for device_group in group_list:
                         device_name, groups_name = device_group
                         if groups_name != '':
-                            device_id = Devices.objects.get(hostname=device_name,status=1).device_id
+                            device_id = Devices.objects.get(hostname=device_name, status=1).device_id
                             groupnames = groups_name.split(',')
                             for group_name in groupnames:
                                 group_id = Groups.objects.get(name=group_name).group_id
@@ -361,7 +362,7 @@ class DevicesViewSet(viewsets.ViewSet):
                                     'status': 1,
                                     'ostype_id': tmp.ostype.ostypeid,
                                 }
-                                serializer = DevicesSerializer(current,data=data,partial=True)
+                                serializer = DevicesSerializer(current, data=data, partial=True)
                                 if serializer.is_valid():
                                     serializer.save()
                             else:
@@ -374,7 +375,7 @@ class DevicesViewSet(viewsets.ViewSet):
                     for device_group in group_list:
                         device_name, groups_name = device_group
                         if groups_name != '':
-                            device_id = Devices.objects.get(hostname=device_name,status=1).device_id
+                            device_id = Devices.objects.get(hostname=device_name, status=1).device_id
                             groupnames = groups_name.split(',')
                             for group_name in groupnames:
                                 group_id = Groups.objects.get(name=group_name).group_id
@@ -437,12 +438,12 @@ class DevicesViewSet(viewsets.ViewSet):
                     act = ActionPolicyViewSet(request=self.request)
                     act.regenerate_trigger_detail()
                 data = {
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
-                        }
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.TRUE,
+                        constants.MESSAGE: constants.SUCCESS
                     }
+                }
                 return api_return(data=data)
         except Exception, e:
             transaction.rollback()
@@ -467,7 +468,7 @@ class DevicesViewSet(viewsets.ViewSet):
                 for x in res_telnet:
                     device_pre = Devices.objects.get(device_id=x[1])
                     telnet_res = x[0]
-                    data ={
+                    data = {
                         'telnet_status': telnet_res,
                     }
                     serializer = DevicesSerializer(device_pre, data=data, partial=True)
