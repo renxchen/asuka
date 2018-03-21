@@ -15,7 +15,7 @@ import importlib
 from rest_framework import viewsets
 from django.utils.translation import gettext
 
-from backend.apolo.models import Items, Mapping
+from backend.apolo.models import Items, Mapping, DevicesGroups
 from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import views_helper
@@ -28,11 +28,16 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         super(DataTableTableViewsSet, self).__init__(**kwargs)
         self.request = request
         # coll_policy_rule_tree.treeid
-        self.id = views_helper.get_request_value(self.request, 'id', 'GET')
+        self.tree_id = views_helper.get_request_value(self.request, 'tree_id', 'GET')
         # collection policy id
         self.coll_policy_id = views_helper.get_request_value(self.request, 'coll_id', 'GET')
+        # collection policy group id, schedule-->policy_group_id(coll_policy_groups)
+        self.policy_group_id = views_helper.get_request_value(self.request, 'policy_group_id', 'GET')
+        # device group id, from step2-->groups table(device_group_id)
+        self.device_group_id = views_helper.get_request_value(self.request, 'device_group_id', 'GET')
         # device ids
-        self.devices = views_helper.get_request_value(self.request, 'devices', 'GET')
+        self.devices = self.get_device_ids(**{'group': int(self.device_group_id)})
+        # self.devices = views_helper.get_request_value(self.request, 'devices', 'GET')
         self.rule_name = views_helper.get_request_value(self.request, 'rule_name', 'GET')
 
     @staticmethod
@@ -68,6 +73,23 @@ class DataTableTableViewsSet(viewsets.ViewSet):
     #     """
     #     value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
     #     return value['code_meaning']
+    @staticmethod
+    def get_device_ids(**kwargs):
+        """!@brief
+        Get the device ids as group_id of the DevicesGroups table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need to select DevicesGroups table
+        @post according to the need to deal with the DevicesGroups table
+        @note
+        @return result: queryset of DevicesGroups table
+        """
+        try:
+            result = DevicesGroups.objects.filter(**kwargs).values('device')
+            return result
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
 
     @staticmethod
     def get_mapping(code):
@@ -103,8 +125,9 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         """
         try:
             data = []
-            if self.id is not '':
-                for device_id in self.devices.split(','):
+            if self.tree_id is not '':
+                for device in self.devices:
+                    device_id = int(device['device'])
                     result = {
                         'device_name': '',
                         'time_stamp': '',
@@ -114,21 +137,23 @@ class DataTableTableViewsSet(viewsets.ViewSet):
                         'rule_name': ''
                     }
                     item_infos = Items.objects.filter(
-                        **{'coll_policy_rule_tree_treeid': self.id, 'device': device_id,
-                           'coll_policy': self.coll_policy_id}).values('item_id', 'value_type', 'item_type',
-                                                                       'device__hostname')
-                    item_id = item_infos[0]['item_id']
-                    value_type = self.get_mapping(item_infos[0]['value_type'])
-                    item_type = self.get_mapping(item_infos[0]['item_type'])
-                    queryset = self.get_history(item_id, value_type, item_type)
-                    serializer = HistoryXSerializer(queryset, many=True)
-                    result['device_name'] = item_infos[0]['device__hostname']
-                    result['time_stamp'] = serializer.data[0]['clock']
-                    result['path'] = serializer.data[0]['block_path']
-                    result['value'] = serializer.data[0]['value']
-                    result['item_id'] = serializer.data[0]['item']
-                    result['rule_name'] = self.rule_name
-                    data.append(result)
+                        **{'coll_policy_rule_tree_treeid': self.tree_id, 'device': device_id,
+                           'coll_policy': self.coll_policy_id, 'policys_groups': self.policy_group_id}).values(
+                        'item_id', 'value_type', 'item_type', 'device__hostname')
+                    if item_infos:
+                        item_id = item_infos[0]['item_id']
+                        value_type = self.get_mapping(item_infos[0]['value_type'])
+                        item_type = self.get_mapping(item_infos[0]['item_type'])
+                        queryset = self.get_history(item_id, value_type, item_type)
+                        serializer = HistoryXSerializer(queryset, many=True)
+                        if serializer.data:
+                            result['device_name'] = item_infos[0]['device__hostname']
+                            result['time_stamp'] = serializer.data[0]['clock']
+                            result['path'] = serializer.data[0]['block_path']
+                            result['value'] = serializer.data[0]['value']
+                            result['item_id'] = serializer.data[0]['item']
+                            result['rule_name'] = self.rule_name
+                        data.append(result)
                 return api_return(data=data)
         except Exception, e:
             if constants.DEBUG_FLAG:

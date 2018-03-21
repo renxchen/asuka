@@ -9,7 +9,7 @@ from backend.apolo.apolomgr.resource.collection_policy_group import collection_p
 from backend.apolo.apolomgr.resource.collection_policy_tree import policy_tree_highlight_view, policytree_view, \
     policy_tree_rule_view, collection_policy_edit_view
 from backend.apolo.apolomgr.resource.action_policy_table import data_table_step3_views, data_table_step1_views, \
-    data_table_step4_table_views, data_table_step4_tree_views
+    data_table_step4_table_views, data_table_step4_tree_views, data_table_name_verify
 from backend.apolo.apolomgr.resource.action_policy import action_policy_views, action_policy_column_views, \
     action_policy_column_verify, verify_expression
 from backend.apolo.apolomgr.resource.common import common_views
@@ -170,6 +170,14 @@ def api_data_table_step1(request):
 @api_view(["GET"])
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))
+def api_data_table_name_verify(request):
+    resource_object = data_table_name_verify.DataTableNameVerifyViewsSet(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(["GET"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
 def api_data_table_csv_export(request):
     resource_object = data_table_step1_views.TableViewsSet(request=request).csv_export()
     return resource_object
@@ -279,6 +287,7 @@ def api_device_upload(request):
 def api_device_pre(request):
     resource_object = device_pre_view.DevicePreViewSet(request=request)
     return HttpResponse(run_request_method(resource_object))
+
 
 @api_view(['GET'])
 @auth_if_refresh_required
