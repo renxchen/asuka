@@ -1,17 +1,17 @@
 # -*- coding:utf-8 -*-
-# !/usr/bin/env python
+#!/usr/bin/env python
 """
 
 @author: kaixliu
 @contact: kaixliu@cisco.com
 @file: ostype_views.py
-@time: 2017/03/04 14:19
+@time: 2018/03/04 14:19
 @desc:
 
 """
 
 from backend.apolo.serializer.collection_policy_serializer import OstypeSerializer
-from backend.apolo.models import Ostype, Devices, Schedules, CollPolicy
+from backend.apolo.models import Ostype,Devices,Schedules,CollPolicy
 from backend.apolo.tools import constants
 from rest_framework import viewsets
 from backend.apolo.tools.views_helper import api_return
@@ -51,6 +51,13 @@ class OsTypeViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_ostype(**kwargs):
+        """@brief
+        get the data of the Ostype table
+        @param kwargs: the condition to query the table
+        @pre call when need to get the data of Ostype table
+        @post return the data when queryset exits and exception string when queryset not exit
+        @return: the data when queryset exits and exception string when queryset not exit
+        """
         try:
             ostype_info = Ostype.objects.get(**kwargs)
             return ostype_info
@@ -60,6 +67,10 @@ class OsTypeViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def get(self):
+        """@brief
+        get the data of Ostype table
+        @return: the data of Ostype table
+        """
         try:
             if self.id:
                 queryset = Ostype.objects.filter(ostypeid=int(self.id))
@@ -85,7 +96,7 @@ class OsTypeViewSet(viewsets.ViewSet):
                     'desc': 'desc',
                 }
                 query_data = {
-                    'name': self.os_type_name,
+                    'name':self.os_type_name,
                     'log_fail_judges': self.log_fail_judges,
                     'status': self.status,
                     'snmp_timeout': self.snmp_timeout,
@@ -128,6 +139,10 @@ class OsTypeViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def post(self):
+        """@brief
+        create a ostype
+        @return: the created ostype when create success and error when create fail
+        """
         try:
             with transaction.atomic():
                 if len(self.start_default_command) != 0:
@@ -136,12 +151,11 @@ class OsTypeViewSet(viewsets.ViewSet):
                         cli_start = unicode(i.get('name'))
                         for x in cli_start:
                             if not (str(x).isalnum() or str(x) in string.punctuation or x == ' '):
-                                message = "END_DEFAULT_COMMANDS_ERROR"
                                 data = {
                                     'new_token': self.new_token,
                                     constants.STATUS: {
                                         constants.STATUS: constants.FALSE,
-                                        constants.MESSAGE: message
+                                        constants.MESSAGE: constants.START_DEFAULT_COMMANDS_ERROR
                                     }
                                 }
                                 return api_return(data=data)
@@ -154,12 +168,11 @@ class OsTypeViewSet(viewsets.ViewSet):
                         cli_end = i.get('name')
                         for x in cli_end:
                             if not (str(x).isalnum() or str(x) in string.punctuation or x == ' '):
-                                message = "END_DEFAULT_COMMANDS_ERROR"
                                 data = {
                                     'new_token': self.new_token,
                                     constants.STATUS: {
                                         constants.STATUS: constants.FALSE,
-                                        constants.MESSAGE: message
+                                        constants.MESSAGE: constants.END_DEFAULT_COMMANDS_ERROR
                                     }
                                 }
                                 return api_return(data=data)
@@ -173,12 +186,11 @@ class OsTypeViewSet(viewsets.ViewSet):
                         try:
                             re.compile(cli_error)
                         except Exception, e:
-                            message = "LOG_FAIL_JUDGES_ERROR"
                             data = {
                                 'new_token': self.new_token,
                                 constants.STATUS: {
                                     constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: message
+                                    constants.MESSAGE: constants.LOG_FAIL_JUDGES_ERROR
                                 }
                             }
                             return api_return(data=data)
@@ -188,12 +200,11 @@ class OsTypeViewSet(viewsets.ViewSet):
                 else:
                     cli_error_context = None
                 if self.telnet_prompt == '':
-                    message = "TELNET_PROMPT_EMPTY_ERROR"
                     data = {
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: message
+                            constants.MESSAGE: constants.TELNET_PROMPT_EMPTY_ERROR
                         }
                     }
                     return api_return(data=data)
@@ -201,36 +212,33 @@ class OsTypeViewSet(viewsets.ViewSet):
                     try:
                         re.compile(self.telnet_prompt)
                     except Exception, e:
-                        message = "TELNET_PROMPT_FORMAT_ERROR"
                         data = {
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: message
+                                constants.MESSAGE: constants.TELNET_PROMPT_FORMAT_ERROR
                             }
                         }
                         return api_return(data=data)
                 try:
                     telnet_timeout = int(self.telnet_timeout)
                 except Exception, e:
-                    message = "TELNET_TIMEOUT_FORMAT_ERROR"
                     data = {
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: message
+                            constants.MESSAGE: constants.TELNET_TIMEOUT_FORMAT_ERROR
                         }
                     }
                     return api_return(data=data)
                 try:
                     snmp_timeout = int(self.snmp_timeout)
                 except Exception, e:
-                    message = "SNMP_TIMEOUT_FORMAT_ERROR"
                     data = {
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: message
+                            constants.MESSAGE: constants.SNMP_TIMEOUT_FORMAT_ERROR
                         }
                     }
                     return api_return(data=data)
@@ -252,22 +260,20 @@ class OsTypeViewSet(viewsets.ViewSet):
                 if self.os_type_name is not '':
                     get_name_from_cp = self.get_ostype(**{'name': self.os_type_name})
                     if not isinstance(get_name_from_cp, str):
-                        message = "NAME_IS_EXISTENCE"
                         data = {
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: message,
+                                constants.MESSAGE: constants.OSTYPE_NAME_EXISTS,
                             }
                         }
                         return api_return(data=data)
                 else:
-                    message = "NAME_IS_EMPTY"
                     data = {
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: message,
+                            constants.MESSAGE: constants.OSTYPE_NAME_EMPTY,
                         }
                     }
                     return api_return(data=data)
@@ -290,6 +296,10 @@ class OsTypeViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def put(self):
+        """@brief
+        modify a ostype
+        @return: the modified ostype when modify success and error when modify fail
+        """
         try:
             with transaction.atomic():
                 if self.ostypeid:
@@ -299,12 +309,11 @@ class OsTypeViewSet(viewsets.ViewSet):
                             cli_start = unicode(i.get('name'))
                             for x in cli_start:
                                 if not (str(x).isalnum() or str(x) in string.punctuation or x == ' '):
-                                    message = "END_DEFAULT_COMMANDS_ERROR"
                                     data = {
                                         'new_token': self.new_token,
                                         constants.STATUS: {
                                             constants.STATUS: constants.FALSE,
-                                            constants.MESSAGE: message
+                                            constants.MESSAGE: constants.START_DEFAULT_COMMANDS_ERROR
                                         }
                                     }
                                     return api_return(data=data)
@@ -317,12 +326,11 @@ class OsTypeViewSet(viewsets.ViewSet):
                             cli_end = i.get('name')
                             for x in cli_end:
                                 if not (str(x).isalnum() or str(x) in string.punctuation or x == ' '):
-                                    message = "END_DEFAULT_COMMANDS_ERROR"
                                     data = {
                                         'new_token': self.new_token,
                                         constants.STATUS: {
                                             constants.STATUS: constants.FALSE,
-                                            constants.MESSAGE: message
+                                            constants.MESSAGE: constants.END_DEFAULT_COMMANDS_ERROR
                                         }
                                     }
                                     return api_return(data=data)
@@ -336,12 +344,11 @@ class OsTypeViewSet(viewsets.ViewSet):
                             try:
                                 re.compile(cli_error)
                             except Exception, e:
-                                message = "LOG_FAIL_JUDGES_ERROR"
                                 data = {
                                     'new_token': self.new_token,
                                     constants.STATUS: {
                                         constants.STATUS: constants.FALSE,
-                                        constants.MESSAGE: message
+                                        constants.MESSAGE: constants.LOG_FAIL_JUDGES_ERROR
                                     }
                                 }
                                 return api_return(data=data)
@@ -351,12 +358,11 @@ class OsTypeViewSet(viewsets.ViewSet):
                     else:
                         cli_error_context = None
                     if self.telnet_prompt == '':
-                        message = "TELNET_PROMPT_EMPTY_ERROR"
                         data = {
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: message
+                                constants.MESSAGE: constants.TELNET_PROMPT_EMPTY_ERROR
                             }
                         }
                         return api_return(data=data)
@@ -364,36 +370,33 @@ class OsTypeViewSet(viewsets.ViewSet):
                         try:
                             re.compile(self.telnet_prompt)
                         except Exception, e:
-                            message = "TELNET_PROMPT_FORMAT_ERROR"
                             data = {
                                 'new_token': self.new_token,
                                 constants.STATUS: {
                                     constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: message
+                                    constants.MESSAGE: constants.TELNET_PROMPT_FORMAT_ERROR
                                 }
                             }
                             return api_return(data=data)
                     try:
                         telnet_timeout = int(self.telnet_timeout)
                     except Exception, e:
-                        message = "TELNET_TIMEOUT_FORMAT_ERROR"
                         data = {
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: message
+                                constants.MESSAGE: constants.TELNET_TIMEOUT_FORMAT_ERROR
                             }
                         }
                         return api_return(data=data)
                     try:
                         snmp_timeout = int(self.snmp_timeout)
                     except Exception, e:
-                        message = "SNMP_TIMEOUT_FORMAT_ERROR"
                         data = {
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: message
+                                constants.MESSAGE: constants.SNMP_TIMEOUT_FORMAT_ERROR
                             }
                         }
                         return api_return(data=data)
@@ -412,17 +415,28 @@ class OsTypeViewSet(viewsets.ViewSet):
                         'telnet_timeout': telnet_timeout,
                         'snmp_timeout': snmp_timeout,
                     }
+                    queryset = self.get_ostype(**{'ostypeid': self.ostypeid})
                     if self.os_type_name.strip() == '':
-                        message = "NAME_IS_EMPTY"
                         data = {
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: message,
+                                constants.MESSAGE: constants.OSTYPE_NAME_EMPTY,
                             }
                         }
                         return api_return(data=data)
-                    queryset = self.get_ostype(**{'ostypeid': self.ostypeid})
+                    else:
+                        ostype_database = self.get_ostype(**{"name": self.os_type_name})
+                        if not isinstance(ostype_database, str):
+                            if ostype_database.ostypeid != self.ostypeid:
+                                data = {
+                                    'new_token': self.new_token,
+                                    constants.STATUS: {
+                                        constants.STATUS: constants.FALSE,
+                                        constants.MESSAGE: constants.OSTYPE_NAME_EXISTS,
+                                    }
+                                }
+                                return api_return(data=data)
                     serializer = OstypeSerializer(queryset, data=data)
                     if serializer.is_valid(Exception):
                         serializer.save()
@@ -443,6 +457,10 @@ class OsTypeViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def delete(self):
+        """@brief
+        delete a ostype
+        @return: the success when delete success and error when delete fail
+        """
         try:
             with transaction.atomic():
                 if self.id:
@@ -460,34 +478,31 @@ class OsTypeViewSet(viewsets.ViewSet):
                     else:
                         devices_queryset = Devices.objects.filter(ostype_id=self.id)
                         if len(devices_queryset) != 0:
-                            message = "EXIST_IN_DEVICES"
                             data = {
                                 'new_token': self.new_token,
                                 constants.STATUS: {
                                     constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: message
+                                    constants.MESSAGE: constants.OSTYPE_EXIST_IN_DEVICES
                                 }
                             }
                             return api_return(data=data)
                         schedules_queryset = Schedules.objects.filter(ostype_id=self.id)
                         if len(schedules_queryset) != 0:
-                            message = "EXIST_IN_SCHEDULE"
                             data = {
                                 'new_token': self.new_token,
                                 constants.STATUS: {
                                     constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: message
+                                    constants.MESSAGE: constants.OSTYPE_EXIST_IN_SCHEDULE
                                 }
                             }
                             return api_return(data=data)
                         coll_policy_queryset = CollPolicy.objects.filter(ostype_id=self.id)
                         if len(coll_policy_queryset) != 0:
-                            message = "EXIST_IN_COLL_POLICY"
                             data = {
                                 'new_token': self.new_token,
                                 constants.STATUS: {
                                     constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: message
+                                    constants.MESSAGE: constants.OSTYPE_EXISTS_IN_COLL_POLICY
                                 }
                             }
                             return api_return(data=data)

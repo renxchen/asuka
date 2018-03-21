@@ -9,12 +9,12 @@
 
 """
 
-from backend.apolo.serializer.devices_groups_serializer import DevicesTmpSerializer, DevicesGroupsSerializer
-from backend.apolo.models import Groups, Ostype, DevicesTmp, DevicesGroups
+from backend.apolo.serializer.devices_groups_serializer import DevicesTmpSerializer,DevicesGroupsSerializer
+from backend.apolo.models import Groups, Ostype, DevicesTmp,DevicesGroups
 from backend.apolo.tools import constants
 from rest_framework.views import APIView
 from rest_framework import viewsets
-from backend.apolo.apolomgr.resource.device import groups_views, device_views
+from backend.apolo.apolomgr.resource.device import groups_views,device_views
 from backend.apolo.tools.views_helper import api_return
 from django.core.paginator import Paginator
 from backend.apolo.tools import views_helper
@@ -30,8 +30,8 @@ import string, copy
 from multiprocessing.dummy import Pool as ThreadPool
 import requests
 
-
 class DevicePreViewSet(APIView):
+
     parser_classes = (FileUploadParser,)
 
     def __init__(self, request, **kwargs):
@@ -64,9 +64,16 @@ class DevicePreViewSet(APIView):
 
     @staticmethod
     def telnet_status_check(device_id):
+        """@brief
+        check the device_tmp status in Devive_Tmp table whether it can telnet success
+        @param device_id: the device_id in Device_Tmp table to confirm the device which need to check
+        @pre call when need to check the telnet_status
+        @post return the telnet result with post Gin`s API
+        @return: the telnet_status and device_id
+        """
         device = DevicesTmp.objects.get(device_id=device_id)
         ostype = Ostype.objects.get(ostypeid=device.ostype_id)
-        default_commands = ostype.start_default_commands
+        default_commands=ostype.start_default_commands
         time_out = ostype.telnet_timeout
 
         payload = {
@@ -87,6 +94,13 @@ class DevicePreViewSet(APIView):
 
     @staticmethod
     def snmp_status_check(device_id):
+        """@brief
+        check the device_tmp status in Devive_Tmp table whether it can snmp success
+        @param device_id: the device_id in Device_Tmp table to confirm the device which need to check
+        @pre call when need to check the snmp_status
+        @post return the snmp result with post Gin`s API
+        @return: the snmp_status and device_id
+        """
         device = DevicesTmp.objects.get(device_id=device_id)
         ostype = Ostype.objects.get(ostypeid=device.ostype_id)
         time_out = ostype.snmp_timeout
@@ -114,6 +128,10 @@ class DevicePreViewSet(APIView):
                 return 'success', device_id
 
     def get(self):
+        """@brief
+        get the data in Device_Tmp table by the operation_id
+        @return: the data of Device_Tmp table
+        """
         try:
             queryset_devices = DevicesTmp.objects.filter(operation_id=self.operation_id)
             field_relation_ships = {
@@ -145,7 +163,7 @@ class DevicePreViewSet(APIView):
                 'ostype': self.ostype_name,
             }
             search_fields = ['hostname', 'ip', 'telnet_port', 'snmp_port', 'snmp_community', 'snmp_version',
-                             'login_expect', 'device_type', 'telnet_status', 'status_type', 'group_name', 'ostype']
+                             'login_expect', 'device_type', 'telnet_status', 'status_type','group_name','ostype']
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                           query_data, search_fields)
             if sorts != []:
@@ -187,8 +205,11 @@ class DevicePreViewSet(APIView):
                 print traceback.format_exc(e)
             return exception_handler(e)
 
-    # todo
     def put(self):
+        """@brief
+        check and change the status of telnet and snmp in Device_Tmp table by the list of device_id
+        @return: the status of check result
+        """
         try:
             with transaction.atomic():
                 data_list = self.data_list
@@ -201,7 +222,7 @@ class DevicePreViewSet(APIView):
                 for x in res_telnet:
                     device_pre = DevicesTmp.objects.get(device_id=x[1])
                     telnet_res = x[0]
-                    data = {
+                    data ={
                         'telnet_status': telnet_res,
                     }
                     serializer = DevicesTmpSerializer(device_pre, data=data, partial=True)
@@ -237,3 +258,7 @@ class DevicePreViewSet(APIView):
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
             return exception_handler(e)
+
+
+
+

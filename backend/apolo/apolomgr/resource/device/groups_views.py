@@ -10,8 +10,8 @@
 """
 
 from backend.apolo.serializer.data_collection_serializer import DeviceGroupIDNameSerializer, OstypeSerializer
-from backend.apolo.models import Groups, Ostype, Schedules, DevicesGroups
-from backend.apolo.apolomgr.resource.device import device_views, ostype_views
+from backend.apolo.models import Groups, Ostype,Schedules,DevicesGroups
+from backend.apolo.apolomgr.resource.device import device_views,ostype_views
 from backend.apolo.tools import constants
 from rest_framework import viewsets
 from backend.apolo.tools.views_helper import api_return
@@ -22,7 +22,6 @@ from backend.apolo.tools.exception import exception_handler
 import simplejson as json
 from django.forms.models import model_to_dict
 from django.db import transaction
-
 
 class GroupsViewSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):
@@ -45,6 +44,13 @@ class GroupsViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_group(kwargs):
+        """@brief
+        get the data of the Groups table
+        @param kwargs: the condition to query the table
+        @pre call when need to get the data of Groups table
+        @post return the data when queryset exits and False when queryset not exit
+        @return: the data when queryset exits and False when queryset not exit
+        """
         try:
             return Groups.objects.get(**kwargs)
         except Groups.DoesNotExist:
@@ -52,6 +58,13 @@ class GroupsViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_ostype(kwargs):
+        """@brief
+        get the data of the Ostype table
+        @param kwargs: the condition to query the table
+        @pre call when need to get the data of Ostype table
+        @post return the data when queryset exits and exception string when queryset not exit
+        @return: the data when queryset exits and exception string when queryset not exit
+        """
         try:
             ostype_info = Ostype.objects.get(**kwargs)
             return ostype_info
@@ -61,6 +74,10 @@ class GroupsViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def get(self):
+        """@brief
+        get the data of Groups table
+        @return: the data of Groups table
+        """
         try:
             queryset = Groups.objects.all()
             # return name&ostype for checking whether they can be changed
@@ -77,12 +94,11 @@ class GroupsViewSet(viewsets.ViewSet):
                     name = True
                 queryset = Groups.objects.filter(**query_conditions)
                 if not queryset.exists():
-                    message = 'There is no result for current query.'
                     data = {
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: message
+                            constants.MESSAGE: constants.GROUP_NOT_EXIST
                         }
                     }
                     return api_return(data=data)
@@ -107,17 +123,29 @@ class GroupsViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def post(self):
-        kwargs_groupname = {'name': self.name}
-        groups = self.get_group(kwargs_groupname)
-        if groups:
-            message = 'GROUPNAME_ALREADY_EXISTS'
+        """@brief
+        create a new group
+        @return: the created group when create success and error when create fail
+        """
+        if "," in self.name:
             data = {
                 'new_token': self.new_token,
                 constants.STATUS: {
                     constants.STATUS: constants.FALSE,
-                    constants.MESSAGE: message
+                    constants.MESSAGE: constants.GROUP_NAME_FORMAT_ERROR
                 }
             }
+            return api_return(data=data)
+        kwargs_groupname = {'name':self.name}
+        groups = self.get_group(kwargs_groupname)
+        if groups:
+            data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.GROUP_ALREADY_EXISTS
+                        }
+                    }
             return api_return(data=data)
         kwargs_ostypeid = {"ostypeid": self.ostype_id}
         ostype = self.get_ostype(kwargs_ostypeid)
@@ -149,6 +177,10 @@ class GroupsViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def put(self):
+        """@brief
+        modify a group
+        @return: the modified group when modify success and error when modify fail
+        """
         try:
             with transaction.atomic():
                 if self.name:
@@ -156,20 +188,28 @@ class GroupsViewSet(viewsets.ViewSet):
                     groups = self.get_group(kwargs_groupname)
                     if groups:
                         if int(groups.group_id) != int(self.group_id):
-                            message = 'GROUPNAME_ALREADY_EXISTS'
                             data = {
                                 'new_token': self.new_token,
                                 constants.STATUS: {
                                     constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: message
+                                    constants.MESSAGE: constants.GROUP_ALREADY_EXISTS
                                 }
                             }
                             return api_return(data=data)
+                if "," in self.name:
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.GROUP_NAME_FORMAT_ERROR
+                        }
+                    }
+                    return api_return(data=data)
                 kwargs_group = {'group_id': self.group_id}
                 group = self.get_group(kwargs_group)
                 kwargs_ostype = {'ostypeid': self.ostype_id}
                 ostype = self.get_ostype(kwargs_ostype)
-                if not isinstance(ostype, str):
+                if not isinstance(ostype,str):
                     data = {
                         'name': self.name,
                         'desc': self.desc,
@@ -181,12 +221,11 @@ class GroupsViewSet(viewsets.ViewSet):
                         'desc': self.desc
                     }
                 if group is False:
-                    message = 'There is no result for current query.'
                     data = {
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: message
+                            constants.MESSAGE: constants.GROUP_NOT_EXIST
                         }
                     }
                     return api_return(data=data)
@@ -221,30 +260,32 @@ class GroupsViewSet(viewsets.ViewSet):
             return exception_handler(e)
 
     def delete(self):
+        """@brief
+        delete a group
+        @return: the success when delete success and error when delete fail
+        """
         try:
             with transaction.atomic():
                 if self.group_id:
-                    kwards_schedules = {'device_group_id': self.group_id}
+                    kwards_schedules = {'device_group_id':self.group_id}
                     queryset_schedules = Schedules.objects.filter(**kwards_schedules)
-                    if queryset_schedules.count() != 0:
-                        message = 'ALREADY_EXISTS_IN_SCHEDULES'
+                    if queryset_schedules.count() != 0 :
                         data = {
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: message
+                                constants.MESSAGE: constants.EXISTS_IN_SCHEDULES
                             }
                         }
                         return api_return(data=data)
                     kwards_devicegroup = {'group_id': self.group_id}
                     queryset_device = DevicesGroups.objects.filter(**kwards_devicegroup)
                     if queryset_device.count() != 0:
-                        message = 'ALREADY_EXISTS_IN_DEVICESGROUPS'
                         data = {
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: message
+                                constants.MESSAGE: constants.EXISTS_IN_DEVICESGROUPS
                             }
                         }
                         return api_return(data=data)
@@ -260,12 +301,11 @@ class GroupsViewSet(viewsets.ViewSet):
                         }
                         return api_return(data=data)
                     else:
-                        message = 'There is no result for current query.'
                         data = {
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: message
+                                constants.MESSAGE: constants.GROUP_NOT_EXIST
                             }
                         }
                     return api_return(data=data)
