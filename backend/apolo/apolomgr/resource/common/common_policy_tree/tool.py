@@ -172,6 +172,14 @@ class Tool(object):
 
         return "".join(arry)
 
+    @staticmethod
+    def replace_xml_mark(xmlString):
+        if xmlString:
+            if '<' in xmlString and '>' in xmlString:
+                xmlString = xmlString.replace('<', '&lt;')
+                xmlString = xmlString.replace('>', '&gt;')
+        return xmlString
+
 if __name__ == '__main__':
 
     print Tool.replace_escape_char(r'description@@**@@\\@@Management@@IF@@\\@@**')
