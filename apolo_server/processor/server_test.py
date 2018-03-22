@@ -140,7 +140,7 @@ class CommandApiHandler(web.RequestHandler):
 
             if device_id in device_pending_dict:
                 #update pending data
-                device_pending_dict.update(device_id,device_info)
+                device_pending_dict.update(dict(device_id=device_info))
                 continue
 
             if device_id in _device_q.queue:
@@ -172,10 +172,12 @@ class CommandApiHandler(web.RequestHandler):
                                     coll_queue_timestamp=timestamp,
                                     #read=False,
                                     channel=channel,
-                                    parser_queue=Queue.Queue(),
+                                    #parser_queue=Queue.Queue(),
                                     parser_status="queue"
 
                                     ))
+                
+                session_mgr.init_parser_queue(task_id)
 
                 _device_q.put(device_id)
 
@@ -218,29 +220,32 @@ def on_worker_data_in(data):
                     output=output)
 
     """
-
+    task = session_mgr.get(task_id)
+    channel = task["channel"]
     if result_type == "element_result":
         print "enter command"
         session_mgr.update_command_result(task_id,result)
 
-        channel = "parser"
-        if result["channel"] == "snmp":
+
+        new_channel = "parser"
+        if channel == "snmp":
             find_key = result["clock"]
-            zmq_publish.send_string(b'%s task %s %s' % (channel,task_id,find_key))
+            zmq_publish.send_string(b'%s task %s %s' % (new_channel,task_id,find_key))
         else:
             find_key = result["command"]
-            pre_element = result["pre_element"]
+            first_element = result["first_element"]
             next_element = result["next_element"]
-            #if pre_element == -1:
-                #zmq_publish.send_string(b'%s task %s %s' % (channel,task_id,find_key))
-            #else:
-            session_mgr.set_parser_queue(task_id,dict(element=find_key,pre_element=pre_element,
-                next_element=next_element,status="queue",publish_string=b'%s task %s %s' % (channel,task_id,find_key)))
+            
+            session_mgr.set_parser_queue(task_id,dict(element=find_key,first_element=first_element,
+                next_element=next_element,status="queue",publish_string=b'%s task %s %s' % (new_channel,task_id,find_key)))
+
+        logging.info('Collection element Task Done')
 
         #logging.info('Collection Task %s %s done, status: %s' % (task_id, status))
-    elif result_type == "task":
+    elif result_type == "task_result":
 
         # create new task
+        print "finish?"
         timer = time.time()
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -248,10 +253,12 @@ def on_worker_data_in(data):
                                          coll_finish_timestamp=timestamp,
                                          coll_result=result))
         
-        channel = result["channel"]
+        #channel = result["channel"]
         device_id = result["device_id"]
         device_pending_dict = cli_device_pending_dict if channel == "cli" else snmp_device_pendding_dict
         device_task_dict = cli_device_task_dict if channel == "cli" else snmp_device_task_dict
+
+        
         if device_id in device_task_dict:
             del device_task_dict[device_id]
 
@@ -267,15 +274,22 @@ def on_worker_data_in(data):
             device_task_dict[device_id] = task_id
          
             session_mgr.put(task_id,
-                            dict(status='coll_queue',
-                                device_info=device_info,
-                                #timer=timer,
-                                coll_queue_timestamp=timestamp,
-                                #read=False,
-                                channel=channel))
+                                dict(status='coll_queue',
+                                    device_info=device_info,
+                                    #timer=timer,
+                                    coll_queue_timestamp=timestamp,
+                                    #read=False,
+                                    channel=channel,
+                                    #parser_queue=Queue.Queue(),
+                                    parser_status="queue"
 
-            del device_pending_dict[device_id]
+                                    ))
+                
+            session_mgr.init_parser_queue(task_id)
+
             _device_q.put(device_id)
+            del device_pending_dict[device_id]
+           
 
     elif result_type == "parser":
         session_mgr.update_parser_result(task_id,result)
@@ -297,6 +311,7 @@ class SessionApiHandler(web.RequestHandler):
             timer = session_mgr.get_timer()
             now = time.time()
             session_data = session_mgr.get_all()
+            #print session_data
             """
             for task_id in session_data:
                 task = session_data[task_id]

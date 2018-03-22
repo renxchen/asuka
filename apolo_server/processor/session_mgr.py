@@ -13,6 +13,9 @@ import Queue
 
 class SessionManager(Thread):
     data_set = {}
+
+    parser_dict={}
+
     polling_interval = 60
     absolute_timeout = 3600
     after_read_timeout = 300
@@ -35,14 +38,19 @@ class SessionManager(Thread):
             self.data_set[k].update(v)
         except KeyError:
             pass
+    def init_parser_queue(self,task_id):
+        self.parser_dict[task_id] = Queue.Queue()
+
+        
 
     def set_parser_queue(self,task_id,value):
 
-        data = self.data_set.get(task_id)
-        if "parser_queue" not in data:
-            data.update(dict(parser_queue=Queue.Queue(),parser_status="queue"))
-        
-        data["parser_queue"].append(value)
+        #data = self.data_set.get(task_id)
+        #if "parser_queue" not in data:
+        #data.update(dict(parser_queue=Queue.Queue(),parser_status="queue"))
+        queue = self.parser_dict[task_id]
+        queue.put(value)
+        #data["parser_queue"].append(value)
 
 
 
@@ -54,12 +62,11 @@ class SessionManager(Thread):
                 data.update(dict(element_result={}))
 
         if channel == "cli":
-            
             command = result["command"]
             data.get("element_result")[command] = result
         else:
             clock = result["clock"]
-            data.get("element_result")[command] = result
+            data.get("element_result")[clock] = result
 
 
     def update_parser_result(self,task_id,result):
@@ -113,6 +120,9 @@ class SessionManager(Thread):
         logger = get_logger('SessionMgr')
         while True:
             time.sleep(self.polling_interval)
+            #pass
+            """
+            time.sleep(self.polling_interval)
             for k in self.data_set.keys():
                 v = self.data_set[k]
                 status = v["status"] 
@@ -125,6 +135,7 @@ class SessionManager(Thread):
                     
                     if parser_queue.empty() and status == "coll_finish":
                         v["status"] == "all_finish"
+            """
                 
                 
                 

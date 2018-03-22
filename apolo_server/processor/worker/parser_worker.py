@@ -29,20 +29,20 @@ class Parser(WorkerBase):
         try:
             #params = task['params']
             #item_type = params['item_type']
-            items,parser_result = parser_main(item_type=item_type, task=task,data=data result=result)
+            items,parser_result = parser_main(item_type=item_type, task=task,data=data,result=result)
             #print json.dumps(items, indent=2), timestamp
             trigger = TriggerHelp(items, logger)
             trigger.trigger(task_timestamp=time.time())
             result = dict(
                     result_type = "parser",
                     task_id=task_id,
-                    command=command,
+                    #command=command,
                     parser_result=parser_result,
                     status="success",
                     #message="",
                 )
             if item_type == CommonConstants.CLI_TYPE_CODE:
-                result.update(dict(command=command,parser_result=parser_result))
+                result.update(dict(command=data,parser_result=parser_result))
                 
             else:
                 result.update(dict(clock=data))
@@ -56,7 +56,7 @@ class Parser(WorkerBase):
                 message=str(e)
             )
             if item_type == CommonConstants.CLI_TYPE_CODE:
-                result.update(dict(command=command))
+                result.update(dict(command=data))
             else:
                 result.update(dict(clock=data))
 

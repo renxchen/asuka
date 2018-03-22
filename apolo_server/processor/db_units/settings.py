@@ -99,12 +99,12 @@ DATABASES = {
         'NAME': "apolo",
         # 'NAME': "newwebday2",
         # 'HOST': '10.79.148.225',
-        #'HOST': '127.0.0.1',
-         'HOST': '10.71.244.134',
+        'HOST': '127.0.0.1',
+        # 'HOST': '10.71.244.134',
         # "USER": "webday2",
-        "USER": "root",
+        "USER": "apolo",
         #"PASSWORD": "1234",
-         "PASSWORD": "apolo"
+         "PASSWORD": "apolo123"
      
     }
 }

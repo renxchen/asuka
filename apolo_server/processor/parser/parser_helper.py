@@ -37,7 +37,7 @@ class Parser(object):
 """
 
 class SNMPParser(object):
-    def __init__(selfß):
+    def __init__(self):
         pass
         
     def handle(self,items,result):
@@ -48,7 +48,7 @@ class SNMPParser(object):
         #parser_result = {}
         #timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
-        ParserDbHelp().bulk_save_result(self.parser_params['items'],clock, CommonConstants.SNMP_TYPE_CODE)
+        ParserDbHelp().bulk_save_result(items,clock, CommonConstants.SNMP_TYPE_CODE)
         return ""
 
 

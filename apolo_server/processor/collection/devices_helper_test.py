@@ -248,18 +248,18 @@ def __merge_snmp(item, deviceinfo_dict):
 def __merge_cli(item, deviceinfo_dict):
 
     interval_key_dict={
-        str(24*60*60):["element_1day","items_1day"],
-        str(60*60):["element_1hour","items_1hour"],
-        str(15*60):["element_15min","items_15min"],
-        str(5*60):["element_5min","items_5min"]
+        str(24*60*60):"items_1day",
+        str(60*60):"items_1hour",
+        str(15*60):"items_15min",
+        str(5*60):"items_5min"
         
     }
 
     if str(item['device__device_id']) not in deviceinfo_dict:
-        deviceinfo_dict['element_1day']=[]
-        deviceinfo_dict['element_1hour']=[]
-        deviceinfo_dict['element_15min']=[]
-        deviceinfo_dict['element_5min']=[]
+        #deviceinfo_dict['element_1day']=[]
+        #deviceinfo_dict['element_1hour']=[]
+        #deviceinfo_dict['element_15min']=[]
+        #deviceinfo_dict['element_5min']=[]
         deviceinfo_dict['device_id'] = str(item['device__device_id'])
         #deviceinfo_dict['ip'] = item['device__ip']
         deviceinfo_dict['ip'] = "10.71.244.135"
@@ -268,20 +268,23 @@ def __merge_cli(item, deviceinfo_dict):
         deviceinfo_dict['default_commands'] = item['device__ostype__start_default_commands']
         deviceinfo_dict['timeout'] = item['device__ostype__telnet_timeout']
         deviceinfo_dict['method'] = DevicesConstants.CLI_COLLECTION_DEFAULT_METHOD
-        deviceinfo_dict['items_1day'] = []
-        deviceinfo_dict['items_1hour'] = []
-        deviceinfo_dict['items_15min'] = []
-        deviceinfo_dict['items_5min'] = []
+        #deviceinfo_dict['items_1day'] = []
+        #deviceinfo_dict['items_1hour'] = []
+        #deviceinfo_dict['items_15min'] = []
+        #deviceinfo_dict['items_5min'] = []
     
     #exec_interval=item['policys_groups__exec_interval']
     exec_interval=300
     command=item['coll_policy__cli_command']
     print command
     
-    cmd_key = interval_key_dict[str(exec_interval)][0]
-    item_key = interval_key_dict[str(exec_interval)][1]
-    if command not in deviceinfo_dict[cmd_key]:
-        deviceinfo_dict[cmd_key].append(command)
+    #cmd_key = interval_key_dict[str(exec_interval)][0]
+    item_key = interval_key_dict[str(exec_interval)]
+    #if command not in deviceinfo_dict[cmd_key]:
+        #deviceinfo_dict[cmd_key].append(command)
+    
+    if item_key not in deviceinfo_dict:
+        deviceinfo_dict[item_key] = []
 
     deviceinfo_dict[item_key].append( dict(
             item_id=item['item_id'],
