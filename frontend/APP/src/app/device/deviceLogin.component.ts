@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { DeviceErrorTableComponent } from './deviceErrorTable.component';
 import { ProcessbarComponent } from '../../components/processbar/processbar.component';
 import { Observable } from 'rxjs/Rx';
 import * as _ from 'lodash';
@@ -35,6 +36,13 @@ export class DeviceLoginComponent implements OnInit {
         backdrop: true,
         ignoreBackdropClick: true,
         class: 'modal-md'
+    };
+    modalConfigLg = {
+        animated: true,
+        keyboard: false,
+        backdrop: true,
+        ignoreBackdropClick: true,
+        class: 'modal-lg'
     };
     constructor(
         public httpClient: HttpClientComponent,
@@ -69,7 +77,7 @@ export class DeviceLoginComponent implements OnInit {
             this.devLoginTable$.GridUnload();
         }
         this.processbar = this.modalService.show(ProcessbarComponent, this.modalConfig);
-        this.processbar.content.message = 'uploading...';
+        this.processbar.content.message = 'Uploading...';
         this.http.post('/v1/api_device/upload', this.formData)
             .map(res => res.json())
             .catch(error => Observable.throw(error))
@@ -80,15 +88,14 @@ export class DeviceLoginComponent implements OnInit {
                 let data: any = _.get(res, 'error_list');
                 this.optId = _.get(res, 'operation_id');
                 if (status && status['status'].toLowerCase() === 'true') {
-                    // $('#bar').width('100%');
                     this.drawDevLoginTable();
                     this.actionFlg = false;
                     this.processbar.hide();
                     if (data && data.length > 0) {
-                        this.modalMsg = '';
-                        this.closeMsg = '閉じる';
+                        this.modalRef = this.modalService.show(DeviceErrorTableComponent, this.modalConfigLg);
+                        this.modalRef.content.closeMsg = '閉じる';
                         this.errorDevices = data;
-                        this.showAlertModal(this.modalMsg, this.closeMsg, this.errorDevices);
+                        this.modalRef.content.data = this.errorDevices;
                     }
                 } else {
                     this.processbar.hide();
@@ -101,8 +108,6 @@ export class DeviceLoginComponent implements OnInit {
         let _t = this;
         _t.devLoginTable$ = $('#devLoginTable').jqGrid({
             url: '/v1/api_device_pre/?operation_id=' + this.optId,
-            // datatype: 'local',
-            // data: _t.testData,
             datatype: 'JSON',
             mtype: 'get',
             colNames: ['DeviceId', 'Hostname', 'IP Address', 'Telnet Port', 'SNMP Port', 'SNMP Community',
@@ -141,21 +146,21 @@ export class DeviceLoginComponent implements OnInit {
                 { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
             ],
             // beforeSelectRow: function (rowid, e) { return false; },
-            beforeRequest: function () {
-                let currentPage: any = $('#devLoginTable').jqGrid('getGridParam', 'page');
-                let rowNum: any = $('#devLoginTable').jqGrid('getGridParam', 'rowNum');
-                let records: any = $('#devLoginTable').jqGrid('getGridParam', 'records');
-                let totalPages = records % rowNum;
-                if (records > 0 && currentPage > totalPages) {
-                    $('#devLoginTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
-                }
-            },
+            // beforeRequest: function () {
+            //     let currentPage: any = $('#devLoginTable').jqGrid('getGridParam', 'page');
+            //     let rowNum: any = $('#devLoginTable').jqGrid('getGridParam', 'rowNum');
+            //     let records: any = $('#devLoginTable').jqGrid('getGridParam', 'records');
+            //     let totalPages = records % rowNum;
+            //     if (records > 0 && currentPage > totalPages) {
+            //         $('#devLoginTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
+            //     }
+            // },
             // text-overflow: ellipsis;
             pager: '#devLoginPager',
             rowNum: 10,
             rowList: [5, 10, 15],
             autowidth: true,
-            height: 300,
+            height: 330,
             viewrecords: false,
             multiselect: true,
             emptyrecords: 'There is no data to display',
@@ -164,7 +169,6 @@ export class DeviceLoginComponent implements OnInit {
                 page: 'current_page_num',
                 total: 'num_page',
                 records: 'total_num',
-                // userData:'erroList',
                 repeatitems: false,
             },
         });
@@ -187,30 +191,27 @@ export class DeviceLoginComponent implements OnInit {
         checkInfo['operation_id'] = this.optId;
         if (deviceSel.length > 0) {
             this.processbar = this.modalService.show(ProcessbarComponent, this.modalConfig);
-            this.processbar.content.message = 'ステータスチェック中...';
+            this.processbar.content.message = 'Check...';
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put(checkUrl, checkInfo))
                 .subscribe(res => {
                     let status = _.get(res, 'status');
-                    // check upload status; if success, call the function draw table;
                     if (status && status['status'].toLowerCase() === 'true') {
-                        // $('.bar').width('100%');
                         this.devLoginTable$.GridUnload();
                         this.drawDevLoginTable();
                         this.processbar.hide();
                     } else {
                         this.processbar.hide();
-                        alert('check data failed');
+                        alert('Status check failed.');
                     }
                 });
         } else {
-            alert('no device selected');
+            alert('Please choose one device at least.');
         }
     }
     // save to database;
     public deviceLogin() {
-        // waitingfor.show('uploading...');
         this.apiPrefix = '/v1';
         let databaseUrl = '/api_device/';
         let loginInfo: any = {};
@@ -223,14 +224,13 @@ export class DeviceLoginComponent implements OnInit {
                 if (status && status['status'].toString().toLowerCase() === 'true') {
                     this.router.navigate(['index/deviceview/']);
                 } else {
-                    alert('save failed');
+                    alert('Save failed.');
                 }
             });
     }
-    public showAlertModal(modalMsg?: any, closeMsg?: any, data?: any) {
+    public showAlertModal(modalMsg: any, closeMsg: any) {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
-        this.modalRef.content.data = data;
     }
 }
