@@ -15,7 +15,7 @@ declare var $: any;
     templateUrl: './deviceView.component.html',
     styleUrls: ['./device.component.less']
 })
-export class DeviceViewComponent implements OnInit {
+export class DeviceViewComponent implements OnInit, AfterViewInit {
     /*
     @brief 函数简要说明
     @param 参数名 参数的意思和用户
@@ -44,10 +44,10 @@ export class DeviceViewComponent implements OnInit {
         private http: Http,
         private router: Router) { }
 
-    ngOnInit() {
+    ngOnInit() { }
+    ngAfterViewInit() {
         this.drawdevViewTable();
     }
-
     public drawdevViewTable() {
         let _t = this;
         _t.devViewTable$ = $('#devViewTable').jqGrid({
@@ -99,11 +99,11 @@ export class DeviceViewComponent implements OnInit {
             loadComplete: function (res) {
                 let code = _.get(_.get(res, 'new_token'), 'code');
                 if (code === 102) {
-                    alert('Signature has expired,please login again.');
+                    alert(_.get(_.get(res, 'new_token'), 'message'));
                     _t.router.navigate(['/login/']);
                 }
                 if (code === 103) {
-                    alert('This user is not authorized to access, please login again.');
+                    alert(_.get(_.get(res, 'new_token'), 'message'));
                     _t.router.navigate(['/login']);
                 }
             },
@@ -120,7 +120,6 @@ export class DeviceViewComponent implements OnInit {
                 page: 'current_page_num',
                 total: 'num_page',
                 records: 'total_num',
-                // userData:'erroList',
                 repeatitems: false,
             },
         });
@@ -142,7 +141,7 @@ export class DeviceViewComponent implements OnInit {
         checkInfo['id_list'] = deviceSel;
         if (deviceSel.length > 0) {
             this.processbar = this.modalService.show(ProcessbarComponent, this.modalConfig);
-            this.processbar.content.message = 'ステータスチェック中...';
+            this.processbar.content.message = 'Check...';
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put(checkUrl, checkInfo))
@@ -151,7 +150,6 @@ export class DeviceViewComponent implements OnInit {
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toLowerCase() === 'true') {
                         this.devViewTable$.GridUnload();
-                        // $('.bar').width('100%');
                         this.drawdevViewTable();
                         this.processbar.hide();
                     } else {
@@ -160,7 +158,7 @@ export class DeviceViewComponent implements OnInit {
                     }
                 });
         } else {
-            alert('no device selected');
+            alert('Please choose one device at least.');
         }
     }
     public CSVExport() {

@@ -11,6 +11,8 @@ import { DeviceGroupComponent } from './device/deviceGroup/deviceGroup.component
 import { GroupLoginComponent } from './device/deviceGroup/groupLogin.component';
 import { GroupEditComponent } from './device/deviceGroup/groupEdit.component';
 import { DeviceLoginComponent } from './device/deviceLogin.component';
+import { DeviceErrorTableComponent } from './device/deviceErrorTable.component';
+
 import { DeviceViewComponent } from './device/deviceView.component';
 import { OstypeComponent } from './device/./ostype/ostype.component';
 import { OstypeLoginComponent } from './device/./ostype/ostypeLogin.component';
@@ -307,6 +309,7 @@ export const entryComponentList: any[] = [
     GroupEditComponent,
     OstypeLoginComponent,
     OstypeEditComponent,
+    DeviceErrorTableComponent,
     // collection policy
     CLIBlockComponent,
     CLIDataComponent,
