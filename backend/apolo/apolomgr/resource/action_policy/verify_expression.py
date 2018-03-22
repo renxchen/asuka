@@ -130,10 +130,10 @@ class ExpressionVerify(viewsets.ViewSet):
             msg = ''
             if reg_check.search(result_left) is not None:
                 # illegal_left = reg_check.search(result_left).group()
-                msg = constants.EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION % result_left
+                msg = constants.EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION
             if reg_check.search(result_right) is not None:
                 # illegal_right = reg_check.search(result_right).group()
-                msg = constants.EXPRESSION_ILLEGAL_IN_RIGHT_EXPRESSION % result_right
+                msg = constants.EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION
             result = {
                 constants.MESSAGE: msg,
                 constants.STATUS: constants.FALSE,
@@ -167,7 +167,7 @@ class ExpressionVerify(viewsets.ViewSet):
             eval(value)
         except Exception, e:
             result = {
-                constants.MESSAGE: constants.EXPRESSION_EVAL_VERIFY_FAILED % initial_expression,
+                constants.MESSAGE: constants.EXPRESSION_EVAL_VERIFY_FAILED,
                 constants.STATUS: constants.FALSE,
             }
             return result

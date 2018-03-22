@@ -1248,7 +1248,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     data = {
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLUMN_A_OR_COLUMN_B_NOT_EXIST % (self.column_a, self.column_b)
+                            constants.MESSAGE: constants.COLUMN_A_OR_COLUMN_B_NOT_EXIST
                         }
                     }
                     return api_return(data=data)
