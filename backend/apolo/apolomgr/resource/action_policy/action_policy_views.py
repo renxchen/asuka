@@ -1353,7 +1353,6 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     self.delete_trigger_related(self.action_policy_name)
                     # create new trigger, trigger_detail, action data
                     data = self.create_trigger_related(method='PUT')
-                    data[constants.STATUS][constants.MESSAGE] = constants.PUT_SUCCESSFUL
                     return api_return(data=data)
         except Exception, e:
             transaction.rollback()
