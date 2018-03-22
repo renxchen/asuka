@@ -69,6 +69,17 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 _t.editBtn();
                 _t.deleteBtn();
             },
+            loadComplete: function (res) {
+                let code = _.get(_.get(res, 'new_token'), 'code');
+                if (code === 102) {
+                    alert('Signature has expired,please login again.');
+                    _t.router.navigate(['/login/']);
+                }
+                if (code === 103) {
+                    alert('This user is not authorized to access, please login again.');
+                    _t.router.navigate(['/login/']);
+                }
+            },
             beforeSelectRow: function (rowid, e) { return false; },
             // beforeRequest: function () {
             //     let currentPage: any = $('#cpgTable').jqGrid('getGridParam', 'page');

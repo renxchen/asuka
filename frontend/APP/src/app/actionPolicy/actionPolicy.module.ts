@@ -4,10 +4,15 @@ import { FormsModule } from '@angular/forms';
 import { BsDatepickerModule, TimepickerModule } from 'ngx-bootstrap';
 import { ActionPolicyViewComponent } from './actionPolicyView.component';
 import { ActionPolicyLoginComponent } from './actionPolicyLogin.component';
-import { DataTableViewComponent } from './dataTableView.component';
+// import {
+//     DataTableViewComponent, FirstStepComponent, SecondComponent,
+//     ThirdStepComponent, FourthStepComponent
+// } from './dataTableView.component.backup';
+import {DataTableViewComponent} from './dataTableView.component';
 import { DataTableLoginComponent } from './dataTableLogin.component';
 import { DataTableDetailComponent } from './dataTableDetail.component';
 import { ActionPolicyHistoryComponent } from './actionPolicyHistory.component';
+import { StepsModule } from '../../components/steps/steps.module';
 
 @NgModule({
     declarations: [
@@ -16,15 +21,20 @@ import { ActionPolicyHistoryComponent } from './actionPolicyHistory.component';
         DataTableViewComponent,
         DataTableLoginComponent,
         DataTableDetailComponent,
-        ActionPolicyHistoryComponent
+        ActionPolicyHistoryComponent,
+        // FirstStepComponent,
+        // SecondComponent,
+        // ThirdStepComponent,
+        // FourthStepComponent
     ],
     imports: [
         CommonModule,
         FormsModule,
+        StepsModule,
         BsDatepickerModule.forRoot(),
         TimepickerModule.forRoot(),
     ],
     exports: [],
     providers: [],
 })
-export class ActionPolicyComponentModule {}
+export class ActionPolicyComponentModule { }
