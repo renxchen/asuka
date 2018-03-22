@@ -291,8 +291,8 @@ class TableViewsSet(viewsets.ViewSet):
             },
             'new_token': self.new_token,
             'num_page': paginator.num_pages,
-            'page_range': list(paginator.page_range),
-            'page_has_next': contacts.has_next(),
+            # 'page_range': list(paginator.page_range),
+            # 'page_has_next': contacts.has_next(),
             'total_num': len(result_temp),
             'current_page_num': contacts.number,
             constants.STATUS: {
@@ -321,7 +321,7 @@ class TableViewsSet(viewsets.ViewSet):
                     data = {
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: result
+                            constants.MESSAGE: constants.CSV_PATH_NOT_EXIST
                         },
                     }
                     return api_return(data=data)
@@ -426,7 +426,7 @@ class TableViewsSet(viewsets.ViewSet):
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.TRUE,
-                                constants.MESSAGE: constants.SUCCESS
+                                constants.MESSAGE: constants.POST_SUCCESSFUL
                             }
                         }
                         return api_return(data=data)
@@ -459,7 +459,7 @@ class TableViewsSet(viewsets.ViewSet):
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.TRUE,
-                        constants.MESSAGE: constants.SUCCESS
+                        constants.MESSAGE: constants.DELETE_SUCCESSFUL
                     }
                 }
                 return api_return(data=data)

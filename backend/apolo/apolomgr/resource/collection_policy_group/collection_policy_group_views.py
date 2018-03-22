@@ -344,7 +344,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
+                            constants.MESSAGE: constants.POST_SUCCESSFUL
                         }
                     }
                     return api_return(data=data)
@@ -403,7 +403,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.TRUE,
-                                constants.MESSAGE: constants.SUCCESS
+                                constants.MESSAGE: constants.PUT_SUCCESSFUL
                             }
                         }
                         return api_return(data=data)
@@ -466,7 +466,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
+                            constants.MESSAGE: constants.DELETE_SUCCESSFUL
                         }
                     }
                 return api_return(data=data)

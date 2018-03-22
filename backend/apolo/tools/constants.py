@@ -38,6 +38,10 @@ FALSE = 'False'
 VERIFY_WHETHER_EXECUTING_SERVER_URL = "http://%s:%s/api/v1/valid"
 VERIFY_WHETHER_EXECUTING_SERVER_IP = '10.71.244.134'
 VERIFY_WHETHER_EXECUTING_SERVER_PORT = '7777'
+SYSTEM_ERROR = 'System access failed, please connect the administrator.'
+POST_SUCCESSFUL = 'Data create successfully.'
+PUT_SUCCESSFUL = 'Data update successfully.'
+DELETE_SUCCESSFUL = 'Data delete successfully.'
 #########################################
 # API token related define
 #########################################
@@ -57,7 +61,7 @@ USERNAME = 'username'
 PASSWORD = 'password'
 TOKEN_EXPIRED_MSG = gettext('Token has expired.')
 TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = 'There was no token found for current user.'
-NO_USERNAME_OR_PASSWORD_FONUD_ERROR = "No username or password found, username is %s, password is %s."
+NO_USERNAME_OR_PASSWORD_FONUD_ERROR = "No username or password found"
 LOGIN_FAILED_ERROR = "Login failed with incorrect username %s or password %s."
 REFRESH_EXPIRED = "Refresh has expired."
 ORIG_IAT_REQUIRED = "orig_iat field is required."
@@ -65,7 +69,7 @@ USERNAME_INACTIVE_ERROR = "Username %s is inactive."
 LOGIN_SUCCESSFUL = "Login successful with username %s and password %s."
 NO_USERNAME_OR_PASSWORD = "No user or password found."
 USER_AND_PASSWD_INCORRECT = "User or password is incorrect."
-USER_DISABLED = "User is disabled."
+USER_DISABLED = "User is inactive."
 USER_LOGOUT_SUCCESSFUL = "User logout successful."
 #########################################
 # Action Policy Related define
@@ -106,6 +110,7 @@ OSTYPE_EXIST_IN_SCHEDULE = 'OSTYPE_EXIST_IN_SCHEDULE'
 DEVICE_GROUP_NOT_EXIST = 'Current device group is not exist in current system.'
 DEVICE_GROUP_NOT_EXIST_IN_SCHEDULE = gettext('Current device group is not exist in Schedule Table.')
 DATA_TABLE_NOT_EXIST_IN_SYSTEM = gettext('Current data table is not exist in system.')
+CSV_PATH_NOT_EXIST = gettext('CSV path is not exist.')
 #########################################
 # Collection Policy Related define
 #########################################
