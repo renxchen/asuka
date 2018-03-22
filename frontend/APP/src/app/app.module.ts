@@ -10,6 +10,7 @@ import { SharedModule } from './sharedModule/shared.module';
 import { ModalModule, BsDatepickerModule, TimepickerModule} from 'ngx-bootstrap';
 import { AppComponent } from './app.component';
 import { HClientModule } from '../components/utils/httpClient.module';
+import { StepsModule } from '../components/steps/steps.module';
 import { ValidationModule } from '../components/validation/validation.module';
 import { BreadCrumbModule } from '../components/breadCrumb/bread-crumb.module';
 import { ModModule } from '../components/modal/modal.module';
@@ -47,6 +48,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         appRouting,
         SharedModule,
         HClientModule,
+        StepsModule,
         BreadCrumbModule,
         DeviceModule,
         CPViewComponentModule,
