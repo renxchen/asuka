@@ -214,13 +214,18 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                                 });
                             } else {
                                 // check this cp occupation
-                                if (msg && msg === 'POLICY_GROUP_EXIST_IN_SCHEDULE') {
-                                    this.modalMsg = 'Can not been delete when policy group exits in schedule';
-                                    this.closeMsg = 'close';
+                                if (msg) {
+                                    this.modalMsg = msg;
+                                    this.closeMsg = '閉じる';
                                     _t.showAlertModal(this.modalMsg, this.closeMsg);
-                                } else {
-                                    alert(msg);
                                 }
+                                // if (msg && msg === 'COLL_POLICY_GROUP_EXIST_IN_SCHEDULE') {
+                                //     this.modalMsg = 'Can not been delete when policy group exits in schedule';
+                                //     this.closeMsg = '閉じる';
+                                //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                // } else {
+                                //     alert(msg);
+                                // }
                             }
                         });
                 }
