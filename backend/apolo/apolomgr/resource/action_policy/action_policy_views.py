@@ -565,7 +565,6 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             transaction.rollback()
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
-            self.logger.error(e)
             return exception_handler(e)
 
     def data_generate_critical(self):
@@ -1056,7 +1055,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             if result_in_trigger[0].columnA:
                 column_a = DataTable.objects.get(table_id=int(result_in_trigger[0].columnA)).name
                 device_group_a = DataTable.objects.get(table_id=int(result_in_trigger[0].columnA)).groups.name
-                device_group_a_id = DataTable.objects.get(table_id=int(result_in_trigger[0].columnA)).groups
+                device_group_a_id = DataTable.objects.get(table_id=int(result_in_trigger[0].columnA)).groups.group_id
                 coll_policy_group_a = \
                     DataTable.objects.filter(table_id=int(result_in_trigger[0].columnA)).values('policy_group__name')[
                         0]['policy_group__name']
@@ -1065,8 +1064,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                         'policy_group']
             if result_in_trigger[0].columnB:
                 column_b = DataTable.objects.get(table_id=int(result_in_trigger[0].columnB)).name
-                device_group_b = DataTable.objects.get(table_id=int(result_in_trigger[0].columnB)).groups.name
-                device_group_b_id = DataTable.objects.get(table_id=int(result_in_trigger[0].columnB)).groups
+                # device_group_b = DataTable.objects.get(table_id=int(result_in_trigger[0].columnB)).groups.name
+                # device_group_b_id = DataTable.objects.get(table_id=int(result_in_trigger[0].columnB)).groups.group_id
                 coll_policy_group_b = \
                     DataTable.objects.filter(table_id=int(result_in_trigger[0].columnB)).values('policy_group__name')[
                         0]['policy_group__name']
@@ -1074,8 +1073,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     DataTable.objects.filter(table_id=int(result_in_trigger[0].columnB)).values('policy_group')[0][
                         'policy_group']
             data_dic['column'] = str(column_a) + ',' + str(column_b)
-            data_dic['device_group'] = str(device_group_a) + ',' + str(device_group_b)
-            data_dic['device_group_id'] = str(device_group_a_id) + ',' + str(device_group_b_id)
+            data_dic['device_group'] = str(device_group_a)
+            data_dic['device_group_id'] = str(device_group_a_id)
             data_dic['coll_policy_group'] = str(coll_policy_group_a) + ',' + str(coll_policy_group_b)
             data_dic['coll_policy_group_id'] = str(coll_policy_group_a_id) + ',' + str(coll_policy_group_b_id)
             for per_priority in priority_dic:
@@ -1234,7 +1233,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         return data
 
-    def create_trigger_related(self):
+    def create_trigger_related(self, method='POST'):
         """!@brief
         Insert data into triggers table, actions table and trigger_detail table
         @pre call from POST or PUT method
@@ -1249,7 +1248,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     data = {
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLUMN_A_OR_COLUMN_B_NOT_EXIST % (self.column_a, self.column_b)
+                            constants.MESSAGE: constants.COLUMN_A_OR_COLUMN_B_NOT_EXIST
                         }
                     }
                     return api_return(data=data)
@@ -1289,7 +1288,9 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     serializer_action = ActionsSerializer(data=action_data, many=True)
                     if serializer_action.is_valid(Exception):
                         serializer_action.save()
-
+                    msg = constants.POST_SUCCESSFUL
+                    if method == 'PUT':
+                        msg = constants.PUT_SUCCESSFUL
                     data = {
                         'data': {
                             'trigger': serializer_trigger.data,
@@ -1299,7 +1300,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
+                            constants.MESSAGE: msg
                         }
                     }
                     return data
@@ -1307,7 +1308,6 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             transaction.rollback()
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
-            self.logger.error(e)
             return exception_handler(e)
 
     def get(self):
@@ -1333,7 +1333,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         """
         try:
             with transaction.atomic():
-                data = self.create_trigger_related()
+                data = self.create_trigger_related(method='POST')
                 return api_return(data=data)
         except Exception, e:
             transaction.rollback()
@@ -1352,7 +1352,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     # delete old trigger, trigger_detail, action data
                     self.delete_trigger_related(self.action_policy_name)
                     # create new trigger, trigger_detail, action data
-                    data = self.create_trigger_related()
+                    data = self.create_trigger_related(method='PUT')
                     return api_return(data=data)
         except Exception, e:
             transaction.rollback()
@@ -1372,7 +1372,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.TRUE,
-                        constants.MESSAGE: constants.SUCCESS
+                        constants.MESSAGE: constants.DELETE_SUCCESSFUL
                     }
                 }
                 return api_return(data=data)
