@@ -45,7 +45,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         self.ostype = views_helper.get_request_value(self.request, 'ostype_name', method)
         self.execute_ing = True
         # verify whether is executing status
-        self.get_execute_ing()
+        # self.get_execute_ing()
 
     def get_execute_ing(self):
         """!@brief
@@ -208,6 +208,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         @return verify_result: the status of each column
         """
         try:
+            self.get_execute_ing()
             if id is not '':
                 queryset_pg = PolicysGroups.objects.filter(**{'policy_group_id': id})
                 verify_result = {
@@ -358,6 +359,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         @return data: the status of whether modified successful and the modified data
         """
         try:
+            self.get_execute_ing()
             kwargs = {'policy_group_id': self.id}
             cps = views_helper.get_request_value(self.request, 'cps', 'BODY')
             with transaction.atomic():
@@ -445,6 +447,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         @return data: the status of whether deleted successful
         """
         try:
+            self.get_execute_ing()
             with transaction.atomic():
                 kwargs = {'policy_group_id': self.id}
                 verify_result = self.get_schedule(**kwargs)
