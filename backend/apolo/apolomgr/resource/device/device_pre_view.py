@@ -121,11 +121,11 @@ class DevicePreViewSet(APIView):
         for x in response.get('output'):
             if 'message' in x.keys():
                 if x.get('message').find('timeout') > -1:
-                    return 'fali', device_id
+                    return 'Fali', device_id
                 else:
-                    return 'success', device_id
+                    return 'Success', device_id
             else:
-                return 'success', device_id
+                return 'Success', device_id
 
     def get(self):
         """@brief
