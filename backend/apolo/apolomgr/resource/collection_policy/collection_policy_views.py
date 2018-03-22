@@ -341,7 +341,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLLECTION_POLICY_NOT_EXIST % self.id
+                            constants.MESSAGE: constants.COLLECTION_POLICY_NOT_EXIST
                         }
                     }
                     return api_return(data=data)
@@ -380,13 +380,13 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 pg = self.get_cp_from_policys_groups(**{'policy_id': self.id})
                 if self.execute_ing:
                     data = {
-                        'data': {
-                            'data': constants.COLLECTION_POLICY_IS_EXECUTING % self.id
-                        },
+                        # 'data': {
+                        #     'data': constants.COLLECTION_POLICY_IS_EXECUTING
+                        # },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLL_POLICY_EXIST_IN_POLICYS_GROUPS
+                            constants.MESSAGE: constants.COLLECTION_POLICY_IS_EXECUTING
                         }
                     }
                     return api_return(data=data)
@@ -395,7 +395,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLLECTION_POLICY_NOT_EXIST % self.id
+                            constants.MESSAGE: constants.COLLECTION_POLICY_NOT_EXIST
                         }
                     }
                     return api_return(data=data)

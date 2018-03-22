@@ -118,7 +118,7 @@ class Auth(object):
                 return api_return(data=data)
             user_obj = auth.authenticate(username=self.username, password=self.password)
             if not user_obj:
-                self.logger.info(constants.LOGIN_FAILED_ERROR % (self.username, self.password))  ###Logger###
+                self.logger.info(constants.LOGIN_FAILED_ERROR)  ###Logger###
                 data = {
                     constants.STATUS: {
                         constants.STATUS: constants.FALSE,
@@ -127,7 +127,7 @@ class Auth(object):
                 }
                 return api_return(data=data)
             elif not user_obj.is_active:
-                self.logger.info(constants.USERNAME_INACTIVE_ERROR % self.username)  ###Logger###
+                self.logger.info(constants.USERNAME_INACTIVE_ERROR)  ###Logger###
                 data = {
                     constants.STATUS: {
                         constants.STATUS: constants.FALSE,
@@ -136,7 +136,7 @@ class Auth(object):
                 }
                 return api_return(data=data)
             else:
-                self.logger.info(constants.LOGIN_SUCCESSFUL % (self.username, self.password))  ###Logger###
+                self.logger.info(constants.LOGIN_SUCCESSFUL)  ###Logger###
                 auth.login(self.request, user_obj)
                 if user_obj.is_superuser:
                     role = constants.SUPERUSER
