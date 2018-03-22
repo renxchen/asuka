@@ -76,7 +76,7 @@ class WorkerBase(Thread):
                     start_time = time.strftime('%Y-%m-%d %H:%M:%S')
                     # global counter_loc
                     # if counter_lock.acquire():
-                    result = self.handler(task_id, task, self.logger,data)
+                    result = self.handler(task_id, task, data,self.logger)
                         # counter_lock.release()
                     end_time = time.strftime('%Y-%m-%d %H:%M:%S')
                     result.update(dict(start_time=start_time, end_time=end_time))

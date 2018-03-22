@@ -200,19 +200,19 @@ def __merge_snmp(item, deviceinfo_dict):
 
     interval_key_dict={
   
-        str(24*60*60):["oid_1day","items_1day"],
-        str(60*60):["oid_1hour","items_1hour"],
-        str(15*60):["oid_15min","items_15min"],
-        str(5*60):["oid_5min","items_5min"],
-        str(60):["oid_1min","items_1min"]
+        str(24*60*60):["element_1day","items_1day"],
+        str(60*60):["element_1hour","items_1hour"],
+        str(15*60):["element_15min","items_15min"],
+        str(5*60):["element_5min","items_5min"],
+        str(60):["element_1min","items_1min"]
     }
 
     if str(item['device__device_id']) not in deviceinfo_dict:
-        deviceinfo_dict['oid_1day']=[]
-        deviceinfo_dict['oid_1hour']=[]
-        deviceinfo_dict['oid_15min']=[]
-        deviceinfo_dict['oid_5min']=[]
-        deviceinfo_dict['oid_1min']=[]
+        #deviceinfo_dict['element_1day']=[]
+        #deviceinfo_dict['element_1hour']=[]
+        #deviceinfo_dict['element_15min']=[]
+        #deviceinfo_dict['element_5min']=[]
+        #deviceinfo_dict['element_1min']=[]
         deviceinfo_dict['device_id'] = str(item['device__device_id'])
         deviceinfo_dict['ip'] = item['device__ip']
         deviceinfo_dict['hostname'] = item['device__hostname']
@@ -223,6 +223,7 @@ def __merge_snmp(item, deviceinfo_dict):
         deviceinfo_dict['items_15min'] = []
         deviceinfo_dict['items_5min'] = []
         deviceinfo_dict['items_1min'] = []
+       
 
     exec_interval=item['policys_groups__exec_interval']
     #exec_interval=300
@@ -232,6 +233,7 @@ def __merge_snmp(item, deviceinfo_dict):
     item_key = interval_key_dict[str(exec_interval)][1]
     if oid not in deviceinfo_dict[oid_key]:
         deviceinfo_dict[oid_key].append(oid)
+        
 
     deviceinfo_dict[item_key].append( dict(
             item_id=item['item_id'],
@@ -246,18 +248,18 @@ def __merge_snmp(item, deviceinfo_dict):
 def __merge_cli(item, deviceinfo_dict):
 
     interval_key_dict={
-        str(24*60*60):["cmd_1day","items_1day"],
-        str(60*60):["cmd_1hour","items_1hour"],
-        str(15*60):["cmd_15min","items_15min"],
-        str(5*60):["cmd_5min","items_5min"]
+        str(24*60*60):["element_1day","items_1day"],
+        str(60*60):["element_1hour","items_1hour"],
+        str(15*60):["element_15min","items_15min"],
+        str(5*60):["element_5min","items_5min"]
         
     }
 
     if str(item['device__device_id']) not in deviceinfo_dict:
-        deviceinfo_dict['cmd_1day']=[]
-        deviceinfo_dict['cmd_1hour']=[]
-        deviceinfo_dict['cmd_15min']=[]
-        deviceinfo_dict['cmd_5min']=[]
+        deviceinfo_dict['element_1day']=[]
+        deviceinfo_dict['element_1hour']=[]
+        deviceinfo_dict['element_15min']=[]
+        deviceinfo_dict['element_5min']=[]
         deviceinfo_dict['device_id'] = str(item['device__device_id'])
         #deviceinfo_dict['ip'] = item['device__ip']
         deviceinfo_dict['ip'] = "10.71.244.135"

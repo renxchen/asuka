@@ -92,27 +92,20 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        'ENGINE': 'PyMysqlPool.mysql.connector.django',
-        # 'ENGINE': 'django.db.backends.sqlite3',
+        #'ENGINE': 'PyMysqlPool.mysql.connector.django',
+        'ENGINE': 'django.db.backends.mysql',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         # 'NAME': "tmp",
         'NAME': "apolo",
         # 'NAME': "newwebday2",
         # 'HOST': '10.79.148.225',
-        'HOST': '127.0.0.1',
-        # 'HOST': '10.71.244.134',
+        #'HOST': '127.0.0.1',
+         'HOST': '10.71.244.134',
         # "USER": "webday2",
         "USER": "root",
-        "PASSWORD": "1234",
-        # "PASSWORD": "apolo",
-        "OPTIONS": {
-            'autocommit': True,
-            'pool': {
-                "use": 0,
-                "size": 100,
-                "name": "local",
-            }
-        }
+        #"PASSWORD": "1234",
+         "PASSWORD": "apolo"
+     
     }
 }
 

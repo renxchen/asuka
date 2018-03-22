@@ -8,27 +8,34 @@ from cisco_cli_helper import CiscoCLI
 from worker_base import WorkerBase, main
 import json
 
+
 class CiscoCliWorker(WorkerBase):
     name = 'CiscoCli'        
     channels = ('cli',)
 
-    def handler(self, task_id, task, logger,message):
+    def handler(self, task_id, task, data,logger):
         device_info = task['device_info']
         commands = []
         #"cmd_5min": ["show interface","show clock"],   
         #"cmd_15min":["show version","show clock"],
         #"cmd_1hour":["show version"],
         #"cmd_1day":["show version"],
-        for key in ["cmd_1day","cmd_1hour","cmd_15min","cmd_5min"]:
+        command_dict = {}
+        for key in ["items_1day","items_1hour","items_15min","items_5min"]:
             if key in device_info:
-                if not commands:
-                    commands.extend(device_info[key])
-                else:
-                    for cmd in device_info[key]:
-                        if cmd not in commands:
-                            commands.append(cmd)
+                for item in device_info[key]:
+                    item_id = item["item_id"]
+                    command = item["command"]
+                    
+                    if command in command_dict:
+                        command_dict[command].append(item_id)
+                    else:
+                        command_dict[command] = [item_id]
 
-        print commands
+                    if command not in commands:
+                        commands.append(command)
+
+        #print commands
         #commands = task['commands']
 
         given_name = device_info.get('hostname')
@@ -46,12 +53,22 @@ class CiscoCliWorker(WorkerBase):
             else:
                 status = 'success'
                 message = ''
-            for cmd in commands:
+            for index,cmd in enumerate(commands):
                 cmd_out = worker.execute(cmd)
-                #output.append(cmd_out)
-                #cmd_out.update("result_type","command")
-                cmd_out.update(dict(result_type="command_result", task_id=task_id))
+                if index == 0:
+                    previous_element = -1
+                else:
+                    previous_element = ""
+                
+                if index == len(commands)-1:
+                    next_element = -1
+                else:
+                    next_element = commands[index]
+
+                cmd_out.update(dict(result_type="element_result",next_element=commands[index],pre_element=previous_element,task_id=task_id,item_ids=command_dict[cmd]))
                 self.zmq_push.send(json.dumps(cmd_out))
+
+
         except Exception as e:
             status = 'fail'
             message = str(e)

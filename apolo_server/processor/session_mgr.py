@@ -8,6 +8,7 @@ Should be implemented using redis
 from threading import Thread
 import time
 from helper import get_logger
+import Queue
 
 
 class SessionManager(Thread):
@@ -15,6 +16,9 @@ class SessionManager(Thread):
     polling_interval = 60
     absolute_timeout = 3600
     after_read_timeout = 300
+    def __init__(self,zmq_publish):
+        Thread.__init__(self)
+        self.zmq_publish = zmq_publish
 
     def put(self, k, v):
         self.data_set[k] = v
@@ -32,22 +36,46 @@ class SessionManager(Thread):
         except KeyError:
             pass
 
-    #def get_by_device
+    def set_parser_queue(self,task_id,value):
+
+        data = self.data_set.get(task_id)
+        if "parser_queue" not in data:
+            data.update(dict(parser_queue=Queue.Queue(),parser_status="queue"))
+        
+        data["parser_queue"].append(value)
+
+
 
     def update_command_result(self,task_id,result):
         data = self.data_set.get(task_id)
-        if "commands_result" not in data:
-            data.update(dict(commands_result={}))
-        command = result["command"]
+        
+        channel = data["channel"]
+        if "element_result" not in data:
+                data.update(dict(element_result={}))
 
-        data.get("commands_result")[command] = result
+        if channel == "cli":
+            
+            command = result["command"]
+            data.get("element_result")[command] = result
+        else:
+            clock = result["clock"]
+            data.get("element_result")[command] = result
+
+
+    def update_parser_result(self,task_id,result):
+        data = self.data_set.get(task_id)
+        if "parser_result" not in data:
+            data.update(dict(parser_result=[]))
+
+        data.get("parser_result").append(result)
+        data["parser_status"] == "queue"
 
 
     def get(self, k):
         data = self.data_set.get(k)
-        if data:
-            data['timer'] = time.time()
-            data['read'] = True
+        #if data:
+        #    data['timer'] = time.time()
+        #    data['read'] = True
         return data
 
     def set_read(self, k):
@@ -87,9 +115,30 @@ class SessionManager(Thread):
             time.sleep(self.polling_interval)
             for k in self.data_set.keys():
                 v = self.data_set[k]
-                if time.time() - v['timer'] > self.absolute_timeout:
-                    del self.data_set[k]
-                    logger.info('Task %s timeout, cleared' % k)
-                elif v['read'] and time.time() - v['timer'] > self.after_read_timeout:
-                    del self.data_set[k]
-                    logger.info('Task %s timeout, cleared' % k)
+                status = v["status"] 
+                parser_queue = v["parser_queue"]
+                if v["parser_status"] == "queue":
+                    if not parser_queue.empty():
+                        data = parser_queue.pop()
+                        v["parser_status"]="runnning"
+                        self.zmq_publish.send_string(data["publish_string"])
+                    
+                    if parser_queue.empty() and status == "coll_finish":
+                        v["status"] == "all_finish"
+                
+                
+                
+
+
+
+                #if time.time() - v['timer'] > self.absolute_timeout:
+                #    del self.data_set[k]
+                #    logger.info('Task %s timeout, cleared' % k)
+                #elif v['read'] and time.time() - v['timer'] > self.after_read_timeout:
+                #    del self.data_set[k]
+                #    logger.info('Task %s timeout, cleared' % k)
+
+
+
+
+

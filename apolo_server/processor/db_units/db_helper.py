@@ -155,7 +155,7 @@ class ParserDbHelp(DbHelp):
     def __init__(self):
         pass
 
-    def bulk_save_result(self, results, item_type):
+    def bulk_save_result(self, results, clock,item_type):
         data = {}
         for result in results:
             value_type = result['value_type']
@@ -167,14 +167,14 @@ class ParserDbHelp(DbHelp):
                 data[keys] = []
             data[keys].append(result)
         if item_type == CommonConstants.CLI_TYPE_CODE:
-            self.__save_cli_bulk(data)
+            self.__save_cli_bulk(data,clock)
         else:
-            self.__save_snmp_bulk(data)
+            self.__save_snmp_bulk(data,clock)
 
-    def __save_cli_bulk(self, result):
-        base_time = time.time()
-        clock = int(base_time)
-        ns = (int(round(base_time * 1000)))
+    def __save_cli_bulk(self, result,clock):
+        #base_time = time.time()
+        _clock = int(clock)
+        _ns = (int(round(clock * 1000)))
         for table in result:
             tmp = []
             for data in result[table]:
@@ -185,8 +185,8 @@ class ParserDbHelp(DbHelp):
                 item_id = data['item_id']
                 tmp.append(table(
                     value=value[0],
-                    ns=clock,
-                    clock=data['task_timestamp'],
+                    ns=_ns,
+                    clock=_clock,
                     item_id=item_id,
                     block_path=block_path
                 ))
@@ -194,22 +194,22 @@ class ParserDbHelp(DbHelp):
             table.objects.bulk_create(tmp)
         return True
 
-    def __save_snmp_bulk(self, result):
-        base_time = time.time()
-        clock = int(base_time)
-        ns = (int(round(base_time * 1000)))
+    def __save_snmp_bulk(self, result,clock):
+        #base_time = time.time()
+        _clock = int(clock)
+        _ns = (int(round(clock * 1000)))
         for table in result:
             tmp = []
             for data in result[table]:
-                output = data['output']
+                output = data['value']
                 item_id = data['item_id']
                 mibs = output.keys()[0]
                 value1 = output[mibs][0]
                 value2 = output[mibs][1]
                 tmp.append(table(
                     value=value1 if value1 else value2,
-                    ns=clock,
-                    clock=data['task_timestamp'],
+                    ns=_ns,
+                    clock=_clock,
                     item_id=item_id
                 ))
             table.objects.bulk_create(tmp)

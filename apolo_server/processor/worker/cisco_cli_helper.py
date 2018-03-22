@@ -10,6 +10,7 @@ from time import strftime
 
 import pexpect
 import re
+import time
 
 
 def replace_spec_character(after_str, line, others_str=[], is_utf_8=True):
@@ -131,6 +132,7 @@ class CiscoCLI(object):
     def execute(self, command):
 
         timestamp = strftime('%Y-%m-%d %H:%M:%S')
+        clock = time.time()
         expect_pattern = self.expect_pattern
         child = self.child
         res = []
@@ -155,7 +157,7 @@ class CiscoCLI(object):
         else:
             status = 'Ok'
         
-        return dict(command=command, status=status, output=output, timestamp=timestamp)
+        return dict(command=command, status=status, output=output, timestamp=timestamp,clock=str(clock))
 
     def close(self):
         try:
