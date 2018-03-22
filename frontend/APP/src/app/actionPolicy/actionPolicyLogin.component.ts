@@ -27,6 +27,23 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
     isNew: boolean = true;
 
     selectingColumn:string;
+    columnModel: any = [
+        {label: 'table_id', hidden: true, name: 'table_id'},
+        {label: 'policy_id', hidden: true, name: 'policy_id'},
+        {label: 'コレクションポリシー名',  name: 'policy_name', width: 30, align: 'center'},
+        {label: 'テーブル名',  name: 'name', width: 30, align: 'center'},
+        {label: '概要', name: 'desc', width: 30, align: 'center'},
+
+    ];
+    columnSelected: number;
+
+    historyDataModel: any = [
+        {label: 'デバイス名',  name: 'hostname', width: 30, align: 'center'},
+        {label: 'Time Stamp',  name: 'date', width: 30, align: 'center'},
+        {label: 'Path',  name: 'path', width: 30, align: 'center'},
+        {label: 'value', name: 'value', width: 30, align: 'center'},
+
+    ];
 
     editingAction: string;
     actionSelectTitle: string;
@@ -193,28 +210,39 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
     }
 
     initForExist(name){
-        let url = 'api_action_policy/?name='+name;
+        let url = '/api_action_policy/?name='+name;
         this.httpClient
             .toJson(this.httpClient.get(url))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    if (res['data']) {
-                        this.initVariable(res['data']);
-                    }
-                } else {
-                    if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
-                        // jump to view
-                    }
-                }
+                this.initVariable(res);
+                // if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                //     if (res['data']) {
+                //         this.initVariable(res['data']);
+                //     }
+                // } else {
+                //     if (res['status'] && res['status']['message']) {
+                //         alert(res['status']['message']);
+                //         // jump to view
+                //     }
+                // }
         });
     }
 
     initVariable(data){
-        this.actionPolicyName = data['name'];
-        this.actionPolicyDescription = data['desc'];
+        console.log(data);
+        let commonData = data['common_data'];
+        this.actionPolicyName = commonData['name'];
+        this.actionPolicyDescription = commonData['desc'];
 
-        if (data['trigger_type']){
+        if (data['critical']){
+
+        }
+
+        if (data['major']){
+
+        }
+
+        if (data['minor']){
 
         }
     }
@@ -235,12 +263,104 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
 
     selectColumn(template, isWhich){
         this.selectingColumn = isWhich;
-        this.drawColumnTable();
         this.modalRef = this.modalService.show(template, this.modalConfig);
+        this.drawColumnTable();
     }
 
     drawColumnTable(){
         let _this = this;
+        $('#columnTable').jqGrid({
+            url: '/v1/api_column/',
+            datatype: 'JSON',
+            // datatype: 'local',
+            mtype: 'get',
+            colModel: _this.columnModel,
+            // postData: { '': '' },
+            // data: _this.testData,
+            // viewrecords: true,
+            onSelectRow: function(rowid,status,e) {
+              let table_id = e.target.parentElement.cells[0].innerHTML;
+              _this.columnSelected = table_id;
+              let policy_id = e.target.parentElement.cells[1].innerHTML;
+              _this.drawHistoryDataTable(table_id, policy_id);
+            },
+            loadComplete: function() {
+                // _this.showDataTable();
+                // _this.renderColor();
+            },
+            // rowNum: 10,
+            // rowList: [ 10, 20, 30],
+            autowidth: true,
+
+            // beforeSelectRow: function(rowid, e) { return false; },
+            // height: 230,
+            // pager: '#actionPolicyPager',
+            jsonReader: {
+                root: 'data.data',
+                page: 'current_page_num',
+                total: 'num_page',
+                records: 'total_num',
+                userData: 'status',
+                repeatitems: false,
+            },
+        });
+
+    }
+
+    drawHistoryDataTable(table_id, policy_id){
+        console.log(table_id, policy_id);
+        let _this = this;
+        $('#historyDataTable').jqGrid({
+            url: '/v1/api_column/',
+            datatype: 'JSON',
+            // datatype: 'local',
+            mtype: 'get',
+            colModel: _this.historyDataModel,
+            // postData: { 'id': table_id,  'policy_id': policy_id},
+            // data: _this.testData,
+            // viewrecords: true,
+            // onSelectRow: function(rowid,status,e) {
+            // },
+            loadComplete: function(res) {
+                _this.drawHistoryDataTableLastTitle(res);
+                _this.drawPolicyTree(res);
+            },
+            // rowNum: 10,
+            // rowList: [ 10, 20, 30],
+            autowidth: true,
+            // beforeSelectRow: function(rowid, e) { return false; },
+            // height: 230,
+            // pager: '#actionPolicyPager',
+            jsonReader: {
+                root: 'data.data_history.data.data',
+                page: 'current_page_num',
+                total: 'num_page',
+                records: 'total_num',
+                userData: 'status',
+                repeatitems: false,
+            },
+        }).setGridParam({postData: { 'id': table_id,  'policy_id': policy_id}}).trigger("reloadGrid");
+    }
+
+    drawHistoryDataTableLastTitle(res){
+        let title = res.data;
+        console.log(title);
+        // $('#historyDataTable').jqGrid('setLabel', 'valid_status', title);
+    }
+
+    drawPolicyTree(res){
+        let _t = this;
+        let data = res['data'][''];
+        $('#policyTree').jstree({
+            'core': {
+                'check_callback': false,
+                'data': data,
+            },
+            // 'plugins': ['state'],
+            // 'state': { 'opened': true },
+            'expand_selected_onload': true,
+        });
+
 
     }
 

@@ -57,7 +57,7 @@
                     <input class="form-control" type="text" readonly="readonly" [(ngModel)]="columnA">
                 </div>
                 <div class="col-sm-2" style="padding-right: 0px">
-                    <button class="btn btn-primary btn-sm pull-right">select</button>
+                    <button class="btn btn-primary btn-sm pull-right" (click)="selectColumn(columnTable, 'column_a')">select</button>
                 </div>
             </div>
         </div>
@@ -71,7 +71,7 @@
                     <input class="form-control" type="text" readonly="readonly" [(ngModel)]="columnB">
                 </div>
                 <div class="col-sm-2" style="padding-right: 0px">
-                    <button class="btn btn-primary btn-sm pull-right">select</button>
+                    <button class="btn btn-primary btn-sm pull-right" (click)="selectColumn(columnTable, 'column_b')">select</button>
                 </div>
             </div>
         </div>
@@ -214,6 +214,8 @@
     </div>
 </div>
 
+
+
 <ng-template #columnTable>
     <div class="modal-header" style="padding-bottom: 30px;">
         <h3 class="modal-title pull-left">カラム選択</h3>
@@ -222,7 +224,15 @@
         </button>
     </div>
     <div class="modal-body form-horizontal" style="padding: 15px 5px 40px 5px;">
-        <table id="columnTable"></table>
+        <div>
+            <table id='columnTable'></table>
+        </div>
+        <div>
+            <table id="historyDataTable"></table>
+        </div>
+        <div>
+            <div id="policyTree" class="jstree"></div>
+        </div>
     </div>
 </ng-template>
 
