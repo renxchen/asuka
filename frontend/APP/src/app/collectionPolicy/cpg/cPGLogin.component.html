@@ -73,6 +73,7 @@
                         class="form-control" 
                         id="osType" 
                         name="selectedOsType"
+                        (change)="ostypeChange(selectedOsType)"
                         [(ngModel)]="selectedOsType" 
                     >
                         <option 
@@ -109,10 +110,11 @@
                 <label 
                     for="cpName" 
                     class="col-sm-4 control-label"
+                    [ngClass]="{'text-warning': !addCPFlg||!sameCPFlg}"
                 >
                     コレクションポリシー名:
                 </label>
-                <div class="col-sm-7">
+                <div class="col-sm-7" [ngClass]="{'has-warning': !addCPFlg||!sameCPFlg}">
                     <select 
                         class="form-control" 
                         id="selCPName" 
@@ -137,10 +139,11 @@
                 <label 
                     for="execInterval" 
                     class="col-sm-4 control-label"
+                    [ngClass]="{'text-warning': !addExecFlg}"
                 >
                     取得間隔:
                 </label>
-                <div class="col-sm-7">
+                <div class="col-sm-7" [ngClass]="{'has-warning': !addExecFlg}">
                     <select 
                         class="form-control" 
                         id="execInterval" 
@@ -216,13 +219,22 @@
                     class="col-sm-12 text-warning" 
                     *ngIf="!nameNotNull"
                 >
-                コレクションポリシー名は必須入力です。
-            </div>
+                    コレクションポリシー名は必須入力です。
+                </div>
                 <div 
                     class="col-sm-12 text-warning" 
                     *ngIf="!nameNotNull&&!nameFlg"
                 >
                     コレクションポリシー名は半角英数字のみで入力してください。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf="!addCPFlg">
+                    Please choose collection policy first.
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf="!addExecFlg">
+                    Please choose  time interval first.
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf="!sameCPFlg">
+                    Can not add the same collection policy twice.
                 </div>
             </div> 
         </form>
