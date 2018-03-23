@@ -97,12 +97,12 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
     public doCheck(): boolean {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
 
         this.cmdNotNull = Validator.notNullCheck(this.cliCommand);
         if (this.cmdNotNull) {
-            this.cmdFlg = Validator.noCommsymbol(this.cliCommand);
+            this.cmdFlg = Validator.halfWidthReg(this.cliCommand);
         }
         if (this.nameNotNull && this.nameFlg
             && this.cmdNotNull && this.cmdFlg) {

@@ -41,6 +41,9 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
     // selExpiDurantion: any = '1';
     cpsTem: any = {};
     cpList: any = [];
+    addCPFlg: Boolean = true;
+    addExecFlg: Boolean = true;
+    sameCPFlg: Boolean = true;
     // bsModalRef: any;
     constructor(
         private httpClient: HttpClientComponent,
@@ -55,7 +58,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.selExecInterval = 'null';
         // this.selExpiDurantion = '1';
         this.getOsType();
-        this.getCPNames();
+        // this.getCPNames();
     }
     ngAfterViewInit() {
         setTimeout(() => {
@@ -68,24 +71,29 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    if (res['data'] && res['data'].length > 0) {
-                        this.osType = res['data'];
-                        this.selectedOsType = res['data'][0]['ostypeid'].toString();
-                        // let osTypeTmp = _.clone(res['data']);
+                let status = _.get(res, 'status');
+                let msg = _.get(status, 'status');
+                let data: any = _.get(res, 'data');
+                if (status && status['status'].toLowerCase() === 'true') {
+                    if (data && data.length > 0) {
+                        this.osType = data;
+                        let osTypeTmp = _.clone(data);
+                        this.selectedOsType = data[0]['ostypeid'].toString();
+                        this.getCPNames(this.selectedOsType);
                     }
                 } else {
+                    this.getCPNames();
                     if (res['status'] && res['status']['message']) {
                         alert(res['status']['message']);
                     }
                 }
             });
     }
-    public getCPNames() {
+    public getCPNames(id?:any) {
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
-            .toJson(this.httpClient.get('/api_get_collection_policy_name/'))
+            .toJson(this.httpClient.get('/api_get_collection_policy_name/?id='))
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
@@ -131,6 +139,13 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         } else {
             this.cpNames = this.cpNamesTmp;
         }
+    }
+    public ostypeChange(selOstype: any) {
+        this.selCPName = 'null';
+        this.selExecInterval = 'null';
+        this.cpList = [];
+        $('#moreInfoTable').jqGrid('clearGridData');
+        this.getCPNames(selOstype);
     }
     public cpNamecChange(selCPName: any) {
         let _t = this;
@@ -179,11 +194,15 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         let cpList = this.cpList;
         for (let i = 0; i < cpList.length; i++) {
             if (cpList[i].policy.toString() === this.selCPName) {
-                alert('Can not add the same cp');
-                return;
+                this.sameCPFlg = false;
+                break;
+            } else {
+                this.sameCPFlg = true;
             }
         }
         if (this.selCPName !== 'null' && this.selExecInterval !== 'null') {
+            this.addCPFlg = true;
+            this.addExecFlg = true;
             let cpName = this.cpNameFomatter(this.selCPName);
             cpInfo['policy_name'] = cpName.name;
             cpInfo['exec_interval'] = this.selExecInterval;
@@ -198,10 +217,14 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             this.moreInfoTable(this.cpList);
         } else {
             if (this.selCPName === 'null') {
-                alert('cpName can not be null');
+                this.addCPFlg = false;
+            } else {
+                this.addCPFlg = true;
             }
             if (this.selExecInterval === 'null') {
-                alert('Monitor time can not be null');
+                this.addExecFlg = false;
+            } else {
+                this.addExecFlg = true;
             }
         }
     }
@@ -312,7 +335,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
     public doCheck(): boolean {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         if (this.nameNotNull && this.nameFlg) {
             return true;

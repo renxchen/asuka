@@ -17,7 +17,6 @@ import { CPGViewComponent } from './cpg/cPGView.component';
 import { CPGLoginComponent } from './cpg/cPGLogin.component';
 import { CPGDetailComponent } from './cpg/cPGDetail.component';
 import { CPGEditComponent } from './cpg/cPGEdit.component';
-import { CPGActionComponent } from './cpg/cPGAction.component';
 
 @NgModule({
     declarations: [CPViewComponent, CLICPLoginComponent,
@@ -26,7 +25,7 @@ import { CPGActionComponent } from './cpg/cPGAction.component';
         CLIDataComponent, SNMPCPLoginComponent,
         SNMPCPDetailComponent, SNMPCPEditComponent,
         CPGViewComponent, CPGLoginComponent,
-        CPGDetailComponent, CPGEditComponent, CPGActionComponent
+        CPGDetailComponent, CPGEditComponent
     ],
     imports: [FormsModule, CommonModule, SharedModule],
     exports: [],

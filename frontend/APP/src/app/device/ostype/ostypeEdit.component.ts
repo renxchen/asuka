@@ -31,6 +31,8 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
+    startRegFlg: Boolean = true;
+    endRegFlg: Boolean = true;
     regFlg: Boolean = true;
     telPromptFlg: Boolean = true;
     telPromptNotNull: Boolean = true;
@@ -59,6 +61,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             'id': this.countStart,
             'name': '',
             'startCmdFlg': false,
+            'cmdRegFlg': true
         };
         this.startCmds.push(firstStartCmd);
     }
@@ -68,6 +71,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             'id': this.countStart,
             'name': '',
             'endCmdFlg': false,
+            'cmdRegFlg': true
         };
         this.endCmds.push(firstEndCmd);
     }
@@ -133,6 +137,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             startCmdInfo = {
                 'id': i + 1,
                 'name': dataList[i],
+                'cmdRegFlg': true,
                 'startCmdFlg': (i + 1) === len ? false : true
             };
             startCmds.push(startCmdInfo);
@@ -148,6 +153,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             endCmdInfo = {
                 'id': i + 1,
                 'name': dataList[i],
+                'cmdRegFlg': true,
                 'endCmdFlg': (i + 1) === len ? false : true
             };
             endCmds.push(endCmdInfo);
@@ -174,6 +180,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         let startCmdInfo = {
             'id': this.startCmds.length + 1,
             'name': '',
+            'cmdRegFlg': true,
             'startCmdFlg': false
         };
         let id: any = startCmdInfo['id'];
@@ -201,6 +208,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         let endCmdInfo = {
             'id': this.endCmds.length + 1,
             'name': '',
+            'cmdRegFlg': true,
             'endCmdFlg': false
         };
         let id: any = endCmdInfo['id'];
@@ -252,10 +260,12 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         }
     }
     public ostypeCheck() {
+        this.startRegFlg = this.multiStartCmdRegFomatter(this.startCmds);
+        this.endRegFlg = this.multiEndCmdRegFomatter(this.endCmds);
         this.regFlg = this.multiLogsFomatter(this.logs);
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noCommsymbol(this.name);
+            this.nameFlg = Validator.fullWithoutSpecial(this.name);
         }
         this.telPromptNotNull = Validator.notNullCheck(this.telPrompt);
         if (this.telPromptNotNull) {
@@ -278,6 +288,54 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         } else {
             return false;
         }
+    }
+    // startCommandReg Check
+    public multiStartCmdRegFomatter(multiStartCmds: any) {
+        let regFlgTmp = true;
+        let uniqData: any = _.uniqBy(multiStartCmds, 'name');
+        _.remove(uniqData, function (value) {
+            return value['name'] === '';
+        });
+        let len = uniqData.length;
+        if (len > 0) {
+            for (let i = 0; i < uniqData.length; i++) {
+                if (!Validator.halfWidthReg(uniqData[i].name)) {
+                    uniqData[i].cmdRegFlg = false;
+                    regFlgTmp = false;
+                } else {
+                    uniqData[i].cmdRegFlg = true;
+                }
+            }
+            uniqData[len - 1]['startCmdFlg'] = false;
+        } else {
+            uniqData.push(this.startCmdsInit());
+        }
+        this.logs = uniqData;
+        return regFlgTmp;
+    }
+    // endCommandReg Check
+    public multiEndCmdRegFomatter(multiendCmds: any) {
+        let regFlgTmp = true;
+        let uniqData: any = _.uniqBy(multiendCmds, 'name');
+        _.remove(uniqData, function (value) {
+            return value['name'] === '';
+        });
+        let len = uniqData.length;
+        if (len > 0) {
+            for (let i = 0; i < uniqData.length; i++) {
+                if (!Validator.halfWidthReg(uniqData[i].name)) {
+                    uniqData[i].cmdRegFlg = false;
+                    regFlgTmp = false;
+                } else {
+                    uniqData[i].cmdRegFlg = true;
+                }
+            }
+            uniqData[len - 1]['endCmdFlg'] = false;
+        } else {
+            uniqData.push(this.endCmdsInit());
+        }
+        this.logs = uniqData;
+        return regFlgTmp;
     }
     public multiLogsFomatter(multiLogs: any) {
         let regFlgTmp = true;

@@ -125,11 +125,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     public blockRuleADCheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         if (this.nameNotNull && this.nameFlg
@@ -143,11 +143,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     public blockRuleBCheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         this.sLnNubFlg = Number.isInteger(this.startLnNum);
@@ -167,11 +167,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     public blockRuleCCheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrFlg) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull_A = Validator.notNullCheck(this.markString);
         this.extractKeyNotNull = Validator.notNullCheck(this.extractKey);

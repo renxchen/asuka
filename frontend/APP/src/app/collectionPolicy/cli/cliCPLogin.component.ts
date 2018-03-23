@@ -36,7 +36,7 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
             this.router.navigate(['/index/index']);
         }
         this.getOsType();
-        this.labelParentAlert();
+        // this.labelParentAlert();
     }
     ngAfterViewInit() {
         this.getOsType();
@@ -97,11 +97,11 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
     public doCheck(): boolean {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.cmdNotNull = Validator.notNullCheck(this.cliCommand);
         if (this.cmdNotNull) {
-            this.cmdFlg = Validator.noCommsymbol(this.cliCommand);
+            this.cmdFlg = Validator.halfWidthReg(this.cliCommand);
         }
         if (this.nameNotNull && this.nameFlg
             && this.cmdNotNull && this.cmdFlg) {
@@ -110,13 +110,13 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
             return false;
         }
     }
-    public labelParentAlert() {
-        let _t = this;
-        $('a[id ="labelParent"]').click(function () {
-            let r = confirm('作業中の内容は破棄されます。よろしいですか？');
-            if (r) {
-                _t.router.navigate(['/index/cpview/']);
-            }
-        });
-    }
+    // public labelParentAlert() {
+    //     let _t = this;
+    //     $('a[id ="labelParent"]').click(function () {
+    //         let r = confirm('作業中の内容は破棄されます。よろしいですか？');
+    //         if (r) {
+    //             _t.router.navigate(['/index/cpview/']);
+    //         }
+    //     });
+    // }
 }

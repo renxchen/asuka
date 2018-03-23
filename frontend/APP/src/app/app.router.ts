@@ -34,7 +34,6 @@ import { CPGViewComponent } from './collectionPolicy/cpg/cPGView.component';
 import { CPGLoginComponent } from './collectionPolicy/cpg/cPGLogin.component';
 import { CPGDetailComponent } from './collectionPolicy/cpg/cPGDetail.component';
 import { CPGEditComponent } from './collectionPolicy/cpg/cPGEdit.component';
-import { CPGActionComponent } from './collectionPolicy/cpg/cPGAction.component';
 
 // data collection
 import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
@@ -315,7 +314,6 @@ export const entryComponentList: any[] = [
     CLIDataComponent,
     CLICPEditPopComponent,
     CPGLoginComponent,
-    CPGActionComponent,
     // data
     DataCollectionLoginComponent,
     DataTableLoginComponent,
