@@ -244,15 +244,20 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                                     $('#cpTable').jqGrid().trigger('reloadGrid');
                                 });
                             } else {
-                                if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
-                                    this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
-                                    this.closeMsg = 'close';
-                                    _t.showAlertModal(this.modalMsg, this.closeMsg);
-                                } else {
-                                    if (msg) {
-                                        alert(msg);
+                                if (msg) {
+                                        this.modalMsg = msg;
+                                        this.closeMsg = '閉じる';
+                                        _t.showAlertModal(this.modalMsg, this.closeMsg);
                                     }
-                                }
+                                // if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
+                                //     this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
+                                //     this.closeMsg = '閉じる';
+                                //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                // } else {
+                                //     if (msg) {
+                                //         alert(msg);
+                                //     }
+                                // }
                             }
                         });
                 }
@@ -274,7 +279,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 { queryParams: { 'cPType': parseInt(this.cPType, 0) } });
         }
     }
-    public showAlertModal(modalMsg?: any, closeMsg?: any, data?: any) {
+    public showAlertModal(modalMsg: any, closeMsg: any) {
         /**
         * @brief show modal dialog
         * @author Dan Lv
@@ -283,6 +288,5 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
-        this.modalRef.content.data = data;
     }
 }

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { TranslateService } from '@ngx-translate/core';
-
+import * as _ from 'lodash';
 @Component({
     selector: 'login',
     templateUrl: 'login.component.html',
@@ -17,8 +17,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
         public httpClient: HttpClientComponent,
         public router: Router,
         private translate: TranslateService) {
-            translate.setDefaultLang('ja');
-        }
+        translate.setDefaultLang('ja');
+    }
     ngOnInit() {
         localStorage.setItem('requestFailed', '');
     }
@@ -37,21 +37,21 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 .httpClient
                 .toJson(this.httpClient.post(loginUrl, { 'username': this.username, 'password': this.password }))
                 .subscribe(res => {
-                    if (res['status']) {
-                        let status = res['status'];
-                        if (status['status'] && status['status'].toLowerCase() === 'true') {
-                            if (localStorage.getItem('sessionTimeOut')) {
-                                localStorage.removeItem('sessionTimeOut');
-                            }
-                            if (res['username'] && res['token']) {
-                                localStorage.setItem('token', res['token']);
-                                localStorage.setItem('username', res['username']);
-                            }
-                            this.router.navigate(['/index/']);
-                        } else {
-                            alert(res['status']['message']);
+                    let status = _.get(res, 'status');
+                    let data = _.get(res, 'data');
+                    if (status && status['status'].toLowerCase() === 'true') {
+                        if (localStorage.getItem('sessionTimeOut')) {
+                            localStorage.removeItem('sessionTimeOut');
                         }
+                        if (data && _.get(data, 'username')) {
+                            localStorage.setItem('token', _.get(res, 'new_token'));
+                            // localStorage.setItem('username', _.get(data, 'username'));
+                        }
+                        this.router.navigate(['/index/']);
+                    } else {
+                        alert(_.get(status, 'message'));
                     }
+
                 });
         }
     }

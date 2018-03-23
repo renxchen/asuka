@@ -199,27 +199,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         }
     }
     public naviCPEdit() {
-        // this.apiPrefix = '/v1';
-        // let url = '/api_collection_policy/?policy_type=0';
-        // this.httpClient.setUrl(this.apiPrefix);
-        // this.httpClient
-        //     .toJson(this.httpClient.get(url + '?id=' + this.cPId))
-        //     .subscribe(res => {
-        //         if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
         this.router.navigate(['/index/clicpedit'], { queryParams: { 'id': this.cPId } });
-        //     } else {
-        //         // check this cp occupation, add 'occupation' feedback
-        //         if (res['status']['message'] && ['status']['message'] === 'occupation') {
-        //             this.modalMsg = 'This collection policy is being occupied';
-        //             this.closeMsg = 'close';
-        //             this.showAlertModal(this.modalMsg, this.closeMsg);
-        //         } else {
-        //             if (res['status'] && res['status']['message']) {
-        //                 alert(res['status']['message']);
-        //             }
-        //         }
-        //     }
-        // });
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
         this.modalRef = this.modalService.show(ModalComponent);
