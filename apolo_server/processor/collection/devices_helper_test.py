@@ -69,7 +69,6 @@ def get_devices(now_time, item_type):
     items = get_valid_items(now_time, items)
     #items = [item for item in items if item.get('valid_status')]
     #items = __create_test_devices(items)
-
     #ItemsDbHelp().update_last_exec_time(now_time, items)
 
     #tmp_devices = {}
@@ -200,40 +199,33 @@ def __merge_snmp(item, deviceinfo_dict):
 
     interval_key_dict={
   
-        str(24*60*60):["element_1day","items_1day"],
-        str(60*60):["element_1hour","items_1hour"],
-        str(15*60):["element_15min","items_15min"],
-        str(5*60):["element_5min","items_5min"],
-        str(60):["element_1min","items_1min"]
+        str(24*60*60):"items_1day",
+        str(60*60):"items_1hour",
+        str(15*60):"items_15min",
+        str(5*60):"items_5min",
+        str(60):"items_1min"
     }
 
     if str(item['device__device_id']) not in deviceinfo_dict:
-        #deviceinfo_dict['element_1day']=[]
-        #deviceinfo_dict['element_1hour']=[]
-        #deviceinfo_dict['element_15min']=[]
-        #deviceinfo_dict['element_5min']=[]
-        #deviceinfo_dict['element_1min']=[]
+
         deviceinfo_dict['device_id'] = str(item['device__device_id'])
-        deviceinfo_dict['ip'] = item['device__ip']
-        deviceinfo_dict['hostname'] = item['device__hostname']
+        #deviceinfo_dict['ip'] = item['device__ip']
+        deviceinfo_dict['ip'] = "10.71.244.135"
+        deviceinfo_dict['hostname'] = "crs1000_1"
+        #deviceinfo_dict['hostname'] = item['device__hostname']
         deviceinfo_dict['community'] = item['device__snmp_community']
         deviceinfo_dict['timeout'] = item['device__ostype__snmp_timeout']
-        deviceinfo_dict['items_1day'] = []
-        deviceinfo_dict['items_1hour'] = []
-        deviceinfo_dict['items_15min'] = []
-        deviceinfo_dict['items_5min'] = []
-        deviceinfo_dict['items_1min'] = []
-       
 
     exec_interval=item['policys_groups__exec_interval']
-    #exec_interval=300
     oid=item['coll_policy__snmp_oid'],
     
-    oid_key = interval_key_dict[str(exec_interval)][0]
-    item_key = interval_key_dict[str(exec_interval)][1]
-    if oid not in deviceinfo_dict[oid_key]:
-        deviceinfo_dict[oid_key].append(oid)
-        
+    #oid_key = interval_key_dict[str(exec_interval)][0]
+    item_key = interval_key_dict[str(exec_interval)]
+    #if oid not in deviceinfo_dict[oid_key]:
+    #deviceinfo_dict[oid_key].append(oid)
+    
+    if item_key not in deviceinfo_dict:
+        deviceinfo_dict[item_key] = []
 
     deviceinfo_dict[item_key].append( dict(
             item_id=item['item_id'],
@@ -251,15 +243,13 @@ def __merge_cli(item, deviceinfo_dict):
         str(24*60*60):"items_1day",
         str(60*60):"items_1hour",
         str(15*60):"items_15min",
-        str(5*60):"items_5min"
-        
+        str(5*60):"items_5min",
+        str(5*60):"items_1min"
     }
 
     if str(item['device__device_id']) not in deviceinfo_dict:
-        #deviceinfo_dict['element_1day']=[]
-        #deviceinfo_dict['element_1hour']=[]
-        #deviceinfo_dict['element_15min']=[]
-        #deviceinfo_dict['element_5min']=[]
+
+
         deviceinfo_dict['device_id'] = str(item['device__device_id'])
         #deviceinfo_dict['ip'] = item['device__ip']
         deviceinfo_dict['ip'] = "10.71.244.135"
@@ -268,10 +258,7 @@ def __merge_cli(item, deviceinfo_dict):
         deviceinfo_dict['default_commands'] = item['device__ostype__start_default_commands']
         deviceinfo_dict['timeout'] = item['device__ostype__telnet_timeout']
         deviceinfo_dict['method'] = DevicesConstants.CLI_COLLECTION_DEFAULT_METHOD
-        #deviceinfo_dict['items_1day'] = []
-        #deviceinfo_dict['items_1hour'] = []
-        #deviceinfo_dict['items_15min'] = []
-        #deviceinfo_dict['items_5min'] = []
+
     
     #exec_interval=item['policys_groups__exec_interval']
     exec_interval=300
@@ -489,7 +476,7 @@ def __create_path(rules, path):
 
 if __name__ == "__main__":
     
-    devices,device_dict = get_devices(int(time.time()), "cli")
+    devices,device_dict = get_devices(int(time.time()), "snmp")
     #print 123
     print devices
     print device_dict

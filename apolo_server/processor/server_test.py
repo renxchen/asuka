@@ -71,8 +71,11 @@ class TaskDispatcher(Thread):
                     session_mgr.update(task_id, dict(status='coll_start',coll_start_timestamp=timestamp))
                     zmq_dispatch.send_string(b'%s %s' % (task_id, json.dumps(task)))
                     logging.debug('Sent task %s to %s worker' % (task_id, channel))
-            elif channel.startwith("parser"):
-                pass
+            elif channel.startswith("parser"):
+                #session_mgr.update(task_id, dict(status='coll_start',coll_start_timestamp=timestamp))
+                task = session_mgr.get(task_id)
+                zmq_dispatch.send_string(b'%s %s' % (task_id, json.dumps(task)))
+
             else:
                 zmq_dispatch.send_string(b'')
 
@@ -168,7 +171,7 @@ class CommandApiHandler(web.RequestHandler):
                 session_mgr.put(task_id,
                                 dict(status='coll_queue',
                                     device_info=device_info,
-                                    #timer=timer,
+                                    timer=timer,
                                     coll_queue_timestamp=timestamp,
                                     #read=False,
                                     channel=channel,
@@ -230,14 +233,13 @@ def on_worker_data_in(data):
         new_channel = "parser"
         if channel == "snmp":
             find_key = result["clock"]
-            zmq_publish.send_string(b'%s task %s %s' % (new_channel,task_id,find_key))
+            #zmq_publish.send_string(b'%s task %s %s' % (new_channel,task_id,find_key))
         else:
             find_key = result["command"]
-            first_element = result["first_element"]
-            next_element = result["next_element"]
+            #first_element = result["first_element"]
+            #next_element = result["next_element"]
             
-            session_mgr.set_parser_queue(task_id,dict(element=find_key,first_element=first_element,
-                next_element=next_element,status="queue",publish_string=b'%s task %s %s' % (new_channel,task_id,find_key)))
+        session_mgr.set_parser_queue(task_id,dict(publish_string=b'%s task %s %s' % (new_channel,task_id,find_key)))
 
         logging.info('Collection element Task Done')
 
@@ -276,7 +278,7 @@ def on_worker_data_in(data):
             session_mgr.put(task_id,
                                 dict(status='coll_queue',
                                     device_info=device_info,
-                                    #timer=timer,
+                                    timer=timer,
                                     coll_queue_timestamp=timestamp,
                                     #read=False,
                                     channel=channel,
@@ -289,6 +291,8 @@ def on_worker_data_in(data):
 
             _device_q.put(device_id)
             del device_pending_dict[device_id]
+
+            zmq_publish.send_string(b'%s task' % channel)
            
 
     elif result_type == "parser":
@@ -387,8 +391,8 @@ if __name__ == '__main__':
     snmp_device_task_dict = {}
 
 
-    task_dict = {}
-    task_q = {}
+    #task_dict = {}
+    #task_q = {}
     task_dispatcher = TaskDispatcher()
     task_dispatcher.daemon = True
     task_dispatcher.start()

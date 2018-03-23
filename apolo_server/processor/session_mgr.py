@@ -16,7 +16,7 @@ class SessionManager(Thread):
 
     parser_dict={}
 
-    polling_interval = 60
+    polling_interval = 1
     absolute_timeout = 3600
     after_read_timeout = 300
     def __init__(self,zmq_publish):
@@ -40,8 +40,6 @@ class SessionManager(Thread):
             pass
     def init_parser_queue(self,task_id):
         self.parser_dict[task_id] = Queue.Queue()
-
-        
 
     def set_parser_queue(self,task_id,value):
 
@@ -75,7 +73,8 @@ class SessionManager(Thread):
             data.update(dict(parser_result=[]))
 
         data.get("parser_result").append(result)
-        data["parser_status"] == "queue"
+        
+        data["parser_status"] = "queue"
 
 
     def get(self, k):
@@ -109,9 +108,9 @@ class SessionManager(Thread):
             after_read_timeout = int(after_read_timeout)
             if absolute_timeout >= 300:
                 self.absolute_timeout = absolute_timeout
-            if after_read_timeout >= 60:
+            if after_read_timeout >= 30:
                 self.after_read_timeout = after_read_timeout
-            if polling_interval >= 5:
+            if polling_interval >= 1:
                 self.polling_interval = polling_interval
         except ValueError:
             pass
@@ -119,35 +118,29 @@ class SessionManager(Thread):
     def run(self):
         logger = get_logger('SessionMgr')
         while True:
-            time.sleep(self.polling_interval)
-            #pass
-            """
+            #time.sleep(self.polling_interval)
             time.sleep(self.polling_interval)
             for k in self.data_set.keys():
                 v = self.data_set[k]
                 status = v["status"] 
-                parser_queue = v["parser_queue"]
-                if v["parser_status"] == "queue":
-                    if not parser_queue.empty():
-                        data = parser_queue.pop()
-                        v["parser_status"]="runnning"
-                        self.zmq_publish.send_string(data["publish_string"])
-                    
-                    if parser_queue.empty() and status == "coll_finish":
-                        v["status"] == "all_finish"
-            """
+                if k in self.parser_dict:
+                    parser_queue = self.parser_dict[k]
+                    if v["parser_status"] == "queue":
+                        if not parser_queue.empty():
+                            data = parser_queue.get()
+                            v["parser_status"]="runnning"
+                            self.zmq_publish.send_string(data["publish_string"])
+                        
+                        if parser_queue.empty() and status == "coll_finish":
+                            v["status"] = "all_finish"
                 
-                
-                
+                if v["status"] == "all_finish" and v["parser_status"] != "running" and time.time() - v['timer'] > self.after_read_timeout:
+                    del self.data_set[k]
+                    if k in self.parser_dict:
+                        del self.parser_dict[k]
+                    logger.info('Task %s timeout, cleared' % k)
+            
 
-
-
-                #if time.time() - v['timer'] > self.absolute_timeout:
-                #    del self.data_set[k]
-                #    logger.info('Task %s timeout, cleared' % k)
-                #elif v['read'] and time.time() - v['timer'] > self.after_read_timeout:
-                #    del self.data_set[k]
-                #    logger.info('Task %s timeout, cleared' % k)
 
 
 

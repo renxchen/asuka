@@ -16,12 +16,9 @@ class CiscoCliWorker(WorkerBase):
     def handler(self, task_id, task, data, logger):
         device_info = task['device_info']
         commands = []
-        #"cmd_5min": ["show interface","show clock"],   
-        #"cmd_15min":["show version","show clock"],
-        #"cmd_1hour":["show version"],
-        #"cmd_1day":["show version"],
+
         command_dict = {}
-        for key in ["items_1day","items_1hour","items_15min","items_5min"]:
+        for key in ["items_1day","items_1hour","items_15min","items_5min","items_1min"]:
             if key in device_info:
                 for item in device_info[key]:
                     item_id = item["item_id"]
@@ -56,6 +53,7 @@ class CiscoCliWorker(WorkerBase):
             for index,cmd in enumerate(commands):
                 cmd_out = worker.execute(cmd)
                 
+                """
                 if index == 0:
                     first_element = True
                 else:
@@ -65,8 +63,9 @@ class CiscoCliWorker(WorkerBase):
                     next_element = -1
                 else:
                     next_element = commands[index]
+                """
                 
-                cmd_out.update(dict(result_type="element_result",task_id=task_id,first_element=first_element,next_element=next_element,item_ids=command_dict[cmd]))
+                cmd_out.update(dict(result_type="element_result",task_id=task_id,item_ids=command_dict[cmd]))
                 self.zmq_push.send(json.dumps(cmd_out))
 
 

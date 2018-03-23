@@ -1,7 +1,7 @@
 import sys
-from apolo_server.processor.parser.common_policy_tree.dispatch import Dispatch
+#from apolo_server.processor.parser.common_policy_tree.dispatch import Dispatch
 from apolo_server.processor.constants import ParserConstants, CommonConstants
-from apolo_server.processor.parser.common_policy_tree.tool import Tool
+#from apolo_server.processor.parser.common_policy_tree.tool import Tool
 from apolo_server.processor.db_units.memcached_helper import ItemMemCacheDb, RulesMemCacheDb
 from apolo_server.processor.db_units.db_helper import ParserDbHelp
 from multiprocessing.dummy import Pool as ThreadPool
@@ -48,7 +48,7 @@ class SNMPParser(object):
         #parser_result = {}
         #timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
-        ParserDbHelp().bulk_save_result(items,clock, CommonConstants.SNMP_TYPE_CODE)
+        #ParserDbHelp().bulk_save_result(items,clock, CommonConstants.SNMP_TYPE_CODE)
         return ""
 
 
@@ -80,13 +80,16 @@ class CliParser(object):
             #raw_data = item['output']
             #if raw_data is None:
             #continue
+            """
             p = Dispatch(rule_path, rules, output)
             p.dispatch()
             arry = p.get_result()
             item['value'] = arry[-1][0]
+            """
+            item['value'] = "test%s"%item['item_id']
             parser_result[str(item['item_id'])] = {"value":item['value']}
             
-        ParserDbHelp().bulk_save_result(items, clock, CommonConstants.CLI_TYPE_CODE)
+        #ParserDbHelp().bulk_save_result(items, clock, CommonConstants.CLI_TYPE_CODE)
         return parser_result
 
     @staticmethod
@@ -100,7 +103,7 @@ class CliParser(object):
         return [str(rule) for rule in rules]
 
 
-def parser_main(item_type,task, data,result):
+def parser_main(item_type,task, data):
 
     deviceinfo = task["device_info"]
     result = task["element_result"][data.strip()]
@@ -126,7 +129,6 @@ def parser_main(item_type,task, data,result):
             else:
                 if item["command"] == data:
                     items.append(item)
-
 
     if item_type == CommonConstants.CLI_TYPE_CODE:
         func = CliParser()
