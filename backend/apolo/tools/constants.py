@@ -38,10 +38,10 @@ FALSE = 'False'
 VERIFY_WHETHER_EXECUTING_SERVER_URL = "http://%s:%s/api/v1/valid"
 VERIFY_WHETHER_EXECUTING_SERVER_IP = '10.71.244.134'
 VERIFY_WHETHER_EXECUTING_SERVER_PORT = '7777'
-SYSTEM_ERROR = 'System access failed, please connect the administrator.'
-POST_SUCCESSFUL = 'Data create successfully.'
-PUT_SUCCESSFUL = 'Data update successfully.'
-DELETE_SUCCESSFUL = 'Data delete successfully.'
+SYSTEM_ERROR = gettext('System access failed, please connect the administrator.')
+POST_SUCCESSFUL = gettext('Data create successfully.')
+PUT_SUCCESSFUL = gettext('Data update successfully.')
+DELETE_SUCCESSFUL = gettext('Data delete successfully.')
 #########################################
 # API token related define
 #########################################
@@ -60,17 +60,17 @@ ORIG_IAT = 'orig_iat'
 USERNAME = 'username'
 PASSWORD = 'password'
 TOKEN_EXPIRED_MSG = gettext('Token has expired.')
-TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = 'There was no token found for current user.'
-NO_USERNAME_OR_PASSWORD_FONUD_ERROR = "No username or password found"
-LOGIN_FAILED_ERROR = "Login failed with incorrect username or password."
-REFRESH_EXPIRED = "Refresh has expired."
-ORIG_IAT_REQUIRED = "orig_iat field is required."
-USERNAME_INACTIVE_ERROR = "Username is inactive."
-LOGIN_SUCCESSFUL = "Login successful."
-NO_USERNAME_OR_PASSWORD = "No user or password found."
-USER_AND_PASSWD_INCORRECT = "User or password is incorrect."
-USER_DISABLED = "User is inactive."
-USER_LOGOUT_SUCCESSFUL = "User logout successful."
+TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = gettext('There was no token found for current user.')
+NO_USERNAME_OR_PASSWORD_FONUD_ERROR = gettext("No username or password found")
+LOGIN_FAILED_ERROR = gettext("Login failed with incorrect username or password.")
+REFRESH_EXPIRED = gettext("Refresh has expired.")
+ORIG_IAT_REQUIRED = gettext("orig_iat field is required.")
+USERNAME_INACTIVE_ERROR = gettext("Username is inactive.")
+LOGIN_SUCCESSFUL = gettext("Login successful.")
+NO_USERNAME_OR_PASSWORD = gettext("No user or password found.")
+USER_AND_PASSWD_INCORRECT = gettext("User or password is incorrect.")
+USER_DISABLED = gettext("User is inactive.")
+USER_LOGOUT_SUCCESSFUL = gettext("User logout successful.")
 #########################################
 # Action Policy Related define
 #########################################
@@ -93,19 +93,19 @@ TRIGGER_TYPE_EXPRESSION_COMPARE = '演算比較'
 TRIGGER_TYPE_INTEGER_COMPARE = '数値比較'
 TRIGGER_TYPE_STRING__COMPARE = '文字列比較'
 TRIGGER_TYPE_FAILED = '取得失敗'
-COLUMN_A_OR_COLUMN_B_NOT_EXIST = 'Column A or Column B is not exist in current system, please connect Administrator.'
-COLUMN_A_COLUMN_B_VERIFY_FAILED = 'Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).'
-EXPRESSION_ILLEGAL = gettext('There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1)')
-EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = 'A and B maybe do not have the same value type(String or Integer)'
-EXPRESSION_A_B_NOT_EXIST = 'There is not A or B in expression, should be at least A in expression'
-EXPRESSION_CONDITION_ILLEGAL = 'The expression condition should be in <=, >=, ==, !=, >, <'
-EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION = 'There is illegal format in current expression.'
-EXPRESSION_EVAL_VERIFY_FAILED = 'The expression eval verification failed.'
-EXPRESSION_VERIFY_FAILED = 'The expression verify failed'
-ACTION_POLICY_NAME_DUPLICATE = 'The action name is exist in current system, please change name.'
-DATA_TABLE_NAME_DUPLICATE = 'The table name is exist in current system, please change name.'
-OSTYPE_EXIST_IN_SCHEDULE = 'Ostype is in use.'
-DEVICE_GROUP_NOT_EXIST = 'Current device group is not exist in current system.'
+COLUMN_A_OR_COLUMN_B_NOT_EXIST = gettext('Column A or Column B is not exist in current system, please connect Administrator.')
+COLUMN_A_COLUMN_B_VERIFY_FAILED = gettext('Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).')
+EXPRESSION_ILLEGAL = gettext('There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1).')
+EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = gettext('A and B maybe do not have the same value type(String or Integer).')
+EXPRESSION_A_B_NOT_EXIST = gettext('There is not A or B in expression, should be at least A in expression.')
+EXPRESSION_CONDITION_ILLEGAL = gettext('The expression condition should be in <=, >=, ==, !=, >, <.')
+EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION = gettext('There is illegal format in current expression.')
+EXPRESSION_EVAL_VERIFY_FAILED = gettext('The expression eval verification failed.')
+EXPRESSION_VERIFY_FAILED = gettext('The expression verify failed')
+ACTION_POLICY_NAME_DUPLICATE = gettext('The action name is exist in current system, please change name.')
+DATA_TABLE_NAME_DUPLICATE = gettext('The table name is exist in current system, please change name.')
+OSTYPE_EXIST_IN_SCHEDULE = gettext('Ostype is in use.')
+DEVICE_GROUP_NOT_EXIST = gettext('Current device group is not exist in current system.')
 DEVICE_GROUP_NOT_EXIST_IN_SCHEDULE = gettext('Current device group is not exist in Schedule Table.')
 DATA_TABLE_NOT_EXIST_IN_SYSTEM = gettext('Current data table is not exist in system.')
 CSV_PATH_NOT_EXIST = gettext('CSV path is not exist.')
@@ -118,18 +118,18 @@ SPLIT_RULE_COMMA = 'comma'
 SPLIT_RULE_SLASH = 'slash'
 SPLIT_RULE_OTHER = 'other'
 INSTEAD = '@@'
-NO_MATCH_EXTRACT_DATA_REGEXP = 'Can not match the provided regular Expression.'
+NO_MATCH_EXTRACT_DATA_REGEXP = gettext('Can not match the provided regular Expression.')
 
 # collection policy functional related
-COLLECTION_POLICY_NOT_EXIST = 'The collection policy is not exist in system.'
-COLLECTION_POLICY_IS_EXECUTING = 'The collection policy is running in system.'
+COLLECTION_POLICY_NOT_EXIST = gettext('The collection policy is not exist in system.')
+COLLECTION_POLICY_IS_EXECUTING = gettext('The collection policy is running in system.')
 COLL_POLICY_EXIST_IN_ITEM = 'COLL_POLICY_EXIST_IN_ITEM'
-COLL_POLICY_EXIST_IN_POLICYS_GROUPS = 'Collection policy group is exist in system.'
-COLLECTION_POLICY_NAME_DUPLICATE = 'Collection policy name is exist in system.'
+COLL_POLICY_EXIST_IN_POLICYS_GROUPS = gettext('Collection policy group is exist in system.')
+COLLECTION_POLICY_NAME_DUPLICATE = gettext('Collection policy name is exist in system.')
 #########################################
 # Collection Policy Group Related define
 #########################################
-COLL_POLICY_GROUP_EXIST_IN_SCHEDULE = 'Collection policy group is running in system.'
+COLL_POLICY_GROUP_EXIST_IN_SCHEDULE = gettext('Collection policy group is running in system.')
 #########################################
 # Policy Tree Node's information
 # Rule Tree Node's information
@@ -151,9 +151,9 @@ RULE_NODE_ICON = 'fa fa-folder-o'
 #########################################
 # Policy Tree Message
 #########################################
-NODE_IS_EXISTENCE = 'the node exist in the tree'  # ツリー内に定義されているため、編集できません。
+NODE_IS_EXISTENCE = 'The node is exist in the tree'  # ツリー内に定義されているため、編集できません。
 RULE_NAME_IS_EXISTENCE = 'RULE_NAME_IS_EXISTENCE'  # 既に同じ表示名のルールが登録されています。
-POLICY_IS_APPLIED = 'the policy is being applied by schedule function'  # このコレクションポリシーがスケジュールに利用されています。
+POLICY_IS_APPLIED = 'The policy is being applied by schedule function.'  # このコレクションポリシーがスケジュールに利用されています。
 POLICY_DATA_VALID_ERROR = 'data valid error when insert policy tree rules'  # コレクションポリシーツリーに追加されたデータが適切ではないです。
 RULE_DATA_VALID_ERROR = 'data valid error in saving the rule'  # ルールを追加する時に、データが適切ではないです
 LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定義されていないです
