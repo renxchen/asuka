@@ -245,12 +245,36 @@ class GetValidItem(CollectionValidate):
         self.items = self.get_items(None)
         return self.valid_items(now_time)
 
+
+class GetValidItemByPolicy(CollectionValidate):
+    def __init__(self):
+        super(GetValidItemByPolicy, self).__init__()
+
+    def valid(self, now_time, policy_id):
+        self.items = self.get_items(None)
+        self.valid_items(now_time)
+        return len([item for item in self.items if item['valid_status'] and item['coll_policy_id'] == policy_id])
+
+
+class GetValidItemByPolicyGroup(CollectionValidate):
+    def __init__(self):
+        super(GetValidItemByPolicyGroup, self).__init__()
+
+    def valid(self, now_time, policy_group):
+        self.items = self.get_items(None)
+        self.valid_items(now_time)
+        for i in self.items:
+            print i
+        return len([item for item in self.items if item['valid_status'] and
+                    item['policys_groups__policy_group_id'] == policy_group])
+
+
 if __name__ == "__main__":
-    test_instance = GetValidItem()
-    test_instance.valid(int(time.time()))
-    for i in test_instance.items:
-        print i
-        # pass
+    test_instance = GetValidItemByPolicyGroup()
+    test_instance.valid(int(time.time()), 14)
+    # for i in test_instance.items:
+    #     print i
+    # pass
 
 
 
