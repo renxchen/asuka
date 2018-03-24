@@ -11,6 +11,8 @@ import { DeviceGroupComponent } from './device/deviceGroup/deviceGroup.component
 import { GroupLoginComponent } from './device/deviceGroup/groupLogin.component';
 import { GroupEditComponent } from './device/deviceGroup/groupEdit.component';
 import { DeviceLoginComponent } from './device/deviceLogin.component';
+import { DeviceErrorTableComponent } from './device/deviceErrorTable.component';
+
 import { DeviceViewComponent } from './device/deviceView.component';
 import { OstypeComponent } from './device/./ostype/ostype.component';
 import { OstypeLoginComponent } from './device/./ostype/ostypeLogin.component';
@@ -32,7 +34,6 @@ import { CPGViewComponent } from './collectionPolicy/cpg/cPGView.component';
 import { CPGLoginComponent } from './collectionPolicy/cpg/cPGLogin.component';
 import { CPGDetailComponent } from './collectionPolicy/cpg/cPGDetail.component';
 import { CPGEditComponent } from './collectionPolicy/cpg/cPGEdit.component';
-import { CPGActionComponent } from './collectionPolicy/cpg/cPGAction.component';
 
 // data collection
 import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
@@ -307,12 +308,12 @@ export const entryComponentList: any[] = [
     GroupEditComponent,
     OstypeLoginComponent,
     OstypeEditComponent,
+    DeviceErrorTableComponent,
     // collection policy
     CLIBlockComponent,
     CLIDataComponent,
     CLICPEditPopComponent,
     CPGLoginComponent,
-    CPGActionComponent,
     // data
     DataCollectionLoginComponent,
     DataTableLoginComponent,

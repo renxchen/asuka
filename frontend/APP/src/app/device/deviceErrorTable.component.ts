@@ -2,12 +2,12 @@ import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 @Component({
-    selector: 'msg-modal',
-    templateUrl: 'modal.html',
+    selector: 'device-error-table',
+    templateUrl: 'deviceErrorTable.component.html',
 
 })
-export class ModalComponent implements OnInit, AfterViewInit {
-    modalMsg: any;
+export class DeviceErrorTableComponent implements OnInit, AfterViewInit {
+    data: any;
     closeMsg: any;
     constructor(
         private bsModalRef: BsModalRef

@@ -52,12 +52,13 @@
                     <label 
                         for="startCmd" 
                         class="col-sm-4 control-label"
+                        [ngClass]="{'text-warning': !startRegFlg}"
                     >
                         CLI情報取得前デフォルト実行コマンド:
                     </label>
                     <div class="col-sm-8">
                         <div *ngFor="let startCmd of startCmds" style="width:100%">
-                            <div class="multi-input">
+                            <div class="multi-input" [ngClass]="{'has-warning': !startCmd.cmdRegFlg}">
                                 <input type="text" 
                                     class="form-control" 
                                     id="start_id_{{startCmd.id}}"
@@ -89,12 +90,13 @@
                     <label
                         for="endCmd"
                         class="col-sm-4 control-label"
+                        [ngClass]="{'text-warning': !endRegFlg}"
                     >
                         CLI情報取得完了後デフォルト実行コマンド:
                     </label>
                     <div class="col-sm-8">
                         <div *ngFor="let endCmd of endCmds" style="width:100%">
-                            <div class="multi-input">
+                            <div class="multi-input" [ngClass]="{'has-warning': !endCmd.cmdRegFlg}">
                                 <input
                                     type="text" 
                                     class="form-control" 
@@ -233,6 +235,12 @@
                 <div class="col-sm-12 text-warning" *ngIf='!uniqueFlg'>
                     OS Type名は重複しています。
                 </div>
+                <div class="col-sm-12 text-warning" *ngIf='!startRegFlg'>
+                    CLI情報取得前デフォルト実行コマンドは半角英数字のみで入力してください。
+                </div> 
+                <div class="col-sm-12 text-warning" *ngIf='!endRegFlg'>
+                    CLI情報取得完了後デフォルト実行コマンドは半角英数字のみで入力してください。
+                </div> 
                 <div class="col-sm-12 text-warning" *ngIf='!regFlg'>
                     CLIエラー文字列は正規表現形式です。
                 </div> 

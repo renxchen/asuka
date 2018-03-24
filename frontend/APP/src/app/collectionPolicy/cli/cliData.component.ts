@@ -120,11 +120,11 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     public dataRuleACheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         this.xOffsetNotNull = Validator.notNullCheck(this.xOffset.toString());
@@ -151,11 +151,11 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     public dataRuleBCheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         this.xOffsetNotNullB = typeof (this.xOffset) === 'number' ? true : false;
@@ -186,11 +186,11 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     public dataRuleCCheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         if (this.nameNotNull && this.nameFlg && this.keyStrNotNull
@@ -204,11 +204,11 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     public dataRuleDCheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         if (this.nameNotNull && this.nameFlg && this.keyStrNotNull
             && this.keyStrFlg) {
@@ -220,11 +220,11 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     public dataRuleECheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         if (this.nameNotNull && this.nameFlg && this.keyStrNotNull
             && this.keyStrFlg) {

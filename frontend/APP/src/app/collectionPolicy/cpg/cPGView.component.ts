@@ -13,7 +13,6 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../../components/modal/modal.component';
 import { CPGDetailComponent } from './cPGDetail.component';
-import { CPGActionComponent } from './cPGAction.component';
 import { CPGEditComponent } from './cPGEdit.component';
 import { CPGLoginComponent } from './cPGLogin.component';
 import { Subscription } from 'rxjs/Rx';
@@ -159,6 +158,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         $('.detail').click(function (event) {
             let detaiId = $(event)[0].target.id;
             if (detaiId) {
+                console.log(detaiId);
                 _t.router.navigate(['/index/cpgdetail'],
                     { queryParams: { 'id': detaiId } });
             }
@@ -214,13 +214,18 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                                 });
                             } else {
                                 // check this cp occupation
-                                if (msg && msg === 'POLICY_GROUP_EXIST_IN_SCHEDULE') {
-                                    this.modalMsg = 'Can not been delete when policy group exits in schedule';
-                                    this.closeMsg = 'close';
+                                if (msg) {
+                                    this.modalMsg = msg;
+                                    this.closeMsg = '閉じる';
                                     _t.showAlertModal(this.modalMsg, this.closeMsg);
-                                } else {
-                                    alert(msg);
                                 }
+                                // if (msg && msg === 'COLL_POLICY_GROUP_EXIST_IN_SCHEDULE') {
+                                //     this.modalMsg = 'Can not been delete when policy group exits in schedule';
+                                //     this.closeMsg = '閉じる';
+                                //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                // } else {
+                                //     alert(msg);
+                                // }
                             }
                         });
                 }

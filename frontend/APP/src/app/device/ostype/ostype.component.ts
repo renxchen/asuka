@@ -200,21 +200,26 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                             });
                         } else {
                             // check this ostype occupation, check with backend
-                            if (msg === 'EXIST_IN_DEVICES') {
-                                this.modalMsg = 'Can not been delete when ostype exits in devices';
-                                this.closeMsg = 'close';
+                            if (msg) {
+                                this.modalMsg = msg;
+                                this.closeMsg = '閉じる';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
-                            } else if (msg === 'OSTYPE_EXIST_IN_SCHEDULE') {
-                                this.modalMsg = 'Can not been delete when ostype exits in schedule';
-                                this.closeMsg = 'close';
-                                _t.showAlertModal(this.modalMsg, this.closeMsg);
-                            } else if (msg === 'EXIST_IN_COLL_POLICY') {
-                                this.modalMsg = 'Can not been delete when ostype exits in collection policy';
-                                this.closeMsg = 'close';
-                                _t.showAlertModal(this.modalMsg, this.closeMsg);
-                            } else {
-                                alert(msg);
                             }
+                            // if (msg === 'EXIST_IN_DEVICES') {
+                            //     this.modalMsg = 'Can not been delete when ostype exits in devices';
+                            //     this.closeMsg = '閉じる';
+                            //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            // } else if (msg === 'OSTYPE_EXIST_IN_SCHEDULE') {
+                            //     this.modalMsg = 'Can not been delete when ostype exits in schedule';
+                            //     this.closeMsg = '閉じる';
+                            //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            // } else if (msg === 'EXIST_IN_COLL_POLICY') {
+                            //     this.modalMsg = 'Can not been delete when ostype exits in collection policy';
+                            //     this.closeMsg = '閉じる';
+                            //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            // } else {
+                            //     alert(msg);
+                            // }
                         }
                     });
             }

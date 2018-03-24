@@ -135,7 +135,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         */
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.oidNotNull = Validator.notNullCheck(this.snmpOid);
         if (this.oidNotNull) {
