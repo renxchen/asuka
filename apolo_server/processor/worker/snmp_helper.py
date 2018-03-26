@@ -227,14 +227,15 @@ class SNMP(object):
         if error_indication and str(error_indication).find("response received before timeout") > 0:
                 self.logger.error('%s: %s', error_indication, self.ip)
                 for oid in oids:
-                    output.append(dict( origin_oid=oid,
+                    output.append(dict( status="fail",
+                                            origin_oid=oid,
                                             oid=oid,
                                             value="",
                                             message=str(error_indication)))
 
 
-                return dict(status='success',
-                    message='',
+                return dict(status='fail',
+                    message=str(error_indication),
                     output=output)
 
         if error_indication or error_status or exception_msg:

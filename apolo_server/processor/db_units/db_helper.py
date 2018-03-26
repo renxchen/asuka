@@ -1,6 +1,7 @@
 from db_units import *
-from models import Items, CollPolicyCliRule, TriggerDetail, Event, CollPolicyGroups
-import models
+
+from backend.apolo.models import Items, CollPolicyCliRule, TriggerDetail, Event, CollPolicyGroups
+#import models
 from apolo_server.processor.constants import CommonConstants, TriggerConstants
 from apolo_server.processor.units import TriggerException
 import importlib
@@ -175,27 +176,30 @@ class ParserDbHelp(DbHelp):
             else:
                 data[keys] = []
             data[keys].append(result)
-        if item_type == CommonConstants.CLI_TYPE_CODE:
-            self.__save_cli_bulk(data,clock)
-        else:
-            self.__save_snmp_bulk(data,clock)
 
-    def __save_cli_bulk(self, result,clock):
-        #base_time = time.time()
+        clock = float(clock)
         _clock = int(clock)
-        _ns = (int(round(clock * 1000)))
+        _ns = int(str((int(round(clock * 1000))))[-3:])
+
+        if item_type == CommonConstants.CLI_TYPE_CODE:
+            self.__save_cli_bulk(data,_clock,_ns)
+        else:
+            self.__save_snmp_bulk(data,_clock,_ns)
+        
+
+
+    def __save_cli_bulk(self, result, clock, ns):
+        
         for table in result:
             tmp = []
             for data in result[table]:
-                value = data['value']['extract_data']
-                if len(value) == 0:
-                    value = [None]
-                block_path = str(data['value']['block_path'])
+         
+                block_path = str(data["data"]['block_path'])
                 item_id = data['item_id']
                 tmp.append(table(
-                    value=value[0],
-                    ns=_ns,
-                    clock=_clock,
+                    value=data['data']["value"],
+                    ns=ns,
+                    clock=clock,
                     item_id=item_id,
                     block_path=block_path
                 ))
@@ -203,10 +207,9 @@ class ParserDbHelp(DbHelp):
             table.objects.bulk_create(tmp)
         return True
 
-    def __save_snmp_bulk(self, result,clock):
-        #base_time = time.time()
-        _clock = int(clock)
-        _ns = (int(round(clock * 1000)))
+    def __save_snmp_bulk(self, result, clock, ns):
+        
+
         for table in result:
             tmp = []
             for data in result[table]:
@@ -217,8 +220,8 @@ class ParserDbHelp(DbHelp):
                 value2 = output[mibs][1]
                 tmp.append(table(
                     value=value1 if value1 else value2,
-                    ns=_ns,
-                    clock=_clock,
+                    ns=ns,
+                    clock=clock,
                     item_id=item_id
                 ))
             table.objects.bulk_create(tmp)

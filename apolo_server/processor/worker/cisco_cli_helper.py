@@ -157,7 +157,7 @@ class CiscoCLI(object):
         else:
             status = 'success'
         
-        return dict(command=command, status=status, output=output, timestamp=timestamp,clock=clock)
+        return dict(command=command, status=status, output=output, timestamp=timestamp,clock = "%f" % clock)
 
     def close(self):
         try:
