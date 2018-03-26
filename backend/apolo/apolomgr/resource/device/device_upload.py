@@ -114,15 +114,15 @@ class DevicePreViewSet(APIView):
                     dict_check = {}
                     hostname_csv = f.get(hostname)
                     if len(hostname_csv) > 30:
-                        dict_check['hostname'] = False
+                        dict_check['hostname_check'] = False
                     else:
                         for letter in hostname_csv:
                             if not (str(letter).isalnum() or (str(letter) in string.punctuation and str(letter) != ' '
                                                               and str(letter) != r"'" and str(letter) != "\""
                                                               and str(letter) != r",")):
-                                dict_check['hostname'] = False
+                                dict_check['hostname_check'] = False
                             else:
-                                dict_check['hostname'] = True
+                                dict_check['hostname_check'] = True
                     dict_check['hostname'] = hostname_csv
                     ip = f.get('IP Address')
                     pattern_ip = "((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))"
