@@ -135,7 +135,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             if (this.otherChar) {
                 this.otherCharFlg = true;
             } else {
-                this.otherChar = false;
+                this.otherCharFlg = false;
             }
         }
         // this.yOffsetFlg = Number.isInteger(this.yOffset);
