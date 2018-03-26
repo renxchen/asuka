@@ -66,7 +66,8 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                                 { queryParams: { 'id': id } });
                         }
                     } else {
-                        if (msg && msg === 'CP_NAME_DUPLICATE') {
+                        // CP_NAME_DUPLICATE
+                        if (msg && msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
                             alert(msg);

@@ -25,7 +25,7 @@
                                     class="form-control" 
                                     id="name" name="name" 
                                     [(ngModel)]="name" 
-                                    placeholder="日本語、英数字、記号可"
+                                    placeholder="英数字のみ"
                                     maxlength="30" 
                                 />
                             </div>
@@ -201,10 +201,10 @@
                         <!-- alert -->
                         <div class="form-group" [ngClass]="{'hidden':msgFlg}">
                             <div class="col-sm-12 text-warning" *ngIf="!nameNotNull">
-                                コレクションポリシー名は必須入力です。
+                                コレクションポリシーグループ名は必須入力です。
                             </div>
-                            <div class="col-sm-12 text-warning" *ngIf="!nameNotNull&&!nameFlg">
-                                コレクションポリシー名は半角英数字のみで入力してください。
+                            <div class="col-sm-12 text-warning" *ngIf="nameNotNull&&!nameFlg">
+                                コレクションポリシーグループ名は半角英数字のみで入力してください。
                             </div>
                             <div class="col-sm-12 text-warning" *ngIf="!addCPFlg">
                                 Please choose collection policy first.
