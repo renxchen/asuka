@@ -93,9 +93,15 @@ class CollectionValidate(object):
             self.__check_device_priority(item, item_prioriy_dict, index)
 
         for item in self.items:
-            self.__check_is_stop_collection(item)
-            if item['valid_status']:
-                valid_items.append(item)
+            priority_key = "%d_%d" % (item["coll_policy_id"], item["device__device_id"])
+            if priority_key in item_prioriy_dict and item['valid_status'] and \
+                            item['schedule__priority'] == item_prioriy_dict[priority_key]:
+                item['valid_status'] = True
+                self.__check_is_stop_collection(item)
+                if item['valid_status']:
+                    valid_items.append(item)
+            else:
+                item['valid_status'] = False
 
 
 
@@ -124,8 +130,6 @@ class CollectionValidate(object):
     def __check_is_stop_collection(self, item):
         if item["schedule__data_schedule_type"] == self.SCHEDULE_CLOSED:
             item['valid_status'] = False
-        else:
-            item['valid_status'] = True
         return
 
 
@@ -137,16 +141,11 @@ class CollectionValidate(object):
 
         if "valid_status" in item.keys() and item['valid_status']:
             item_key = "%d_%d" % (item["coll_policy_id"], item["device__device_id"])
-            if item_key in item_prioriy_dict:
-                tmp_p_item = self.items[item_prioriy_dict[item_key]]
-                if item["schedule__priority"] > tmp_p_item["schedule__priority"]:
-                    item['valid_status'] = True
-                    tmp_p_item['valid_status'] = False
-                    item_prioriy_dict[item_key] = index
-                else:
-                    item['valid_status'] = False
+            if item_key not in item_prioriy_dict:
+                item_prioriy_dict[item_key] = item["schedule__priority"]
             else:
-                item_prioriy_dict[item_key] = index
+                if item_prioriy_dict[item_key] < item["schedule__priority"]:
+                    item_prioriy_dict[item_key] = item["schedule__priority"]
         return
 
     def __check_schedule_time(self, item, now_time):
@@ -277,17 +276,17 @@ class GetValidItemByPolicyGroup(CollectionValidate):
 
 
 if __name__ == "__main__":
-    test_instance = GetValidItemByPolicy()
-    test_instance.valid(int(time.time()), 14)
-    test_instance = GetValidItemByPolicyGroup()
-    test_instance.valid(int(time.time()), 14)
+    # test_instance = GetValidItemByPolicy()
+    # test_instance.valid(int(time.time()), 14)
+    # test_instance = GetValidItemByPolicyGroup()
+    # test_instance.valid(int(time.time()), 14)
     # for i in test_instance.items:
     #     print i
     # pass
     test_instance = GetValidItem()
     valid_items = test_instance.valid_items(int(time.time()))
     for i in test_instance.items:
-        print i
+        print i['valid_status'], i['device__device_id'], i['coll_policy_id'], i['schedule__priority']
 
 
 
