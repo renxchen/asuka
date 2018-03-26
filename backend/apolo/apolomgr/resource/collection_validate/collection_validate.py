@@ -85,6 +85,7 @@ class CollectionValidate(object):
     def valid_items(self, now_time):
         item_prioriy_dict = {}
         valid_items = []
+        self.items = self.get_items(None)
         for index, item in enumerate(self.items):
             item['valid_status'] = True
             self.__check_period_time(item, now_time)
@@ -110,7 +111,7 @@ class CollectionValidate(object):
         #     # if item["valid_status"]:
         #     #     valid_items.append(item)
         #
-        return valid_items
+        return self.items
 
     def __check_is_stop_collection(self, item):
         if item["schedule__data_schedule_type"] == self.SCHEDULE_CLOSED:
@@ -263,18 +264,20 @@ class GetValidItemByPolicyGroup(CollectionValidate):
     def valid(self, now_time, policy_group):
         self.items = self.get_items(None)
         self.valid_items(now_time)
-        for i in self.items:
-            print i
         return len([item for item in self.items if item['valid_status'] and
                     item['policys_groups__policy_group_id'] == policy_group])
 
 
 if __name__ == "__main__":
-    test_instance = GetValidItemByPolicyGroup()
-    test_instance.valid(int(time.time()), 14)
+    # test_instance = GetValidItemByPolicyGroup()
+    # test_instance.valid(int(time.time()), 14)
     # for i in test_instance.items:
     #     print i
     # pass
+    test_instance = GetValidItem()
+    test_instance.valid_items(int(time.time()))
+    for i in test_instance.items:
+        print i
 
 
 
