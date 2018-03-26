@@ -84,7 +84,7 @@ class SNMPWorker(WorkerBase):
                 for data in result["output"]:
                     data["item_ids"] = oid_dict[data["origin_oid"]]
                 
-                result.update(dict(result_type="element_result", task_id=task_id, timestamp=timestamp, clock=clock))
+                result.update(dict(result_type="element_result", task_id=task_id, timestamp=timestamp, clock="%f" % clock))
                 self.zmq_push.send(json.dumps(result))
 
 

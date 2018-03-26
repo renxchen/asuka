@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import  sys
+sys.path.append("/Users/yihli/Desktop/projects/apolo")
 from worker_base import WorkerBase, main
 from parser_helper import parser_main
 from apolo_server.processor.trigger.trigger_helper import TriggerHelp

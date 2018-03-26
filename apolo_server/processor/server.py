@@ -62,7 +62,9 @@ class CommandApiHandler(web.RequestHandler):
         self.set_header("Content-Type", "application/json")
         method = args[0]
         channel = args[1]
+
         #params = json.loads(self.request.body)
+        #now_time = param["now_time"]
 
         # url should be valid
         if method not in 'sync' or channel not in 'cli snmp':
@@ -71,35 +73,8 @@ class CommandApiHandler(web.RequestHandler):
             self.finish()
             return
 
-        #now_time = param["now_time"]    
+           
         devices,tmp_devices_dict = get_devices(int(time.time()), channel)
-
-        #category = "cli"
-        """
-        devices = ["1113"]
-        tmp_devices_dict = {
-            "1113":    {
-                "cmd_5min": ["show interface","show clock"],   
-                "cmd_15min":["show version","show clock"],
-                "cmd_1hour":["show version"],
-                "cmd_1day":["show version"],
-                "default_commands": "terminal len 0;terminal pager 0",
-                "ip": "10.79.244.135",
-                "platform": "ios",
-                "expect": "ssword:,cisco,>,enable,:,cisco123,#",
-                "timeout": 30,
-                "device_id": "1113",
-                "items": [
-                {
-                    "tree_path": "/7",
-                    "rule_id": 7,
-                    "value_type": 0,
-                    "policy_type": 0,
-                    "item_id": 4,
-                }
-                ]
-        }}
-        """
 
         #get snmp or cli device q
         if channel not in device_q:
@@ -164,7 +139,6 @@ class CommandApiHandler(web.RequestHandler):
 
         result = dict(
             status="success",
-            #output=devices_info,
             message=""
         )
     

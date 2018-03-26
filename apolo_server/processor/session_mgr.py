@@ -18,7 +18,7 @@ class SessionManager(Thread):
 
     polling_interval = 1
     absolute_timeout = 3600
-    after_read_timeout = 300
+    after_read_timeout = 30
     def __init__(self,zmq_publish):
         Thread.__init__(self)
         self.zmq_publish = zmq_publish
@@ -128,7 +128,7 @@ class SessionManager(Thread):
                     if v["parser_status"] == "queue":
                         if not parser_queue.empty():
                             data = parser_queue.get()
-                            v["parser_status"]="runnning"
+                            v["parser_status"]="running"
                             self.zmq_publish.send_string(data["publish_string"])
                         
                         if status == "coll_finish" and parser_queue.empty() and v["parser_status"] != "running":

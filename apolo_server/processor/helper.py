@@ -1,9 +1,11 @@
 __author__ = 'zhutong'
 
 import logging
-DEFAULT_LOG_FILE_PATH = "log.log"
+import os
+DEFAULT_LOG_FILE_PATH = os.path.join(os.path.dirname(__file__),"..","logs","server.log")
 DEFAULT_LOG_LEVEL = logging.DEBUG
 DEFAULT_FILE_LOG_LEVEL = logging.ERROR
+from logging.handlers import RotatingFileHandler
 
 
 def get_logger(name, level=None):
@@ -11,8 +13,8 @@ def get_logger(name, level=None):
         level = logging.DEBUG
     log_pattern = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     formatter = logging.Formatter(log_pattern)
-
-    fh = logging.FileHandler(DEFAULT_LOG_FILE_PATH)
+    fh = RotatingFileHandler(DEFAULT_LOG_FILE_PATH, maxBytes=10*1024*1024,backupCount=5)
+    #fh = logging.FileHandler(DEFAULT_LOG_FILE_PATH)
     fh.setLevel(DEFAULT_FILE_LOG_LEVEL)
 
     ch = logging.StreamHandler()
