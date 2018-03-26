@@ -5,7 +5,7 @@ import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../components/modal/modal.component';
-import { ProcessbarComponent } from '../../components/processbar/processbar.component';
+import { ProgressbarComponent } from '../../components/processbar/processbar.component';
 import { Observable } from 'rxjs/Rx';
 import * as _ from 'lodash';
 declare var $: any;
@@ -26,8 +26,8 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
     @author Zizhuang Jiang
     @date 03/08/2018
      */
-    @ViewChild(ProcessbarComponent)
-    proBar: ProcessbarComponent;
+    @ViewChild(ProgressbarComponent)
+    proBar: ProgressbarComponent;
     apiPrefix: any;
     devViewTable$: any;
     processbar: BsModalRef;
@@ -140,7 +140,7 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
         let checkInfo: any = {};
         checkInfo['id_list'] = deviceSel;
         if (deviceSel.length > 0) {
-            this.processbar = this.modalService.show(ProcessbarComponent, this.modalConfig);
+            this.processbar = this.modalService.show(ProgressbarComponent, this.modalConfig);
             this.processbar.content.message = 'Check...';
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient

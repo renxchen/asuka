@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ProgressbarModuleCustom } from '../../components/processbar/processbar.module';
 import { DeviceGroupComponent } from './deviceGroup/deviceGroup.component';
 import { GroupLoginComponent } from './deviceGroup/groupLogin.component';
 import { GroupEditComponent } from './deviceGroup/groupEdit.component';
@@ -20,7 +21,7 @@ import { OstypeEditComponent } from './ostype/ostypeEdit.component';
             OstypeLoginComponent, OstypeEditComponent,
             DeviceErrorTableComponent
         ],
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ProgressbarModuleCustom],
     exports: [],
     providers: [],
 })
