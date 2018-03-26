@@ -18,7 +18,7 @@ from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import constants
 from backend.apolo.tools import views_helper
-from backend.apolo.models import DataTable, DataTableItems
+from backend.apolo.models import DataTable, DataTableItems, DataTableHistoryItems
 from django.db import transaction
 from backend.apolo.serializer.action_policy_serializer import ActionPolicyDataTableSerializer, \
     ActionPolicyDataTableItemSerializer
@@ -44,6 +44,7 @@ class TableViewsSet(viewsets.ViewSet):
             method = 'BODY'
         self.name = views_helper.get_request_value(self.request, 'name', method)
         self.coll_policy_id = views_helper.get_request_value(self.request, 'coll_policy_id', method)
+        self.coll_policy_group_id = views_helper.get_request_value(self.request, 'coll_policy_group_id', method)
         self.tree_id = views_helper.get_request_value(self.request, 'tree_id', method)
         self.group_id = views_helper.get_request_value(self.request, 'group_id', method)
         self.desc = views_helper.get_request_value(self.request, 'desc', method)
@@ -78,7 +79,8 @@ class TableViewsSet(viewsets.ViewSet):
             dt = DataTable.objects.filter(**kwargs)
             return dt
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     @staticmethod
@@ -97,7 +99,29 @@ class TableViewsSet(viewsets.ViewSet):
                                                                                   'item__coll_policy_rule_tree_treeid__rule__key_str')
             return data_table_item_info
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
+
+    @staticmethod
+    def get_data_table_history_item(**kwargs):
+        """!@brief
+        Get the data of DataTableItems table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of DataTableItems table
+        @post return DataTableItems data
+        @return result: data of DataTableItems table
+        """
+        try:
+            data_table_history_item_info = DataTableHistoryItems.objects.filter(**kwargs).values('item',
+                                                                                                 'item__value_type',
+                                                                                                 'item__item_type',
+                                                                                                 'item__device__hostname',
+                                                                                                 'item__coll_policy_rule_tree_treeid__rule__key_str')
+            return data_table_history_item_info
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     @staticmethod
@@ -159,17 +183,22 @@ class TableViewsSet(viewsets.ViewSet):
                 h.value = str(h.value)
         return history
 
-    def get_info_by_table_id(self, id):
+    def get_info_by_table_id(self, id, history_need_flag=True):
         """!@brief
         Get the data when click [表示] button according the search by and sort by
         @param id: table id
+        @param history_need_flag: if history_need_flag=True, will show the data from data_table_history_items table
+        @node: history_need_flag exist for click [Column] button in 新规页面, if in that page no need history data, will not show the data from data_table_history_items table
         @return data: history data(type is list)
         """
         result = []
         result_temp = []
+        result_history_temp = []
         data_history = {}
         # get all items by provided table id
-        data_table_item_info = self.get_data_table_item(**{'table_id': id, 'item__enable_status': 1})
+        # data_table_item_info = self.get_data_table_item(**{'table_id': id, 'item__enable_status': 1})
+        data_table_item_info = self.get_data_table_item(**{'table_id': id})
+        data_table_history_item_info = self.get_data_table_history_item(**{'table_id': id})
         for per_data_table_item_info in data_table_item_info:
             # value type in item table
             value_type = self.get_mapping(per_data_table_item_info['item__value_type'])
@@ -177,14 +206,51 @@ class TableViewsSet(viewsets.ViewSet):
             item_type = self.get_mapping(per_data_table_item_info['item__item_type'])
             # host name in Devices table
             hostname = per_data_table_item_info['item__device__hostname']
+            # item id in item table
+            item_id = per_data_table_item_info['item']
+            table_id = id
             # key_str in rule table
             key_str = per_data_table_item_info['item__coll_policy_rule_tree_treeid__rule__key_str']
             history_data = self.get_history(per_data_table_item_info['item'], value_type, item_type)
             serializer = HistoryXSerializer(history_data, many=True)
             for per in serializer.data:
+                per['item_id'] = item_id
+                per['table_id'] = table_id
                 per['device_name'] = hostname
                 per['key_str'] = key_str
                 result_temp.append(per)
+        # get the data from data_table_history_items table for show the history data when device reloaded
+        if history_need_flag:
+            for per_data_table_history_item_info in data_table_history_item_info:
+                # value type in item table
+                value_type = self.get_mapping(per_data_table_history_item_info['item__value_type'])
+                # item type in item table
+                item_type = self.get_mapping(per_data_table_history_item_info['item__item_type'])
+                # host name in Devices table
+                hostname = per_data_table_history_item_info['item__device__hostname']
+                # item id in item table
+                item_id = per_data_table_history_item_info['item']
+                table_id = id
+                # key_str in rule table
+                key_str = per_data_table_history_item_info['item__coll_policy_rule_tree_treeid__rule__key_str']
+                history_data = self.get_history(per_data_table_history_item_info['item'], value_type, item_type)
+                serializer = HistoryXSerializer(history_data, many=True)
+                for per in serializer.data:
+                    per['item_id'] = item_id
+                    per['table_id'] = table_id
+                    per['device_name'] = hostname
+                    per['key_str'] = key_str
+                    result_history_temp.append(per)
+        # delete the repeating data from data_table_history_items and data_table_item
+        result_history_without_repeating = []
+        for per_history in result_history_temp:
+            repeating_flag = False
+            for per in result_temp:
+                if per_history['item_id'] == per['item_id']:
+                    repeating_flag = True
+            if not repeating_flag:
+                result_history_without_repeating.append(per_history)
+        result_temp = result_temp + result_history_without_repeating
         paginator = Paginator(result_temp, int(self.max_size_per_page))
         contacts = paginator.page(int(self.page_from))
         for per_history_data in contacts.object_list:
@@ -220,11 +286,13 @@ class TableViewsSet(viewsets.ViewSet):
                 result = sorted(result, key=lambda result: result[self.sort_by], reverse=reverse)
         # table detail page sort end
         data = {
-            'data': result,
+            'data': {
+                'data': result
+            },
             'new_token': self.new_token,
             'num_page': paginator.num_pages,
-            'page_range': list(paginator.page_range),
-            'page_has_next': contacts.has_next(),
+            # 'page_range': list(paginator.page_range),
+            # 'page_has_next': contacts.has_next(),
             'total_num': len(result_temp),
             'current_page_num': contacts.number,
             constants.STATUS: {
@@ -238,9 +306,9 @@ class TableViewsSet(viewsets.ViewSet):
         try:
             if self.id is not '':
                 data = self.get_info_by_table_id(self.id)
-                title = ['デバイス名', 'Time Stamp', 'Path', data['data'][0]['checkitem']]
+                title = ['デバイス名', 'Time Stamp', 'Path', data['data']['data'][0]['checkitem']]
                 csv_data = []
-                for per in data['data']:
+                for per in data['data']['data']:
                     csv_data.append([per['hostname'], per['date'], per['path'], per['value']])
                 script_dir = os.path.split(os.path.realpath(__file__))[0]
                 csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))),
@@ -253,7 +321,7 @@ class TableViewsSet(viewsets.ViewSet):
                     data = {
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: result
+                            constants.MESSAGE: constants.CSV_PATH_NOT_EXIST
                         },
                     }
                     return api_return(data=data)
@@ -286,17 +354,21 @@ class TableViewsSet(viewsets.ViewSet):
                                                                           query_data, search_fields)
             total_num = len(DataTable.objects.all())
             if search_conditions:
-                queryset = DataTable.objects.filter(**search_conditions).order_by(*sorts)
+                queryset = DataTable.objects.filter(**search_conditions).values(
+                    *['table_id', 'descr', 'name', 'coll_policy', 'groups', 'tree']).order_by(*sorts)
             else:
-                queryset = DataTable.objects.all().order_by(*sorts)
-            serializer = ActionPolicyDataTableSerializer(queryset, many=True)
-            paginator = Paginator(serializer.data, int(self.max_size_per_page))
+                queryset = DataTable.objects.all().values(
+                    *['table_id', 'descr', 'name', 'coll_policy', 'groups', 'tree']).order_by(*sorts)
+            # serializer = ActionPolicyDataTableSerializer(queryset, many=True)
+            paginator = Paginator(list(queryset), int(self.max_size_per_page))
             contacts = paginator.page(int(self.page_from))
             data = {
-                'data': contacts.object_list,
+                'data': {
+                    'data': contacts.object_list,
+                },
                 'new_token': self.new_token,
                 'num_page': paginator.num_pages,
-                'page_range': list(paginator.page_range),
+                # 'page_range': list(paginator.page_range),
                 'page_has_next': contacts.has_next(),
                 'total_num': total_num,
                 'current_page_num': contacts.number,
@@ -322,6 +394,7 @@ class TableViewsSet(viewsets.ViewSet):
                     'name': self.name,
                     'descr': self.desc,
                     'coll_policy': self.coll_policy_id,
+                    'policy_group': self.coll_policy_group_id,
                     'tree': self.tree_id,
                     'groups': self.group_id,
                 }
@@ -346,12 +419,14 @@ class TableViewsSet(viewsets.ViewSet):
                     if serializer_data_table_item.is_valid(Exception):
                         serializer_data_table_item.save()
                         data = {
-                            'data_table': serializer.data,
-                            'data_table_item': serializer_data_table_item.data,
+                            'data': {
+                                'data_table': serializer.data,
+                                'data_table_item': serializer_data_table_item.data,
+                            },
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.TRUE,
-                                constants.MESSAGE: constants.SUCCESS
+                                constants.MESSAGE: constants.POST_SUCCESSFUL
                             }
                         }
                         return api_return(data=data)
@@ -371,21 +446,20 @@ class TableViewsSet(viewsets.ViewSet):
                 kwargs = {'table_id': self.id}
                 data_in_dp = self.get_data_table(**kwargs)
                 if len(data_in_dp) <= 0:
-                    if json.loads(data_in_dp)['message'] is not '':
-                        data = {
-                            'new_token': self.new_token,
-                            constants.STATUS: {
-                                constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: json.loads(data_in_dp)['message']
-                            }
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.DATA_TABLE_NOT_EXIST_IN_SYSTEM
                         }
-                        return api_return(data=data)
+                    }
+                    return api_return(data=data)
                 data_in_dp.delete()
                 data = {
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.TRUE,
-                        constants.MESSAGE: constants.SUCCESS
+                        constants.MESSAGE: constants.DELETE_SUCCESSFUL
                     }
                 }
                 return api_return(data=data)

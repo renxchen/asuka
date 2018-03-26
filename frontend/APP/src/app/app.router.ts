@@ -11,6 +11,8 @@ import { DeviceGroupComponent } from './device/deviceGroup/deviceGroup.component
 import { GroupLoginComponent } from './device/deviceGroup/groupLogin.component';
 import { GroupEditComponent } from './device/deviceGroup/groupEdit.component';
 import { DeviceLoginComponent } from './device/deviceLogin.component';
+import { DeviceErrorTableComponent } from './device/deviceErrorTable.component';
+
 import { DeviceViewComponent } from './device/deviceView.component';
 import { OstypeComponent } from './device/./ostype/ostype.component';
 import { OstypeLoginComponent } from './device/./ostype/ostypeLogin.component';
@@ -32,7 +34,6 @@ import { CPGViewComponent } from './collectionPolicy/cpg/cPGView.component';
 import { CPGLoginComponent } from './collectionPolicy/cpg/cPGLogin.component';
 import { CPGDetailComponent } from './collectionPolicy/cpg/cPGDetail.component';
 import { CPGEditComponent } from './collectionPolicy/cpg/cPGEdit.component';
-import { CPGActionComponent } from './collectionPolicy/cpg/cPGAction.component';
 
 // data collection
 import { DataCollectionViewComponent } from './dataCollection/dataCollectionView.component';
@@ -40,10 +41,14 @@ import { PoliciesPerDeviceComponent } from './dataCollection/policiesPerDevice.c
 import { DevicesPerPolicyComponent } from './dataCollection/devicesPerPolicy.component';
 import { DataCollectionLoginComponent } from './dataCollection/dataCollectionLogin.component';
 
-//action policy
+// action policy
 import { ActionPolicyViewComponent } from './actionPolicy/actionPolicyView.component';
 import { ActionPolicyLoginComponent } from './actionPolicy/actionPolicyLogin.component';
-import { DataTableViewComponent } from './actionPolicy/dataTableView.component';
+// import {
+//     DataTableViewComponent, FirstStepComponent, SecondComponent,
+//     ThirdStepComponent, FourthStepComponent
+// } from './actionPolicy/dataTableView.backup.component';
+import {DataTableViewComponent} from './actionPolicy/dataTableView.component';
 import { ActionPolicyHistoryComponent } from './actionPolicy/actionPolicyHistory.component';
 import { DataTableLoginComponent } from './actionPolicy/dataTableLogin.component';
 import { DataTableDetailComponent } from './actionPolicy/dataTableDetail.component';
@@ -235,62 +240,62 @@ const routes: Routes = [
             },
             //
             // data collection
-          {
-            path: 'datacollectionview',
-            component: DataCollectionViewComponent,
-            data: {
-              parentTitle: 'データ取得',
-              title: 'データ取得一覧'
+            {
+                path: 'datacollectionview',
+                component: DataCollectionViewComponent,
+                data: {
+                    parentTitle: 'データ取得',
+                    title: 'データ取得一覧'
+                }
+            },
+            {
+                path: 'policiesperdevice',
+                component: PoliciesPerDeviceComponent,
+                data: {
+                    parentTitle: 'データ取得',
+                    title: 'デバイス毎のデータ収集中の項目出力機能'
+                }
+            },
+            {
+                path: 'devicesperpolicy',
+                component: DevicesPerPolicyComponent,
+                data: {
+                    parentTitle: 'データ取得',
+                    title: 'コレクションポリシー毎のデバイス一覧出力機能'
+                }
+            },
+            {
+                path: 'datatableview',
+                component: DataTableViewComponent,
+                data: {
+                    parentTitle: 'アクションポリシー',
+                    title: 'テーブル一覧'
+                }
+            },
+            {
+                path: 'actionpolicyview',
+                component: ActionPolicyViewComponent,
+                data: {
+                    parentTitle: 'アクションポリシー',
+                    title: 'アクションポリシー一覧'
+                }
+            },
+            {
+                path: 'actionpolicylogin',
+                component: ActionPolicyLoginComponent,
+                data: {
+                    parentTitle: 'アクションポリシー',
+                    title: 'アクションポリシー編集'
+                }
+            },
+            {
+                path: 'actionpolicyhistory',
+                component: ActionPolicyHistoryComponent,
+                data: {
+                    parentTitle: 'アクションポリシー',
+                    title: 'アクション実行履歴'
+                }
             }
-          },
-          {
-            path: 'policiesperdevice',
-            component: PoliciesPerDeviceComponent,
-            data: {
-              parentTitle: 'データ取得',
-              title: 'デバイス毎のデータ収集中の項目出力機能'
-            }
-          },
-          {
-            path: 'devicesperpolicy',
-            component: DevicesPerPolicyComponent,
-            data: {
-              parentTitle: 'データ取得',
-              title: 'コレクションポリシー毎のデバイス一覧出力機能'
-            }
-          },
-          {
-            path: 'datatableview',
-            component: DataTableViewComponent,
-            data: {
-              parentTitle: 'アクションポリシー',
-              title: 'テーブル一覧'
-            }
-          },
-          {
-            path: 'actionpolicyview',
-            component: ActionPolicyViewComponent,
-            data: {
-              parentTitle: 'アクションポリシー',
-              title: 'アクションポリシー一覧'
-            }
-          },
-          {
-            path: 'actionpolicylogin',
-            component: ActionPolicyLoginComponent,
-            data: {
-              parentTitle: 'アクションポリシー',
-              title: 'アクションポリシー編集'
-            }
-          },
-          {
-            path: 'actionpolicyhistory',
-            component: ActionPolicyHistoryComponent,
-            data: {
-              parentTitle: 'アクションポリシー',
-              title: 'アクション実行履歴'
-            }
-          }
         ]
     }
 ];
@@ -303,15 +308,20 @@ export const entryComponentList: any[] = [
     GroupEditComponent,
     OstypeLoginComponent,
     OstypeEditComponent,
+    DeviceErrorTableComponent,
     // collection policy
     CLIBlockComponent,
     CLIDataComponent,
     CLICPEditPopComponent,
     CPGLoginComponent,
-    CPGActionComponent,
     // data
     DataCollectionLoginComponent,
     DataTableLoginComponent,
     DataTableDetailComponent,
-    ActionPolicyLoginComponent
+    // action policy
+    ActionPolicyLoginComponent,
+    // FirstStepComponent,
+    // SecondComponent,
+    // ThirdStepComponent,
+    // FourthStepComponent
 ];

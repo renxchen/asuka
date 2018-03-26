@@ -20,10 +20,9 @@
 #
 # django.setup()
 
-import json
 from collections import OrderedDict
 
-from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.apolomgr.resource.common.tool import Tool
 from backend.apolo.db_utils.db_opt import DBOpt
 from backend.apolo.tools import constants
 
@@ -166,7 +165,7 @@ class Rule_Tree(object):
             'data': {
                 'rule_id': 0,
                 'is_root': True,
-                'rule_type': 'data_rule_5'
+                'rule_type': 'data_rule_9'
             },
             'state': {
                 'opened': True,
@@ -279,6 +278,10 @@ class Policy_tree(DBOpt):
                 r['icon'] = constants.BLOCK_NODE_ICON
                 r['data']['rule_type'] = 'block_rule_4'
                 rule_tree.block_rule_type_four['children'].append(r)
+            elif rule.rule_type == 9:
+                r['icon'] = constants.DATA_NODE_ICON
+                r['data']['rule_type'] = 'data_rule_9'
+                rule_tree.data_rule_type_five['children'].append(r)
             else:
                 err_having = True
                 break

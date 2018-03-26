@@ -47,6 +47,7 @@ urlpatterns = [
     url(r'^v1/api_data_table_step4_tree/', resource_api.api_data_table_step4_tree),
     url(r'^v1/api_data_table_step4_table/', resource_api.api_data_table_step4_table),
     url(r'^v1/api_data_table_step1/', resource_api.api_data_table_step1),
+    url(r'^v1/api_data_table_name_verify/', resource_api.api_data_table_name_verify),
     url(r'^v1/api_action_policy/', resource_api.api_action_policy),
     url(r'^v1/api_regenerate_trigger_detail/', resource_api.api_regenerate_trigger_detail),
     url(r'^v1/api_column/', resource_api.api_column),

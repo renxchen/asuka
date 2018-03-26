@@ -48,6 +48,11 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         self.order = views_helper.get_request_value(self.request, 'sord', method)
         self.action_policy_name = views_helper.get_request_value(self.request, 'name', method)
         self.action_policy_name_for_search = views_helper.get_request_value(self.request, 'name_for_search', method)
+        self.device_group_name_for_search = views_helper.get_request_value(self.request, 'device_group_name_for_search',
+                                                                           method)
+        self.coll_policy_group_name_for_search = views_helper.get_request_value(self.request,
+                                                                                'coll_policy_group_name_for_search',
+                                                                                method)
         self.desc = views_helper.get_request_value(self.request, 'desc', method)
         self.trigger_type = views_helper.get_request_value(self.request, 'trigger_type', method)
         self.column_a = views_helper.get_request_value(self.request, 'column_a', method)
@@ -57,9 +62,10 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         self.critical_threshold = views_helper.get_request_value(self.request, 'critical_threshold', method)
         self.critical_condition = views_helper.get_request_value(self.request, 'critical_condition', method)
         self.critical_limit_nums = views_helper.get_request_value(self.request, 'critical_limit_nums', method)
-        self.critical_action_type = views_helper.get_request_value(self.request, 'critical_action_type', method)
+        self.critical_action_type_1 = views_helper.get_request_value(self.request, 'critical_action_type_1', method)
+        self.critical_action_type_2 = views_helper.get_request_value(self.request, 'critical_action_type_2', method)
         # critical action type is SNMP Trap
-        self.action_multi = views_helper.get_request_value(self.request, 'action_multi', method)
+        # self.action_multi = views_helper.get_request_value(self.request, 'action_multi', method)
         # 1
         self.critical_snmp_version_1 = views_helper.get_request_value(self.request, 'critical_snmp_version_1', method)
         self.critical_snmp_comminute_1 = views_helper.get_request_value(self.request, 'critical_snmp_comminute_1',
@@ -112,7 +118,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         self.minor_threshold = views_helper.get_request_value(self.request, 'minor_threshold', method)
         self.minor_condition = views_helper.get_request_value(self.request, 'minor_condition', method)
         self.minor_limit_nums = views_helper.get_request_value(self.request, 'minor_limit_nums', method)
-        self.minor_action_type = views_helper.get_request_value(self.request, 'minor_action_type', method)
+        self.minor_action_type_1 = views_helper.get_request_value(self.request, 'minor_action_type_1', method)
+        self.minor_action_type_2 = views_helper.get_request_value(self.request, 'minor_action_type_2', method)
         # minor action type is SNMP Trap
         # 1
         self.minor_snmp_version_1 = views_helper.get_request_value(self.request, 'minor_snmp_version_1', method)
@@ -166,7 +173,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         self.major_threshold = views_helper.get_request_value(self.request, 'major_threshold', method)
         self.major_condition = views_helper.get_request_value(self.request, 'major_condition', method)
         self.major_limit_nums = views_helper.get_request_value(self.request, 'major_limit_nums', method)
-        self.major_action_type = views_helper.get_request_value(self.request, 'major_action_type', method)
+        self.major_action_type_1 = views_helper.get_request_value(self.request, 'major_action_type_1', method)
+        self.major_action_type_2 = views_helper.get_request_value(self.request, 'major_action_type_2', method)
         # major action type is SNMP Trap
         # 1
         self.major_snmp_version_1 = views_helper.get_request_value(self.request, 'major_snmp_version_1', method)
@@ -346,6 +354,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
             return exception_handler(e)
+
+    @staticmethod
+    def migrate(data):
+        temp = []
+        for i in data:
+            temp.append(i['action_type'])
+        return ','.join(temp)
 
     def create_expression(self, value, column_a=None, column_b=None):
         """!@brief
@@ -550,7 +565,6 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             transaction.rollback()
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
-            self.logger.error(e)
             return exception_handler(e)
 
     def data_generate_critical(self):
@@ -586,7 +600,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         data_action_1 = {
             'action_name': self.action_policy_name,
-            'action_type': self.critical_action_type,  # アクションタイプ
+            'action_type': self.critical_action_type_1,  # アクションタイプ
             'param': '',  #
             'priority': self.critical_priority,  # 重要度
             'snmp_version': self.critical_snmp_version_1,  # SNMP Version
@@ -606,7 +620,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         data_action_2 = {
             'action_name': self.action_policy_name,
-            'action_type': self.critical_action_type,  # アクションタイプ
+            'action_type': self.critical_action_type_2,  # アクションタイプ
             'param': '',  #
             'priority': self.critical_priority,  # 重要度
             'snmp_version': self.critical_snmp_version_2,  # SNMP Version
@@ -627,12 +641,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         trigger_data = {}
         trigger_detail_data = {}
         action_data = []
-        if self.critical_threshold is not '':
+        if self.critical_priority is not '':
             trigger_data = dict(data_common.items() + data_trigger.items())
             trigger_detail_data = data_trigger_detail
-            action_data = [data_action_1]
-            if self.action_multi.upper() == 'TRUE':
+            if self.critical_action_type_1 is not '' and self.critical_action_type_2 is not '':
                 action_data = [data_action_1, data_action_2]
+            elif self.critical_action_type_1 is not '':
+                action_data = [data_action_1]
+            elif self.critical_action_type_2 is not '':
+                action_data = [data_action_2]
         result = {
             'data_trigger': trigger_data,
             'trigger_detail_data': trigger_detail_data,
@@ -674,7 +691,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         data_action_1 = {
             'action_name': self.action_policy_name,
-            'action_type': self.major_action_type,  # アクションタイプ
+            'action_type': self.major_action_type_1,  # アクションタイプ
             'param': '',  #
             'priority': self.major_priority,  # 重要度
             'snmp_version': self.major_snmp_version_1,  # SNMP Version
@@ -695,7 +712,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
 
         data_action_2 = {
             'action_name': self.action_policy_name,
-            'action_type': self.major_action_type,  # アクションタイプ
+            'action_type': self.major_action_type_2,  # アクションタイプ
             'param': '',  #
             'priority': self.major_priority,  # 重要度
             'snmp_version': self.major_snmp_version_2,  # SNMP Version
@@ -717,13 +734,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         trigger_data = {}
         trigger_detail_data = {}
         action_data = []
-        if self.major_threshold is not '':
+        if self.major_priority is not '':
             trigger_data = dict(data_common.items() + data_trigger.items())
             trigger_detail_data = data_trigger_detail
-            action_data = [data_action_1]
-            if self.action_multi.upper() == 'TRUE':
+            if self.major_action_type_1 is not '' and self.major_action_type_2 is not '':
                 action_data = [data_action_1, data_action_2]
-
+            elif self.major_action_type_1 is not '':
+                action_data = [data_action_1]
+            elif self.major_action_type_2 is not '':
+                action_data = [data_action_2]
         result = {
             'data_trigger': trigger_data,
             'trigger_detail_data': trigger_detail_data,
@@ -764,7 +783,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         data_action_1 = {
             'action_name': self.action_policy_name,
-            'action_type': self.minor_action_type,  # アクションタイプ
+            'action_type': self.minor_action_type_1,  # アクションタイプ
             'param': '',  #
             'priority': self.minor_priority,  # 重要度
             'snmp_version': self.minor_snmp_version_1,  # SNMP Version
@@ -784,7 +803,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         data_action_2 = {
             'action_name': self.action_policy_name,
-            'action_type': self.minor_action_type,  # アクションタイプ
+            'action_type': self.minor_action_type_2,  # アクションタイプ
             'param': '',  #
             'priority': self.minor_priority,  # 重要度
             'snmp_version': self.minor_snmp_version_2,  # SNMP Version
@@ -806,13 +825,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         trigger_data = {}
         trigger_detail_data = {}
         action_data = []
-        if self.minor_threshold is not '':
+        if self.minor_priority is not '':
             trigger_data = dict(data_common.items() + data_trigger.items())
             trigger_detail_data = data_trigger_detail
-            action_data = [data_action_1]
-            if self.action_multi.upper() == 'TRUE':
+            if self.minor_action_type_1 is not '' and self.minor_action_type_2 is not '':
                 action_data = [data_action_1, data_action_2]
-
+            elif self.minor_action_type_1 is not '':
+                action_data = [data_action_1]
+            elif self.minor_action_type_2 is not '':
+                action_data = [data_action_2]
         result = {
             'data_trigger': trigger_data,
             'trigger_detail_data': trigger_detail_data,
@@ -916,14 +937,24 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             'name': self.action_policy_name_for_search,
             'trigger_type': self.trigger_type,
             'critical_priority': self.critical_priority,
+            'column_a': self.column_a,
+            'column_b': self.column_b,
+            'device_group': self.device_group_name_for_search,
+            'coll_policy_group': self.coll_policy_group_name_for_search,
             'major_priority': self.major_priority,
             'minor_priority': self.minor_priority,
             'desc': self.desc,
         }
+        total_num = len(contacts.object_list)
         search_sort_data = {}
         for per in contacts.object_list:
             name = per['name']
             trigger_type = per['trigger_type']
+            column = per['column']
+            device_group = per['device_group']
+            coll_policy_group = per['coll_policy_group']
+            device_group_id = per['device_group_id']
+            coll_policy_group_id = per['coll_policy_group_id']
             critical_priority = ''
             major_priority = ''
             minor_priority = ''
@@ -948,6 +979,11 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 continue
             search_sort_data['name'] = name
             search_sort_data['trigger_type'] = trigger_type
+            search_sort_data['column'] = column
+            search_sort_data['device_group'] = device_group
+            search_sort_data['device_group_id'] = device_group_id
+            search_sort_data['coll_policy_group'] = coll_policy_group
+            search_sort_data['coll_policy_group_id'] = coll_policy_group_id
             search_sort_data['critical_priority'] = critical_priority
             search_sort_data['major_priority'] = major_priority
             search_sort_data['minor_priority'] = minor_priority
@@ -967,9 +1003,9 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             },
             'new_token': self.new_token,
             'num_page': paginator.num_pages,
-            'page_range': list(paginator.page_range),
-            'page_has_next': contacts.has_next(),
-            'total_num': len(contacts.object_list),
+            # 'page_range': list(paginator.page_range),
+            # 'page_has_next': contacts.has_next(),
+            'total_num': total_num,
             'current_page_num': contacts.number,
             constants.STATUS: {
                 constants.STATUS: constants.TRUE,
@@ -1001,21 +1037,56 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             result_in_trigger = queryset_triggers.filter(name=action_name)
             data_dic = {}
             priority_dic = {}
+            column_a = ''
+            column_b = ''
+            device_group_a = ''
+            device_group_b = ''
+            device_group_a_id = ''
+            device_group_b_id = ''
+            coll_policy_group_a = ''
+            coll_policy_group_b = ''
+            coll_policy_group_a_id = ''
+            coll_policy_group_b_id = ''
             for per_in_trigger in result_in_trigger:
                 priority_dic[per_in_trigger.priority] = per_in_trigger.trigger_id
             data_dic['name'] = result_in_trigger[0].name
             data_dic['trigger_type'] = self.map_trigger_type(result_in_trigger[0].trigger_type)
             data_dic['desc'] = result_in_trigger[0].descr
+            if result_in_trigger[0].columnA:
+                column_a = DataTable.objects.get(table_id=int(result_in_trigger[0].columnA)).name
+                device_group_a = DataTable.objects.get(table_id=int(result_in_trigger[0].columnA)).groups.name
+                device_group_a_id = DataTable.objects.get(table_id=int(result_in_trigger[0].columnA)).groups.group_id
+                coll_policy_group_a = \
+                    DataTable.objects.filter(table_id=int(result_in_trigger[0].columnA)).values('policy_group__name')[
+                        0]['policy_group__name']
+                coll_policy_group_a_id = \
+                    DataTable.objects.filter(table_id=int(result_in_trigger[0].columnA)).values('policy_group')[0][
+                        'policy_group']
+            if result_in_trigger[0].columnB:
+                column_b = DataTable.objects.get(table_id=int(result_in_trigger[0].columnB)).name
+                # device_group_b = DataTable.objects.get(table_id=int(result_in_trigger[0].columnB)).groups.name
+                # device_group_b_id = DataTable.objects.get(table_id=int(result_in_trigger[0].columnB)).groups.group_id
+                coll_policy_group_b = \
+                    DataTable.objects.filter(table_id=int(result_in_trigger[0].columnB)).values('policy_group__name')[
+                        0]['policy_group__name']
+                coll_policy_group_b_id = \
+                    DataTable.objects.filter(table_id=int(result_in_trigger[0].columnB)).values('policy_group')[0][
+                        'policy_group']
+            data_dic['column'] = str(column_a) + ',' + str(column_b)
+            data_dic['device_group'] = str(device_group_a)
+            data_dic['device_group_id'] = str(device_group_a_id)
+            data_dic['coll_policy_group'] = str(coll_policy_group_a) + ',' + str(coll_policy_group_b)
+            data_dic['coll_policy_group_id'] = str(coll_policy_group_a_id) + ',' + str(coll_policy_group_b_id)
             for per_priority in priority_dic:
                 if per_priority == constants.NUMBER_ZERO:
-                    data_dic['critical_priority'] = queryset_action_all.filter(trigger_id=priority_dic[0]).values(
-                        'action_type').annotate(num=Count('action_type'))[0]['action_type']
+                    data_dic['critical_priority'] = self.migrate(
+                        queryset_action_all.filter(trigger_id=priority_dic[0]).values('action_type'))
                 if per_priority == constants.NUMBER_ONE:
-                    data_dic['major_priority'] = queryset_action_all.filter(trigger_id=priority_dic[1]).values(
-                        'action_type').annotate(num=Count('action_type'))[0]['action_type']
+                    data_dic['major_priority'] = self.migrate(
+                        queryset_action_all.filter(trigger_id=priority_dic[1]).values('action_type'))
                 if per_priority == constants.NUMBER_TWO:
-                    data_dic['minor_priority'] = queryset_action_all.filter(trigger_id=priority_dic[2]).values(
-                        'action_type').annotate(num=Count('action_type'))[0]['action_type']
+                    data_dic['minor_priority'] = self.migrate(
+                        queryset_action_all.filter(trigger_id=priority_dic[2]).values('action_type'))
             view_list_data.append(data_dic)
         result_data = self.get_search_sort_data(view_list_data)
         return result_data
@@ -1150,9 +1221,19 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 'action_data': result_action_minor_list,
             },
         }
-        return result
+        data = {
+            'data': {
+                'data': result
+            },
+            'new_token': self.new_token,
+            constants.STATUS: {
+                constants.STATUS: constants.TRUE,
+                constants.MESSAGE: constants.SUCCESS
+            },
+        }
+        return data
 
-    def create_trigger_related(self):
+    def create_trigger_related(self, method='POST'):
         """!@brief
         Insert data into triggers table, actions table and trigger_detail table
         @pre call from POST or PUT method
@@ -1167,7 +1248,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     data = {
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLUMN_A_OR_COLUMN_B_NOT_EXIST % (self.column_a, self.column_b)
+                            constants.MESSAGE: constants.COLUMN_A_OR_COLUMN_B_NOT_EXIST
                         }
                     }
                     return api_return(data=data)
@@ -1207,7 +1288,9 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     serializer_action = ActionsSerializer(data=action_data, many=True)
                     if serializer_action.is_valid(Exception):
                         serializer_action.save()
-
+                    msg = constants.POST_SUCCESSFUL
+                    if method == 'PUT':
+                        msg = constants.PUT_SUCCESSFUL
                     data = {
                         'data': {
                             'trigger': serializer_trigger.data,
@@ -1217,7 +1300,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
+                            constants.MESSAGE: msg
                         }
                     }
                     return data
@@ -1225,7 +1308,6 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             transaction.rollback()
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
-            self.logger.error(e)
             return exception_handler(e)
 
     def get(self):
@@ -1251,7 +1333,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         """
         try:
             with transaction.atomic():
-                data = self.create_trigger_related()
+                data = self.create_trigger_related(method='POST')
                 return api_return(data=data)
         except Exception, e:
             transaction.rollback()
@@ -1270,7 +1352,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     # delete old trigger, trigger_detail, action data
                     self.delete_trigger_related(self.action_policy_name)
                     # create new trigger, trigger_detail, action data
-                    data = self.create_trigger_related()
+                    data = self.create_trigger_related(method='PUT')
                     return api_return(data=data)
         except Exception, e:
             transaction.rollback()
@@ -1290,7 +1372,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.TRUE,
-                        constants.MESSAGE: constants.SUCCESS
+                        constants.MESSAGE: constants.DELETE_SUCCESSFUL
                     }
                 }
                 return api_return(data=data)

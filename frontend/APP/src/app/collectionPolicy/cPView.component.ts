@@ -41,15 +41,16 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         private modalService: BsModalService
     ) { }
     ngOnInit() {
+    }
+    ngAfterViewInit() {
         let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cptype'];
         if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
             this.cPType = cPTypeTmp;
+            this.drawCPTable('OID', 'snmp_oid', this.cPType);
         } else {
             this.cPType = '0';
+            this.drawCPTable('show コマンド', 'cli_command', this.cPType);
         }
-    }
-    ngAfterViewInit() {
-        this.drawCPTable('show コマンド', 'cli_command', this.cPType);
     }
     public formatterBtn(cellvalue, options, rowObject) {
         /**
@@ -112,7 +113,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             colModel: [
                 { label: 'No', hidden: true, name: 'coll_policy_id', index: 'coll_policy_id', search: false, key: true },
                 { label: 'コレクションポリシー名', name: 'name', index: 'name', width: 50, align: 'center', search: true },
-                { label: 'OS Type', name: 'ostype_name', index: 'ostype', width: 50, align: 'center', search: true },
+                { label: 'OS Type', name: 'ostype__name', index: 'ostype__name', width: 50, align: 'center', search: true },
                 { label: thirdCol, name: thirdName, index: thirdName, width: 50, align: 'center', search: true },
                 {
                     abel: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true,
@@ -136,7 +137,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 }
                 if (code === 103) {
                     alert('This user is not authorized to access, please login again.');
-                    _t.router.navigate(['/login']);
+                    _t.router.navigate(['/login/']);
                 }
             },
             beforeSelectRow: function (rowid, e) { return false; },
@@ -243,15 +244,20 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                                     $('#cpTable').jqGrid().trigger('reloadGrid');
                                 });
                             } else {
-                                if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
-                                    this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
-                                    this.closeMsg = 'close';
-                                    _t.showAlertModal(this.modalMsg, this.closeMsg);
-                                } else {
-                                    if (msg) {
-                                        alert(msg);
+                                if (msg) {
+                                        this.modalMsg = msg;
+                                        this.closeMsg = '閉じる';
+                                        _t.showAlertModal(this.modalMsg, this.closeMsg);
                                     }
-                                }
+                                // if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
+                                //     this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
+                                //     this.closeMsg = '閉じる';
+                                //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                // } else {
+                                //     if (msg) {
+                                //         alert(msg);
+                                //     }
+                                // }
                             }
                         });
                 }
@@ -273,7 +279,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 { queryParams: { 'cPType': parseInt(this.cPType, 0) } });
         }
     }
-    public showAlertModal(modalMsg?: any, closeMsg?: any, data?: any) {
+    public showAlertModal(modalMsg: any, closeMsg: any) {
         /**
         * @brief show modal dialog
         * @author Dan Lv
@@ -282,6 +288,5 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
-        this.modalRef.content.data = data;
     }
 }

@@ -1,9 +1,14 @@
 export class Validator {
-    // need modify noSpecSymbolReg
-    static noSpecSymbolReg: RegExp = /[\x00-\xff]+/;
-    static noCommsymbolReg: RegExp = /[\x00-\xff]+/;
-    static includeChineseReg: RegExp = /[\u4e00-\u9fa5]/;
-    static oidReg: RegExp = /[0-9]+?(\.[0-9]+?)+/;
+    // full-width and half-width without space, comma , quotes and double quotes
+    static fullWithoutSpecialReg: RegExp = /^(?!.*[, \'\"])/;
+    // full-width with space, comma , quotes and double quotes
+    static halfWithoutSpecialReg: RegExp = /[^\x00-\xff]|[\x22|\x20|\x27\x2c]/;
+    // only half-width
+    static halfReg: RegExp = /[\x00-\xff]+/;
+    // static oidReg: RegExp = /^[1-9]+(\.[1-9]*|\.[1-9][0-9]|\.[1-9][0-9][0-9])*$/;
+    // static oidReg: RegExp = /^[1-9](\.(?!0+)\d+)*$/;
+    // static oidReg: RegExp = /^1(\.(?!0)\d+)*$/;
+    static oidReg: RegExp = /^1(\.(?!0+)\d+)*$/;
     static numReg: RegExp = /[0-9]/;
     static xOffsetReg: RegExp = /^-?[1-9]\d*$/;
     static offsetReg: RegExp = /^-?[0-9]\d*$/;
@@ -20,8 +25,8 @@ export class Validator {
             }
         }
     }
-    static noSpecSymbol(param: any): boolean {
-        if (Validator.regTest(Validator.noSpecSymbolReg, param)) {
+    static fullWithoutSpecial(param: any): boolean {
+        if (Validator.regTest(Validator.fullWithoutSpecialReg, param)) {
             return true;
         } else {
             return false;
@@ -34,15 +39,15 @@ export class Validator {
             return false;
         }
     }
-    static noCommsymbol(param: any) {
-        if (Validator.regTest(Validator.noCommsymbolReg, param)) {
-            return true;
-        } else {
+    static halfWithoutSpecial(param: any) {
+        if (Validator.regTest(Validator.halfWithoutSpecialReg, param)) {
             return false;
+        } else {
+            return true;
         }
     }
-    static includeChinese(param: any) {
-        if (Validator.regTest(Validator.includeChineseReg, param)) {
+    static halfWidthReg(param: any) {
+        if (Validator.regTest(Validator.halfReg, param)) {
             return true;
         } else {
             return false;

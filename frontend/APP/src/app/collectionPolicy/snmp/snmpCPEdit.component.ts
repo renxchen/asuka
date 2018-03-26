@@ -35,7 +35,6 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
     closeMsg: any;
     nameNotNull: Boolean = true;
     nameFlg: Boolean = true;
-    descFlg: Boolean = false;
     oidNotNull: Boolean = true;
     oidFlg: Boolean = true;
     uniqueFlg: Boolean = true;
@@ -128,16 +127,14 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
         */
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
-        this.descFlg = Validator.includeChinese(this.desc);
         this.oidNotNull = Validator.notNullCheck(this.snmpOid);
         if (this.oidNotNull) {
             this.oidFlg = Validator.oidRegCheck(this.snmpOid);
         }
         if (this.nameNotNull && this.nameFlg
-            && this.oidNotNull && this.oidFlg
-            && !this.descFlg) {
+            && this.oidNotNull && this.oidFlg) {
             return true;
         } else {
             return false;
@@ -184,7 +181,9 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
             this.httpClient
                 .toJson(this.httpClient.put(cPLoginUrl, cPInfo))
                 .subscribe(res => {
-                    if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    if (status && status['status'].toLowerCase() === 'true') {
                         // if (res['data']) {
                         //     let id = res['data']['coll_policy_id'];
                         //     this.router.navigate(['/index/snmpcpedit'],
@@ -197,8 +196,12 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                             _t.router.navigate(['/index/cpview/'], { queryParams: { 'cptype': 1 } });
                         });
                     } else {
-                        if (res['status']['message'] === 'CP_NAME_DUPLICATE') {
+                        if (msg === 'CP_NAME_DUPLICATE') {
                             this.uniqueFlg = false;
+                        } else {
+                            this.modalMsg = msg;
+                            this.closeMsg = '一覧へ戻る';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
                         }
                     }
                 });

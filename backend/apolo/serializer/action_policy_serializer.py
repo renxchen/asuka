@@ -26,6 +26,7 @@ class ActionPolicyDataTableSerializer(serializers.ModelSerializer):
         instance.coll_policy = validated_data.get('coll_policy', instance.coll_policy)
         instance.groups = validated_data.get('groups', instance.groups)
         instance.tree = validated_data.get('tree', instance.tree)
+        instance.policy_group = validated_data.get('policy_group', instance.policy_group)
         instance.save()
         return instance
 

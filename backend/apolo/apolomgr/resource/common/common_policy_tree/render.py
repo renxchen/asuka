@@ -16,9 +16,8 @@
 import re
 
 from backend.apolo.apolomgr.resource.common.common_policy_tree.dispatch import Dispatch
-from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.apolomgr.resource.common.tool import Tool
 from backend.apolo.db_utils.db_opt import DBOpt
-from backend.apolo.models import CollPolicyCliRule
 from backend.apolo.tools import constants
 
 
@@ -31,13 +30,7 @@ class Render(Tool, DBOpt):
         # save format [leaf rule_id,parent rule_id...root rule_id]
         self.leaf_path = []
         self.rule_context = {}
-
         self.dispatch_result = {}
-        self.colors = [
-            ["rgba(245, 180, 145, 0.15)", "rgba(250, 155, 190, 0.15)"],
-            ["rgba(245, 180, 145, 0.15)", "rgba(250, 155, 190, 0.15)"],
-            ["#F5B7B1", "#AED6F1", "#D7BDE2", "#F9E79F", "#E5E7E9"]
-        ]
 
     def render(self):
         # get leaf path
@@ -62,7 +55,6 @@ class Render(Tool, DBOpt):
             for d in buffer_dict["children"]:
                 if self.get_path_of_leaf(d):
                     # save the parent node of the leaf
-                    # if buffer_dict['rule_id'] != 0:
                     if buffer_dict['data']['rule_id']:
                         self.leaf_path.append(buffer_dict['data']['rule_id'])
                     return True
@@ -70,7 +62,7 @@ class Render(Tool, DBOpt):
     # get the dispatch executed result
     def execute_dispatch(self):
         for rule_id in self.leaf_path:
-            rule_context = self.__get_rule_from_db__(rule_id)
+            rule_context = self.__get_rule_from_db(rule_id)
             # save the data as input of rules
             if not self.rule_context.has_key(rule_id):
                 self.rule_context.update({rule_id: rule_context})
@@ -91,9 +83,11 @@ class Render(Tool, DBOpt):
     def generate_html(self):
         # render
         deep = len(self.leaf_path) - 1
+        # chance xml mark
+        self.data = Tool.replace_xml_mark(self.data)
         all_data = self.data.split('\n')
-        start_line = 0
-        end_line = len(all_data)
+        # start_line = 0
+        # end_line = len(all_data)
         while deep >= 0:
             color_index = 0
             # leaf node area
@@ -106,13 +100,13 @@ class Render(Tool, DBOpt):
                     if not item['extract_match_flag']:
                         pass
                     else:
-                        # command xml tag
                         basic_character_index = item['basic_character_index']
-                        basic_character = item['basic_character']
+                        basic_character = Tool.replace_xml_mark(item['basic_character'])
                         extract_data_pair = item['extract_data_result']
                         start_line = item['start_line']
                         end_line = item['end_line']
-                        split_char = item['split_characters']
+                        split_char_reg = item['split_characters']
+                        split_char = self.__get_split_char(split_char_reg)
                         rule_type = item['rule_type']
                         # get block text
                         data_list = all_data[start_line:end_line + 1]
@@ -127,6 +121,7 @@ class Render(Tool, DBOpt):
                                     extract_data, replace_extract_data)
                             html_context = '\n'.join(data_list)
                         elif rule_type == 4:
+                            # show line num
                             # there is one layer
                             if deep == 0:
                                 extract_data = extract_data_pair[0][1]
@@ -167,12 +162,13 @@ class Render(Tool, DBOpt):
                                 continue
 
                         elif rule_type == 9:
-                            data_list[0] = '{}{}'.format(constants.EXTRACT_DATA_STYLE, data_list[0])
-                            data_list[-1] = '{}{}'.format(data_list[-1], constants.SPAN_END)
+                            for i in range(len(data_list)):
+                                data_list[i] = '{}{}{}'.format(constants.EXTRACT_DATA_STYLE, data_list[i],
+                                                               constants.SPAN_END)
                             html_context = '\n'.join(data_list)
                         else:
                             extract_data_index = extract_data_pair[0][0]
-                            extract_data = extract_data_pair[0][1]
+                            extract_data = Tool.replace_xml_mark(extract_data_pair[0][1])
                             # replace basic character with split char in raw data
                             replace_char = basic_character
                             if split_char in basic_character:
@@ -188,12 +184,9 @@ class Render(Tool, DBOpt):
                             # combine to new text
                             element_index = 0
                             is_chanced = 0
-                            # there is Regular expression special chars in split char
-                            sp_char = Tool.replace_escape_char(split_char)
                             for i in range(len(data_list)):
                                 line = data_list[i]
-                                line_arry = re.split(sp_char, line)
-                                # line_arry = re.split(split_char, line)
+                                line_arry = re.split(split_char_reg, line)
                                 for j in range(len(line_arry)):
                                     if element_index == basic_character_index:
                                         basic_character_new = line_arry[j]
@@ -236,78 +229,93 @@ class Render(Tool, DBOpt):
                 else:
                     # the node is not leaf
                     # the node is block area
-                    # node = self.dispatch_result[deep]
-                    # for item in node:
                     start_line = item['start_line']
                     end_line = item['end_line']
-                    for i in range(len(all_data)):
-                        if item.has_key('identifier_line_num'):
-                            if i == item['identifier_line_num']:
-                                if constants.EXTRACT_DATA_STYLE in all_data[i]:
+                    basic_char_line = item['block_basic_line_num']
+                    # mark the block basic char
+                    block_start_char = Tool.replace_xml_mark(item['block_start_characters'])
+                    extract_data_in_block_basic = False
+                    if constants.EXTRACT_DATA_STYLE in all_data[basic_char_line]:
+                        extract_match = re.search(
+                            '{}(.*){}'.format(constants.EXTRACT_DATA_STYLE,
+                                              constants.SPAN_END),
+                            all_data[basic_char_line])
+                        if extract_match is not None:
+                            buffer_data = extract_match.group(1)
+                            if buffer_data in block_start_char \
+                                    or block_start_char in buffer_data:
+                                extract_data_in_block_basic = True
+
+                    if not extract_data_in_block_basic:
+                        all_data[basic_char_line] = all_data[basic_char_line].replace(block_start_char,
+                                                                                      '{}{}{}'.format(
+                                                                                          constants.BLOCK_BASIC_CHAR_STYLE,
+                                                                                          block_start_char,
+                                                                                          constants.SPAN_END))
+
+                    # add block start html mark for a block
+                    block_rule_style = constants.BLOCK_RULE_EVEN_STYLE
+                    if color_index == 1:
+                        block_rule_style = constants.BLOCK_RULE_ODD_STYLE
+
+                    if item['rule_type'] != 8:
+                        all_data[start_line] = '{}{}'.format(block_rule_style, all_data[start_line])
+                        if color_index == 1:
+                            color_index = 0
+                        else:
+                            color_index = 1
+
+                    # if  block rule is block_rule_by_regular
+                    if item.has_key('reg_match_context'):
+                        for tuple_item in item['reg_match_context']:
+
+                            (lm, match_string) = tuple_item
+                            match_string = Tool.replace_xml_mark(match_string)
+                            if constants.EXTRACT_DATA_STYLE in all_data[lm]:
+                                extract_match = re.search(
+                                    '{}(.*){}'.format(constants.EXTRACT_DATA_STYLE, constants.SPAN_END),
+                                    all_data[lm])
+                                if extract_match is not None:
+                                    buffer_data = extract_match.group(1)
+                                    if buffer_data in match_string or match_string in buffer_data:
+                                        all_data[lm] = constants.REGEXP_BLOCK_RULE_STYLE.format(all_data[lm])
+                                        continue
+
+                            all_data[lm] = all_data[lm].replace(match_string,
+                                                                '{}{}{}'.format(
+                                                                    constants.BLOCK_BASIC_CHAR_STYLE,
+                                                                    match_string,
+                                                                    constants.SPAN_END))
+                            all_data[lm] = constants.REGEXP_BLOCK_RULE_STYLE.format(all_data[lm])
+
+                    # add block end html mark for a block
+                    if item['rule_type'] != 8:
+                        if item.has_key('is_include'):
+                            if not item['is_include']:
+                                block_end_char = Tool.replace_xml_mark(item['block_end_characters'])
+                                is_marked = False
+                                if constants.EXTRACT_DATA_STYLE in all_data[end_line]:
                                     extract_match = re.search(
                                         '{}(.*){}'.format(constants.EXTRACT_DATA_STYLE,
                                                           constants.SPAN_END),
-                                        all_data[i])
+                                        all_data[end_line])
                                     if extract_match is not None:
                                         buffer_data = extract_match.group(1)
-                                        if buffer_data in item['block_start_characters'] \
-                                                or item['block_start_characters'] in buffer_data:
-                                            continue
+                                        if buffer_data in block_end_char \
+                                                or block_end_char in buffer_data:
+                                            is_marked = True
+                                if not is_marked:
+                                    all_data[end_line] = all_data[end_line].replace(block_end_char,
+                                                                                    '{}{}{}'.format(
+                                                                                        constants.BLOCK_BASIC_CHAR_STYLE,
+                                                                                        block_end_char,
+                                                                                        constants.SPAN_END))
 
-                                all_data[i] = all_data[i].replace(item['block_start_characters'],
-                                                              '{}{}{}'.format(constants.BLOCK_BASIC_CHAR_STYLE,
-                                                                              item['block_start_characters'],
-                                                                              constants.SPAN_END))
-
-                        if i == start_line:
-                            block_rule_style = constants.BLOCK_RULE_EVEN_STYLE
-                            if color_index==1:
-                                block_rule_style = constants.BLOCK_RULE_ODD_STYLE
-
-                            if item['rule_type'] != 8:
-                                all_data[i] = '{}{}'.format(block_rule_style, all_data[i])
-
-                                if color_index == 1:
-                                    color_index = 0
-                                else:
-                                    color_index = 1
-                            # if  block rule is block_rule_by_regular
-                            if item.has_key('reg_match_context'):
-                                for tuple_item in item['reg_match_context']:
-
-                                    (lm, match_string) = tuple_item
-                                    if constants.EXTRACT_DATA_STYLE in all_data[lm]:
-                                        extract_match = re.search(
-                                            '{}(.*){}'.format(constants.EXTRACT_DATA_STYLE, constants.SPAN_END),
-                                            all_data[lm])
-                                        if extract_match is not None:
-                                            buffer_data = extract_match.group(1)
-                                            if buffer_data in match_string or match_string in buffer_data:
-                                                all_data[lm] = constants.REGEXP_BLOCK_RULE_STYLE.format(all_data[lm])
-                                                continue
-
-                                    all_data[lm] = all_data[lm].replace(match_string,
-                                                                        '{}{}{}'.format(
-                                                                            constants.BLOCK_BASIC_CHAR_STYLE,
-                                                                            match_string,
-                                                                            constants.SPAN_END))
-                                    all_data[lm] = constants.REGEXP_BLOCK_RULE_STYLE.format(all_data[lm])
-
-
-                        if i == end_line and item['rule_type'] != 8:
-                            if item.has_key('is_include'):
-                                if item['is_include']:
-                                    all_data[i] = all_data[i].replace(item['block_end_characters'],
-                                                                      '{}{}{}'.format(
-                                                                          constants.BLOCK_BASIC_CHAR_STYLE,
-                                                                          item['block_end_characters'],
-                                                                          constants.SPAN_END))
-
-                            if all_data[i]:
-                                all_data[i] = all_data[i] + constants.DIV_END
-                            else:
-                                # there is only enter key in the end line
-                                all_data[i] = all_data[i] + ' ' + constants.DIV_END
+                        if all_data[end_line]:
+                            all_data[end_line] = all_data[end_line] + constants.DIV_END
+                        else:
+                            # there is only enter key in the end line
+                            all_data[end_line] = all_data[end_line] + ' ' + constants.DIV_END
             deep = deep - 1
         html_data_list = []
         for k in range(len(all_data)):
@@ -321,6 +329,16 @@ class Render(Tool, DBOpt):
         html_data = "\n".join(html_data_list)
         return html_data
 
-    def __get_rule_from_db__(self, rule_id):
+    def __get_rule_from_db(self, rule_id):
         obj = self.get_rule_detail_from_db(rule_id)
         return self.get_rule_value(obj)
+
+    def __get_split_char(self, split_char_reg):
+        if split_char_reg:
+            m = re.search(split_char_reg, self.data)
+            if m is not None:
+                return m.group()
+            else:
+                return split_char_reg
+        else:
+            return split_char_reg

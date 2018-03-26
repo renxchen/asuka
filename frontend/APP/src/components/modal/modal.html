@@ -1,44 +1,16 @@
 <div class="modal-content">
     <div class="modal-body" style="margin-bottom:10px">
-        <p [hidden]="!modalMsg" class="text-center">{{modalMsg}}</p>
-        <div [hidden]="!data" style="overflow:auto">
-            <h2><strong>Error Devices Table</strong></h2>
-            <h6><i class="fa fa-times-circle" style="color:red"></i>&nbsp;該当デバイスに対応カラムの修正が必要です</h6>    
-            <table  class="table">
-                <thead>
-                    <tr>
-                        <th>Hostname</th>
-                        <th>IP Address</th>
-                        <th>Telnet Port</th>
-                        <th>SNMP Port</th>
-                        <th>SNMP Community</th>
-                        <th>SNMP Version</th>
-                        <th>Login Expect</th>
-                        <th>Device Type</th>
-                        <th>Ostype</th>
-                        <th>Group</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let item of data">
-                        <td>{{item.hostname}}</td>
-                        <td><span *ngIf="!item.ip"><i class="fa fa-times-circle" style="color:red"></i></span></td>
-                        <td><span *ngIf="!item.telnet_port"><i class="fa fa-times-circle" style="color:red"></i></span></td>
-                        <td><span *ngIf="!item.snmp_port"><i class="fa fa-times-circle" style="color:red"></i></span></td>
-                        <td><span *ngIf="!item.snmp_community"><i class="fa fa-times-circle" style="color:red"></i></span></td>
-                        <td><span *ngIf="!item.snmp_version"><i class="fa fa-times-circle" style="color:red"></i></span></td>
-                        <td><span *ngIf="!item.login_expect"><i class="fa fa-times-circle" style="color:red"></i></span></td>
-                        <td><span *ngIf="!item.device_type"><i class="fa fa-times-circle" style="color:red"></i></span></td>
-                        <td><span *ngIf="!item.ostype"><i class="fa fa-times-circle" style="color:red"></i></span></td>
-                        <td><span *ngIf="!item.group"><i class="fa fa-times-circle" style="color:red"></i></span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <p class="text-center">{{modalMsg}}</p>
     </div>
-    <div class="modal-footer" [hidden]="!closeMsg" >
+    <div class="modal-footer">
         <div class="text-right">
-            <button type="button" id="modalButton" class="btn btn-primary"  (click)="closeAlertModal()">{{closeMsg}}</button>
+            <button 
+                type="button" 
+                id="modalButton" 
+                class="btn btn-primary"  
+                (click)="closeAlertModal()">
+                {{closeMsg}}
+            </button>
         </div>
     </div>
 </div>

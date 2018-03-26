@@ -9,7 +9,6 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 export class ModalComponent implements OnInit, AfterViewInit {
     modalMsg: any;
     closeMsg: any;
-    data: any;
     constructor(
         private bsModalRef: BsModalRef
     ) { }

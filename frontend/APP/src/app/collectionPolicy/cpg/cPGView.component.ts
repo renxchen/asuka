@@ -13,7 +13,6 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../../components/modal/modal.component';
 import { CPGDetailComponent } from './cPGDetail.component';
-import { CPGActionComponent } from './cPGAction.component';
 import { CPGEditComponent } from './cPGEdit.component';
 import { CPGLoginComponent } from './cPGLogin.component';
 import { Subscription } from 'rxjs/Rx';
@@ -58,7 +57,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 { label: 'No', hidden: true, name: 'policy_group_id', index: 'policy_group_id', search: false, key: true },
                 { label: 'コレクションポリシー名', name: 'name', index: 'name', width: 50, align: 'center', search: true },
                 { label: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true, formatter: _t.noDataFormatter },
-                { label: 'OS Type', name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true },
+                { label: 'OS Type', name: 'ostypeid__name', index: 'ostypeid__name', width: 50, align: 'center', search: true },
                 {
                     label: 'アクション', name: 'action', width: 50, align: 'center', search: false,
                     formatter: _t.formatterBtn, resizable: false
@@ -68,6 +67,17 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 _t.detailBtn();
                 _t.editBtn();
                 _t.deleteBtn();
+            },
+            loadComplete: function (res) {
+                let code = _.get(_.get(res, 'new_token'), 'code');
+                if (code === 102) {
+                    alert('Signature has expired,please login again.');
+                    _t.router.navigate(['/login/']);
+                }
+                if (code === 103) {
+                    alert('This user is not authorized to access, please login again.');
+                    _t.router.navigate(['/login/']);
+                }
             },
             beforeSelectRow: function (rowid, e) { return false; },
             // beforeRequest: function () {
@@ -148,6 +158,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         $('.detail').click(function (event) {
             let detaiId = $(event)[0].target.id;
             if (detaiId) {
+                console.log(detaiId);
                 _t.router.navigate(['/index/cpgdetail'],
                     { queryParams: { 'id': detaiId } });
             }
@@ -203,13 +214,18 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                                 });
                             } else {
                                 // check this cp occupation
-                                if (msg && msg === 'POLICY_GROUP_EXIST_IN_SCHEDULE') {
-                                    this.modalMsg = 'Can not been delete when policy group exits in schedule';
-                                    this.closeMsg = 'close';
+                                if (msg) {
+                                    this.modalMsg = msg;
+                                    this.closeMsg = '閉じる';
                                     _t.showAlertModal(this.modalMsg, this.closeMsg);
-                                } else {
-                                    alert(msg);
                                 }
+                                // if (msg && msg === 'COLL_POLICY_GROUP_EXIST_IN_SCHEDULE') {
+                                //     this.modalMsg = 'Can not been delete when policy group exits in schedule';
+                                //     this.closeMsg = '閉じる';
+                                //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                // } else {
+                                //     alert(msg);
+                                // }
                             }
                         });
                 }

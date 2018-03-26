@@ -70,11 +70,6 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                 this.ruleType = this.info['ruleType'];
                 this.actionType = this.info['actionType'];
                 if (this.actionType === 'edit') {
-                    if (this.info['delFlg']) {
-                        this.delBtn = false;
-                    } else {
-                        this.delBtn = true;
-                    }
                     this.ruleId = this.info['ruleId'];
                     this.getDataRule(this.cpId, this.ruleId);
                 }
@@ -104,6 +99,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         this.commInfo(cpId, ruleId).subscribe(res => {
             this.processFlg = _.get(res, 'is_processing');
             this.lockFlg = _.get(res, 'is_locked');
+            let isUsed = _.get(res, 'rule_is_used');
             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                 if (res['data']) {
                     let data = res['data'];
@@ -118,7 +114,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     this.isSerial = this.typeFomatter(_.get(data, 'is_serial'));
                     this.extractKey = _.get(data, 'extract_key');
                 }
-                if (res['rule_is_used'] || res['rule_is_used'].toString().toLowerCase() === 'true' && this.info['delFlg']) {
+                if (isUsed || this.info['delFlg']) {
                     this.delBtn = false;
                 } else {
                     this.delBtn = true;
@@ -129,11 +125,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     public blockRuleADCheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         if (this.nameNotNull && this.nameFlg
@@ -147,11 +143,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     public blockRuleBCheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         this.sLnNubFlg = Number.isInteger(this.startLnNum);
@@ -171,11 +167,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     public blockRuleCCheck() {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrFlg) {
-            this.keyStrFlg = Validator.noSpecSymbol(this.keyStr);
+            this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull_A = Validator.notNullCheck(this.markString);
         this.extractKeyNotNull = Validator.notNullCheck(this.extractKey);
@@ -188,7 +184,8 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         // }
         if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull_A && this.endMrkStrFlg && this.extractKeyNotNull) {
+            && this.mrkStrNotNull_A && this.endMrkNotNull
+            && this.extractKeyNotNull) {
             return true;
         } else {
             return false;

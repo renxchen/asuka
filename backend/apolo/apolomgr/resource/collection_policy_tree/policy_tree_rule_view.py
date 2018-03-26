@@ -14,12 +14,11 @@ import traceback
 from django.db.models import Q
 from rest_framework import viewsets
 
-from backend.apolo.apolomgr.resource.common.common_policy_tree.tool import Tool
+from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree
+from backend.apolo.apolomgr.resource.common.tool import Tool
 from backend.apolo.models import CollPolicyCliRule, CollPolicy, CollPolicyRuleTree, DataTable
 from backend.apolo.serializer.policytree_serializer import CollPolicyCliRuleSerializer
 from backend.apolo.tools import views_helper, constants
-from backend.apolo.apolomgr.resource.common.common_policy_tree.policy_tree import Policy_tree
-
 from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 
@@ -393,8 +392,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
     @staticmethod
     def __judge_rule_is_locked(rule_id, coll_policy_id):
         tree_id = CollPolicyRuleTree.objects.filter(rule=rule_id, coll_policy=coll_policy_id).values('treeid')
-        tree_count = DataTable.objects.filter(tree__in=tree_id).count()
-        print tree_count
+        tree_count = len(DataTable.objects.filter(tree__in=tree_id))
         if tree_count > 0:
             return True
         else:

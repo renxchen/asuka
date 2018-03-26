@@ -45,7 +45,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         self.ostype = views_helper.get_request_value(self.request, 'ostype_name', method)
         self.execute_ing = True
         # verify whether is executing status
-        self.get_execute_ing()
+        # self.get_execute_ing()
 
     def get_execute_ing(self):
         """!@brief
@@ -208,6 +208,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         @return verify_result: the status of each column
         """
         try:
+            self.get_execute_ing()
             if id is not '':
                 queryset_pg = PolicysGroups.objects.filter(**{'policy_group_id': id})
                 verify_result = {
@@ -281,11 +282,13 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                                                                           query_data, search_fields)
             total_num = len(CollPolicyGroups.objects.all())
             if search_conditions:
-                queryset = CollPolicyGroups.objects.filter(**search_conditions).order_by(*sorts)
+                queryset = CollPolicyGroups.objects.filter(**search_conditions).values(
+                    *['policy_group_id', 'ostypeid', 'name', 'desc', 'ostypeid__name']).order_by(*sorts)
             else:
-                queryset = CollPolicyGroups.objects.all().order_by(*sorts)
-            serializer = CollPolicyGroupSerializer(queryset, many=True)
-            paginator = Paginator(serializer.data, self.max_size_per_page)
+                queryset = CollPolicyGroups.objects.all().values(
+                    *['policy_group_id', 'ostypeid', 'name', 'desc', 'ostypeid__name']).order_by(*sorts)
+            # serializer = CollPolicyGroupSerializer(queryset, many=True)
+            paginator = Paginator(list(queryset), self.max_size_per_page)
             contacts = paginator.page(self.page_from)
             data = {
                 'data': {
@@ -293,7 +296,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 },
                 'new_token': self.new_token,
                 'num_page': paginator.num_pages,
-                'page_range': list(paginator.page_range),
+                # 'page_range': list(paginator.page_range),
                 'page_has_next': contacts.has_next(),
                 'total_num': total_num,
                 'current_page_num': contacts.number,
@@ -341,7 +344,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
+                            constants.MESSAGE: constants.POST_SUCCESSFUL
                         }
                     }
                     return api_return(data=data)
@@ -356,6 +359,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         @return data: the status of whether modified successful and the modified data
         """
         try:
+            self.get_execute_ing()
             kwargs = {'policy_group_id': self.id}
             cps = views_helper.get_request_value(self.request, 'cps', 'BODY')
             with transaction.atomic():
@@ -399,7 +403,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.TRUE,
-                                constants.MESSAGE: constants.SUCCESS
+                                constants.MESSAGE: constants.PUT_SUCCESSFUL
                             }
                         }
                         return api_return(data=data)
@@ -443,6 +447,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         @return data: the status of whether deleted successful
         """
         try:
+            self.get_execute_ing()
             with transaction.atomic():
                 kwargs = {'policy_group_id': self.id}
                 verify_result = self.get_schedule(**kwargs)
@@ -461,7 +466,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
+                            constants.MESSAGE: constants.DELETE_SUCCESSFUL
                         }
                     }
                 return api_return(data=data)

@@ -172,10 +172,20 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         if (operation === 'copy_node') {
             node_parent.state.opened = true;
         }
-        // block_rule_4 can not have the type of 'block_rule' children
-        if (node['data']['rule_type'] && node['data']['rule_type'].indexOf('block_rule') !== -1
+        // block_rule_4 can not have the type of 'block_rule' children except block_rule_4
+        // if (node['data']['rule_type']
+        //     && node['data']['rule_type'].indexOf('block_rule') !== -1
+        //     && node_parent['data']['rule_type']
+        //     && node_parent['data']['rule_type'] === 'block_rule_4') {
+        //     return false;
+        // }
+        if (node['data']['rule_type']
+            && node['data']['rule_type'].indexOf('block_rule') !== -1
             && node_parent['data']['rule_type']
             && node_parent['data']['rule_type'] === 'block_rule_4') {
+            if (node['data']['rule_type'] === 'block_rule_4') {
+                return true;
+            }
             return false;
         }
         return true;
@@ -329,7 +339,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         // .bind('move_node.jstree', function (e, data) {
         // }).bind('activate_node.jstree', function (e, node) {
 
-
         //     show_detail(node);
         // });
     }
@@ -446,14 +455,15 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             ],
         })
-            .bind('move_node.jstree', function (e, data) { })
+            .bind('move_node.jstree', function (e, data) {})
             .on('copy_node.jstree', function (e, data) {
                 data.node.original = $.extend(true, data.node.original, data.original.original);
                 data.node.data = $.extend(true, data.node.data, data.original.data);
             })
-            .bind('activate_node.jstree', function (e, node) {
-            }).on('select_node.jstree', function (e, data) {
-
+            .bind('activate_node.jstree', function (e, node) {})
+            .on('select_node.jstree', function (e, data) {})
+            .on('rename_node.jstree', function (node, obj) {
+                $('#policyTree').jstree(true).redraw(true);
             });
     }
     public blockRuleAction(sendInfo: any) {
@@ -467,9 +477,12 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 let text = _.get(res, 'ruleName');
                 this.blockTree(tree);
                 if (nodes && nodes.length > 0 && text) {
-                    _.each(nodes, function (node) {
-                        $('#policyTree').jstree('rename_node', node, text);
-                    });
+                    // _.each(nodes, function (node) {
+                    //     console.log('node', node);
+                    $('#policyTree').jstree('rename_node', nodes[0], text);
+                    // this.policyTree($('#policyTree').jstree(true).get_json());
+                    // $('#policyTree').jstree(true).refresh();
+                    // });
                 }
             }
             this.unsubscribe(blockTree$);
@@ -488,9 +501,9 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 let text = _.get(res, 'ruleName');
                 this.dataTree(tree);
                 if (nodes && nodes.length > 0 && text) {
-                    _.each(nodes, function (node) {
-                        $('#policyTree').jstree('rename_node', node, text);
-                    });
+                    // _.each(nodes, function (node) {
+                    $('#policyTree').jstree('rename_node', nodes[0], text);
+                    // });
                 }
             }
             this.unsubscribe(dataTree$);

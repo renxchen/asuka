@@ -64,7 +64,7 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             // japanese is ok, need to check;
-            this.nameFlg = Validator.noSpecSymbol(this.name);
+            this.nameFlg = Validator.fullWithoutSpecial(this.name);
         }
         if (this.nameNotNull && this.nameFlg && this.selectedOsType) {
             return true;

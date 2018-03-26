@@ -50,7 +50,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
         self.value_type = views_helper.get_request_value(self.request, 'value_type', method)
         self.execute_ing = True
         # verify whether is executing status
-        self.get_execute_ing()
+        # self.get_execute_ing()
 
     def get_execute_ing(self):
         """!@brief
@@ -169,6 +169,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
         @return verify_result: the status of each column
         """
         try:
+            self.get_execute_ing()
             if id is not '':
                 cp = CollPolicy.objects.get(coll_policy_id=int(id))
                 cpg = CollPolicyGroups.objects.filter(**{'ostypeid': int(cp.ostype_id)})
@@ -241,11 +242,15 @@ class CollPolicyViewSet(viewsets.ViewSet):
                                                                           query_data, search_fields)
             total_num = len(CollPolicy.objects.filter(**{'policy_type': self.policy_type}))
             if search_conditions:
-                queryset = CollPolicy.objects.filter(**search_conditions).order_by(*sorts)
+                queryset = CollPolicy.objects.filter(**search_conditions).values(
+                    *['coll_policy_id', 'ostype', 'name', 'cli_command', 'desc', 'snmp_oid', 'value_type',
+                      'policy_type', 'ostype__name']).order_by(*sorts)
             else:
-                queryset = CollPolicy.objects.filter(**{'policy_type': self.policy_type}).order_by(*sorts)
-            serializer = CollPolicySerializer(queryset, many=True)
-            paginator = Paginator(serializer.data, int(self.max_size_per_page))
+                queryset = CollPolicy.objects.filter(**{'policy_type': self.policy_type}).values(
+                    *['coll_policy_id', 'ostype', 'name', 'cli_command', 'desc', 'snmp_oid', 'value_type',
+                      'policy_type', 'ostype__name']).order_by(*sorts)
+            # serializer = CollPolicySerializer(queryset, many=True)
+            paginator = Paginator(list(queryset), int(self.max_size_per_page))
             contacts = paginator.page(int(self.page_from))
             data = {
                 'data': {
@@ -253,7 +258,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 },
                 'new_token': self.new_token,
                 'num_page': paginator.num_pages,
-                'page_range': list(paginator.page_range),
+                # 'page_range': list(paginator.page_range),
                 'page_has_next': contacts.has_next(),
                 'total_num': total_num,
                 'current_page_num': contacts.number,
@@ -305,7 +310,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
+                            constants.MESSAGE: constants.POST_SUCCESSFUL
                         }
                     }
                     return api_return(data=data)
@@ -336,7 +341,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLLECTION_POLICY_NOT_EXIST % self.id
+                            constants.MESSAGE: constants.COLLECTION_POLICY_NOT_EXIST
                         }
                     }
                     return api_return(data=data)
@@ -350,7 +355,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
-                            constants.MESSAGE: constants.SUCCESS
+                            constants.MESSAGE: constants.PUT_SUCCESSFUL
                         }
                     }
                     return api_return(data=data)
@@ -366,6 +371,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
         @return data: the status of whether deleted successful
         """
         try:
+            self.get_execute_ing()
             with transaction.atomic():
                 kwargs = {'coll_policy_id': self.id}
                 collection_policy_in_cp = self.get_cp(**kwargs)
@@ -374,13 +380,13 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 pg = self.get_cp_from_policys_groups(**{'policy_id': self.id})
                 if self.execute_ing:
                     data = {
-                        'data': {
-                            'data': constants.COLLECTION_POLICY_IS_EXECUTING % self.id
-                        },
+                        # 'data': {
+                        #     'data': constants.COLLECTION_POLICY_IS_EXECUTING
+                        # },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLL_POLICY_EXIST_IN_POLICYS_GROUPS
+                            constants.MESSAGE: constants.COLLECTION_POLICY_IS_EXECUTING
                         }
                     }
                     return api_return(data=data)
@@ -389,7 +395,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.COLLECTION_POLICY_NOT_EXIST % self.id
+                            constants.MESSAGE: constants.COLLECTION_POLICY_NOT_EXIST
                         }
                     }
                     return api_return(data=data)
@@ -414,7 +420,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.TRUE,
-                        constants.MESSAGE: constants.SUCCESS
+                        constants.MESSAGE: constants.DELETE_SUCCESSFUL
                     }
                 }
                 return api_return(data=data)

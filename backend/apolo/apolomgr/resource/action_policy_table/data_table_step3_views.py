@@ -81,6 +81,8 @@ class DataTableCoulumnViewsSet(viewsets.ViewSet):
                             result_dict['groupNo'] = self.id
                             # collection policy group name
                             result_dict['cpGroup'] = policy_info['policy_group__name']
+                            # collection policy group id
+                            result_dict['cpGroup_id'] = per_policy_group_id[0]
                             # collection policy name
                             result_dict['policy'] = collection_policy_name[0]['name']
                             policy_type = 'CLI'
