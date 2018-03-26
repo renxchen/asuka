@@ -92,6 +92,14 @@ class CollectionValidate(object):
             self.__check_schedule_time(item, now_time)
             self.__check_device_priority(item, item_prioriy_dict, index)
 
+        for item in self.items:
+            self.__check_is_stop_collection(item)
+            if item['valid_status']:
+                valid_items.append(item)
+
+
+
+
         # for item in self.items:
         #     """
         #         set device's priority status
@@ -269,13 +277,15 @@ class GetValidItemByPolicyGroup(CollectionValidate):
 
 
 if __name__ == "__main__":
-    # test_instance = GetValidItemByPolicyGroup()
-    # test_instance.valid(int(time.time()), 14)
+    test_instance = GetValidItemByPolicy()
+    test_instance.valid(int(time.time()), 14)
+    test_instance = GetValidItemByPolicyGroup()
+    test_instance.valid(int(time.time()), 14)
     # for i in test_instance.items:
     #     print i
     # pass
     test_instance = GetValidItem()
-    test_instance.valid_items(int(time.time()))
+    valid_items = test_instance.valid_items(int(time.time()))
     for i in test_instance.items:
         print i
 
