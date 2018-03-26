@@ -153,9 +153,9 @@ class CiscoCLI(object):
         output = re.sub("\s*\\x08+\s*", "", output)
         output = output.replace("$rm", "")
         if " '^' " in output:
-            status = 'Error'
+            status = 'fail'
         else:
-            status = 'Ok'
+            status = 'success'
         
         return dict(command=command, status=status, output=output, timestamp=timestamp,clock=clock)
 

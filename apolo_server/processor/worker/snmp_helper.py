@@ -252,14 +252,15 @@ class SNMP(object):
                         _exception_msg = str(e)
 
                     if _exception_msg:
-                        output.append(dict( origin_oid=origin_oid,
+                        output.append(dict( status="fail",
+                                            origin_oid=origin_oid,
                                             oid=_oid_str,
                                             value="",
                                             message=str(_exception_msg)))
 
                     elif _error_indication:
                         self.logger.error('%s: %s', _error_indication, self.ip)
-                        output.append(dict(
+                        output.append(dict(status="fail",
                                             origin_oid=origin_oid,
                                             oid=_oid_str,
                                             value="",
@@ -270,25 +271,31 @@ class SNMP(object):
                         self.logger.error('%s: %s at %s', self.ip, error_msg,
                                             _error_index and _var_binds[-1][int(_error_index) - 1] or '?')
 
-                        output.append(dict(origin_oid=origin_oid,
+                        output.append(dict(
+                                            status="fail",
+                                            origin_oid=origin_oid,
                                             oid=_oid_str,
                                             value="",
                                             message=str(error_msg)))
                     else:
                         for value in _var_binds:
-                            output.append(dict(origin_oid=origin_oid,
+                            output.append(dict(status="success",
+                                                origin_oid=origin_oid,
                                                 oid=str(value[0]),
                                                 value=self.translate(value)))
             else:
                 if exception_msg:
-                    output.append(dict(origin_oid=oids[0],
+                    output.append(dict(status="fail",
+                                        origin_oid=oids[0],
                                         oid=_oid_strs[0],
                                         value="",
                                         message=str(exception_msg)))
 
                 elif error_indication:
                     self.logger.error('%s: %s', error_indication, self.ip)
-                    output.append(dict(origin_oid=oids[0],
+                    output.append(dict(
+                                        status="fail",
+                                        origin_oid=oids[0],
                                         oid=_oid_strs[0],
                                         value="",
                                         message=str(error_indication)))
@@ -296,14 +303,16 @@ class SNMP(object):
                     error_msg = error_status.prettyPrint()
                     self.logger.error('%s: %s at %s', self.ip, error_msg,
                                         error_index and var_binds[-1][int(error_index) - 1] or '?')
-                    output.append(dict(origin_oid=oids[0],
+                    output.append(dict(status="fail",
+                                        origin_oid=oids[0],
                                         oid=_oid_strs[0],
                                         value="",
                                         message=str(error_msg)))
 
         else:
             for index,value in enumerate(var_binds):
-                output.append(dict( origin_oid=oids[index],
+                output.append(dict( status="success",
+                                    origin_oid=oids[index],
                                     oid=str(value[0]),
                                     value=self.translate(value)))
 

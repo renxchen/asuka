@@ -17,30 +17,6 @@ from apolo_server.processor.session_mgr import SessionManager
 from apolo_server.processor.configurations import Configurations
 from apolo_server.processor.collection.devices_helper import get_devices
 
-
-
-
-#class CheckableQueue(Queue.Queue): # or OrderedSetQueue
-
-    #def __contains__(self, item):
-    #    with self.mutex:
-    #        return item in self.queue
-    
-#    def repeat_check_put(self,item):
-#        with self.mutex:
-#            if item not in self.queue:
-#                self.put(item)
-
-"""
-pending_queue   {}
-device_q {}
-running_q {}
-status:
-coll_queue
-coll_start
-coll_finish
-"""
-
 class TaskDispatcher(Thread):
     """
     Task Dispatcher
@@ -264,7 +240,6 @@ def on_worker_data_in(data):
 
         if device_id in device_pending_dict:
             device_info = device_pending_dict[device_id]
-            #session_mgr.update_device(task_id,device_info)
             
             if channel not in device_q:
                 device_q[channel] = Queue.Queue()
