@@ -77,7 +77,8 @@ class DevicePreViewSet(APIView):
                 path_csv = os.path.abspath(os.path.join(file_dir, str(operation_id) + "_" + filename.name))
                 for f in reader:
                     file_x.append(f)
-                    if f.get(hostname) != '':
+                    # hostname check
+                    if f.get(hostname).strip() != '':
                         hostname_list.append(f.get(hostname))
                     else:
                         data = {
@@ -111,7 +112,18 @@ class DevicePreViewSet(APIView):
                     flag_err = 0
                     # ipv4 check
                     dict_check = {}
-                    dict_check['hostname'] = f.get(hostname)
+                    hostname_csv = f.get(hostname)
+                    if len(hostname_csv) > 30:
+                        dict_check['hostname_check'] = False
+                    else:
+                        for letter in hostname_csv:
+                            if not (str(letter).isalnum() or (str(letter) in string.punctuation and str(letter) != ' '
+                                                              and str(letter) != r"'" and str(letter) != "\""
+                                                              and str(letter) != r",")):
+                                dict_check['hostname_check'] = False
+                            else:
+                                dict_check['hostname_check'] = True
+                    dict_check['hostname'] = hostname_csv
                     ip = f.get('IP Address')
                     pattern_ip = "((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))"
                     if re.match(pattern_ip, ip) is None:
@@ -153,6 +165,8 @@ class DevicePreViewSet(APIView):
                     snmp_community = f.get('SNMP Community')
                     if snmp_community == '':
                         dict_check['snmp_community'] = True
+                    elif len(snmp_community) > 30:
+                        dict_check['snmp_community'] = False
                     else:
                         for letter in snmp_community:
                             if not (str(letter).isalnum() or str(letter) in string.punctuation or str(letter) == ' '):
@@ -174,6 +188,8 @@ class DevicePreViewSet(APIView):
                     login_expect = str(f.get('Login Expect')).split(',')
                     if login_expect == '':
                         dict_check['login_expect'] = True
+                    elif len(login_expect) > 1000:
+                        dict_check['login_expect'] = False
                     else:
                         flag_expect = 0
                         for symbol in login_expect:
@@ -190,6 +206,8 @@ class DevicePreViewSet(APIView):
                     device_type = f.get('Device Type')
                     if device_type == '':
                         dict_check['device_type'] = True
+                    elif len(device_type) > 30:
+                        dict_check['device_type'] = False
                     else:
                         flag_type = 0
                         for letter in device_type:
@@ -218,19 +236,22 @@ class DevicePreViewSet(APIView):
                     group = f.get('Group')
                     if group != '':
                         group = group.split(',')
-                        flag_group = 0
-                        for group_one in group_list:
-                            for g in group:
-                                if g == group_one.name:
-                                    ostype_id = group_one.ostype_id
-                                    if f.get('OS Type') == groups_views.GroupsViewSet.get_ostype(
-                                            {"ostypeid": ostype_id}).name:
-                                        flag_group += 1
-                        if not flag_group == len(group):
+                        if len(group) > 5:
                             dict_check['group'] = False
-                            flag_err += 1
                         else:
-                            dict_check['group'] = True
+                            flag_group = 0
+                            for group_one in group_list:
+                                for g in group:
+                                    if g == group_one.name:
+                                        ostype_id = group_one.ostype_id
+                                        if f.get('OS Type') == groups_views.GroupsViewSet.get_ostype(
+                                                {"ostypeid": ostype_id}).name:
+                                            flag_group += 1
+                            if not flag_group == len(group):
+                                dict_check['group'] = False
+                                flag_err += 1
+                            else:
+                                dict_check['group'] = True
                     else:
                         dict_check['group'] = True
                     if flag_err > 0:
