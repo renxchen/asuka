@@ -64,9 +64,10 @@ class CliParser(object):
     def handle(self,items,result):
         
         rules = {}
-        with RulesMemCacheDb() as rules:
-            rules = rules.get()
+        #with RulesMemCacheDb() as rules:
+        #rules = rules.get()
         #print rules
+        #trigger_detail
 
         output = result["output"]
         clock = result["clock"]
@@ -75,13 +76,16 @@ class CliParser(object):
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
         for item in items:
-            rule_path = CliParser.__split_path(item['tree_path'],
-                                               item['rule_id'])
+            #rule_path = CliParser.__split_path(item['tree_path'],
+            #                               item['rule_id'])
+
+
+
             #raw_data = item['output']
             #if raw_data is None:
             #continue
             """
-            p = Dispatch(rule_path, rules, output)
+            p = Dispatch(item["rule_path"], item["rules"], output)
             p.dispatch()
             arry = p.get_result()
             item['value'] = arry[-1][0]
@@ -92,15 +96,6 @@ class CliParser(object):
         #ParserDbHelp().bulk_save_result(items, clock, CommonConstants.CLI_TYPE_CODE)
         return parser_result
 
-    @staticmethod
-    def __split_path(path, rule_id):
-        rules = []
-        if len(path) == 1:
-            rules.append(rule_id)
-        else:
-            rules = path.split(ParserConstants.TREE_PATH_SPLIT)[1:]
-            rules.append(rule_id)
-        return [str(rule) for rule in rules]
 
 
 def parser_main(item_type,task, data):

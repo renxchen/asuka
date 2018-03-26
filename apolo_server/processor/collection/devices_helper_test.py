@@ -6,65 +6,34 @@ import copy
 from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
 from apolo_server.processor.db_units.memcached_helper import RulesMemCacheDb, ItemMemCacheDb
 from apolo_server.processor.db_units.db_helper import DeviceDbHelp, ItemsDbHelp
-
+from apolo_server.processor.parser.common_policy_tree.tool import Tool
 
 
 __version__ = '0.1'
 __author__ = 'Rubick <haonchen@cisco.com>'
 
 
-class Valid(object):
-    def __init__(self, now_time):
-        self.items = get_valid_items(now_time, get_items(CommonConstants.ALL_TYPE_CODE))
-
-    def valid(self, *args, **kwargs):
-        pass
-
-
-class DeviceValid(Valid):
-    def __init__(self, now_time):
-        super(DeviceValid, self).__init__(now_time)
-
-    def valid(self, device_id):
-        devices = [item for item in self.items if item["device__device_id"] == int(device_id)]
-        return len(devices)
-
-
-class PolicyValid(Valid):
-    def __init__(self, now_time):
-        super(PolicyValid, self).__init__(now_time)
-
-    def valid(self, coll_policy_id):
-        devices = [item for item in self.items if item["coll_policy_id"] == int(coll_policy_id)]
-        return len(devices)
-
-
-class PolicyGroupValid(Valid):
-    def __init__(self, now_time):
-        super(PolicyGroupValid, self).__init__(now_time)
-
-    def valid(self, policys_groups__policy_group_id):
-        devices = [item for item in self.items if item["policys_groups__policy_group_id"] == int(policys_groups__policy_group_id)]
-        return len(devices)
-
-
-
 def get_devices(now_time, item_type):
-
+    """
+    get Valid items by now time
+    """
     device_dict = {}
     devices = []
     
     item_type = CommonConstants.CLI_TYPE_CODE if item_type.upper() == "CLI" \
         else CommonConstants.SNMP_TYPE_CODE
     
-    # cache Rulles
-    with RulesMemCacheDb() as memcache:
-        memcache.cache()
+    # cache Rules
+    rule_dict = {}
+    rules = DeviceDbHelp.get_all_rule()
+    ruletool = Tool()
+    for rule in rules:
+        format_rule = ruletool.get_rule_value(rule)
+        rule_dict[str(rule['ruleid'])] = format_rule
+    
     
     # get items from db 
-    #print item_type
     items = DeviceDbHelp.get_items(item_type)
-    #print items
 
     items = get_valid_items(now_time, items)
     #items = [item for item in items if item.get('valid_status')]
@@ -81,9 +50,9 @@ def get_devices(now_time, item_type):
             devices.append(device_id)
             deviceinfo_dict = device_dict[device_id] = {}
 
-        #
+        #format data
         if item_type == CommonConstants.CLI_TYPE_CODE:
-            __merge_cli(item,deviceinfo_dict) 
+            __merge_cli(item,deviceinfo_dict,rule_dict) 
         else:
             __merge_snmp(item,deviceinfo_dict) 
 
@@ -111,51 +80,10 @@ def deco_item(func):
         return item
     return wrapper
 
-
-def __item_type_mapping(item):
-    def common(item):
-        tmp_item = {}
-        tmp_item['valid_status'] = item['valid_status']
-        tmp_item['policy_group_id'] = item['policys_groups__policy_group_id']
-        tmp_item['policy_group_name'] = item['policys_groups__policy_group_id__name']
-        tmp_item['coll_policy_id'] = item['coll_policy_id']
-        tmp_item['item_id'] = item['item_id']
-        tmp_item['item_type'] = item['item_type']
-        tmp_item['device_id'] = item['device__device_id']
-        tmp_item['priority'] = item['schedule__priority']
-        tmp_item['device_name'] = item['device__hostname']
-        tmp_item['policy_name'] = item['coll_policy__name']
-        tmp_item['exec_interval'] = item['policys_groups__exec_interval']
-        return tmp_item
-
-    def wrapper_snmp(item):
-        return item
-
-    def wrapper_cli(item):
-        return item
-
-    result = common(item)
-    if item['item_type'] == CommonConstants.CLI_TYPE_CODE:
-        result.update(wrapper_cli(result))
-    else:
-        result.update(wrapper_snmp(result))
-    return result
-
-
 def get_items(item_type):
-    # with ItemMemCacheDb() as item:
-    #     items = item.update()
+
     items = DeviceDbHelp.get_items(item_type)
-    #items = [item for item in items if __filter_item_type(item, item_type)]
     return items
-
-
-#def get_valid_items(now_time, item_type):
-#    items = get_items(item_type)
-#    items = valid_items(now_time, items)
-#    items = map(__item_type_mapping, items)
-#    return items
-
 
 def get_valid_items(now_time, items):
     """
@@ -231,13 +159,13 @@ def __merge_snmp(item, deviceinfo_dict):
             item_id=item['item_id'],
             policy_id=item['coll_policy_id'],
             oid=item['coll_policy__snmp_oid'],
-            value_type=item['coll_policy__value_type'],
+            value_type=item['value_type'],
             policy_type=item['item_type']
         )
     )
 
 
-def __merge_cli(item, deviceinfo_dict):
+def __merge_cli(item, deviceinfo_dict,rule_dict):
 
     interval_key_dict={
         str(24*60*60):"items_1day",
@@ -248,7 +176,6 @@ def __merge_cli(item, deviceinfo_dict):
     }
 
     if str(item['device__device_id']) not in deviceinfo_dict:
-
 
         deviceinfo_dict['device_id'] = str(item['device__device_id'])
         #deviceinfo_dict['ip'] = item['device__ip']
@@ -263,7 +190,7 @@ def __merge_cli(item, deviceinfo_dict):
     #exec_interval=item['policys_groups__exec_interval']
     exec_interval=300
     command=item['coll_policy__cli_command']
-    print command
+    #print command
     
     #cmd_key = interval_key_dict[str(exec_interval)][0]
     item_key = interval_key_dict[str(exec_interval)]
@@ -273,10 +200,22 @@ def __merge_cli(item, deviceinfo_dict):
     if item_key not in deviceinfo_dict:
         deviceinfo_dict[item_key] = []
 
+    """
+    get rules
+    """
+    tree_path=item['coll_policy_rule_tree_treeid__rule_id_path']
+    rule_id=item['coll_policy_rule_tree_treeid__rule_id']
+    rule_path = __split_path(tree_path,rule_id)
+
+    rules = {}
+    for ruleid in rule_path:
+        rules[ruleid] = rule_dict[ruleid]
+
     deviceinfo_dict[item_key].append( dict(
             item_id=item['item_id'],
             policy_id=item['coll_policy_id'],
-            tree_path=item['coll_policy_rule_tree_treeid__rule_id_path'],
+            rule_path=rule_path,
+            rules=rules,
             rule_id=item['coll_policy_rule_tree_treeid__rule_id'],
             value_type=item['value_type'],
             policy_type=item['item_type'],
@@ -285,41 +224,14 @@ def __merge_cli(item, deviceinfo_dict):
         )
     )
 
-
-
-def __add_param(items, param_keys):
-    result = {}
-    for key in param_keys:
-        if key in items:
-            result[key] = items[key]
-    return result
-
-
-def __merge_device(items):
-    tmp_devices = {}
-    for item in items:
-        if item['device__device_id'] in tmp_devices:
-            tmp_devices[item['device__device_id']].append(item)
-        else:
-            tmp_devices[item['device__device_id']] = []
-            tmp_devices[item['device__device_id']].append(item)
-    return tmp_devices
-
-
-def __filter_item_type(item, item_type):
-    """
-    :param item: item Queryset
-    :param item_type: 0: cli 1 snmp -1 all
-    :return: True or False
-    """
-
-    if item['item_type'] == item_type:
-        return True
-    elif item_type == CommonConstants.ALL_TYPE_CODE:
-        return True
+def __split_path(path, rule_id):
+    rules = []
+    if len(path) == 1:
+        rules.append(str(rule_id))
     else:
-        return False
-
+        rules = path.split(ParserConstants.TREE_PATH_SPLIT)[1:]
+        rules.append(str(rule_id))
+    return rules
 
 @deco_item
 def __check_item_interval(item, now_time):
@@ -476,7 +388,7 @@ def __create_path(rules, path):
 
 if __name__ == "__main__":
     
-    devices,device_dict = get_devices(int(time.time()), "snmp")
+    devices,device_dict = get_devices(int(time.time()), "cli")
     #print 123
     print devices
     print device_dict

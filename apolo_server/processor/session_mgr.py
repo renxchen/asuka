@@ -131,10 +131,11 @@ class SessionManager(Thread):
                             v["parser_status"]="runnning"
                             self.zmq_publish.send_string(data["publish_string"])
                         
-                        if parser_queue.empty() and status == "coll_finish":
+                        if status == "coll_finish" and parser_queue.empty() and v["parser_status"] != "running":
                             v["status"] = "all_finish"
+                            v["timer"] = time.time()
                 
-                if v["status"] == "all_finish" and v["parser_status"] != "running" and time.time() - v['timer'] > self.after_read_timeout:
+                if v["status"] == "all_finish" and time.time() - v['timer'] > self.after_read_timeout:
                     del self.data_set[k]
                     if k in self.parser_dict:
                         del self.parser_dict[k]

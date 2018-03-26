@@ -11,9 +11,10 @@ __version__ = 0.1
 __author__ = 'Rubick <haonchen@cisco.com>'
 
 
+
 class Parser(WorkerBase):
     name = "parser_trigger"
-    channels = 'parser'
+    channels = ('parser',)
     threads = 1
 
     def handler(self, task_id, task, data, logger):
@@ -23,7 +24,7 @@ class Parser(WorkerBase):
             logger.error("miss parser data")
             return 
 
-                
+
         item_type = CommonConstants.CLI_TYPE_CODE if task["channel"].upper() == "CLI" \
                          else CommonConstants.SNMP_TYPE_CODE
 
