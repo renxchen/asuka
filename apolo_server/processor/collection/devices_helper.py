@@ -1,477 +1,419 @@
 # -*- coding: utf-8 -*-
-import time
-import copy
-import json
-from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
-from apolo_server.processor.db_units.memcached_helper import RulesMemCacheDb, ItemMemCacheDb
-from apolo_server.processor.db_units.db_helper import DeviceDbHelp, ItemsDbHelp
-
-
 __version__ = '0.1'
 __author__ = 'Rubick <haonchen@cisco.com>'
+import  sys
+sys.path.append("/Users/yihli/Desktop/projects/apolo")
+import json
+import time
+import Queue
+import zmq
+import logging
+import uuid
+from tornado import web, ioloop, options
+from zmq.eventloop.ioloop import ZMQIOLoop
+from zmq.eventloop.zmqstream import ZMQStream
+from threading import Thread
+from apolo_server.processor.session_mgr import SessionManager
+from apolo_server.processor.configurations import Configurations
+# from collection.collection_help import get_collection_devices, get_items
+from apolo_server.processor.collection.devices_helper_test import get_devices
+
+from apolo_server.processor.parser.parser_helper import parser_main
+from apolo_server.processor.trigger.trigger_helper import TriggerHelp
 
 
-class Valid(object):
-    def __init__(self, now_time):
-        self.items = valid_items(now_time, get_items(CommonConstants.ALL_TYPE_CODE))
+#class CheckableQueue(Queue.Queue): # or OrderedSetQueue
 
-    def valid(self, *args, **kwargs):
+    #def __contains__(self, item):
+    #    with self.mutex:
+    #        return item in self.queue
+    
+#    def repeat_check_put(self,item):
+#        with self.mutex:
+#            if item not in self.queue:
+#                self.put(item)
+
+"""
+pending_queue   {}
+device_q {}
+running_q {}
+status:
+coll_queue
+coll_start
+coll_finish
+"""
+
+class TaskDispatcher(Thread):
+    """
+    Task Dispatcher
+    """
+    def run(self):
+        while True:
+            result = zmq_dispatch.recv_string().split()  # got task request from worker
+            channel = result[0]
+            task_id = None
+            if len(result) == 2:
+                task_id = result[1]
+            
+
+            #tmp_q = task_q[channel]
+            if channel in "cli snmp":
+                _device_q = device_q[channel]
+
+                logging.debug('Receive request from %s worker' % channel)
+                if _device_q.qsize():
+                    device_id = _device_q.get()
+                    device_task_dict = cli_device_task_dict if channel == "cli" else snmp_device_task_dict
+                    task_id = device_task_dict[device_id]
+                    task = session_mgr.get(task_id)
+                    timer = time.time()
+                    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+                    session_mgr.update(task_id, dict(status='coll_start',coll_start_timestamp=timestamp))
+                    zmq_dispatch.send_string(b'%s %s' % (task_id, json.dumps(task)))
+                    logging.debug('Sent task %s to %s worker' % (task_id, channel))
+            elif channel.startswith("parser"):
+                #session_mgr.update(task_id, dict(status='coll_start',coll_start_timestamp=timestamp))
+                task = session_mgr.get(task_id)
+                zmq_dispatch.send_string(b'%s %s' % (task_id, json.dumps(task)))
+
+            else:
+                zmq_dispatch.send_string(b'')
+
+
+
+class CommandApiHandler(web.RequestHandler):
+    @web.asynchronous
+    def post(self, *args, **kwargs):
+        
+        self.set_header("Content-Type", "application/json")
+        method = args[0]
+        channel = args[1]
+        #params = json.loads(self.request.body)
+
+        # url should be valid
+        if method not in 'sync' or channel not in 'cli snmp':
+            self.write(json.dumps(dict(status='error',
+                                       message='Not support method')))
+            self.finish()
+            return
+
+        #now_time = param["now_time"]    
+        devices,tmp_devices_dict = get_devices(int(time.time()), channel)
+
+        #category = "cli"
+        """
+        devices = ["1113"]
+        tmp_devices_dict = {
+            "1113":    {
+                "cmd_5min": ["show interface","show clock"],   
+                "cmd_15min":["show version","show clock"],
+                "cmd_1hour":["show version"],
+                "cmd_1day":["show version"],
+                "default_commands": "terminal len 0;terminal pager 0",
+                "ip": "10.79.244.135",
+                "platform": "ios",
+                "expect": "ssword:,cisco,>,enable,:,cisco123,#",
+                "timeout": 30,
+                "device_id": "1113",
+                "items": [
+                {
+                    "tree_path": "/7",
+                    "rule_id": 7,
+                    "value_type": 0,
+                    "policy_type": 0,
+                    "item_id": 4,
+                }
+                ]
+        }}
+        """
+
+        #get snmp or cli device q
+        if channel not in device_q:
+            device_q[channel] = Queue.Queue()
+        _device_q = device_q[channel]
+
+        #get pending dict and device_task dict 
+        device_pending_dict = cli_device_pending_dict if channel == "cli" else snmp_device_pendding_dict
+        device_task_dict = cli_device_task_dict if channel == "cli" else snmp_device_task_dict
+        
+
+        for device_id in devices:
+            
+            device_info = tmp_devices_dict[device_id]
+
+            if device_id in device_pending_dict:
+                #update pending data
+                device_pending_dict.update(dict(device_id=device_info))
+                continue
+
+            if device_id in _device_q.queue:
+                
+                #get task by device id and update device_info
+                task_id =  device_task_dict[device_id]
+                task = session_mgr.get(task_id)
+                if task["status"]=="coll_queue":
+                    session_mgr.update_device(task_id,device_info)
+                continue
+    
+            if device_id in device_task_dict:
+                task_id = device_task_dict[device_id]
+                task = session_mgr.get(task_id)
+                if task["status"] == "coll_start":
+                    device_pending_dict[device_id] = device_info
+                    
+            else:
+
+                task_id = uuid.uuid4().hex
+                device_task_dict[device_id] = task_id
+                # create new task
+                timer = time.time()
+                timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+                session_mgr.put(task_id,
+                                dict(status='coll_queue',
+                                    device_info=device_info,
+                                    timer=timer,
+                                    coll_queue_timestamp=timestamp,
+                                    #read=False,
+                                    channel=channel,
+                                    #parser_queue=Queue.Queue(),
+                                    parser_status="queue"
+
+                                    ))
+                
+                session_mgr.init_parser_queue(task_id)
+
+                _device_q.put(device_id)
+
+                # publish the new task to the channel
+                zmq_publish.send_string(b'%s task' % channel)
+                logging.info('Publish new task %s to %s' % (task_id, channel))
+
+        result = dict(
+            status="success",
+            #output=devices_info,
+            message=""
+        )
+    
+        self.write(json.dumps(result))
+        self.finish()
+
+
+
+
+def on_worker_data_in(data):
+    ##return dict(command=command, status=status, output=output, timestamp=timestamp)
+    result = json.loads(data[0])
+
+    result_type = result['result_type']
+    task_id = result['task_id']
+    status = result['status']
+
+    del result['result_type']
+    del result['task_id']
+
+
+    """
+    end(dict(origin_oid=oids[0],
+    oid=_oid_strs[0],
+    value="",
+    message=str(error_msg)))
+
+    return dict(status='success',
+                    message='',
+                    output=output)
+
+    """
+    task = session_mgr.get(task_id)
+    channel = task["channel"]
+    if result_type == "element_result":
+        print "enter command"
+        session_mgr.update_command_result(task_id,result)
+
+
+        new_channel = "parser"
+        if channel == "snmp":
+            find_key = result["clock"]
+            #zmq_publish.send_string(b'%s task %s %s' % (new_channel,task_id,find_key))
+        else:
+            find_key = result["command"]
+            #first_element = result["first_element"]
+            #next_element = result["next_element"]
+            
+        session_mgr.set_parser_queue(task_id,dict(publish_string=b'%s task %s %s' % (new_channel,task_id,find_key)))
+
+        logging.info('Collection element Task Done')
+
+        #logging.info('Collection Task %s %s done, status: %s' % (task_id, status))
+    elif result_type == "task_result":
+
+        # create new task
+        print "finish?"
+        timer = time.time()
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+
+        session_mgr.update(task_id, dict(status='coll_finish',
+                                         coll_finish_timestamp=timestamp,
+                                         coll_result=result))
+        
+        #channel = result["channel"]
+        device_id = result["device_id"]
+        device_pending_dict = cli_device_pending_dict if channel == "cli" else snmp_device_pendding_dict
+        device_task_dict = cli_device_task_dict if channel == "cli" else snmp_device_task_dict
+
+        
+        if device_id in device_task_dict:
+            del device_task_dict[device_id]
+
+        if device_id in device_pending_dict:
+            device_info = device_pending_dict[device_id]
+            #session_mgr.update_device(task_id,device_info)
+            
+            if channel not in device_q:
+                device_q[channel] = Queue.Queue()
+            _device_q = device_q[channel]
+
+            task_id = uuid.uuid4().hex
+            device_task_dict[device_id] = task_id
+         
+            session_mgr.put(task_id,
+                                dict(status='coll_queue',
+                                    device_info=device_info,
+                                    timer=timer,
+                                    coll_queue_timestamp=timestamp,
+                                    #read=False,
+                                    channel=channel,
+                                    #parser_queue=Queue.Queue(),
+                                    parser_status="queue"
+
+                                    ))
+                
+            session_mgr.init_parser_queue(task_id)
+
+            _device_q.put(device_id)
+            del device_pending_dict[device_id]
+
+            zmq_publish.send_string(b'%s task' % channel)
+           
+
+    elif result_type == "parser":
+        session_mgr.update_parser_result(task_id,result)
+
+
+
+class SessionApiHandler(web.RequestHandler):
+    def check_origin(self, origin):
+        return True
+
+    def get(self, *args):
+        print cli_device_pending_dict
+        print cli_device_task_dict
+        method = args[0]
+        self.set_header("Content-Type", "application/json")
+        if method == 'summary':
+            print 123
+            summary = {}
+            timer = session_mgr.get_timer()
+            now = time.time()
+            session_data = session_mgr.get_all()
+            #print session_data
+            """
+            for task_id in session_data:
+                task = session_data[task_id]
+                s = dict(
+                    category=task['category'],
+                    status=task['status'],
+                    has_read=task['read'],
+                    create=task['timestamp'],
+                    age=int(now - task['timer']),
+                    method=task['method']
+                )
+                summary[task_id] = s
+            """
+            self.write(json.dumps(session_data))
+        elif method == 'debug':
+            data = session_mgr.get_all()
+            if not data:
+                self.set_status(404)
+                data = dict(status='Error', message='No session data')
+            self.write(json.dumps(data))
+        else:
+            self.write(json.dumps(dict(status='error',
+                                       message='Not valid request')))
+        self.finish()
+
+    def put(self, *args):
+        method = args[0]
+        self.set_header("Content-Type", "application/json")
+        if method == 'timer':
+            try:
+                params = json.loads(self.request.body)
+                polling_interval = params.get('polling_interval', 60)
+                absolute_timeout = params.get('absolute_timeout', 3600)
+                after_read_timeout = params.get('after_read_timeout', 300)
+                session_mgr.set_timer(polling_interval,
+                                      absolute_timeout,
+                                      after_read_timeout)
+                self.write(json.dumps(dict(status='success')))
+            except ValueError:
+                self.write(json.dumps(dict(status='fail',
+                                           message='Not valid timer')))
+        else:
+            self.write(json.dumps(dict(status='error',
+                                       message='Not valid request')))
+        self.finish()
+
+
+if __name__ == '__main__':
+    options.define("p", default=7777, help="run on the given port", type=int)
+    options.parse_command_line()
+    config = Configurations()
+    port = options.options.p
+
+    loop = ZMQIOLoop()
+    loop.install()
+    context = zmq.Context()
+    zmq_publish = context.socket(zmq.PUB)
+    zmq_publish.bind("tcp://127.0.0.1:%s" % str(config.get_configuration("zmqPublish")))
+    zmq_dispatch = context.socket(zmq.REP)
+    zmq_dispatch.bind("tcp://127.0.0.1:%s" % str(config.get_configuration("zmqDispatch")))
+    zmq_result = context.socket(zmq.PULL)
+    zmq_result.bind("tcp://127.0.0.1:%s" % str(config.get_configuration("zmqResult")))
+    receiver = ZMQStream(zmq_result)
+    receiver.on_recv(on_worker_data_in)
+
+
+    cli_device_pending_dict = {}
+    snmp_device_pendding_dict = {}
+
+    device_q = {}
+    #device_task_dict = {"cli":{},"snmp":{}}
+    cli_device_task_dict = {}
+    snmp_device_task_dict = {}
+
+
+    #task_dict = {}
+    #task_q = {}
+    task_dispatcher = TaskDispatcher()
+    task_dispatcher.daemon = True
+    task_dispatcher.start()
+
+    session_mgr = SessionManager(zmq_publish)
+    session_mgr.daemon = True
+    session_mgr.start()
+
+    
+    print 'Tornado server started on port %d' % port
+    print 'Press "Ctrl+C" to exit.\n'
+    web.Application([
+                    (r'/api/v1/session/?(.*)', SessionApiHandler),
+                    (r'/api/v1/(.*)/(.*)', CommandApiHandler)
+                    
+                     ],
+                    autoreload=True).listen(port)
+    try:
+        ioloop.IOLoop.instance().start()
+    except KeyboardInterrupt:
         pass
+ 
 
 
-class DeviceValid(Valid):
-    def __init__(self, now_time):
-        super(DeviceValid, self).__init__(now_time)
-
-    def valid(self, device_id):
-        devices = [item for item in self.items if item["device__device_id"] == int(device_id)]
-        return len(devices)
-
-
-class PolicyValid(Valid):
-    def __init__(self, now_time):
-        super(PolicyValid, self).__init__(now_time)
-
-    def valid(self, coll_policy_id):
-        devices = [item for item in self.items if item["coll_policy_id"] == int(coll_policy_id)]
-        return len(devices)
-
-
-class PolicyGroupValid(Valid):
-    def __init__(self, now_time):
-        super(PolicyGroupValid, self).__init__(now_time)
-
-    def valid(self, policys_groups__policy_group_id):
-        devices = [item for item in self.items if item["policys_groups__policy_group_id"] == int(policys_groups__policy_group_id)]
-        return len(devices)
-
-
-def __create_test_devices(template):
-    test_devices = []
-    for i in range(68):
-        for k in range(101, 116):
-            tmp = copy.copy(template[0])
-            tmp['device__ip'] = "192.168.100.%d" % k
-            tmp['device__device_id'] = i*15 + k
-            test_devices.append(tmp)
-    return test_devices
-
-
-def deco_item(func):
-    def wrapper(item, now_time):
-        if "valid_status" in item.keys():
-            if item['valid_status'] is False:
-                return item
-        status = func(item, now_time)
-        item = __add_items_valid_status(item, status)
-        return item
-    return wrapper
-
-
-def __item_type_mapping(item):
-    def common(item):
-        tmp_item = {}
-        tmp_item['valid_status'] = item['valid_status']
-        tmp_item['policy_group_id'] = item['policys_groups__policy_group_id']
-        tmp_item['policy_group_name'] = item['policys_groups__policy_group_id__name']
-        tmp_item['coll_policy_id'] = item['coll_policy_id']
-        tmp_item['item_id'] = item['item_id']
-        tmp_item['item_type'] = item['item_type']
-        tmp_item['device_id'] = item['device__device_id']
-        tmp_item['priority'] = item['schedule__priority']
-        tmp_item['device_name'] = item['device__hostname']
-        tmp_item['policy_name'] = item['coll_policy__name']
-        tmp_item['exec_interval'] = item['policys_groups__exec_interval']
-        return tmp_item
-
-    def wrapper_snmp(item):
-        return item
-
-    def wrapper_cli(item):
-        return item
-
-    result = common(item)
-    if item['item_type'] == CommonConstants.CLI_TYPE_CODE:
-        result.update(wrapper_cli(result))
-    else:
-        result.update(wrapper_snmp(result))
-    return result
-
-
-def get_items(item_type):
-    # with ItemMemCacheDb() as item:
-    #     items = item.update()
-    items = DeviceDbHelp.get_all_items_from_db()
-    items = [item for item in items if __filter_item_type(item, item_type)]
-    return items
-
-
-def get_valid_items(now_time, item_type):
-    items = get_items(item_type)
-    items = valid_items(now_time, items)
-    items = map(__item_type_mapping, items)
-    return items
-
-
-def valid_items(now_time, items):
-    """
-       filter by item interval
-       combine each item with now_time stamp
-       """
-    for item in items:
-        __check_item_interval(item, now_time)
-        __check_period_time(item, now_time)
-        __check_schedule_time(item, now_time)
-
-    # items = [item for item in items if __check_item_interval(item, now_time)]
-    # """
-    # filter by valid period type
-    # combine each item with now_time stamp
-    # """
-    # items = [item for item in items if __check_period_time(item, now_time)]
-    # """
-    # filter by schedule time type
-    # combine each item with now_time stamp
-    # """
-    # items = [item for item in items if __check_schedule_time(item, now_time)]
-
-    """
-    filter device's priority, hard coding
-    """
-    items = __check_device_priority(items)
-
-    """
-    get biggest priority for each item
-    """
-
-    """
-    filter stop collection
-    """
-    items = [item for item in items if __check_is_stop_collection(item, now_time)]
-    return items
-
-
-def get_devices(now_time, item_type):
-    result = {
-        # "parser_params": {},
-        "devices": []
-    }
-    __add_rules()
-    items = get_items(item_type)
-
-    items = valid_items(now_time, items)
-    items = [item for item in items if item.get('valid_status')]
-    # items = __create_test_devices(items)
-    ItemsDbHelp().update_last_exec_time(now_time, items)
-    devices = __merge_device(items)
-    other_param = []
-    if item_type == CommonConstants.CLI_TYPE_CODE:
-        devices = [__merge_cli(item, other_param) for item in devices.values()]
-        result['devices'] = devices
-    else:
-        devices = [__merge_snmp(item, other_param) for item in devices.values()]
-        result['devices'] = devices
-    return result
-
-
-def __merge_snmp(items, param_keys):
-    result = dict()
-    if len(items) == 0:
-        return []
-    result['ip'] = items[0]['device__ip']
-    result['community'] = items[0]['device__snmp_community']
-    result['timeout'] = items[0]['device__ostype__snmp_timeout']
-
-    result['commands'] = dict(
-        operate="",
-        oids=[]
-    )
-    result['items'] = []
-    result.update(__add_param(items[0], param_keys))
-    for item in items:
-        result["commands"]['operate'] = "bulk_get"
-        result["commands"]['oids'].append(item['coll_policy__snmp_oid'])
-        result['items'].append(
-            dict(
-                item_id=item['item_id'],
-                policy_id=item['coll_policy_id'],
-                oid=item['coll_policy__snmp_oid'],
-                device_id=item['device__device_id'],
-                value_type=item['coll_policy__value_type'],
-                policy_type=item['item_type']
-            )
-
-        )
-    return result
-
-
-def __merge_cli(items, param_keys):
-    result = dict()
-    if len(items) == 0:
-        return []
-    result['ip'] = items[0]['device__ip']
-    result['expect'] = items[0]['device__login_expect']
-    result['default_commands'] = items[0]['device__ostype__start_default_commands']
-    result['timeout'] = items[0]['device__ostype__telnet_timeout']
-    result['commands'] = []
-    result['method'] = DevicesConstants.CLI_COLLECTION_DEFAULT_METHOD
-    result['platform'] = 'ios'
-    result['items'] = []
-    result.update(__add_param(items[0], param_keys))
-    for item in items:
-        result["commands"].append(item['coll_policy__cli_command'])
-        # result['items'].append(item['item_id'])
-        result['items'].append(
-            dict(
-                item_id=item['item_id'],
-                policy_id=item['coll_policy_id'],
-                tree_id=item['coll_policy_rule_tree_treeid'],
-                tree_path=item['coll_policy_rule_tree_treeid__rule_id_path'],
-                command=item['coll_policy__cli_command'],
-                rule_id=item['coll_policy_rule_tree_treeid__rule_id'],
-                device_id=item['device__device_id'],
-                value_type=item['value_type'],
-                policy_type=item['item_type'],
-                # block_path=__create_path(rules, item['coll_policy_rule_tree_treeid__rule_id_path']),
-                block_path=item['coll_policy_rule_tree_treeid__rule_id_path'],
-                device_name=item['device__hostname'],
-                policy_name=item['coll_policy__name'],
-                exec_interval=item['policys_groups__exec_interval']
-            )
-
-        )
-    return result
-
-
-def __add_param(items, param_keys):
-    result = {}
-    for key in param_keys:
-        if key in items:
-            result[key] = items[key]
-    return result
-
-
-def __add_rules():
-    tmp_rules = {}
-    with RulesMemCacheDb() as rules:
-        rules.update()
-    return tmp_rules
-
-
-def __merge_device(items):
-    tmp_devices = {}
-    for item in items:
-        if item['device__device_id'] in tmp_devices:
-            tmp_devices[item['device__device_id']].append(item)
-        else:
-            tmp_devices[item['device__device_id']] = []
-            tmp_devices[item['device__device_id']].append(item)
-    return tmp_devices
-
-
-def __filter_item_type(item, item_type):
-    """
-    :param item: item Queryset
-    :param item_type: 0: cli 1 snmp -1 all
-    :return: True or False
-    """
-
-    if item['item_type'] == item_type:
-        return True
-    elif item_type == CommonConstants.ALL_TYPE_CODE:
-        return True
-    else:
-        return False
-
-
-@deco_item
-def __check_item_interval(item, now_time):
-    """
-    :param item: item instance include:policys_groups__exec_interval, last_exec_time
-    :param now_time: now timestampe
-    :return:True or False
-    """
-    exec_interval = item["policys_groups__exec_interval"]
-    last_exec_time = item['last_exec_time']
-    # if now_time - last_exec_time >= exec_interval:
-    #     return True
-    # else:
-    #     return False
-    if now_time / exec_interval == last_exec_time / exec_interval:
-        return False
-    else:
-        return True
-
-
-@deco_item
-def __check_period_time(item, now_time):
-    """
-    0: open valid period type
-    1: close valid period type
-    """
-    if item['schedule__valid_period_type'] == DevicesConstants.OPEN_VALID_PERIOD_TYPE:
-        item_valid_period_time = __translate_valid_period_date((item['schedule__start_period_time'],
-                                                                item['schedule__end_period_time']))
-        return __check_date_range(item_valid_period_time[0], item_valid_period_time[1], now_time)
-    else:
-        return True
-
-
-@deco_item
-def __check_schedule_time(item, now_time):
-    """
-    Judging given item whether start at now time
-    :now_time: given time stamp
-    :return:True Or False
-    """
-    if item["schedule__data_schedule_type"] not in [DevicesConstants.SCHEDULE_GET_NORMALLY,
-                                                    DevicesConstants.SCHEDULE_SPECIALLY]:
-        return True
-    """
-    collection data normally
-    """
-    if item["schedule__data_schedule_type"] == DevicesConstants.SCHEDULE_GET_NORMALLY:
-        return True
-    # """
-    # stop collection data
-    # """
-    # if item["schedule__data_schedule_type"] == 1:
-    #     return False
-    """
-    collection data periodically
-    """
-    if item["schedule__data_schedule_type"] == DevicesConstants.SCHEDULE_SPECIALLY:
-        """
-        filter week
-        """
-        weeks = str(item["schedule__data_schedule_time"].split(DevicesConstants.SCHEDULE_DATE_SPLIT)[0]).split(
-            DevicesConstants.SCHEDULE_WEEKS_SPLIT)
-        week_status = __check_week(now_time, weeks)
-        if week_status:
-            now_date = time.localtime(now_time)
-            tmp_start = time.strptime(str(item["schedule__data_schedule_time"].split(
-                DevicesConstants.SCHEDULE_DATE_SPLIT)[1])
-                                      .split(DevicesConstants.SCHEDULE_SPLIT)[0], "%H:%M")
-            tmp_end = time.strptime(str(item["schedule__data_schedule_time"]
-                                        .split(DevicesConstants.SCHEDULE_DATE_SPLIT)[1]).split("-")[1], "%H:%M")
-            now = time.strptime(str(str(now_date.tm_hour) + ":" + str(now_date.tm_min)), "%H:%M")
-            status = __check_date_range(tmp_start, tmp_end, now)
-            return status
-        return False
-
-
-def __check_device_priority(items):
-    items = sorted(items, reverse=True)
-    tmp_items = []
-    for item in items:
-        item_key = "%s_%s" % (str(item["coll_policy_id"]), str(item["device__device_id"]))
-        if item_key in tmp_items:
-            item['valid_status'] = False
-        else:
-            tmp_items.append(item_key)
-    return items
-    # result = {}
-    # """
-    # Group by policy id and device id
-    # """
-    # invalid_items = []
-    # for item in items:
-    #     if "valid_status" in item.keys():
-    #         if item['valid_status'] is False:
-    #             invalid_items.append(item)
-    #             continue
-    #     item_key = "%s_%s" % (str(item["coll_policy_id"]), str(item["device__device_id"]))
-    #     if item_key in result.keys():
-    #         pass
-    #     else:
-    #         result[item_key] = []
-    #     result[item_key].append(item)
-    #
-    # tmp_items = map(lambda k: sorted(k, key=lambda x: x['schedule__priority'], reverse=True), result.values())
-    # items = []
-    # for tmp in tmp_items:
-    #     for index, value in enumerate(tmp):
-    #         if index == 0:
-    #             status = True
-    #         else:
-    #             status = False
-    #         value['valid_status'] = status
-    #         items.append(value)
-    # items.extend(invalid_items)
-    # return items
-
-
-@deco_item
-def __check_is_stop_collection(item, now_time):
-    if item["schedule__data_schedule_type"] == DevicesConstants.SCHEDULE_CLOSED:
-        return False
-    return True
-
-
-def __translate_valid_period_date(given_date):
-    """
-    translate given date to time stamp
-    :param given_date: Schedule's valid period time
-    :return:time stamp
-    """
-    start_date = given_date[0]
-    end_date = given_date[1]
-    start_time_stamp = time.strptime(start_date, DevicesConstants.VALID_DATE_FORMAT)
-    end_time_stamp = time.strptime(end_date, DevicesConstants.VALID_DATE_FORMAT)
-    return int(time.mktime(start_time_stamp)), int(time.mktime(end_time_stamp))
-
-
-def __check_date_range(start_time, end_time, now_time):
-    """
-    Judging given time whether in date range
-    :param start_time: start date time stamp
-    :param end_time: end date time stamp
-    :param now_time: now date time stamp
-    :return: True or False
-    """
-    if start_time <= now_time <= end_time:
-        return True
-    return False
-
-
-def __check_week(now_time, weeks):
-    """
-    Judging given now time is given week
-    :param now_time: time stamp
-    :param weeks:week
-    :return:True Or False
-    """
-    now_date = time.localtime(now_time)
-    if str(now_date.tm_wday + 1) in weeks:
-        return True
-    return False
-
-
-def __create_path(rules, path):
-    path_list = path[1:].split(ParserConstants.TREE_PATH_SPLIT)
-    result = ['']
-    if len(path) != 1:
-        for each_path in path_list:
-            each_path_rules = rules[str(each_path)]
-            result.append(str(each_path_rules['key_str']))
-    else:
-        result.append('')
-    return "/".join(result)
-
-
-def __add_items_valid_status(item, status):
-    item['valid_status'] = status
-    return item
-
-
-if __name__ == "__main__":
-    now_time = time.time()
-    for i in get_devices(now_time, 0).items():
-        print json.dumps(i[1], indent=2)
-    # device_valid = DeviceValid(1517281147)
-    # print device_valid.valid(1)
-    # device_valid = PolicyGroupValid(1517281147)
-    # print device_valid.valid(2)
-    # device_valid = PolicyValid(1517281147)
-    # print device_valid.valid(2)
-    pass
