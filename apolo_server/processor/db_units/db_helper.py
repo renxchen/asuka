@@ -49,14 +49,10 @@ class DeviceDbHelp(DbHelp):
 
     @staticmethod
     def get_items(item_type):
-        param_dict = {"policys_groups__status": 1, "status": 1, "schedule__status": 1}
-        if item_type is not None:
-            param_dict["item_type"] = item_type
-
-        items = Items.objects.filter(
-            **param_dict).order_by(
-                "-policys_groups__exec_interval","schedule__priority").values(
-                "item_id",
+        param_dict = {"policys_groups__status": 1}
+       
+        
+        value_items = ["item_id",
                 "schedule__valid_period_type",
                 "schedule__start_period_time",
                 "schedule__end_period_time",
@@ -68,33 +64,46 @@ class DeviceDbHelp(DbHelp):
                 "device__device_id",
                 "device__ip",
                 "device__hostname",
-                "device__login_expect",
+                "coll_policy__name",
+                "coll_policy_id",
+                "value_type",
+                 "policys_groups__exec_interval",
+                 "schedule__priority"
+                ]
+
+        cli_items=[
                 "device__ostype__start_default_commands",
-                "device__ostype__snmp_timeout",
                 "device__ostype__telnet_timeout",
                 "device__login_expect",
                 "device__telnet_port",
-
-                "device__snmp_port",
-                "device__snmp_community",
-                "device__snmp_version",
-                "coll_policy__name",
                 "coll_policy__cli_command",
-                "coll_policy__snmp_oid",
-
                 "coll_policy_rule_tree_treeid",
                 "coll_policy_rule_tree_treeid__rule_id_path",
                 "coll_policy_rule_tree_treeid__rule_id",
-                "coll_policy_rule_tree_treeid__rule__value_type",
-                "coll_policy__value_type",
-                "schedule__priority",
-                "policys_groups__exec_interval",
-                "policys_groups__history",
-                "policys_groups__policy_group_id",
-                "policys_groups__policy_group_id__name",
-                "coll_policy_id",
-                "value_type",
-                "coll_policy_id")
+                "coll_policy_rule_tree_treeid__rule__value_type"]
+
+        snmp_items=["device__ostype__snmp_timeout",
+                "device__snmp_port",
+                "device__snmp_community",
+                "device__snmp_version",
+                "coll_policy__snmp_oid"]
+        
+        if item_type is not None:
+            param_dict["item_type"] = item_type
+            if item_type == CommonConstants.CLI_TYPE_CODE:
+                value_items.extend(cli_items)
+            else:
+                value_items.extend(snmp_items)
+        else:
+
+            value_items.extend(cli_items)
+            value_items.extend(snmp_items)
+        
+
+
+        items = Items.objects.filter(
+            **param_dict).order_by(
+                "-policys_groups__exec_interval","schedule__priority").values(*value_items)
         return list(items)
 
 
@@ -155,7 +164,7 @@ class ParserDbHelp(DbHelp):
     def __init__(self):
         pass
 
-    def bulk_save_result(self, results, item_type):
+    def bulk_save_result(self, results, clock,item_type):
         data = {}
         for result in results:
             value_type = result['value_type']
@@ -167,14 +176,14 @@ class ParserDbHelp(DbHelp):
                 data[keys] = []
             data[keys].append(result)
         if item_type == CommonConstants.CLI_TYPE_CODE:
-            self.__save_cli_bulk(data)
+            self.__save_cli_bulk(data,clock)
         else:
-            self.__save_snmp_bulk(data)
+            self.__save_snmp_bulk(data,clock)
 
-    def __save_cli_bulk(self, result):
-        base_time = time.time()
-        clock = int(base_time)
-        ns = (int(round(base_time * 1000)))
+    def __save_cli_bulk(self, result,clock):
+        #base_time = time.time()
+        _clock = int(clock)
+        _ns = (int(round(clock * 1000)))
         for table in result:
             tmp = []
             for data in result[table]:
@@ -185,8 +194,8 @@ class ParserDbHelp(DbHelp):
                 item_id = data['item_id']
                 tmp.append(table(
                     value=value[0],
-                    ns=clock,
-                    clock=data['task_timestamp'],
+                    ns=_ns,
+                    clock=_clock,
                     item_id=item_id,
                     block_path=block_path
                 ))
@@ -194,22 +203,22 @@ class ParserDbHelp(DbHelp):
             table.objects.bulk_create(tmp)
         return True
 
-    def __save_snmp_bulk(self, result):
-        base_time = time.time()
-        clock = int(base_time)
-        ns = (int(round(base_time * 1000)))
+    def __save_snmp_bulk(self, result,clock):
+        #base_time = time.time()
+        _clock = int(clock)
+        _ns = (int(round(clock * 1000)))
         for table in result:
             tmp = []
             for data in result[table]:
-                output = data['output']
+                output = data['value']
                 item_id = data['item_id']
                 mibs = output.keys()[0]
                 value1 = output[mibs][0]
                 value2 = output[mibs][1]
                 tmp.append(table(
                     value=value1 if value1 else value2,
-                    ns=clock,
-                    clock=data['task_timestamp'],
+                    ns=_ns,
+                    clock=_clock,
                     item_id=item_id
                 ))
             table.objects.bulk_create(tmp)

@@ -29,6 +29,7 @@ class WorkerBase(Thread):
         self.logger = get_logger(name, logging.INFO)
         self.server = server
         self.ports = ports
+        self.zmq_push = ""
 
     def run(self):
         context = zmq.Context()
@@ -42,18 +43,32 @@ class WorkerBase(Thread):
         zmq_reqest.setsockopt(zmq.RCVTIMEO, 3600000)
         zmq_reqest.connect("tcp://%s:%s" % (self.server, self.ports[1]))
         # zmq socket 用来推送结果给server
-        zmq_push = context.socket(zmq.PUSH)
-        zmq_push.connect("tcp://%s:%s" % (self.server, self.ports[2]))
+        self.zmq_push = context.socket(zmq.PUSH)
+        self.zmq_push.connect("tcp://%s:%s" % (self.server, self.ports[2]))
         self.logger.info('Worker started')
         while True:
             try:
                 # waiting for command from server
-                channel, message = zmq_subscripe.recv_string().split()
+                #channel, message
+                result = zmq_subscripe.recv_string().split(" ",3)
+                channel = result[0]
+                message = result[1]
+                task_id = None
+                data = None
+                if len(result) >=3:
+                    task_id = result[2]
+                if len(result) ==4:
+                    data = result[3]
+
                 self.logger.debug('Receive published message: %s', message)
                 if message == 'task':  # has new task
                     self.logger.debug('Request for task')
                     # request new task
-                    zmq_reqest.send_string(b'%s' % channel)
+                    if task_id:
+                        zmq_reqest.send_string(b'%s %s' % (channel,task_id))
+                    else:
+                        zmq_reqest.send_string(b'%s' % channel)
+
                     task_id, task_str = zmq_reqest.recv().split(' ', 1)
                     self.logger.info('Task started: %s', task_id)
                     # deal with task by handler, and get result
@@ -61,14 +76,15 @@ class WorkerBase(Thread):
                     start_time = time.strftime('%Y-%m-%d %H:%M:%S')
                     # global counter_loc
                     # if counter_lock.acquire():
-                    result = self.handler(task_id, task, self.logger)
+                    result = self.handler(task_id, task, data,self.logger)
                         # counter_lock.release()
                     end_time = time.strftime('%Y-%m-%d %H:%M:%S')
                     result.update(dict(start_time=start_time, end_time=end_time))
                     # push result to server
-                    zmq_push.send(json.dumps(result))
+                    self.zmq_push.send(json.dumps(result))
                     del result
                     self.logger.info('Task finished: %s', task_id)
+
             except ValueError:
                 pass
             except zmq.Again:
@@ -84,7 +100,7 @@ class WorkerBase(Thread):
 
 def main(worker):
     options.define("s", default='localhost', help="zmq server", type=str)
-    options.define("t", default=10, help="threads", type=int)
+    options.define("t", default=1, help="threads", type=int)
     options.parse_command_line()
     server = options.options.s
     threads = options.options.t
@@ -107,3 +123,27 @@ def main(worker):
             time.sleep(1)
     except KeyboardInterrupt:
         pass
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
