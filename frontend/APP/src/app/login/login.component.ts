@@ -41,20 +41,20 @@ export class LoginComponent implements OnInit, AfterViewInit {
                     let data = _.get(res, 'data');
                     if (status && status['status'].toLowerCase() === 'true') {
                         // change token to new_token
-                        // if (localStorage.getItem('sessionTimeOut')) {
-                        //     localStorage.removeItem('sessionTimeOut');
-                        // }
-                        // if (data && _.get(data, 'username')) {
-                        //     localStorage.setItem('token', _.get(res, 'new_token'));
-                        //     // localStorage.setItem('username', _.get(data, 'username'));
-                        // }
                         if (localStorage.getItem('sessionTimeOut')) {
                             localStorage.removeItem('sessionTimeOut');
                         }
-                        if (res['username'] && res['token']) {
-                            localStorage.setItem('token', res['token']);
-                            localStorage.setItem('username', res['username']);
+                        if (data && _.get(data, 'username')) {
+                            localStorage.setItem('token', _.get(res, 'new_token'));
+                            // localStorage.setItem('username', _.get(data, 'username'));
                         }
+                        // if (localStorage.getItem('sessionTimeOut')) {
+                        //     localStorage.removeItem('sessionTimeOut');
+                        // }
+                        // if (res['username'] && res['token']) {
+                        //     localStorage.setItem('token', res['token']);
+                        //     localStorage.setItem('username', res['username']);
+                        // }
                         this.router.navigate(['/index/']);
                     } else {
                         alert(_.get(status, 'message'));

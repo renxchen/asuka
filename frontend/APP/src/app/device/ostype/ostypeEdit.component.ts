@@ -34,6 +34,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
     startRegFlg: Boolean = true;
     endRegFlg: Boolean = true;
     regFlg: Boolean = true;
+    ostypeMFlg: Boolean = true;
     telPromptFlg: Boolean = true;
     telPromptNotNull: Boolean = true;
     telTimeoutFlg: Boolean = true;
@@ -96,6 +97,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
                 let data: any = _.get(res, 'data');
+                let verify: any = _.get(res, 'verify_result');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (data) {
                         this.name = _.get(data[0], 'name');
@@ -121,6 +123,9 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                         }
                         this.snmpTimeout = _.get(data[0], 'snmp_timeout');
                         this.telTimeout = _.get(data[0], 'telnet_timeout');
+                    }
+                    if (verify) {
+                        this.ostypeMFlg = _.get(verify, 'name');
                     }
                 } else {
                     alert(msg);
