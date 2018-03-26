@@ -12,7 +12,7 @@ class DevicesConstants(object):
     1: stop collection at anytime
     2: start collection at specially
     """
-    OPEN_VALID_PERIOD_TYPE = 0
+    OPEN_VALID_PERIOD_TYPE = 1
     VALID_PERIOD_SPLIT = ";"
     VALID_DATE_FORMAT = "%Y-%m-%d@%H:%M"
     SCHEDULE_GET_NORMALLY = 0
