@@ -75,6 +75,7 @@ export class DeviceLoginComponent implements OnInit {
     public uploadFile() {
         if (this.devLoginTable$) {
             this.devLoginTable$.GridUnload();
+            // $('#devLoginTable').jqGrid('clearGridData');
         }
         this.processbar = this.modalService.show(ProcessbarComponent, this.modalConfig);
         this.processbar.content.message = 'Uploading...';
@@ -88,6 +89,7 @@ export class DeviceLoginComponent implements OnInit {
                 let data: any = _.get(res, 'error_list');
                 this.optId = _.get(res, 'operation_id');
                 if (status && status['status'].toLowerCase() === 'true') {
+                    // $('#devLoginTable').trigger('reloadGrid');
                     this.drawDevLoginTable();
                     this.actionFlg = false;
                     this.processbar.hide();
@@ -200,6 +202,8 @@ export class DeviceLoginComponent implements OnInit {
                     if (status && status['status'].toLowerCase() === 'true') {
                         this.devLoginTable$.GridUnload();
                         this.drawDevLoginTable();
+                        // $('#devLoginTable').jqGrid('clearGridData');
+                        // $('#devLoginTable').trigger('reloadGrid');
                         this.processbar.hide();
                     } else {
                         this.processbar.hide();

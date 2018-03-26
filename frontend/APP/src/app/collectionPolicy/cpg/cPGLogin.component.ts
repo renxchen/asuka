@@ -89,7 +89,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                 }
             });
     }
-    public getCPNames(id?:any) {
+    public getCPNames(id?: any) {
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -120,6 +120,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                 if (cpList[i].policy.toString() === id) {
                     cpList.splice(i, 1);
                     _t.cpgActionGrid$.GridUnload();
+                    // $('#moreInfoTable').jqGrid('clearGridData');
                     _t.moreInfoTable(cpList);
                 }
             }
@@ -128,17 +129,17 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         });
     }
     public execIntervalChange(selExecInterval: any) {
-        if (selExecInterval === '60') {
-            let snmpNameTmp: any = [];
-            _.each(this.cpNames, function (cpName) {
-                if (cpName.policy_type.toString() === '1') {
-                    snmpNameTmp.push(cpName);
-                }
-            });
-            this.cpNames = snmpNameTmp;
-        } else {
-            this.cpNames = this.cpNamesTmp;
-        }
+        // if (selExecInterval === '60') {
+        //     let snmpNameTmp: any = [];
+        //     _.each(this.cpNames, function (cpName) {
+        //         if (cpName.policy_type.toString() === '1') {
+        //             snmpNameTmp.push(cpName);
+        //         }
+        //     });
+        //     this.cpNames = snmpNameTmp;
+        // } else {
+        //     this.cpNames = this.cpNamesTmp;
+        // }
     }
     public ostypeChange(selOstype: any) {
         this.selCPName = 'null';
@@ -148,15 +149,15 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.getCPNames(selOstype);
     }
     public cpNamecChange(selCPName: any) {
-        let _t = this;
-        _t.cliFlg = true;
-        _.each(this.cpNames, function (cpName) {
-            if (cpName.coll_policy_id.toString() === selCPName
-                && cpName.policy_type === 0) {
-                // _t.selExecInterval = 'null';
-                _t.cliFlg = false;
-            }
-        });
+        // let _t = this;
+        // _t.cliFlg = true;
+        // _.each(this.cpNames, function (cpName) {
+        //     if (cpName.coll_policy_id.toString() === selCPName
+        //         && cpName.policy_type === 0) {
+        //         // _t.selExecInterval = 'null';
+        //         _t.cliFlg = false;
+        //     }
+        // });
     }
     private addBtn() {
         this.addFlg = !this.addFlg;
@@ -195,7 +196,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         for (let i = 0; i < cpList.length; i++) {
             if (cpList[i].policy.toString() === this.selCPName) {
                 this.sameCPFlg = false;
-                break;
+                return;
             } else {
                 this.sameCPFlg = true;
             }
@@ -214,6 +215,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             // console.log('cpInfo', cpInfo);
             this.cpList.push(cpInfo);
             this.cpgActionGrid$.GridUnload();
+            // $('#moreInfoTable').jqGrid('clearGridData');
             this.moreInfoTable(this.cpList);
         } else {
             if (this.selCPName === 'null') {

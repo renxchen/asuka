@@ -166,8 +166,10 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                 _t.modalRef.content.actionType = 'edit';
                 let ostypeEdit$ = _t.modalService.onHidden.subscribe(o => {
                     if (o) {
-                        _t.ostypeTable$.GridUnload();
-                        _t.drawOstypeTable();
+                        // _t.ostypeTable$.GridUnload();
+                        // _t.drawOstypeTable();
+                        $('#ostypeTable').jqGrid('clearGridData');
+                        $('#ostypeTable').trigger('reloadGrid');
                     }
                     _t.unsubscribe(ostypeEdit$);
                 });
@@ -230,8 +232,10 @@ export class OstypeComponent implements OnInit, AfterViewInit {
         this.modalRef.content.actionType = 'create';
         let ostypeLogin$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
-                this.ostypeTable$.GridUnload();
-                this.drawOstypeTable();
+                // this.ostypeTable$.GridUnload();
+                // this.drawOstypeTable();
+                $('#ostypeTable').jqGrid('clearGridData');
+                $('#ostypeTable').trigger('reloadGrid');
             }
             this.unsubscribe(ostypeLogin$);
         });
