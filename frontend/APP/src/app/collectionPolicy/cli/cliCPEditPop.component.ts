@@ -140,7 +140,8 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                         // this.closeMsg = '一覧へ戻る';
                         // this.showAlertModal(this.modalMsg, this.closeMsg);
                     } else {
-                        if (msg && msg === 'CP_NAME_DUPLICATE') {
+                        // CP_NAME_DUPLICATE
+                        if (msg && msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
                             alert(msg);
