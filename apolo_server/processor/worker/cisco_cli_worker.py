@@ -14,6 +14,7 @@ import json
 class CiscoCliWorker(WorkerBase):
     name = 'CiscoCli'        
     channels = ('cli',)
+    threads = 15
 
     def handler(self, task_id, task, data, logger):
         device_info = task['device_info']

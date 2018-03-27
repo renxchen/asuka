@@ -18,7 +18,7 @@ __author__ = 'Rubick <haonchen@cisco.com>'
 class Parser(WorkerBase):
     name = "parser_trigger"
     channels = ('parser',)
-    threads = 1
+    threads = 15
 
     def handler(self, task_id, task, data, logger):
 
