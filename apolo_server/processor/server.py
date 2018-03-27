@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 __version__ = '0.1'
 __author__ = 'Rubick <haonchen@cisco.com>'
-import  sys
-sys.path.append("/Users/yihli/Desktop/projects/apolo")
+import sys
+import os
+from constants import SYS_PATH
+sys.path.append(SYS_PATH)
 import json
 import time
 import Queue
@@ -139,7 +141,8 @@ class CommandApiHandler(web.RequestHandler):
 
         result = dict(
             status="success",
-            message=""
+            message="",
+            devices=devices
         )
     
         self.write(json.dumps(result))
@@ -149,7 +152,7 @@ class CommandApiHandler(web.RequestHandler):
 
 
 def on_worker_data_in(data):
-    ##return dict(command=command, status=status, output=output, timestamp=timestamp)
+    
     result = json.loads(data[0])
 
     result_type = result['result_type']
@@ -159,18 +162,6 @@ def on_worker_data_in(data):
     del result['result_type']
     del result['task_id']
 
-
-    """
-    end(dict(origin_oid=oids[0],
-    oid=_oid_strs[0],
-    value="",
-    message=str(error_msg)))
-
-    return dict(status='success',
-                    message='',
-                    output=output)
-
-    """
     task = session_mgr.get(task_id)
     channel = task["channel"]
     if result_type == "element_result":
@@ -227,11 +218,8 @@ def on_worker_data_in(data):
                                     device_info=device_info,
                                     timer=timer,
                                     coll_queue_timestamp=timestamp,
-                                    #read=False,
                                     channel=channel,
-                                    #parser_queue=Queue.Queue(),
                                     parser_status="queue"
-
                                     ))
                 
             session_mgr.init_parser_queue(task_id)
@@ -252,30 +240,29 @@ class SessionApiHandler(web.RequestHandler):
         return True
 
     def get(self, *args):
-        print cli_device_pending_dict
-        print cli_device_task_dict
+
         method = args[0]
         self.set_header("Content-Type", "application/json")
         if method == 'summary':
-            print 123
+            
             summary = {}
             timer = session_mgr.get_timer()
             now = time.time()
             session_data = session_mgr.get_all()
-            #print session_data
-            """
+            
             for task_id in session_data:
                 task = session_data[task_id]
                 s = dict(
-                    category=task['category'],
+                    channel=task['channel'],
                     status=task['status'],
-                    has_read=task['read'],
-                    create=task['timestamp'],
+                    create=task['coll_queue_timestamp'],
                     age=int(now - task['timer']),
-                    method=task['method']
+                    device_id=task["device_info"]["device_id"],
+                    device_ip=task["device_info"]["ip"],
+                    device_hostname=task["device_info"]["hostname"]
                 )
                 summary[task_id] = s
-            """
+            
             self.write(json.dumps(session_data))
         elif method == 'debug':
             data = session_mgr.get_all()
