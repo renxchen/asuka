@@ -1,6 +1,7 @@
 import requests
 import time
 import json
+from optparse import OptionParser
 BASE_CLI_URL = "http://127.0.0.1:7777/api/v1/sync/cli"
 BASE_SNMP_URL = "http://127.0.0.1:7777/api/v1/sync/snmp"
 
@@ -15,13 +16,18 @@ def collector(collection_type):
     param = {"now_time": now_time}
     try:
         res = requests.post(url, param)
+        print json.dumps(res.text, indent=2)
     except Exception, e:
         print str(e)
-    print json.dumps(res.text, indent=2)
     print "Task End"
 
 if __name__ == "__main__":
-    collector('snmp')
+    parser = OptionParser()
+    parser.add_option('-t', '--type', dest="type", help="cli or snmp", default="cli")
+    (options, args) = parser.parse_args()
+    s_type = options.type
+    # print s_type
+    collector(s_type)
     # collection('cli')
 
 

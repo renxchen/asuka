@@ -1,10 +1,9 @@
 # __author__ = 'zhutong'
 
+import sys
+from worker_base import WorkerBase, main,SYS_PATH
+sys.path.append(SYS_PATH)
 from snmp_helper import SNMP,chunks
-# from snmp_helper import SNMP
-import  sys
-sys.path.append("/Users/yihli/Desktop/projects/apolo")
-from worker_base import WorkerBase, main
 import json
 import time
 

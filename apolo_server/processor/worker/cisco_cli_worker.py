@@ -2,16 +2,18 @@
 
 __version__ = 0.1
 __author__ = 'zhutong <zhtong@cisco.com>'
-import  sys
-sys.path.append("/Users/yihli/Desktop/projects/apolo")
+
+import sys
+from worker_base import WorkerBase, main,SYS_PATH
+sys.path.append(SYS_PATH)
 from cisco_cli_helper import CiscoCLI
-from worker_base import WorkerBase, main
 import json
 
 
 class CiscoCliWorker(WorkerBase):
     name = 'CiscoCli'        
     channels = ('cli',)
+    threads = 15
 
     def handler(self, task_id, task, data, logger):
         device_info = task['device_info']

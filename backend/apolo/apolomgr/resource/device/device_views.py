@@ -360,11 +360,12 @@ class DevicesViewSet(viewsets.ViewSet):
                                     'telnet_status': tmp.telnet_status,
                                     'snmp_status': tmp.snmp_status,
                                     'status': 1,
-                                    'ostype_id': tmp.ostype.ostypeid,
                                 }
                                 serializer = DevicesSerializer(current, data=data, partial=True)
                                 if serializer.is_valid():
-                                    serializer.save()
+                                    serializer.save(ostype_id=tmp.ostype.ostypeid)
+                                else:
+                                    print serializer.errors
                             else:
                                 flag += 1
                                 if flag == len(devices):

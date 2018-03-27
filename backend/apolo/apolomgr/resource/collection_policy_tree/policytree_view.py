@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
-'''
-
+"""
 @author: kimli
 @contact: kimli@cisco.com
 @file: policytree_view.py
 @time: 2017/12/18 18:24
 @desc:
-
-'''
+"""
 import traceback
 
 from django.db import transaction

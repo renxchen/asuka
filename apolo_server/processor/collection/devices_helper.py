@@ -3,6 +3,7 @@ import sys
 sys.path.append("/Users/yihli/Desktop/projects/apolo")
 import time
 import copy
+import json
 from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
 from apolo_server.processor.db_units.memcached_helper import RulesMemCacheDb, ItemMemCacheDb
 from apolo_server.processor.db_units.db_helper import DeviceDbHelp, ItemsDbHelp
@@ -80,10 +81,12 @@ def deco_item(func):
         return item
     return wrapper
 
+
 def get_items(item_type):
 
     items = DeviceDbHelp.get_items(item_type)
     return items
+
 
 def get_valid_items(now_time, items):
     """
@@ -96,8 +99,8 @@ def get_valid_items(now_time, items):
 
     for item in items:    
         item["valid_status"] = True
-
-        __check_item_interval(item, now_time)
+        __check_start_time(item, now_time)
+        # __check_item_interval(item, now_time)
         __check_period_time(item, now_time)
         __check_schedule_time(item, now_time)
         __check_device_priority(item,item_prioriy_dict)
@@ -109,8 +112,8 @@ def get_valid_items(now_time, items):
         """
         priority_key = "%d_%d" % (item["coll_policy_id"], item["device__device_id"])
         if item["valid_status"]:
-            if priority_key in item_prioriy_dict and not item_prioriy_dict[priority_key]["valid"] \
-                         and item["item_id"] == item_prioriy_dict[priority_key]["item_id"]:
+            if priority_key in item_prioriy_dict and item["schedule__priority"] < item_prioriy_dict[priority_key]["max_priority"]: 
+                
                 item["valid_status"] = False
         
             """
@@ -275,6 +278,26 @@ def __check_period_time(item, now_time):
 
 
 @deco_item
+def __check_start_time(item, now_time):
+    exec_interval = item["policys_groups__exec_interval"]
+    tm_hour, tm_min, tm_sec = time.localtime(now_time)[3:6]
+
+    if exec_interval not in DevicesConstants.TASK_START_TIME:
+        return True
+
+    if exec_interval == 86400:
+
+        if tm_hour == DevicesConstants.TASK_START_TIME[86400][0] and \
+                        tm_min == DevicesConstants.TASK_START_TIME[86400][1]:
+            return True
+
+    elif tm_min in DevicesConstants.TASK_START_TIME.get(exec_interval):
+        return True
+
+    return False
+
+
+@deco_item
 def __check_schedule_time(item, now_time):
     """
     Judging given item whether start at now time
@@ -329,10 +352,10 @@ def __check_device_priority(item,item_prioriy_dict):
 
         if item_key in item_prioriy_dict:
             tmp_p_item = item_prioriy_dict[item_key]
-            if item["schedule__priority"] < tmp_p_item["priority"]:
-                item_prioriy_dict.update(item_key,{"item_id":item["item_id"],"priority":item["schedule__priority"],"valid":False})
+            if item["schedule__priority"] > tmp_p_item["max_priority"]:
+                item_prioriy_dict.update({item_key: {"max_priority": item["schedule__priority"]}})
         else:
-            item_prioriy_dict[item_key] = {"item_id":item["item_id"],"priority":item["schedule__priority"],"valid":True}   
+            item_prioriy_dict[item_key] = {"max_priority":item["schedule__priority"]}   
 
 
 @deco_item
@@ -397,7 +420,8 @@ def __create_path(rules, path):
 if __name__ == "__main__":
     
     devices,device_dict = get_devices(int(time.time()), "cli")
-    #print 123
-    print devices
-    print device_dict
+    # #print 123
+    # print devices
+    # print device_dict
+    # print json.dumps(device_dict, indent=2)
 

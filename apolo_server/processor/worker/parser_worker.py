@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import  sys
-sys.path.append("/Users/yihli/Desktop/projects/apolo")
-from worker_base import WorkerBase, main
+import sys
+from worker_base import WorkerBase, main,SYS_PATH
+sys.path.append(SYS_PATH)
 from parser_helper import parser_main
 from apolo_server.processor.trigger.trigger_helper import TriggerHelp
 from apolo_server.processor.constants import ParserConstants, CommonConstants
@@ -17,7 +17,7 @@ __author__ = 'Rubick <haonchen@cisco.com>'
 class Parser(WorkerBase):
     name = "parser_trigger"
     channels = ('parser',)
-    threads = 1
+    threads = 15
 
     def handler(self, task_id, task, data, logger):
 

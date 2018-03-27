@@ -24,6 +24,9 @@ from backend.apolo.serializer.action_policy_serializer import TriggerSerializer,
 import logging
 from django.db.models import *
 import sys
+from backend.apolo.apolomgr.resource.action_policy.mem_cache_trigger_and_trigger_detial import \
+    MemCacheTriggerTriggerDetial
+# from apolo_server.processor.db_units.memcached_helper import TriggerMemCache
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -47,6 +50,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         self.sort_by = views_helper.get_request_value(self.request, 'sidx', method)
         self.order = views_helper.get_request_value(self.request, 'sord', method)
         self.action_policy_name = views_helper.get_request_value(self.request, 'name', method)
+        self.action_policy_name_get_put_delete = views_helper.get_request_value(self.request, 'name_get_put_delete',
+                                                                                'GET')
         self.action_policy_name_for_search = views_helper.get_request_value(self.request, 'name_for_search', method)
         self.device_group_name_for_search = views_helper.get_request_value(self.request, 'device_group_name_for_search',
                                                                            method)
@@ -1106,32 +1111,33 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         result_action_major_list = []
         result_action_minor_list = []
         # queryset_triggers = Triggers.objects.filter(name=self.action_policy_name)
-        queryset_actions = Actions.objects.filter(action_name=self.action_policy_name).values('action_id',
-                                                                                              'action_type',
-                                                                                              'action_name',
-                                                                                              'snmp_version',
-                                                                                              'snmp_oid',
-                                                                                              'community',
-                                                                                              'ip_address',
-                                                                                              'username',
-                                                                                              'password',
-                                                                                              'command',
-                                                                                              'agent_address',
-                                                                                              'oid',
-                                                                                              'message',
-                                                                                              'param',
-                                                                                              'script_path',
-                                                                                              'status',
-                                                                                              'trigger_id',
-                                                                                              'trigger__descr',
-                                                                                              'trigger__trigger_type',
-                                                                                              'trigger__columnA',
-                                                                                              'trigger__columnB',
-                                                                                              'trigger__priority',
-                                                                                              'trigger__condition',
-                                                                                              'trigger__expression',
-                                                                                              'trigger__value',
-                                                                                              'trigger__trigger_limit_nums')
+        queryset_actions = Actions.objects.filter(action_name=self.action_policy_name_get_put_delete).values(
+            'action_id',
+            'action_type',
+            'action_name',
+            'snmp_version',
+            'snmp_oid',
+            'community',
+            'ip_address',
+            'username',
+            'password',
+            'command',
+            'agent_address',
+            'oid',
+            'message',
+            'param',
+            'script_path',
+            'status',
+            'trigger_id',
+            'trigger__descr',
+            'trigger__trigger_type',
+            'trigger__columnA',
+            'trigger__columnB',
+            'trigger__priority',
+            'trigger__condition',
+            'trigger__expression',
+            'trigger__value',
+            'trigger__trigger_limit_nums')
         # migrate_actions = queryset_actions.annotate(total_num=Count('action_name'))
         # print queryset_actions.query
         for per in queryset_actions:
@@ -1316,7 +1322,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         @return data: the data for summary page
         """
         try:
-            if self.action_policy_name is not '':
+            if self.action_policy_name_get_put_delete is not '':
                 result = self.get_data_by_name()
                 return api_return(data=result)
             data = self.generate_view_data()
@@ -1334,6 +1340,11 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         try:
             with transaction.atomic():
                 data = self.create_trigger_related(method='POST')
+                if self.action_policy_name is not '':
+                    # mem cache
+                    data_for_mem_cache = MemCacheTriggerTriggerDetial().get(self.action_policy_name)
+                    # with TriggerMemCache() as trigger:
+                    #     trigger.multi_set(data_for_mem_cache)
                 return api_return(data=data)
         except Exception, e:
             transaction.rollback()
@@ -1348,11 +1359,16 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         """
         try:
             with transaction.atomic():
-                if self.action_policy_name is not '':
+                print self.action_policy_name_get_put_delete, 222
+                if self.action_policy_name_get_put_delete is not '':
                     # delete old trigger, trigger_detail, action data
-                    self.delete_trigger_related(self.action_policy_name)
+                    self.delete_trigger_related(self.action_policy_name_get_put_delete)
                     # create new trigger, trigger_detail, action data
                     data = self.create_trigger_related(method='PUT')
+                    # mem cache
+                    data_for_mem_cache = MemCacheTriggerTriggerDetial().get(self.action_policy_name)
+                    # with TriggerMemCache() as trigger:
+                    #     trigger.multi_set(data_for_mem_cache)
                     return api_return(data=data)
         except Exception, e:
             transaction.rollback()
@@ -1367,15 +1383,16 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         """
         try:
             with transaction.atomic():
-                self.delete_trigger_related(self.action_policy_name)
-                data = {
-                    'new_token': self.new_token,
-                    constants.STATUS: {
-                        constants.STATUS: constants.TRUE,
-                        constants.MESSAGE: constants.DELETE_SUCCESSFUL
+                if self.action_policy_name_get_put_delete is not '':
+                    self.delete_trigger_related(self.action_policy_name_get_put_delete)
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.TRUE,
+                            constants.MESSAGE: constants.DELETE_SUCCESSFUL
+                        }
                     }
-                }
-                return api_return(data=data)
+                    return api_return(data=data)
         except Exception, e:
             transaction.rollback()
             if constants.DEBUG_FLAG:

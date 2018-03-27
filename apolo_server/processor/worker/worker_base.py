@@ -17,8 +17,9 @@ __author__ = 'Rubick <haonchen@cisco.com>'
 __version__ = '0.5'
 
 
-counter_lock = threading.Lock()
-
+#counter_lock = threading.Lock()
+tmp_path = os.path.split(os.path.dirname(__file__))[0]
+SYS_PATH = os.path.split(os.path.split(tmp_path)[0])[0]
 
 class WorkerBase(Thread):
     channels = []
@@ -100,7 +101,7 @@ class WorkerBase(Thread):
 
 def main(worker):
     options.define("s", default='localhost', help="zmq server", type=str)
-    options.define("t", default=1, help="threads", type=int)
+    options.define("t", default=10, help="threads", type=int)
     options.parse_command_line()
     server = options.options.s
     threads = options.options.t
