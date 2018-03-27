@@ -3,7 +3,6 @@ import logging
 import time
 from apolo_server.processor.constants import CommonConstants
 from db_helper import DeviceDbHelp
-from apolo_server.processor.parser.common_policy_tree.tool import Tool
 
 
 class MemCacheBase(object):
@@ -93,20 +92,6 @@ class ItemMemCacheDb(MemCacheBase):
         return result
 
 
-class RulesMemCacheDb(MemCacheBase):
-    def __init__(self):
-        super(RulesMemCacheDb, self).__init__()
-        self.key = "DB_Rules"
-
-    def do_get(self):
-        rule_dict = {}
-        rules = DeviceDbHelp.get_all_rule()
-        ruletool = Tool()
-        for rule in rules:
-            format_rule = ruletool.get_rule_value(rule)
-            rule_dict[str(rule['ruleid'])] = format_rule
-        return rule_dict
-
 
 class TaskRunningMemCacheDb(MemCacheBase):
     def __init__(self):
@@ -142,7 +127,7 @@ if __name__ == "__main__":
         #print cache.get()
     # item.flush_all()
     # for i in item._get():
-    #     print i
+    #     print is
     test = {'device1': [1, 2, 3, 4], 'device2': [1, 2, 3, 4]}
     with TriggerMemCache() as trigger:
         trigger.multi_set(test)
