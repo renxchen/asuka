@@ -242,13 +242,12 @@ class Tool(object):
         tmp_key_dict = dict()
         result = []
         for recoder in items:
-            print recoder['item_key']
             if tmp_key_dict.has_key(recoder['item_key']):
                 pass
             else:
                 result.append(recoder)
                 tmp_key_dict.update({recoder['item_key']: 1})
-                print tmp_key_dict
+
         return result
 
     @staticmethod
@@ -268,9 +267,11 @@ class Tool(object):
             tmp_item['device_name'] = item['device__hostname']
             tmp_item['policy_name'] = item['coll_policy__name']
             tmp_item['exec_interval'] = item['policys_groups__exec_interval']
-            tmp_item['item_key']= '{}_{}_{}'.format(tmp_item['policy_group_id'],
+            tmp_item['item_key']= '{}_{}_{}_{}'.format(tmp_item['policy_group_id'],
                                                     tmp_item['priority'],
-                                                    tmp_item['coll_policy_id'])
+                                                    tmp_item['coll_policy_id'],
+                                                       tmp_item['device_id'])
+
             return tmp_item
 
 

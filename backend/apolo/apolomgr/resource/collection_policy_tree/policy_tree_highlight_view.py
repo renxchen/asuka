@@ -1,15 +1,12 @@
 #!/usr/bin/env python
-# -*- coding:utf-8 -*-
-
-'''
-
+# -*- coding: utf-8 -*-
+"""
 @author: kimli
 @contact: kimli@cisco.com
 @file: policy_tree_highlight_view.py
 @time: 2017/12/18 18:24
 @desc:
-
-'''
+"""
 import json
 import traceback
 
@@ -31,6 +28,15 @@ class PolicyTreeHighLightViewSet(viewsets.ViewSet):
         self.tree = views_helper.get_request_value(self.request, 'tree', 'BODY')
 
     def post(self):
+        """!@brief
+        highlight function
+        @param
+        @pre
+        @post
+        @return the highlighted page
+        @author kimli
+        @date 2017/12/18
+        """
         request_dict = {
             'data': self.raw_data,
             'tree': self.tree,
@@ -39,9 +45,6 @@ class PolicyTreeHighLightViewSet(viewsets.ViewSet):
         try:
             render = Render(**request_dict)
             html_data = render.render()
-            # f = open(r'C:\Users\yangyuan\Desktop\D2\apolo\ntt W\text1.html', 'w')
-            # f.write(html_data)
-            # f.close()
             data = {
                 'data': html_data,
                 'new_token': self.new_token,
@@ -52,5 +55,6 @@ class PolicyTreeHighLightViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)

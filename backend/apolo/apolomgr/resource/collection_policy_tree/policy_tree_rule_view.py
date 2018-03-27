@@ -1,14 +1,13 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-'''
-
+"""
 @author: kimli
 @contact: kimli@cisco.com
 @file: policy_tree_rule_view.py
 @time: 2017/12/25 17:37
 @desc:
-
-'''
+"""
 import traceback
 
 from django.db.models import Q
@@ -24,16 +23,22 @@ from backend.apolo.tools.views_helper import api_return
 
 
 class PolicyTreeRuleViewSet(viewsets.ViewSet):
+
     def __init__(self, request, **kwargs):
         super(PolicyTreeRuleViewSet, self).__init__(**kwargs)
         self.request = request
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
 
-    # get information of rules from db
-    # http://127.0.0.1:8000/v1/api_policy_tree_rule/?rule_id=1&coll_policy_id=1
-
     def get(self):
-
+        """!@brief
+        load the rule information when open the rule edit page
+        @param
+        @pre
+        @post
+        @return rule information,verify result(rule_is_used,is_processing,is_locked)
+        @author kimli
+        @date 2017/12/25
+        """
         try:
             coll_policy_id = views_helper.get_request_value(self.request, key='coll_policy_id', method_type='GET')
             rule_id = views_helper.get_request_value(self.request, key='rule_id', method_type='GET')
@@ -76,15 +81,24 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
-    # save the rule into db
-    # 1 check the rule name is existing in the rules of the tree when updating the rule
-    # 2 if the name is exists,return error.else to step 3
-    # 3 save the rule into db
-    # 4 get all rules of tree ,and return the information to front
     def post(self):
+        """!@brief
+        save the rule information into db.
+        two points need to check before save the rule information
+        1 the rule name is not existing in the cp
+        2 the identifier(識別子）name is not existing in the cp
+        @param
+        @pre
+        @post
+        @note
+        @return data rule tree and block rule tree and verify error message
+        @author kimli
+        @date 2017/12/25
+        """
         try:
             insert_info = views_helper.get_request_value(self.request, key='rule_info', method_type='BODY')
             coll_policy_id = str(insert_info['coll_policy'])
@@ -109,7 +123,6 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.FALSE,
-                        # constants.MESSAGE: '\n'.join(Error_Msg_list)
                         constants.MESSAGE: constants.RULE_NAME_IS_EXISTENCE
                     }
                 }
@@ -148,26 +161,29 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
             return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
-    # 1 check the rule name is existing in the rules of the tree when updating the rule
-    # 2 if the name is different,do update,else raise error
-    # 3 get all rules of tree ,and return the information to front
     def put(self):
+        """!@brief
+        update the rule information.
+        two points need to check before update the rule information
+         1 the rule name is not existing in the cp
+         2 the identifier(識別子）name is not existing in the cp
+        @param
+        @pre
+        @post
+        @note
+        @return data rule tree and block rule tree and verify error message
+        @author kimli
+        @date 2017/12/25
+        """
         try:
-
-            # http://127.0.0.1:8000/v1/api_policy_tree_rule/?rule_id=1
-            # check before delete rule
             rule_id = int(views_helper.get_request_value(self.request, 'rule_id', 'GET'))
             insert_info = views_helper.get_request_value(self.request, 'rule_info', 'BODY')
-            # policy_tree_id = views_helper.get_request_value(self.request, key='policy_tree_id', method_type='BODY')
             policy_id = insert_info['coll_policy']
             name = insert_info['name']
-            # judge what is the name chanced in the rule_info
-            # if name != CollPolicyCliRule.objects.get(ruleid=rule_id).name:
-            #     query_set = CollPolicyCliRule.objects.filter(name=name, coll_policy=policy_tree_id)
-            #     query_set_len = len(query_set)
             query_set_len = len(CollPolicyCliRule.objects.filter(Q(name=name) &
                                                                  Q(coll_policy=policy_id) &
                                                                  ~Q(ruleid=rule_id)))
@@ -191,7 +207,6 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
                     'verify_error_msg': error_msg_list,
                     constants.STATUS: {
                         constants.STATUS: constants.FALSE,
-                        # print '\n'.join(Error_Msg_list)
                         constants.MESSAGE: constants.FAILED
                     }
                 }
@@ -230,11 +245,21 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
             return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     def delete(self):
-        # http://127.0.0.1:8000/v1/api_policy_tree_rule/?rule_id=xxx&coll_policy_id=xxx
+        """!@brief
+       delete the rule
+       @param
+       @pre
+       @post
+       @note
+       @return data rule tree and block rule tree
+       @author kimli
+       @date 2017/12/25
+       """
         try:
             rule_id = views_helper.get_request_value(self.request, key='rule_id', method_type='GET')
             policy_tree_id = views_helper.get_request_value(self.request, key='coll_policy_id', method_type='GET')
@@ -254,11 +279,22 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
 
-    def __set_input_rule_data(self,front_data):
+    def __set_input_rule_data(self, front_data):
+        """!@brief
+        sort out data from the front web page
+        @param front_data: the data from the front web page
+        @pre
+        @post
+        @note
+        @return the sorted out rule information
+        @author kimli
+        @date 2017/12/25
+        """
         rule_data_dict = {'name': front_data['name']}
         if front_data.has_key('key_str'):
             rule_data_dict['key_str'] = front_data['key_str']
@@ -359,6 +395,16 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
     @staticmethod
     def __get_value_type(rule_type, extract_data_reg):
+        """!@brief
+        judge regular expression extract what is value type of data
+        @param rule_type:rule type ,extract_data_reg:regular expression
+        @pre
+        @post
+        @note
+        @return the sorted out rule information
+        @author kimli
+        @date 2017/12/25
+        """
         int_reg = ['\d+', '\d', '\d+$', '\d$', '-\d+', '-\d', '-\d+$', '-\d$']
         float_reg = ['\d\.\d', '\d\.\d+', '\d+\.\d', '\d+\.\d+', '\d\.\d$', '\d\.\d+$', '\d+\.\d$', '\d+\.\d+$',
                      '-\d\.\d', '-\d\.\d+', '-\d+\.\d', '-\d+\.\d+', '-\d\.\d$', '-\d\.\d+$', '-\d+\.\d$', '-\d+\.\d+$'
@@ -377,6 +423,16 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
     @staticmethod
     def __judge_identifier_name_exist(identifier_name, policy_id, rule_id=0):
+        """!@brief
+        judge identifier name(識別子名) is not  existing in the cp
+        @param identifier_name:識別子名 ,policy id:policy id
+        @pre
+        @post
+        @note
+        @return the sorted out rule information
+        @author kimli
+        @date 2017/12/25
+        """
         query_result = CollPolicyCliRule.objects.filter(Q(key_str=identifier_name) &
                                                         Q(coll_policy=policy_id) &
                                                         ~Q(ruleid=rule_id))
@@ -387,10 +443,32 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
 
     @staticmethod
     def __judge_rule_is_processing(coll_policy_id):
+        """!@brief
+        judge the cp that include the rule, whether is running or not
+        @param coll_policy_id: collection policy id
+        @pre
+        @post call the function : Tool.get_policy_status(policy_id)
+        @note
+        @return if the policy is running, return True. if the policy is not running, return False
+        @author kimli
+        @date 2017/12/25
+        """
         return Tool.get_policy_status(coll_policy_id)
 
     @staticmethod
     def __judge_rule_is_locked(rule_id, coll_policy_id):
+        """!@brief
+       judge the rule status is lock
+       if  the tree_id corresponding to the rule_id is existing in the data_table table,
+       the rule status is lock,else is not lock
+       @param rule_id:rule id, coll_policy_id:collection policy id
+       @pre
+       @post
+       @note
+       @return if the rule status is lock ,return True.if the status is not lock,return False
+       @author kimli
+       @date 2017/12/25
+       """
         tree_id = CollPolicyRuleTree.objects.filter(rule=rule_id, coll_policy=coll_policy_id).values('treeid')
         tree_count = len(DataTable.objects.filter(tree__in=tree_id))
         if tree_count > 0:
