@@ -26,7 +26,7 @@ from django.db.models import *
 import sys
 from backend.apolo.apolomgr.resource.action_policy.mem_cache_trigger_and_trigger_detial import \
     MemCacheTriggerTriggerDetial
-from apolo_server.processor.db_units.memcached_helper import TriggerMemCache
+# from apolo_server.processor.db_units.memcached_helper import TriggerMemCache
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
