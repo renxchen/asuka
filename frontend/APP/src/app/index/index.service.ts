@@ -1,5 +1,4 @@
 import { Injectable, ElementRef } from '@angular/core';
-import * as $ from 'jquery';
 import { Observable } from 'rxjs/Rx';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 @Injectable()

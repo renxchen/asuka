@@ -28,6 +28,7 @@
                                     [(ngModel)]="name" 
                                     maxlength="256"
                                     placeholder="英数字のみ" 
+                                    [disabled] = "!nameMFlg"
                                 />
                             </div>
                         </div>
@@ -68,7 +69,7 @@
                                     id="snmpOid" 
                                     name="snmpOid" 
                                     [(ngModel)]="snmpOid" 
-                                    maxlength="30"
+                                    maxlength="256"
                                     placeholder="数字とドットのみ" 
                                     [disabled]="!snmpFlg"
                                 />
@@ -137,13 +138,13 @@
                                 class="col-sm-12 text-warning" 
                                 *ngIf="nameNotNull&&!nameFlg"
                             >
-                                コレクションポリシー名は半角英数字のみで入力してください。
+                                コレクションポリシー名はシングルクォート、ダブルクォート、スペース文字とカンマ以外の半角英数字と記号で入力してください。
                             </div>
                             <div 
                                 class="col-sm-12 text-warning" 
                                 *ngIf="!uniqueFlg"
                             >
-                                コレクションポリシー名は重複しています。
+                                コレクションポリシー名は既存データと重複しています。
                             </div>
                             <div 
                                 class="col-sm-12 text-warning" 

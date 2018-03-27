@@ -2,6 +2,10 @@ import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Validator } from '../../../components/validation/validation';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { ModalComponent } from '../../../components/modal/modal.component';
+declare var $: any;
 import * as _ from 'lodash';
 
 @Component({
@@ -23,17 +27,21 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
     nameNotNull: Boolean = true;
     cmdNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
+    modalRef: BsModalRef;
+    closeMsg: any;
+    modalMsg: any;
     constructor(
         private router: Router,
         private activedRoute: ActivatedRoute,
-        private httpClient: HttpClientComponent) { }
+        private httpClient: HttpClientComponent,
+        private modalService: BsModalService) { }
     ngOnInit() {
         // this.selectedOsType = 'null';
         let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cPType'];
         if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
             this.cPType = cPTypeTmp;
         } else {
-            this.router.navigate(['/index/index']);
+            this.router.navigate(['/index/']);
         }
         this.getOsType();
         // this.labelParentAlert();
@@ -42,19 +50,26 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
         this.getOsType();
     }
     public cPLogin() {
+         /**
+        * @brief get and check the input infomation, then save
+        * @post navigate to collection policy edit page
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
+        let _t = this;
         let cPInfo: any = {};
         this.apiPrefix = '/v1';
         let cPLoginUrl = '/api_collection_policy/';
         let cPEditUrl = '/api_collection_policy/';
-        if (this.doCheck()) {
-            cPInfo['name'] = this.name;
-            cPInfo['cli_command'] = this.cliCommand;
+        if (_t.doCheck()) {
+            cPInfo['name'] = _t.name;
+            cPInfo['cli_command'] = _t.cliCommand;
             cPInfo['desc'] = this.desc;
-            cPInfo['ostype'] = this.selectedOsType;
-            cPInfo['policy_type'] = this.cPType;
-            this.httpClient.setUrl(this.apiPrefix);
-            this.httpClient
-                .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
+            cPInfo['ostype'] = _t.selectedOsType;
+            cPInfo['policy_type'] = _t.cPType;
+            _t.httpClient.setUrl(_t.apiPrefix);
+            _t.httpClient
+                .toJson(_t.httpClient.post(cPLoginUrl, cPInfo))
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
@@ -62,15 +77,27 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                     if (status && status['status'].toLowerCase() === 'true') {
                         if (data && data['data']) {
                             let id = _.get(data['data'], 'coll_policy_id');
-                            this.router.navigate(['/index/clicpedit'],
+                            _t.modalMsg = '保存しました。';
+                            _t.closeMsg = 'ツリー構成へ';
+                            _t.showAlertModal(_t.modalMsg, _t.closeMsg);
+                            $('#modalButton').on('click', function () {
+                                _t.router.navigate(['/index/clicpedit'],
                                 { queryParams: { 'id': id } });
+                            });
+                            //
+                            // let id = _.get(data['data'], 'coll_policy_id');
+                            // this.router.navigate(['/index/clicpedit'],
+                            //     { queryParams: { 'id': id } });
                         }
                     } else {
                         // CP_NAME_DUPLICATE
                         if (msg && msg === 'Collection policy name is exist in system.') {
-                            this.uniqueFlg = false;
+                            _t.uniqueFlg = false;
                         } else {
-                            alert(msg);
+                            // alert(msg);
+                            this.modalMsg = msg;
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
                         }
                     }
                 });
@@ -96,6 +123,13 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
             });
     }
     public doCheck(): boolean {
+         /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
+       this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -105,11 +139,23 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
             this.cmdFlg = Validator.halfWidthReg(this.cliCommand);
         }
         if (this.nameNotNull && this.nameFlg
-            && this.cmdNotNull && this.cmdFlg) {
+            && this.cmdNotNull && this.cmdFlg
+            && this.selectedOsType) {
             return true;
         } else {
             return false;
         }
+    }
+
+    public showAlertModal(modalMsg: any, closeMsg: any) {
+        /**
+        * @brief show modal dialog
+        * @author Dan Lv
+        * @date 2018/01/23
+        */
+        this.modalRef = this.modalService.show(ModalComponent);
+        this.modalRef.content.modalMsg = modalMsg;
+        this.modalRef.content.closeMsg = closeMsg;
     }
     // public labelParentAlert() {
     //     let _t = this;

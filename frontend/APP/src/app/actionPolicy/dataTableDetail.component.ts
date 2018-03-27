@@ -47,23 +47,21 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
             // }
         }, 0);
     }
-    public initDatePicker() {
-        console.log(12345);
-        const selectDateInputField: HTMLInputElement = this.elementRef.nativeElement.querySelector('#selectDate');
-        const func = flatpickr['default'];
-        const selectDateTP = func(selectDateInputField, {
-            'enableTime': true,
-            'onChange': (selectedDates, dateStr, instance) => {
-                this.startTime = moment(dateStr + ' 00:00:00', 'YYYY-MM-DD HH:mm:ss').unix();
-                this.endTime = moment(dateStr + ' 23:59:59', 'YYYY-MM-DD HH:mm:ss').unix();
-                const a = _.split(dateStr, '-');
-                // this.select_date = a[0].slice(2, 4) + '-' + a[1] + '-' + a[2];
-                // this.outputOnChangesDate.emit(this.select_date);
+    // public initDatePicker() {
+    //     console.log(12345);
+    //     const selectDateInputField: HTMLInputElement = this.elementRef.nativeElement.querySelector('#selectDate');
+    //     const func = flatpickr['default'];
+    //     const selectDateTP = func(selectDateInputField, {
+    //         'enableTime': true,
+    //         'onChange': (selectedDates, dateStr, instance) => {
+    //             this.startTime = moment(dateStr + ' 00:00:00', 'YYYY-MM-DD HH:mm:ss').unix();
+    //             this.endTime = moment(dateStr + ' 23:59:59', 'YYYY-MM-DD HH:mm:ss').unix();
+    //             const a = _.split(dateStr, '-');
+    //             // this.select_date = a[0].slice(2, 4) + '-' + a[1] + '-' + a[2];
+    //             // this.outputOnChangesDate.emit(this.select_date);
 
-            }
-        });
-        selectDateTP.setDate(this.startTime * 1000);
-    }
-
-
+    //         }
+    //     });
+    //     selectDateTP.setDate(this.startTime * 1000);
+    // }
 }

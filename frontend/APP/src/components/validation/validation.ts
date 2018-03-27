@@ -4,7 +4,7 @@ export class Validator {
     // full-width with space, comma , quotes and double quotes
     static halfWithoutSpecialReg: RegExp = /[^\x00-\xff]|[\x22|\x20|\x27\x2c]/;
     // only half-width
-    static halfReg: RegExp = /[\x00-\xff]+/;
+    static halfReg: RegExp = /[^\x00-\xff]/;
     // static oidReg: RegExp = /^[1-9]+(\.[1-9]*|\.[1-9][0-9]|\.[1-9][0-9][0-9])*$/;
     // static oidReg: RegExp = /^[1-9](\.(?!0+)\d+)*$/;
     // static oidReg: RegExp = /^1(\.(?!0)\d+)*$/;
@@ -48,9 +48,9 @@ export class Validator {
     }
     static halfWidthReg(param: any) {
         if (Validator.regTest(Validator.halfReg, param)) {
-            return true;
-        } else {
             return false;
+        } else {
+            return true;
         }
     }
     static oidRegCheck(param: any) {

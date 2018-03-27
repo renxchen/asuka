@@ -37,7 +37,9 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     uniqueFlg: Boolean = true;
     keyUnqFlg: Boolean = true;
     mrkStrNotNull: Boolean = true;
+    mrkStrFlg: Boolean = true;
     mrkStrNotNull_A: Boolean = true;
+    mrkStrFlg_A: Boolean = true;
     keyStrNotNull: Boolean = true;
     keyStrFlg: Boolean = true;
     lnNubFlg: Boolean = true;
@@ -123,24 +125,31 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         });
     }
     public blockRuleADCheck() {
+        this.uniqueFlg = true;
+        this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
+        }
+        this.mrkStrNotNull = Validator.notNullCheck(this.markString);
+        if (this.mrkStrNotNull) {
+            this.mrkStrFlg = Validator.halfWidthReg(this.markString);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
         if (this.keyStrNotNull) {
             this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
-        this.mrkStrNotNull = Validator.notNullCheck(this.markString);
         if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull) {
+            && this.mrkStrNotNull && this.mrkStrFlg) {
             return true;
         } else {
             return false;
         }
     }
     public blockRuleBCheck() {
+        this.uniqueFlg = true;
+        this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -150,6 +159,9 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
             this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
+        if (this.mrkStrNotNull) {
+            this.mrkStrFlg = Validator.halfWidthReg(this.markString);
+        }
         this.sLnNubFlg = Number.isInteger(this.startLnNum);
         this.eLnNubFlg = Number.isInteger(this.endLnNum);
         if (this.sLnNubFlg && this.eLnNubFlg) {
@@ -158,13 +170,16 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
             && this.sLnNubFlg && this.eLnNubFlg
-            && this.lnNubFlg && this.mrkStrNotNull) {
+            && this.lnNubFlg && this.mrkStrNotNull
+            && this.mrkStrFlg) {
             return true;
         } else {
             return false;
         }
     }
     public blockRuleCCheck() {
+        this.uniqueFlg = true;
+        this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -174,18 +189,22 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
             this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull_A = Validator.notNullCheck(this.markString);
+        if (this.mrkStrNotNull_A) {
+            this.mrkStrFlg_A = Validator.halfWidthReg(this.markString);
+        }
         this.extractKeyNotNull = Validator.notNullCheck(this.extractKey);
-        // if (this.extractKey) {
-        //     this.extractKeyFlg = Validator.noCommsymbol(this.extractKey);
-        // }
+        if (this.extractKey) {
+            this.extractKeyFlg = Validator.halfWidthReg(this.extractKey);
+        }
         this.endMrkNotNull = Validator.notNullCheck(this.endMrkStr);
-        // if (this.endMrkNotNull) {
-        //     this.endMrkStrFlg = Validator.noCommsymbol(this.endMrkStr);
-        // }
+        if (this.endMrkNotNull) {
+            this.endMrkStrFlg = Validator.halfWidthReg(this.endMrkStr);
+        }
         if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull_A && this.endMrkNotNull
-            && this.extractKeyNotNull) {
+            && this.mrkStrNotNull_A && this.mrkStrFlg_A
+            && this.endMrkNotNull && this.endMrkStrFlg
+            && this.extractKeyNotNull && this.extractKeyFlg) {
             return true;
         } else {
             return false;

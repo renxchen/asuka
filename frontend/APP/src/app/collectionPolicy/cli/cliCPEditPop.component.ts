@@ -95,6 +95,7 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
             });
     }
     public doCheck(): boolean {
+        this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -105,7 +106,8 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
             this.cmdFlg = Validator.halfWidthReg(this.cliCommand);
         }
         if (this.nameNotNull && this.nameFlg
-            && this.cmdNotNull && this.cmdFlg) {
+            && this.cmdNotNull && this.cmdFlg
+            && this.selectedOsType) {
             return true;
         } else {
             return false;
@@ -144,7 +146,10 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                         if (msg && msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            alert(msg);
+                            // alert(msg);
+                            this.modalMsg = msg;
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
                         }
                     }
                 });

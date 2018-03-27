@@ -1,8 +1,8 @@
 <div class="modal-content">
     <div class="modal-header popup-title" style="font-size:21px">
         <i class="fa fa-lg fa-text-height"></i>&nbsp;ルール
-        <span *ngIf='(actionType)=="edit"'>追加</span>
-        <span *ngIf='(actionType)=="create"'>編集</span>
+        <span *ngIf='(actionType)=="edit"'>編集</span>
+        <span *ngIf='(actionType)=="create"'>追加</span>
         <button 
             type="button" 
             class="close pull-right" 
@@ -34,7 +34,7 @@
                             name="name" 
                             [(ngModel)]="name" 
                             maxlength="30" 
-                            placeholder="英数字のみ"
+                            placeholder="半角英数字，記号"
                         />
                     </div>
                     <div class="form-group">
@@ -53,11 +53,11 @@
                 <div class="col-xs-7" *ngIf="(ruleType)=='data_rule_1'">
                     <div 
                         class="form-group" 
-                        [ngClass]="{'has-warning': !mrkStrNotNull}"
+                        [ngClass]="{'has-warning': !mrkStrNotNull||!mrkStrFlg}"
                     >
                         <label 
                             for="markString" 
-                            [ngClass]="{'text-warning': !mrkStrNotNull}"
+                            [ngClass]="{'text-warning': !mrkStrNotNull||!mrkStrFlg}"
                         >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             基準となる文字列：
@@ -74,7 +74,10 @@
                         />
                     </div>
                     <div class="form-group">
-                        <label for="splitChar">
+                        <label 
+                            for="splitChar" 
+                            [ngClass]="{'text-warning': !otherCharFlg||!otherCharRegFlg}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             切り分け文字:
                         </label>
@@ -92,7 +95,7 @@
                         </select>
                         <span 
                             *ngIf="selSplitChar=='3'" 
-                            [ngClass]="{'has-warning': !otherCharFlg}"
+                            [ngClass]="{'has-warning': !otherCharFlg||!otherCharRegFlg}"
                         >
                             <input 
                                 type="text" 
@@ -100,7 +103,7 @@
                                 id="extractKey"
                                 name="otherChar" 
                                 [(ngModel)]="otherChar" 
-                                maxlength="10"
+                                maxlength="11"
                                 placeholder="正規表現で記述可能" 
                                 [disabled]="processFlg"
                             />
@@ -147,16 +150,17 @@
                             name="keyStr" 
                             maxlength="30"
                             [(ngModel)]="keyStr" 
-                            placeholder="英数字のみ" [disabled]="lockFlg"
+                            placeholder="半角英数字，記号" 
+                            [disabled]="lockFlg"
                         />
                     </div>
                     <div 
                         class="form-group" 
-                        [ngClass]="{'has-warning': !extKeyNotNull}"
+                        [ngClass]="{'has-warning': !extractKeyFlg}"
                     >
                         <label 
                             for="extractKey" 
-                            [ngClass]="{'text-warning': !extKeyNotNull}"
+                            [ngClass]="{'text-warning': !extractKeyFlg}"
                         >
                             <!-- <i class="fa fa-asterisk text-danger" title="必須項目"></i> -->
                             抽出するデータ:
@@ -236,7 +240,10 @@
                     </div>     
                     
                     <div class="form-group">
-                        <label for="splitChar">
+                        <label
+                            for="splitChar"
+                            [ngClass]="{'text-warning': !otherCharFlg||!otherCharRegFlg}"
+                        >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             切り分け文字:
                         </label>
@@ -254,15 +261,15 @@
                         </select>
                         <span 
                             *ngIf="selSplitChar=='3'" 
-                            [ngClass]="{'has-warning': !otherCharFlg}"
+                            [ngClass]="{'has-warning': !otherCharFlg||!otherCharRegFlg}"
                         >
                             <input 
                                 type="text" 
                                 class="form-control" 
-                                id="extractKey"
+                                id="otherChar"
                                 name="otherChar" 
                                 [(ngModel)]="otherChar" 
-                                maxlength="10"
+                                maxlength="11"
                                 placeholder="正規表現で記述可能"  
                                 [disabled]="processFlg"
                             />
@@ -310,7 +317,7 @@
                             name="keyStr" 
                             maxlength="30"
                             [(ngModel)]="keyStr" 
-                            placeholder="英数字、記号（エスケープ文字が必要となる記号を除く）のみ" 
+                            placeholder="半角英数字，記号" 
                             [disabled]="lockFlg"
                         />
                     </div>
@@ -359,11 +366,11 @@
                 <div class="col-xs-7" *ngIf="(ruleType)=='data_rule_3'">
                     <div 
                         class="form-group" 
-                        [ngClass]="{'has-warning': !mrkStrNotNull}"
+                        [ngClass]="{'has-warning': !mrkStrNotNull||!mrkStrFlg}"
                     >
                         <label 
                             for="markString" 
-                            [ngClass]="{'text-warning': !mrkStrNotNull}"
+                            [ngClass]="{'text-warning': !mrkStrNotNull||!mrkStrFlg}"
                         >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             抽出するデータ:
@@ -397,7 +404,7 @@
                             name="keyStr" 
                             maxlength="30"
                             [(ngModel)]="keyStr" 
-                            placeholder="英数字、記号（エスケープ文字が必要となる記号を除く）のみ" 
+                            placeholder="半角英数字，記号" 
                             [disabled]="lockFlg"
                         />
                     </div> 
@@ -442,7 +449,7 @@
                             id="keyStr" name="keyStr" 
                             maxlength="30"
                             [(ngModel)]="keyStr" 
-                            placeholder="英数字、記号（エスケープ文字が必要となる記号を除く）のみ" 
+                            placeholder="半角英数字，記号" 
                             [disabled]="lockFlg"
                         />
                     </div> 
@@ -488,7 +495,7 @@
                             name="keyStr" 
                             maxlength="30"
                             [(ngModel)]="keyStr" 
-                            placeholder="英数字のみ" 
+                            placeholder="半角英数字，記号" 
                             [disabled]="lockFlg"
                         />
                     </div> 
@@ -518,13 +525,16 @@
                     ルール名は必須入力です。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='nameNotNull&&!nameFlg'>
-                    ルール名は半角英数字のみで入力してください。
+                    ルール名はシングルクォート、ダブルクォート、スペース文字とカンマ以外の半角英数字と記号で入力してください。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='!uniqueFlg'>
-                    ルール名は重複しています。
+                    ルール名は既存データと重複しています。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='!mrkStrNotNull'>
                     基準文字列は必須入力です。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf='mrkStrNotNull&&!mrkStrFlg'>
+                    基準文字列は半角英数字と記号のみで入力してください。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='!xOffsetNotNull'>
                     基準からの距離は必須入力です。
@@ -548,23 +558,22 @@
                     データ識別子名は必須入力です。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='keyStrNotNull&&!keyStrFlg'>
-                    データ識別子名は半角英数字のみで入力してください
+                    データ識別子名はシングルクォート、ダブルクォート、スペース文字とカンマ以外の半角英数字と記号で入力してください。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='!keyUnqFlg'>
-                    データ名は重複しています。
+                    データ名は既存データと重複しています。
                 </div>
-                  <!-- <div class="col-sm-12 text-warning" *ngIf='!lineNumsNotNull'>データ識別子名は必須入力です。</div>
-                  <div class="col-sm-12 text-warning" *ngIf='lineNumsNotNull&&!lineNumsFlg'>データ識別子名は半角英数字のみで入力してください</div>
-                  <div class="col-sm-12 text-warning" *ngIf='!lineNumsUnqFlg'>データ名は重複しています。</div>
-                  <div class="col-sm-12 text-warning" *ngIf='!commandNotNull'>データ識別子名は必須入力です。</div>
-                  <div class="col-sm-12 text-warning" *ngIf='commandNotNull&&!commandFlg'>データ識別子名は半角英数字のみで入力してください</div>
-                  <div class="col-sm-12 text-warning" *ngIf='!commandUnqFlg'>データ名は重複しています。</div> -->
-                  <!-- <div class="col-sm-12 text-warning" *ngIf='!extractKeyNotNull'>データ識別子名は必須入力です。</div> -->
                 <div class="col-sm-12 text-warning" *ngIf='!yOffsetNotNull'>
                     先頭文字からの距離は必須入力です。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf="selSplitChar=='3'&&!otherCharFlg">
-                      その他は必須入力です
+                    その他は必須入力です。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf="selSplitChar=='3'&&otherCharFlg&&!otherCharRegFlg">
+                    その他は半角英数字と記号のみで入力してください。
+                </div>
+                <div class="col-sm-12 text-warning" *ngIf="!extractKeyFlg">
+                    抽出するデータは半角英数字と記号のみで入力してください。
                 </div>
             </div>
         </form>
