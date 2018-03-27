@@ -74,7 +74,7 @@ class Policy(object):
             'basic_character_line_num': None,
             'split_characters': self.split_characters,
             'extract_match_flag': False,
-            'block_path': None
+            'block_path': ''
         }
 
     def __set_block_path(self, identifier):

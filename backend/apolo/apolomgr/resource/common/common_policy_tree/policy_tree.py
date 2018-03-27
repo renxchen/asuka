@@ -1,25 +1,13 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-'''
 
+"""
 @author: kimli
 @contact: kimli@cisco.com
 @file: policy_tree.py
 @time: 2017/12/20 9:41
 @desc:
-
-'''
-# import os, sys
-#
-# script_dir = os.path.split(os.path.realpath(__file__))[0]
-# prj_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))))
-# sys.path.append(prj_dir)
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
-#
-# import django
-#
-# django.setup()
-
+"""
 from collections import OrderedDict
 
 from backend.apolo.apolomgr.resource.common.tool import Tool
