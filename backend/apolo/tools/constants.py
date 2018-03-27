@@ -248,7 +248,7 @@ SPAN_END = '</span>'
 #########################################
 # device, group and ostype information define
 #########################################
-CSV_TITLE_ERROR = 'The title in csv_flie is wrong, please check '
+CSV_TITLE_ERROR = 'The title in csv_flie is wrong, please check'
 CSV_HOSTNAME_EMPTY = 'Empty Hostname'
 CSV_HOSTNAME_DUPLICATE = 'Duplicate Hostname'
 GROUP_NOT_EXIST = 'There is no result for current query.'
@@ -265,11 +265,11 @@ TELNET_TIMEOUT_FORMAT_ERROR = "TELNET_TIMEOUT_FORMAT_ERROR"
 SNMP_TIMEOUT_FORMAT_ERROR = "SNMP_TIMEOUT_FORMAT_ERROR"
 OSTYPE_NAME_EXISTS = "NAME_IS_EXISTENCE"
 OSTYPE_NAME_EMPTY = "Ostype name can not be empty"
-OSTYPE_EXIST_IN_DEVICES = "There is devices in current ostype!"
-OSTYPE_EXIST_IN_SCHEDULE2 = "There is schedules in current ostype!"
+OSTYPE_EXIST_IN_DEVICES = "There is device(s) in current ostype!"
+OSTYPE_EXIST_IN_SCHEDULE2 = "There is schedule(s) in current ostype!"
 OSTYPE_EXISTS_IN_COLL_POLICY = "There is collection policy in current ostype!"
-OSTYPE_EXIST_IN_DEVICEGROUPS = "There is devicegroups in current ostype!"
-OSTYPE_EXIST_IN_COLL_POLICY_GROUPS = "There is collection policy groups in current ostype!"
+OSTYPE_EXIST_IN_DEVICEGROUPS = "There is device group(s) in current ostype!"
+OSTYPE_EXIST_IN_COLL_POLICY_GROUPS = "There is collection policy group(s) in current ostype!"
 #########################################
 # Other API information define
 #########################################
