@@ -54,6 +54,7 @@ urlpatterns = [
     url(r'^v1/api_column_verify/', resource_api.api_column_verify),
     url(r'^v1/api_expression_verify/', resource_api.api_expression_verify),
     url(r'^v1/api_data_table_csv_export/', resource_api.api_data_table_csv_export),
+    url(r'^v1/api_action_policy_mem_cache/', resource_api.api_action_policy_mem_cache),
     # action policy related end
     url(r'^v1/api_data_collection_devices/', resource_api.api_data_collection_by_device),
     url(r"^v1/api_collection_policy_edit_page/", resource_api.api_collection_policy_edit),

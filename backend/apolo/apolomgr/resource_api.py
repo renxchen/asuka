@@ -11,7 +11,7 @@ from backend.apolo.apolomgr.resource.collection_policy_tree import policy_tree_h
 from backend.apolo.apolomgr.resource.action_policy_table import data_table_step3_views, data_table_step1_views, \
     data_table_step4_table_views, data_table_step4_tree_views, data_table_name_verify
 from backend.apolo.apolomgr.resource.action_policy import action_policy_views, action_policy_column_views, \
-    action_policy_column_verify, verify_expression
+    action_policy_column_verify, verify_expression, mem_cache_trigger_and_trigger_detial
 from backend.apolo.apolomgr.resource.common import common_views
 from backend.apolo.apolomgr.resource.data_collection import data_collection_view, new_data_collection_view, \
     data_collection_by_device_view, data_collection_by_cp_view
@@ -254,6 +254,14 @@ def api_column_verify(request):
 # @permission_classes((IsAuthenticated,))
 def api_expression_verify(request):
     resource_object = verify_expression.ExpressionVerify(request=request)
+    return HttpResponse(run_request_method(resource_object))
+
+
+@api_view(['GET'])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_action_policy_mem_cache(request):
+    resource_object = mem_cache_trigger_and_trigger_detial.MemCacheTriggerTriggerDetial(request=request)
     return HttpResponse(run_request_method(resource_object))
 
 
