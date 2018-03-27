@@ -4,10 +4,9 @@ __version__ = 0.1
 __author__ = 'zhutong <zhtong@cisco.com>'
 
 import sys
-from ..constants import SYS_PATH
+from worker_base import WorkerBase, main,SYS_PATH
 sys.path.append(SYS_PATH)
 from cisco_cli_helper import CiscoCLI
-from worker_base import WorkerBase, main
 import json
 
 

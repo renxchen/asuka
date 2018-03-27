@@ -17,8 +17,9 @@ __author__ = 'Rubick <haonchen@cisco.com>'
 __version__ = '0.5'
 
 
-counter_lock = threading.Lock()
-
+#counter_lock = threading.Lock()
+tmp_path = os.path.split(os.path.dirname(__file__))[0]
+SYS_PATH = os.path.split(os.path.split(tmp_path)[0])[0]
 
 class WorkerBase(Thread):
     channels = []
