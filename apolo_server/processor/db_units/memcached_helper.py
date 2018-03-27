@@ -5,6 +5,7 @@ from apolo_server.processor.constants import CommonConstants
 from db_helper import DeviceDbHelp
 from apolo_server.processor.parser.common_policy_tree.tool import Tool
 
+
 class MemCacheBase(object):
 
     def __init__(self, timeout=2):
@@ -12,7 +13,6 @@ class MemCacheBase(object):
         self.key = None
         self.timeout = timeout
         self._mc = ""
-        
 
     def __enter__(self):
         self._connect()
@@ -117,15 +117,37 @@ class TaskRunningMemCacheDb(MemCacheBase):
         return False
 
 
+class BatchMemCacheBase(MemCacheBase):
+    def __init__(self):
+        super(BatchMemCacheBase, self).__init__()
+        self.key_prefix = ""
+
+    def multi_set(self, data_dict):
+        return self._mc.set_multi(data_dict, key_prefix=self.key_prefix)
+
+    def multi_get(self, keys):
+        return self._mc.get_multi(keys, key_prefix=self.key_prefix)
+
+
+class TriggerMemCache(BatchMemCacheBase):
+    def __init__(self):
+        super(TriggerMemCache, self).__init__()
+        self.key_prefix = "Trigger"
+
 if __name__ == "__main__":
     # with RulesMemCacheDb() as item:
     #     print item.get()
 
-    TaskRunningMemCacheDb().get()
+    # TaskRunningMemCacheDb().get()
         #print cache.get()
     # item.flush_all()
     # for i in item._get():
     #     print i
+    test = {'device1': [1, 2, 3, 4], 'device2': [1, 2, 3, 4]}
+    with TriggerMemCache() as trigger:
+        trigger.multi_set(test)
+        print trigger.multi_get(['device1', 'device2'])
+
 
 
 
