@@ -109,8 +109,8 @@ def get_valid_items(now_time, items):
         """
         priority_key = "%d_%d" % (item["coll_policy_id"], item["device__device_id"])
         if item["valid_status"]:
-            if priority_key in item_prioriy_dict and not item_prioriy_dict[priority_key]["valid"] \
-                         and item["item_id"] == item_prioriy_dict[priority_key]["item_id"]:
+            if priority_key in item_prioriy_dict and item["schedule__priority"] < item_prioriy_dict[priority_key]["max_priority"]: 
+                
                 item["valid_status"] = False
         
             """
@@ -329,10 +329,10 @@ def __check_device_priority(item,item_prioriy_dict):
 
         if item_key in item_prioriy_dict:
             tmp_p_item = item_prioriy_dict[item_key]
-            if item["schedule__priority"] < tmp_p_item["priority"]:
-                item_prioriy_dict.update(item_key,{"item_id":item["item_id"],"priority":item["schedule__priority"],"valid":False})
+            if item["schedule__priority"] > tmp_p_item["max_priority"]:
+                item_prioriy_dict.update(item_key,{"max_priority":item["schedule__priority"]})
         else:
-            item_prioriy_dict[item_key] = {"item_id":item["item_id"],"priority":item["schedule__priority"],"valid":True}   
+            item_prioriy_dict[item_key] = {"max_priority":item["schedule__priority"]}   
 
 
 @deco_item
