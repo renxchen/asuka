@@ -34,9 +34,12 @@ class CollectionValidate(object):
 
     @staticmethod
     def get_items(item_type):
-        param_dict = {"policys_groups__status": 1, "status": 1, "schedule__status": 1}
+        param_dict = {"policys_groups__status": 1, "schedule__status": 1}
         if item_type is not None:
             param_dict["item_type"] = item_type
+
+        if item_type == "status":
+            param_dict['status'] = 1
 
         items = Items.objects.filter(
             **param_dict).order_by(

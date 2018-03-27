@@ -23,6 +23,11 @@ class DevicesConstants(object):
     SCHEDULE_SPLIT = "-"
     CLI_COLLECTION_DEFAULT_METHOD = 'telnet'
     SNMP_COLLECTION_DEFAULT_METHOD = "bulk_get"
+    TASK_START_TIME = {
+        900: [10],
+        3600: [0],
+        86400: [1, 0]
+    }
 
 
 class CommonConstants(object):
