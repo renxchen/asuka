@@ -11,7 +11,7 @@
 """
 
 from backend.apolo.serializer.collection_policy_serializer import OstypeSerializer
-from backend.apolo.models import Ostype, Devices, Schedules, CollPolicy
+from backend.apolo.models import Ostype, Devices, Schedules, CollPolicy, Groups, CollPolicyGroups
 from backend.apolo.tools import constants
 from rest_framework import viewsets
 from backend.apolo.tools.views_helper import api_return
@@ -73,10 +73,24 @@ class OsTypeViewSet(viewsets.ViewSet):
         """
         try:
             if self.id:
+                # return verify field for name
+                queryset_devices = Devices.objects.filter(ostype_id=self.id)
+                queryset_groups = Groups.objects.filter(ostype_id=self.id)
+                schedules_queryset = Schedules.objects.filter(ostype_id=self.id)
+                coll_policy_queryset = CollPolicy.objects.filter(ostype_id=self.id)
+                coll_policy_groups = CollPolicyGroups.objects.filter(ostypeid=self.id)
+                if queryset_devices.exists() or queryset_groups.exists() or schedules_queryset.exists() \
+                        or coll_policy_groups.exists() or coll_policy_queryset.exists():
+                    name = False
+                else:
+                    name = True
                 queryset = Ostype.objects.filter(ostypeid=int(self.id))
                 serializer = OstypeSerializer(queryset, many=True)
                 data = {
                     'data': serializer.data,
+                    'verify_result': {
+                        "name": name
+                    },
                     'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.TRUE,
@@ -476,33 +490,28 @@ class OsTypeViewSet(viewsets.ViewSet):
                             }
                             return api_return(data=data)
                     else:
+                        message = ''
                         devices_queryset = Devices.objects.filter(ostype_id=self.id)
-                        if len(devices_queryset) != 0:
-                            data = {
-                                'new_token': self.new_token,
-                                constants.STATUS: {
-                                    constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: constants.OSTYPE_EXIST_IN_DEVICES
-                                }
-                            }
-                            return api_return(data=data)
+                        if devices_queryset.exists():
+                            message += constants.OSTYPE_EXIST_IN_DEVICES + "<br/>"
+                        queryset_groups = Groups.objects.filter(ostype_id=self.id)
+                        if queryset_groups.exists():
+                            message += constants.OSTYPE_EXIST_IN_DEVICEGROUPS + "<br/>"
                         schedules_queryset = Schedules.objects.filter(ostype_id=self.id)
-                        if len(schedules_queryset) != 0:
-                            data = {
-                                'new_token': self.new_token,
-                                constants.STATUS: {
-                                    constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: constants.OSTYPE_EXIST_IN_SCHEDULE
-                                }
-                            }
-                            return api_return(data=data)
+                        if schedules_queryset.exists():
+                            message += constants.OSTYPE_EXIST_IN_SCHEDULE2 + "<br/>"
                         coll_policy_queryset = CollPolicy.objects.filter(ostype_id=self.id)
-                        if len(coll_policy_queryset) != 0:
+                        if coll_policy_queryset.exists():
+                            message += constants.OSTYPE_EXISTS_IN_COLL_POLICY + "<br/>"
+                        coll_policy_groups = CollPolicyGroups.objects.filter(ostypeid=self.id)
+                        if coll_policy_groups.exists():
+                            message += constants.OSTYPE_EXIST_IN_COLL_POLICY_GROUPS + "<br/>"
+                        if message != '':
                             data = {
                                 'new_token': self.new_token,
                                 constants.STATUS: {
                                     constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: constants.OSTYPE_EXISTS_IN_COLL_POLICY
+                                    constants.MESSAGE: message
                                 }
                             }
                             return api_return(data=data)
