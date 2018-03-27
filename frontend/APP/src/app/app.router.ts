@@ -1,6 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
 import { ModalComponent } from '../components/modal/modal.component';
-import { ProcessbarComponent } from '../components/processbar/processbar.component';
+import { ProgressbarComponent } from '../components/processbar/processbar.component';
 
 // login
 import { LoginComponent } from './login/login.component';
@@ -302,7 +302,7 @@ const routes: Routes = [
 export const appRouting = RouterModule.forRoot(routes);
 export const entryComponentList: any[] = [
     ModalComponent,
-    ProcessbarComponent,
+    ProgressbarComponent,
     // device
     GroupLoginComponent,
     GroupEditComponent,

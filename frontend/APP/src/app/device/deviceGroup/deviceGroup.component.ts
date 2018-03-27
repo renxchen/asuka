@@ -51,6 +51,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             this.drawDeviceTable(this.groupId);
             this.getPanelData(this.groupId);
         } else {
+            this.groupId = '-1';
             this.drawDeviceTable('-1');
             this.getPanelData('-1');
         }
@@ -194,13 +195,17 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
 
     // click事件
     public getGroupInfo(id: any) {
-        // event.preventDefault();
         // let id = event.target.id;
-        this.deviceTable$.GridUnload();
+        // event.preventDefault();
+        // this.deviceTable$.GridUnload();
         if (id) {
             this.groupId = id;
             this.getPanelData(id);
-            this.drawDeviceTable(id);
+            $('#deviceTable').jqGrid('clearGridData');
+            $('#deviceTable')
+            .jqGrid('setGridParam', { url : '/v1/api_device/?group_id=' + id })
+            .trigger('reloadGrid');
+            // this.drawDeviceTable(id);
         }
     }
     public editGroup(id: any) {
@@ -240,7 +245,8 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                         alert('Delete successfully');
                         this.getGroups();
                         if (id = this.groupId) {
-                            this.deviceTable$.GridUnload();
+                            // this.deviceTable$.GridUnload();
+                            $('#deviceTable').jqGrid('clearGridData');
                             this.drawDeviceTable('-1');
                             this.getPanelData('-1');
                         }

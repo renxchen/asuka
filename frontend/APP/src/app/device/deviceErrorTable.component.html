@@ -17,6 +17,7 @@
             <thead>
                 <tr>
                     <th>Hostname</th>
+                    <th>Hostname Format</th>
                     <th>IP Address</th>
                     <th>Telnet Port</th>
                     <th>SNMP Port</th>
@@ -31,6 +32,11 @@
             <tbody>
                 <tr *ngFor="let item of data">
                     <td>{{item.hostname}}</td>
+                    <td>
+                        <span *ngIf="!item.hostname_check">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
                     <td>
                         <span *ngIf="!item.ip">
                             <i class="fa fa-times-circle" style="color:red"></i>

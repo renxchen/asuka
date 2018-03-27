@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProcessbarComponent } from './processbar.component';
-
+import { ProgressbarComponent } from './processbar.component';
+import { ProgressbarModule } from 'ngx-bootstrap';
 @NgModule({
-    declarations: [ProcessbarComponent],
-    imports: [ CommonModule ],
-    exports: [ProcessbarComponent],
+    declarations: [ProgressbarComponent],
+    imports: [CommonModule, ProgressbarModule.forRoot()],
+    exports: [ProgressbarComponent],
     providers: []
 })
-export class ProcessbarModule {}
+export class ProgressbarModuleCustom { }

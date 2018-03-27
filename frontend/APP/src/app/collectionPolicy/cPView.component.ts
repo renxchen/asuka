@@ -86,13 +86,29 @@ export class CPViewComponent implements OnInit, AfterViewInit {
          * @date 2018/01/23
          */
         event.stopPropagation();
-        this.cPType = $(event.target).val();
-        if (this.cPType === '0') {
-            this.cPTable.GridUnload();
-            this.drawCPTable('show コマンド', 'cli_command', this.cPType);
+        if (this.cPType === $(event.target).val()) {
+            return;
         } else {
-            this.cPTable.GridUnload();
-            this.drawCPTable('OID', 'snmp_oid', this.cPType);
+            this.cPType = $(event.target).val();
+        }
+        if (this.cPType === '0') {
+            $('#cpTable').jqGrid('clearGridData');
+            $('#cpTable').jqGrid('setLabel', 'snmp_oid', 'show コマンド');
+            $('#cpTable').setColProp('snmp_oid', { index: 'cli_command', name: 'cli_command', label: 'OID', });
+            $('#cpTable').jqGrid('setGridParam', { postData: { 'policy_type': this.cPType }}).trigger('reloadGrid');
+            // this.cPTable.GridUnload();
+            // setColProp('dxts',{index, 'dxts',width: 100,formatter: dxtsFormatter});
+            //     $('#cpTable').trigger('reloadGrid');
+            // this.drawCPTable('show コマンド', 'cli_command', this.cPType);
+        } else {
+            $('#cpTable').jqGrid('clearGridData');
+            $('#cpTable').jqGrid('setLabel', 'cli_command', 'OID');
+            $('#cpTable').setColProp('cli_command', { index: 'snmp_oid', name: 'snmp_oid', label: 'show コマンド', });
+            $('#cpTable').jqGrid('setGridParam', { postData: { 'policy_type': this.cPType }}).trigger('reloadGrid');
+            // this.cPTable.GridUnload();
+            // $('#cpTable') .jqGrid('setGridParam', { postData: { 'policy_type': this.cPType }});
+            // $('#cpTable') .trigger('reloadGrid');
+            // this.drawCPTable('OID', 'snmp_oid', this.cPType);
         }
     }
     public drawCPTable(thirdCol?: any, thirdName?: any, cPType?: any) {
@@ -116,7 +132,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 { label: 'OS Type', name: 'ostype__name', index: 'ostype__name', width: 50, align: 'center', search: true },
                 { label: thirdCol, name: thirdName, index: thirdName, width: 50, align: 'center', search: true },
                 {
-                    abel: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true,
+                    label: '概要', name: 'desc', index: 'desc', width: 50, align: 'center', search: true,
                     formatter: _t.noDataFormatter
                 },
                 {
@@ -245,10 +261,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                                 });
                             } else {
                                 if (msg) {
-                                        this.modalMsg = msg;
-                                        this.closeMsg = '閉じる';
-                                        _t.showAlertModal(this.modalMsg, this.closeMsg);
-                                    }
+                                    this.modalMsg = msg;
+                                    this.closeMsg = '閉じる';
+                                    _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                }
                                 // if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
                                 //     this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
                                 //     this.closeMsg = '閉じる';

@@ -210,7 +210,9 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                                 _t.closeMsg = '閉じる';
                                 _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                                 $('#modalButton').on('click', function () {
-                                    $('#cpgTable').jqGrid().trigger('reloadGrid');
+                                    $('#cpgTable').jqGrid('clearGridData');
+                                    $('#cpgTable').trigger('reloadGrid');
+                                    // $('#cpgTable').jqGrid().trigger('reloadGrid');
                                 });
                             } else {
                                 // check this cp occupation
@@ -238,8 +240,10 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         this.modalRef.content.actionType = 'create';
         let cpgLogin$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
-                this.cpgTable$.GridUnload();
-                this.drawCPGTable();
+                // this.cpgTable$.GridUnload();
+                $('#cpgTable').jqGrid('clearGridData');
+                $('#cpgTable').trigger('reloadGrid');
+                // this.drawCPGTable();
             }
             this.unsubscribe(cpgLogin$);
         });
