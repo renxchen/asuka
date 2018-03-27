@@ -1,26 +1,34 @@
 #!/usr/bin/env python
 
-'''
-
+"""
 @author: kimli
 @contact: kimli@cisco.com
 @file: tool.py
 @time: 2018/1/4 15:14
 @desc:
-
-'''
+"""
 import json
 import time
-
 import requests
 
+from backend.apolo.apolomgr.resource.collection_validate.collection_validate import GetValidItem, GetValidItemByPolicy
 from backend.apolo.tools import constants
 
 
 class Tool(object):
     @staticmethod
     def set_rule_type(rule_type):
-        if rule_type >= 5:
+        """!@brief
+        set rule type
+        @param rule_type:rule type
+        @pre
+        @post
+        @note all extract data rule type is 9
+        @return rule type
+        @author kimli
+        @date 2018/1/4
+        """
+        if rule_type >= 5 and rule_type != 9:
             rule_type = rule_type - 4
             return 'block_rule_{}'.format(rule_type)
         else:
@@ -28,7 +36,16 @@ class Tool(object):
 
     @staticmethod
     def set_split_char(split_char_num=None):
-
+        """!@brief
+        replace split char
+        @param split_char_num : number corresponding to  kind of split
+        @pre
+        @post
+        @note
+        @return split char
+        @author kimli
+        @date 2018/1/4
+        """
         if split_char_num == 0:
             split_char = constants.SPLIT_RULE_SPACE
         elif split_char_num == 1:
@@ -42,8 +59,18 @@ class Tool(object):
 
         return split_char
 
-    def get_rule_value(self, obj):
-        # split_char = self.set_split_char(obj.split_char)
+    @staticmethod
+    def get_rule_value(obj):
+        """!@brief
+        set rule info to dict
+        @param
+        @pre
+        @post
+        @note
+        @return rule info that value type is dict
+        @author kimli
+        @date 2018/1/4
+        """
         input_data_dict = {'rule_type': obj.rule_type,
                            'basic_characters': obj.mark_string,
                            'split_characters': obj.split_char,
@@ -65,7 +92,16 @@ class Tool(object):
 
     @staticmethod
     def split_data_schedule_time(data_schedule_time):
-
+        """!@brief
+        extract week,schedule_start_time,schedule_end_time from schedule time
+        @param
+        @pre
+        @post
+        @note
+        @return return week,schedule_start_time,schedule_end_time
+        @author kimli
+        @date 2018/1/4
+        """
         if data_schedule_time:
             schedule_arry = data_schedule_time.split('@')
             weeks = schedule_arry[0].split(';')
@@ -85,6 +121,16 @@ class Tool(object):
 
     @staticmethod
     def priority_mapping(priority_key):
+        """!@brief
+        priority mapping function
+        @param priority_key: priority key
+        @pre
+        @post
+        @note
+        @return priority value list corresponding to priority key
+        @author kimli
+        @date 2018/1/4
+        """
         levels = [{constants.PRIORITY_HIGH_LEVEL_KEY: constants.PRIORITY_HIGH_LEVEL_VALUE},
                   {constants.PRIORITY_STANDARD_LEVEL_KEY: constants.PRIORITY_STANDARD_LEVEL_VALUE},
                   {constants.PRIORITY_URGENT_LEVEL_KEY: constants.PRIORITY_URGENT_LEVEL_VALUE}]
@@ -96,6 +142,16 @@ class Tool(object):
 
     @staticmethod
     def schedule_type_mapping(schedule_type_key):
+        """!@brief
+        schedule type  mapping function
+        @param schedule_type_key: schedule type key
+        @pre
+        @post
+        @note
+        @return schedule typ value list corresponding to schedule type key
+        @author kimli
+        @date 2018/1/4
+        """
         levels = [{constants.SCHEDULE_TYPE_OFTEN_KEY: constants.SCHEDULE_TYPE_OFTEN_VALUE},
                   {constants.SCHEDULE_TYPE_STOP_KEY: constants.SCHEDULE_TYPE_STOP_VALUE},
                   {constants.SCHEDULE_TYPE_PERIOD_KEY: constants.SCHEDULE_TYPE_PERIOD_VALUE}]
@@ -108,6 +164,16 @@ class Tool(object):
 
     @staticmethod
     def schedule_status_mapping(schedule_status_key):
+        """!@brief
+        schedule status  mapping function
+        @param schedule_status_key: schedule status key
+        @pre
+        @post
+        @note
+        @return schedule status value list corresponding to schedule status key
+        @author kimli
+        @date 2018/1/4
+        """
         levels = [{constants.SCHEDULE_STATUS_ON_KEY: constants.SCHEDULE_STATUS_ON_VALUE},
                   {constants.SCHEDULE_STATUS_OFF_KEY: constants.SCHEDULE_STATUS_OFF_VALUE}
                   ]
@@ -120,6 +186,16 @@ class Tool(object):
 
     @staticmethod
     def set_priority_mapping(priority_value):
+        """!@brief
+        priority value mapping function
+        @param priority_value: priority value
+        @pre
+        @post
+        @note
+        @return priority key  corresponding to priority value
+        @author kimli
+        @date 2018/1/4
+        """
         if priority_value == constants.PRIORITY_HIGH_LEVEL_VALUE:
             return constants.PRIORITY_HIGH_LEVEL_KEY
         elif priority_value == constants.PRIORITY_URGENT_LEVEL_VALUE:
@@ -131,6 +207,16 @@ class Tool(object):
 
     @staticmethod
     def set_cp_status_mapping(cp_status_value):
+        """!@brief
+        cp status mapping function
+        @param cp_status_value: cp status value
+        @pre
+        @post
+        @note
+        @return cp status key corresponding to cp status value
+        @author kimli
+        @date 2018/1/4
+        """
         if cp_status_value == constants.CP_STATUS_OFF_VALUE:
             return constants.CP_STATUS_OFF_KEY
         elif cp_status_value == constants.CP_STATUS_ON_VAULE:
@@ -140,53 +226,115 @@ class Tool(object):
 
     @staticmethod
     def get_data_from_collection_server():
-        now_time = int(time.time())
-        json_data = json.dumps({"now_time": now_time, "item_type": -1})
-        response = requests.post(constants.DATA_COLLECTION_POST_URL, data=json_data)
-        return response.json()
+        """!@brief
+        get items that are running
+        @param
+        @pre
+        @post
+        @note
+        @return return json data of items that are running
+        @author kimli
+        @date 2018/1/4
+        """
+        test_instance = GetValidItem()
+        valid_items = test_instance.valid(int(time.time()))
+        items = map(Tool.__item_type_mapping, valid_items)
+        tmp_key_dict = dict()
+        result = []
+        for recoder in items:
+            print recoder['item_key']
+            if tmp_key_dict.has_key(recoder['item_key']):
+                pass
+            else:
+                result.append(recoder)
+                tmp_key_dict.update({recoder['item_key']: 1})
+                print tmp_key_dict
+        return result
+
+    @staticmethod
+    def __item_type_mapping(item):
+
+
+        def common(item):
+            tmp_item = {}
+            tmp_item['valid_status'] = item['valid_status']
+            tmp_item['policy_group_id'] = item['policys_groups__policy_group_id']
+            tmp_item['policy_group_name'] = item['policys_groups__policy_group_id__name']
+            tmp_item['coll_policy_id'] = item['coll_policy_id']
+            tmp_item['item_id'] = item['item_id']
+            tmp_item['item_type'] = item['item_type']
+            tmp_item['device_id'] = item['device__device_id']
+            tmp_item['priority'] = item['schedule__priority']
+            tmp_item['device_name'] = item['device__hostname']
+            tmp_item['policy_name'] = item['coll_policy__name']
+            tmp_item['exec_interval'] = item['policys_groups__exec_interval']
+            tmp_item['item_key']= '{}_{}_{}'.format(tmp_item['policy_group_id'],
+                                                    tmp_item['priority'],
+                                                    tmp_item['coll_policy_id'])
+            return tmp_item
+
+
+
+        result = common(item)
+        return result
 
     @staticmethod
     def get_policy_status(policy_id):
-
-        try:
-            req_body = {'now_time': time.time(), 'param': policy_id, 'param_type': 1}
-            headers = {'content-type': 'application/json'}
-            resp = requests.post(url=constants.POLICY_POST_URL, data=json.dumps(req_body), headers=headers)
-            if 200 <= resp.status_code <= 299:
-                resp_body = json.loads(resp.text)
-                item = resp_body.get('items')
-                if item == 0:
-                    # not used
-                    return False
-                else:
-                    # is being used
-                    return True
-        except:
+        """!@brief
+        get cp status
+        @param policy_id:collection policy id
+        @pre
+        @post
+        @note
+        @return return cp status. if cp is running,return True.if cp is not running,return False
+        @author kimli
+        @date 2018/1/4
+        """
+        test_instance = GetValidItemByPolicy()
+        item_num = test_instance.valid(int(time.time()), policy_id)
+        if item_num == 0:
+            # not used
             return False
-
+        else:
+            # is being used
+            return True
 
     @staticmethod
     def replace_escape_char(escapeString):
+        """!@brief
+        replace special char to general char
+        @param escapeString :the char to be replaced
+        @pre
+        @post
+        @note
+        @return replaced char
+        @author kimli
+        @date 2018/1/4
+        """
         fbsArr = ["\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|"]
         arry = list(escapeString)
         for i in range(len(arry)):
             if arry[i] in fbsArr:
-                arry[i] = arry[i].replace(arry[i], '\\'+arry[i])
+                arry[i] = arry[i].replace(arry[i], '\\' + arry[i])
 
         return "".join(arry)
 
     @staticmethod
     def replace_xml_mark(xmlString):
+        """!@brief
+        replace '<' and '>' to '&lt;' and '&lt;'  when rend highlight html
+        @param xmlString :  text that include xml mark
+        @pre
+        @post
+        @note
+        @return text to be replaced
+        @author kimli
+        @date 2018/1/4
+        """
         if xmlString:
             if '<' in xmlString and '>' in xmlString:
                 xmlString = xmlString.replace('<', '&lt;')
-                xmlString = xmlString.replace('>', '&gt;')
+                xmlString = xmlString.replace('>', '&lt;')
         return xmlString
 
-if __name__ == '__main__':
 
-    print Tool.replace_escape_char(r'description@@**@@\\@@Management@@IF@@\\@@**')
-    now_time = time.strftime('%Y-%m-%d@%H:%M:%S', time.localtime(time.time()))
-
-    print '2018-09-92@10:00:23' > now_time > '2018-10-92@10:00:23'
-    print now_time, type(now_time)
