@@ -33,13 +33,12 @@ class CollectionValidate(object):
         self.items = []
 
     @staticmethod
-    def get_items(item_type):
-        param_dict = {"policys_groups__status": 1, "schedule__status": 1}
-        if item_type is not None:
-            param_dict["item_type"] = item_type
-
-        if item_type == "status":
-            param_dict['status'] = 1
+    def get_items(kwargs):
+        param_dict = {}
+        if kwargs is not None:
+            param_dict.update(kwargs)
+        # if item_type == "all":
+        #     param_dict = {"policys_groups__status": 1, "schedule__status": 1, "status": 1}
 
         items = Items.objects.filter(
             **param_dict).order_by(
@@ -88,7 +87,7 @@ class CollectionValidate(object):
     def valid_items(self, now_time):
         item_prioriy_dict = {}
         valid_items = []
-        self.items = self.get_items(None)
+        # self.items = self.get_items(None)
         for index, item in enumerate(self.items):
             item['valid_status'] = True
             self.__check_period_time(item, now_time)
@@ -253,7 +252,7 @@ class GetValidItem(CollectionValidate):
         super(GetValidItem, self).__init__()
 
     def valid(self, now_time):
-        self.items = self.get_items(None)
+        self.items = self.get_items()
         return self.valid_items(now_time)
 
 
@@ -262,7 +261,7 @@ class GetValidItemByPolicy(CollectionValidate):
         super(GetValidItemByPolicy, self).__init__()
 
     def valid(self, now_time, policy_id):
-        self.items = self.get_items(None)
+        self.items = self.get_items({"policys_groups__status": 1, "schedule__status": 1, "status": 1})
         self.valid_items(now_time)
         return len([item for item in self.items if item['valid_status'] and item['coll_policy_id'] == policy_id])
 
@@ -272,7 +271,7 @@ class GetValidItemByPolicyGroup(CollectionValidate):
         super(GetValidItemByPolicyGroup, self).__init__()
 
     def valid(self, now_time, policy_group):
-        self.items = self.get_items(None)
+        self.items = self.get_items({"policys_groups__status": 1, "schedule__status": 1, "status": 1})
         self.valid_items(now_time)
         return len([item for item in self.items if item['valid_status'] and
                     item['policys_groups__policy_group_id'] == policy_group])
@@ -287,9 +286,10 @@ if __name__ == "__main__":
     #     print i
     # pass
     test_instance = GetValidItem()
+    test_instance.get_items(None)
     valid_items = test_instance.valid_items(int(time.time()))
-    for i in test_instance.items:
-        print i['valid_status'], i['device__device_id'], i['coll_policy_id'], i['schedule__priority']
+    # for i in test_instance.items:
+    #     print i['valid_status'], i['device__device_id'], i['coll_policy_id'], i['schedule__priority']
 
 
 
