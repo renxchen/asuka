@@ -13,6 +13,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../../components/modal/modal.component';
 import { Validator } from '../../../components/validation/validation';
+declare var $: any;
 import * as _ from 'lodash';
 @Component({
     selector: 'snmp-edit',
@@ -35,6 +36,7 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
     closeMsg: any;
     nameNotNull: Boolean = true;
     nameFlg: Boolean = true;
+    nameMFlg: Boolean = true;
     oidNotNull: Boolean = true;
     oidFlg: Boolean = true;
     uniqueFlg: Boolean = true;
@@ -86,6 +88,7 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                         this.selectedOsType = _.get(snmpData[0], 'ostype');
                     }
                     if (verify) {
+                        this.nameMFlg = _.get(verify, 'coll_policy_name');
                         this.osFlg = _.get(verify, 'ostype');
                         this.snmpFlg = _.get(verify, 'snmp_oid');
                     }
@@ -125,6 +128,7 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
         * @author Dan Lv
         * @date 2018/01/25
         */
+       this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -134,7 +138,8 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
             this.oidFlg = Validator.oidRegCheck(this.snmpOid);
         }
         if (this.nameNotNull && this.nameFlg
-            && this.oidNotNull && this.oidFlg) {
+            && this.oidNotNull && this.oidFlg
+            && this.selectedOsType) {
             return true;
         } else {
             return false;
@@ -196,9 +201,11 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                             _t.router.navigate(['/index/cpview/'], { queryParams: { 'cptype': 1 } });
                         });
                     } else {
-                        if (msg === 'CP_NAME_DUPLICATE') {
+                        // CP_NAME_DUPLICATE
+                        if (msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
+                            // alert(msg);
                             this.modalMsg = msg;
                             this.closeMsg = '一覧へ戻る';
                             this.showAlertModal(this.modalMsg, this.closeMsg);

@@ -27,6 +27,8 @@
                             class="form-control" 
                             id="name" 
                             name="name"
+                            maxlength="30"
+                            placeholder="日本語、英数字、記号可"
                             [(ngModel)]="name"
                             [disabled]="!ostypeMFlg"
                          >
@@ -44,6 +46,8 @@
                             class="form-control"
                             id="desc"
                             name="desc"
+                            maxlength="100"
+                            placeholder="日本語、英数字、記号可"
                             [(ngModel)]="desc"
                         >
                         </textarea>
@@ -64,6 +68,8 @@
                                     class="form-control" 
                                     id="start_id_{{startCmd.id}}"
                                     name="start_name_{{startCmd.id}}" 
+                                    maxlength="256"
+                                    placeholder="英数字、記号のみ"
                                     [(ngModel)]="startCmd.name"
                                 >
                             </div>
@@ -103,7 +109,10 @@
                                     class="form-control" 
                                     id="end_id_{{endCmd.id}}"
                                     name="end_name_{{endCmd.id}}" 
+                                    maxlength="256"
+                                    placeholder="英数字、記号のみ"
                                     [(ngModel)]="endCmd.name"
+                                    autocomplete="off"
                                 >
                             </div>
                             <div class="multi-i">
@@ -145,6 +154,9 @@
                                     id="log_id_{{log.id}}"
                                     name="log_name_{{log.id}}" 
                                     [(ngModel)]="log.name"
+                                    maxlength="256"
+                                    placeholder="正規表現形式"
+                                    autocomplete="off"
                                 >
                             </div>
                             <div class="multi-i">
@@ -185,6 +197,9 @@
                             id="telPrompt"
                             name="telPrompt" 
                             [(ngModel)]="telPrompt"
+                            maxlength="256"
+                            placeholder="正規表現形式"
+                            autocomplete="off"
                         >
                     </div>
                 </div>
@@ -203,7 +218,10 @@
                             class="form-control" 
                             id="telTimeout" 
                             name="telTimeout" 
+                            maxlength="11"
                             [(ngModel)]="telTimeout" 
+                            autocomplete="off"
+                            placeholder="数値のみ"
                         >
                     </div>
                 </div>
@@ -222,7 +240,10 @@
                             class="form-control" 
                             id="snmpTimeout"
                             name="snmpTimeout" 
+                            maxlength="11"
                             [(ngModel)]="snmpTimeout"
+                            autocomplete="off"
+                            placeholder="数値のみ"
                         >
                     </div>
                 </div>
@@ -231,25 +252,25 @@
                     OS Type名は必須入力です。
                 </div>            
                 <div class="col-sm-12 text-warning" *ngIf='nameNotNull&&!nameFlg'>
-                    OS Type名は半角英数字のみで入力してください
+                    OS Type名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください。
                 </div>            
                 <div class="col-sm-12 text-warning" *ngIf='!uniqueFlg'>
                     OS Type名は重複しています。
                 </div>
                 <div class="col-sm-12 text-warning" *ngIf='!startRegFlg'>
-                    CLI情報取得前デフォルト実行コマンドは半角英数字のみで入力してください。
+                    CLI情報取得前デフォルト実行コマンドは半角英数字と記号のみで入力してください。
                 </div> 
                 <div class="col-sm-12 text-warning" *ngIf='!endRegFlg'>
-                    CLI情報取得完了後デフォルト実行コマンドは半角英数字のみで入力してください。
+                    CLI情報取得完了後デフォルト実行コマンドは半角英数字と記号のみで入力してください。
                 </div> 
                 <div class="col-sm-12 text-warning" *ngIf='!regFlg'>
-                    CLIエラー文字列は正規表現形式です。
+                    CLIエラー文字列は半角英数字と記号のみで入力してください。
                 </div> 
                 <div class="col-sm-12 text-warning" *ngIf='!telPromptNotNull'>
                     CLIデフォルトプロンプト文字列は必須入力です。
                 </div> 
                 <div class="col-sm-12 text-warning" *ngIf='telPromptNotNull&&!telPromptFlg'>
-                    CLIデフォルトプロンプト文字列は正規表現形式です。
+                    CLIデフォルトプロンプト文字列は半角英数字と記号のみで入力してください。
                 </div> 
                 <div class="col-sm-12 text-warning" *ngIf='!telTimeoutFlg'>
                     CLI(Telnet) タイムアウト値は必須入力です。

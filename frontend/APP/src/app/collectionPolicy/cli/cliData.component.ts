@@ -36,8 +36,10 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     uniqueFlg: Boolean = true;
     mrkStrNotNull: Boolean = true;
     keyStrNotNull: Boolean = true;
+    mrkStrFlg: Boolean = true;
     keyStrFlg: Boolean = true;
     keyUnqFlg: Boolean = true;
+    extractKeyFlg: Boolean = true;
     commandNotNull: Boolean = true;
     commandFlg: Boolean = true;
     commandUnqFlg: Boolean = true;
@@ -53,6 +55,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     extKeyNotNull: Boolean = true;
     delBtn: Boolean = false;
     otherCharFlg: Boolean = true;
+    otherCharRegFlg: Boolean = true;
     processFlg: Boolean = false;
     lockFlg: Boolean = false;
     constructor(
@@ -118,6 +121,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         });
     }
     public dataRuleACheck() {
+        this.uniqueFlg = true;
+        this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -127,6 +132,9 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
+        if (this.mrkStrNotNull) {
+            this.mrkStrFlg = Validator.halfWidthReg(this.markString);
+        }
         this.xOffsetNotNull = Validator.notNullCheck(this.xOffset.toString());
         if (this.xOffsetNotNull) {
             this.xOffsetFlg = Validator.xOffsetCheck(this.xOffset.toString());
@@ -134,21 +142,32 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         if (this.selSplitChar === '3') {
             if (this.otherChar) {
                 this.otherCharFlg = true;
+                this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
             } else {
                 this.otherCharFlg = false;
+                this.otherCharRegFlg = true;
             }
+        }
+        if (this.extractKey) {
+            this.extractKeyFlg = Validator.halfWidthReg(this.extractKey);
+        } else {
+            this.extractKeyFlg = true;
         }
         // this.yOffsetFlg = Number.isInteger(this.yOffset);
         if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull && this.xOffsetNotNull
-            && this.xOffsetFlg && this.otherCharFlg) {
+            && this.mrkStrNotNull && this.mrkStrFlg
+            && this.xOffsetNotNull && this.xOffsetFlg
+            && this.otherCharFlg && this.otherCharRegFlg
+            && this.extractKeyFlg) {
             return true;
         } else {
             return false;
         }
     }
     public dataRuleBCheck() {
+        this.uniqueFlg = true;
+        this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -158,6 +177,9 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
+        if (this.mrkStrNotNull) {
+            this.mrkStrFlg = Validator.halfWidthReg(this.markString);
+        }
         this.xOffsetNotNullB = typeof (this.xOffset) === 'number' ? true : false;
         if (this.xOffsetNotNullB) {
             this.xOffsetFlgB = Validator.offsetCheck(this.xOffset);
@@ -169,21 +191,32 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         if (this.selSplitChar === '3') {
             if (this.otherChar) {
                 this.otherCharFlg = true;
+                this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
             } else {
                 this.otherCharFlg = false;
+                this.otherCharRegFlg = true;
             }
         }
-        if (this.nameNotNull && this.nameFlg && this.yOffsetNotNull
+        if (this.extractKey) {
+            this.extractKeyFlg = Validator.halfWidthReg(this.extractKey);
+        } else {
+            this.extractKeyFlg = true;
+        }
+        if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
-            && this.mrkStrNotNull && this.xOffsetNotNullB
-            && this.xOffsetFlgB && this.otherCharFlg
-            && this.yOffsetNotNull && this.yOffsetFlg) {
+            && this.mrkStrNotNull && this.mrkStrFlg
+            && this.xOffsetNotNullB && this.xOffsetFlgB
+            && this.otherCharFlg && this.otherCharRegFlg
+            && this.yOffsetNotNull && this.yOffsetFlg
+            && this.extractKeyFlg) {
             return true;
         } else {
             return false;
         }
     }
     public dataRuleCCheck() {
+        this.uniqueFlg = true;
+        this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -193,8 +226,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull = Validator.notNullCheck(this.markString);
-        if (this.nameNotNull && this.nameFlg && this.keyStrNotNull
-            && this.keyStrFlg && this.mrkStrNotNull) {
+        if (this.mrkStrNotNull) {
+            this.mrkStrFlg = Validator.halfWidthReg(this.markString);
+        }
+        if (this.nameNotNull && this.nameFlg
+            && this.keyStrNotNull && this.keyStrFlg
+            && this.mrkStrNotNull && this.mrkStrFlg) {
             return true;
         } else {
             return false;
@@ -202,6 +239,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     }
     // backend feedback:data valid error in saving the rule
     public dataRuleDCheck() {
+        this.uniqueFlg = true;
+        this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -210,14 +249,16 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         if (this.keyStrNotNull) {
             this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
-        if (this.nameNotNull && this.nameFlg && this.keyStrNotNull
-            && this.keyStrFlg) {
+        if (this.nameNotNull && this.nameFlg
+            && this.keyStrNotNull && this.keyStrFlg) {
             return true;
         } else {
             return false;
         }
     }
     public dataRuleECheck() {
+        this.uniqueFlg = true;
+        this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -226,8 +267,8 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         if (this.keyStrNotNull) {
             this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
-        if (this.nameNotNull && this.nameFlg && this.keyStrNotNull
-            && this.keyStrFlg) {
+        if (this.nameNotNull && this.nameFlg
+            && this.keyStrNotNull && this.keyStrFlg) {
             return true;
         } else {
             return false;

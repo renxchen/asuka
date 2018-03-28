@@ -12,6 +12,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../../components/modal/modal.component';
 import { Validator } from '../../../components/validation/validation';
+declare var $: any;
 import * as _ from 'lodash';
 
 @Component({
@@ -93,10 +94,14 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                             });
                         }
                     } else {
-                        if (msg && msg === 'CP_NAME_DUPLICATE') {
+                        // CP_NAME_DUPLICATE
+                        if (msg && msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            alert(msg);
+                            // alert(msg);
+                            this.modalMsg = msg;
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
                         }
                     }
                 });
@@ -133,6 +138,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         * @author Dan Lv
         * @date 2018/01/25
         */
+       this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -142,7 +148,8 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
             this.oidFlg = Validator.oidRegCheck(this.snmpOid);
         }
         if (this.nameNotNull && this.nameFlg
-            && this.oidNotNull && this.oidFlg) {
+            && this.oidNotNull && this.oidFlg
+            && this.selectedOsType) {
             return true;
         } else {
             return false;

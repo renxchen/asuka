@@ -8,9 +8,10 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
-import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Validator } from '../../../components/validation/validation';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
+import { ModalComponent } from '../../../components/modal/modal.component';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 declare var $: any;
 import * as _ from 'lodash';
@@ -32,6 +33,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
     addFlg: Boolean = true;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
+    uniqueFlg: Boolean = true;
     cliFlg: Boolean = true;
     selCPName: any;
     cpNames: any;
@@ -44,13 +46,16 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
     addCPFlg: Boolean = true;
     addExecFlg: Boolean = true;
     sameCPFlg: Boolean = true;
+    modalRef: BsModalRef;
+    modalMsg: any;
+    closeMsg: any;
     // bsModalRef: any;
     constructor(
         private httpClient: HttpClientComponent,
         private activatedRoute: ActivatedRoute,
         private router: Router,
         private bsModalRef: BsModalRef,
-        private modalService: BsModalService
+        private modalService: BsModalService,
     ) { }
 
     ngOnInit() {
@@ -244,7 +249,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         _t.cpgActionGrid$ = $('#moreInfoTable').jqGrid({
             datatype: 'local',
             data: data,
-            colNames: ['CPGID', 'CPID', 'PolicyType', '機能ON/OFF', 'コレクションポリシー名', '監視間隔', 'Action'],
+            colNames: ['CPGID', 'CPID', 'PolicyType', '機能ON/OFF', 'コレクションポリシー名', '監視間隔', 'アクション'],
             colModel: [
                 { hidden: true, name: 'policys_groups_id', index: 'policys_groups_id', search: false },
                 { hidden: true, name: 'policy', index: 'policy', search: false, key: true },
@@ -335,11 +340,13 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         }
     }
     public doCheck(): boolean {
+        this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
+            // this.nameFlg = Validator.fullWithoutSpecial(this.name);
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
-        if (this.nameNotNull && this.nameFlg) {
+        if (this.nameNotNull && this.nameFlg && this.selectedOsType) {
             return true;
         } else {
             return false;
@@ -367,11 +374,26 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                         this.bsModalRef.hide();
                         this.modalService.setDismissReason('true');
                     } else {
-                        if (msg) {
-                            alert(msg);
+                        if (msg && msg === 'Collection policy group name is exist in system.') {
+                            this.uniqueFlg = false;
+                        } else {
+                            // alert(msg);
+                            this.modalMsg = msg;
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
                         }
                     }
                 });
         }
+    }
+    public showAlertModal(modalMsg: any, closeMsg: any) {
+        /**
+        * @brief show modal dialog
+        * @author Dan Lv
+        * @date 2018/01/25
+        */
+        this.modalRef = this.modalService.show(ModalComponent);
+        this.modalRef.content.modalMsg = modalMsg;
+        this.modalRef.content.closeMsg = closeMsg;
     }
 }

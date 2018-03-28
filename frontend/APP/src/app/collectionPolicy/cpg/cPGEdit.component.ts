@@ -13,6 +13,7 @@ import { ModalComponent } from '../../../components/modal/modal.component';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
+import { validateConfig } from '@angular/router/src/config';
 declare var $: any;
 
 @Component({
@@ -32,6 +33,7 @@ export class CPGEditComponent implements OnInit {
     addFlg: Boolean = true;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
+    uniqueFlg: Boolean = true;
     usingFlg: Boolean = false;
     cliFlg: Boolean = true;
     selCPName: any;
@@ -102,9 +104,7 @@ export class CPGEditComponent implements OnInit {
                         this.moreInfoTable(this.cpList);
                     }
                     if (verify) {
-                        this.osFlg = _.get(verify, 'ostype');
-                        this.cpNameFlg = _.get(verify, 'collection_policy_name');
-                        this.exeFlg = _.get(verify, 'exec_interval');
+                        this.exeFlg = _.get(verify, 'status');
                     }
                 }
             });
@@ -168,24 +168,24 @@ export class CPGEditComponent implements OnInit {
     }
     public deleteBtn() {
         let _t = this;
-        if (this.exeFlg && this.cpNameFlg) {
             $('.delete').click(function (event) {
-                let cpList: any = _t.cpList;
-                let id = $(event)[0].target.id;
-                for (let i = 0; i < cpList.length; i++) {
-                    if (cpList[i].policy.toString() === id) {
-                        cpList.splice(i, 1);
-                        _t.cpgActionGrid$.GridUnload();
-                        // $('#moreInfoTable').jqGrid('clearGridData');
-                        _t.moreInfoTable(cpList);
+                if (this.exeFlg) {
+                    let cpList: any = _t.cpList;
+                    let id = $(event)[0].target.id;
+                    for (let i = 0; i < cpList.length; i++) {
+                        if (cpList[i].policy.toString() === id) {
+                            cpList.splice(i, 1);
+                            _t.cpgActionGrid$.GridUnload();
+                            // $('#moreInfoTable').jqGrid('clearGridData');
+                            _t.moreInfoTable(cpList);
+                        }
                     }
-                }
-                _t.cpList = cpList;
-                event.stopPropagation();
-            });
-        } else {
-            alert('can not be deleted when policy is used');
-        }
+                    _t.cpList = cpList;
+                    event.stopPropagation();
+            } else {
+                alert('Collection policy group is running in system.');
+            }
+        });
     }
     public execIntervalChange(selExecInterval: any) {
         // if (selExecInterval === '60') {
@@ -308,7 +308,7 @@ export class CPGEditComponent implements OnInit {
         this.cpgActionGrid$ = $('#moreInfoTable').jqGrid({
             datatype: 'local',
             data: data,
-            colNames: ['CPGID', 'CPID', 'PolicyType', '機能ON/OFF', 'コレクションポリシー名', '監視間隔', 'Action'],
+            colNames: ['CPGID', 'CPID', 'PolicyType', '機能ON/OFF', 'コレクションポリシー名', '監視間隔', 'アクション'],
             colModel: [
                 { hidden: true, name: 'policys_groups_id', index: 'policys_groups_id', search: false },
                 { hidden: true, name: 'policy', index: 'policy', search: false, key: true },
@@ -405,11 +405,13 @@ export class CPGEditComponent implements OnInit {
         * @author Dan Lv
         * @date 2018/03/13
         */
+       this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
+            // this.nameFlg = Validator.fullWithoutSpecial(this.name);
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
-        if (this.nameNotNull && this.nameFlg) {
+        if (this.nameNotNull && this.nameFlg && this.selectedOsType) {
             return true;
         } else {
             return false;

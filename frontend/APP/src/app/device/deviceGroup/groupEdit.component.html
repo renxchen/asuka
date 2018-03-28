@@ -27,7 +27,7 @@
                         id="name" 
                         name="name"
                         [(ngModel)]="name" 
-                        placeholder="英数字のみ" 
+                        placeholder="日本語、英数字、記号可" 
                         maxlength="256" 
                         required=""
                         autocomplete="off" 
@@ -90,7 +90,7 @@
                 class="col-sm-12 text-warning" 
                 *ngIf='nameNotNull&&!nameFlg'
             >
-                デバイスグループ名は必須入力です。
+                デバイスグループ名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください。
             </div>            
             <div 
                 class="col-sm-12 text-warning" 
