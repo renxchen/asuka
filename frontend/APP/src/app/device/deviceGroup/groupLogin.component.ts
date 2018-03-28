@@ -61,6 +61,7 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
             });
     }
     public doCheck() {
+        this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             // japanese is ok, need to check;
