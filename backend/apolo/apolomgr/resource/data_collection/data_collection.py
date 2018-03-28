@@ -27,24 +27,26 @@ class DataCollectionOptCls(object):
         coll_policy_list = self.get_coll_policies()
         return devices_list, coll_policy_list
 
-    # if policy_group_id =1 ,set all functions off
+    # if policy_group_id = -1 ,set all functions off
     def insert_new_schedule(self, devices_list, coll_policy_list):
         policy_group_id = int(self.request_param['policy_group_id'])
         try:
             # check the device nums in the devices group and policy nums in policy group
-            if len(devices_list) == 0 or (len(coll_policy_list) == 0 and policy_group_id > -1):
-                return False, constants.NO_ITEMS_IN_GROUP
+            if len(devices_list) == 0:
+                return False, constants.NO_DEVICE_IN_DEVICE_GROUP
+            elif len(coll_policy_list) == 0 and policy_group_id > -1:
+                return False, constants.NO_CP_IN_CP_GROUP
             else:
                 data_check_res = True
-                # if all functions is off
+                # if is not  all functions off
                 if not policy_group_id == -1:
-                    data_check_res = self.__insert_data_check(devices_list, coll_policy_list)
+                    data_check_res = self.insert_data_check(devices_list, coll_policy_list)
                 # data check
                 if not data_check_res:
                     return False, constants.POLICY_DEVICE_COMBINATION
                 else:
                     # ready
-                    # get tree_id and rule_id of the collection policy tree
+                    # all function off
                     if policy_group_id == -1:
                         self.update_all_function_off_status(0)
                         schedule_data = self.set_schedule_data(status=0)
@@ -80,6 +82,7 @@ class DataCollectionOptCls(object):
             print e
             raise e
 
+    # when device update
     def update_items(self):
         items_list = self.request_param['items']
         for obj in items_list:
@@ -136,7 +139,7 @@ class DataCollectionOptCls(object):
             print e
             raise e
 
-    def __insert_data_check(self, devices, coll_policies):
+    def insert_data_check(self, devices, coll_policies):
 
         try:
             select_sql = 'select item_id,schedule_id from items where'
@@ -301,7 +304,7 @@ class DataCollectionOptCls(object):
                         data_table_queryset = DataTable.objects.filter(coll_policy=coll_policy_id,
                                                             groups=device_group_id,
                                                             tree_id=tree_id).values()
-                        print data_table_queryset
+
                         for data_table in data_table_queryset:
                             item_table_id_pair.append({'item': item_id, 'table': data_table['table_id']})
                 # insert the pair of item_id and table_id into data_table_items table
