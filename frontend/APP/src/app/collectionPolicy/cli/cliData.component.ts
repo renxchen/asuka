@@ -140,12 +140,16 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.xOffsetFlg = Validator.xOffsetCheck(this.xOffset.toString());
         }
         if (this.selSplitChar === '3') {
-            if (this.otherChar) {
-                this.otherCharFlg = true;
+            // if (this.otherChar) {
+            //     this.otherCharFlg = true;
+            //     this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
+            // } else {
+            //     this.otherCharFlg = false;
+            //     this.otherCharRegFlg = true;
+            // }
+            this.otherCharFlg = Validator.notNullCheck(this.otherChar);
+            if (this.otherCharFlg) {
                 this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
-            } else {
-                this.otherCharFlg = false;
-                this.otherCharRegFlg = true;
             }
         }
         if (this.extractKey) {
@@ -189,12 +193,16 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.yOffsetFlg = Validator.offsetCheck(this.yOffset);
         }
         if (this.selSplitChar === '3') {
-            if (this.otherChar) {
-                this.otherCharFlg = true;
+            // if (this.otherChar) {
+            //     this.otherCharFlg = true;
+            //     this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
+            // } else {
+            //     this.otherCharFlg = false;
+            //     this.otherCharRegFlg = true;
+            // }
+            this.otherCharFlg = Validator.notNullCheck(this.otherChar);
+            if (this.otherCharFlg) {
                 this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
-            } else {
-                this.otherCharFlg = false;
-                this.otherCharRegFlg = true;
             }
         }
         if (this.extractKey) {
