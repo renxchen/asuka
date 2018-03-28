@@ -168,6 +168,7 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
         this.startRegFlg = this.multiStartCmdRegFomatter(this.startCmds);
         this.endRegFlg = this.multiEndCmdRegFomatter(this.endCmds);
         this.regFlg = this.multiLogsFomatter(this.logs);
+        this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.fullWithoutSpecial(this.name);
