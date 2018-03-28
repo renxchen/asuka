@@ -25,7 +25,7 @@ import logging
 from django.db.models import *
 import sys
 from backend.apolo.apolomgr.resource.action_policy.mem_cache_trigger_and_trigger_detial import \
-    MemCacheTriggerTriggerDetial
+    MemCacheTriggerTriggerDetail
 # from apolo_server.processor.db_units.memcached_helper import TriggerMemCache
 
 reload(sys)
@@ -1341,8 +1341,9 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             with transaction.atomic():
                 data = self.create_trigger_related(method='POST')
                 if self.action_policy_name is not '':
+                    pass
                     # mem cache
-                    data_for_mem_cache = MemCacheTriggerTriggerDetial().get(self.action_policy_name)
+                    # data_for_mem_cache = MemCacheTriggerTriggerDetail().get(self.action_policy_name)
                     # with TriggerMemCache() as trigger:
                     #     trigger.multi_set(data_for_mem_cache)
                 return api_return(data=data)
@@ -1366,7 +1367,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     # create new trigger, trigger_detail, action data
                     data = self.create_trigger_related(method='PUT')
                     # mem cache
-                    data_for_mem_cache = MemCacheTriggerTriggerDetial().get(self.action_policy_name)
+                    # data_for_mem_cache = MemCacheTriggerTriggerDetail().get(self.action_policy_name)
                     # with TriggerMemCache() as trigger:
                     #     trigger.multi_set(data_for_mem_cache)
                     return api_return(data=data)
