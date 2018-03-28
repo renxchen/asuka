@@ -40,9 +40,9 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     keyStrFlg: Boolean = true;
     keyUnqFlg: Boolean = true;
     extractKeyFlg: Boolean = true;
-    commandNotNull: Boolean = true;
-    commandFlg: Boolean = true;
-    commandUnqFlg: Boolean = true;
+    // commandNotNull: Boolean = true;
+    // commandFlg: Boolean = true;
+    // commandUnqFlg: Boolean = true;
     lineNumsNotNull: Boolean = true;
     lineNumsFlg: Boolean = true;
     lineNumsUnqFlg: Boolean = true;
