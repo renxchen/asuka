@@ -14,7 +14,6 @@
 from backend.apolo.serializer.collection_policy_serializer import CollPolicyGroupSerializer, PolicyGroupSerializer
 from backend.apolo.models import CollPolicyGroups, PolicysGroups, Schedules
 from rest_framework import viewsets
-from django.utils.translation import gettext
 from django.core.paginator import Paginator
 from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
@@ -43,6 +42,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         self.name = views_helper.get_request_value(self.request, 'name', method)
         self.desc = views_helper.get_request_value(self.request, 'desc', method)
         self.ostype = views_helper.get_request_value(self.request, 'ostype_name', method)
+        self.ostype_for_search = views_helper.get_request_value(self.request, 'ostypeid__name', method)
         self.execute_ing = True
         # verify whether is executing status
         # self.get_execute_ing()
@@ -88,9 +88,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
             cpg = CollPolicyGroups.objects.get(**kwargs)
             return cpg
         except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            return False
 
     @staticmethod
     def get_policy_group(**kwargs):
@@ -151,16 +149,14 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         """
         try:
             queryset = self.get_cp_group(**kwargs)
-            if isinstance(queryset, str):
-                if json.loads(queryset)['message'] is not '':
-                    data = {
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: json.loads(queryset)['message']
-                        }
+            if queryset is False:
+                data = {
+                    constants.STATUS: {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.COLL_POLICY_GROUP_NOT_FOUND
                     }
-                    return data
+                }
+                return data
             pgs = self.get_policy_group(**kwargs)
             if isinstance(pgs, str):
                 if json.loads(pgs)['message'] is not '':
@@ -197,7 +193,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 print traceback.format_exc(e)
             return exception_handler(e)
 
-    def verify_column(self, id, method='GET'):
+    def verify_column_bak(self, id, method='GET'):
         """!@brief
         Return the status of each column, decide whether should disable or enable in web page
         False: modify reject, True: modify or shown permit
@@ -225,6 +221,31 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 if self.execute_ing:
                     verify_result['collection_policy_name'] = False
                     verify_result['exec_interval'] = False
+                return verify_result
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
+
+    @staticmethod
+    def verify_column(id, method='GET'):
+        """!@brief
+        Return the status decide whether cpg can be modified
+        False: modify reject, True: modify allow
+        @param id: policy group id
+        @param method: request method, default is GET
+        @pre call when need to get the column status
+        @post return column status
+        @return verify_result: status
+        """
+        try:
+            if id is not '':
+                queryset_pg = Schedules.objects.filter(**{'policy_group_id': id})
+                verify_result = {
+                    'status': True,
+                }
+                if len(queryset_pg) > 0:
+                    verify_result['status'] = False
                 return verify_result
         except Exception, e:
             if constants.DEBUG_FLAG:
@@ -270,14 +291,14 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 'id': 'policy_group_id',
                 'name': 'name',
                 'desc': 'desc',
-                'ostype_name': 'ostypeid__name',
+                'ostypeid__name': 'ostypeid__name',
             }
             query_data = {
                 'name': self.name,
                 'desc': self.desc,
-                'ostypeid__name': self.ostype,
+                'ostypeid__name': self.ostype_for_search,
             }
-            search_fields = ['name', 'ostype_name', 'desc']
+            search_fields = ['name', 'ostypeid__name', 'desc']
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                           query_data, search_fields)
             total_num = len(CollPolicyGroups.objects.all())
@@ -323,6 +344,16 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                     'desc': self.desc,
                     'ostypeid': self.ostype,
                 }
+                if self.name is not '':
+                    get_name_from_cpg = self.get_cp_group(**{'name': self.name})
+                    if get_name_from_cpg is False:
+                        data = {
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.COLLECTION_POLICY_GROUP_NAME_DUPLICATE
+                            }
+                        }
+                        return api_return(data=data)
                 cps = views_helper.get_request_value(self.request, 'cps', 'BODY')
                 serializer = CollPolicyGroupSerializer(data=data)
                 if serializer.is_valid(Exception):
@@ -359,11 +390,19 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         @return data: the status of whether modified successful and the modified data
         """
         try:
-            self.get_execute_ing()
+            # self.get_execute_ing()
             kwargs = {'policy_group_id': self.id}
             cps = views_helper.get_request_value(self.request, 'cps', 'BODY')
             with transaction.atomic():
                 queryset = self.get_cp_group(**kwargs)
+                if queryset is False:
+                    data = {
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.COLL_POLICY_GROUP_NOT_FOUND
+                        }
+                    }
+                    return api_return(data=data)
                 data = {
                     'policy_group_id': int(self.id),
                     'name': self.name,
@@ -371,17 +410,8 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                     'ostypeid': self.ostype,
                 }
                 # collection policy group is running, just name, desc and on/off in table can modify.
-                if self.execute_ing:
-                    if isinstance(queryset, str):
-                        if json.loads(queryset)['message'] is not '':
-                            data = {
-                                'new_token': self.new_token,
-                                constants.STATUS: {
-                                    constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: json.loads(queryset)['message']
-                                }
-                            }
-                            return api_return(data=data)
+                verify_result = self.verify_column(self.id)
+                if not verify_result['status']:
                     serializer = CollPolicyGroupSerializer(queryset, data=data)
                     if serializer.is_valid(Exception):
                         serializer.save()
@@ -447,11 +477,11 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
         @return data: the status of whether deleted successful
         """
         try:
-            self.get_execute_ing()
+            # self.get_execute_ing()
             with transaction.atomic():
                 kwargs = {'policy_group_id': self.id}
-                verify_result = self.get_schedule(**kwargs)
-                if self.execute_ing:
+                verify_result = self.verify_column(self.id)
+                if not verify_result['status']:
                     data = {
                         'new_token': self.new_token,
                         constants.STATUS: {

@@ -10,11 +10,11 @@
 @desc:
 
 """
+from backend.apolo.apolomgr.resource.common.tool import Tool
 from backend.apolo.serializer.collection_policy_serializer import CollPolicySerializer
 from backend.apolo.models import CollPolicy, Items, PolicysGroups, CollPolicyGroups, CollPolicyRuleTree, \
     CollPolicyCliRule
 from rest_framework import viewsets
-from django.utils.translation import gettext
 from django.core.paginator import Paginator
 from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
@@ -44,6 +44,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
         self.id = views_helper.get_request_value(self.request, 'id', method)
         self.name = views_helper.get_request_value(self.request, 'name', method)
         self.ostype = views_helper.get_request_value(self.request, 'ostype', method)
+        self.ostype_for_search = views_helper.get_request_value(self.request, 'ostype__name', method)
         self.cli_command = views_helper.get_request_value(self.request, 'cli_command', method)
         self.desc = views_helper.get_request_value(self.request, 'desc', method)
         self.snmp_oid = views_helper.get_request_value(self.request, 'snmp_oid', method)
@@ -158,7 +159,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 print traceback.format_exc(e)
             return False
 
-    def verify_column(self, id, method='GET'):
+    def verify_column_bak(self, id, method='GET'):
         """!@brief
         Return the status of each column, decide whether should disable or enable in web page
         False: modify reject, True: modify or shown permit
@@ -182,6 +183,48 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     verify_result['ostype'] = False
                 if self.execute_ing:
                     verify_result['snmp_oid'] = False
+                return verify_result
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
+
+    def verify_column(self, id, method='GET'):
+        """!@brief
+        Return the status of each column, decide whether should disable or enable in web page
+        False: modify reject, True: modify or shown permit
+        @param id: collection policy id
+        @param method: request method, default is GET
+        @pre call when need to get the column status
+        @post return column status
+        @return verify_result: the status of each column
+        """
+        try:
+            self.execute_ing = Tool().get_policy_status(int(id))
+            cpg = PolicysGroups.objects.filter(**{'policy_id': int(id)})
+            if self.execute_ing and len(cpg) > 0:
+                verify_result = {
+                    'ostype': False,
+                    'snmp_oid': False,
+                    'command': False,
+                    'coll_policy_name': False
+                }
+                return verify_result
+            elif len(cpg) > 0:
+                verify_result = {
+                    'ostype': False,
+                    'snmp_oid': True,
+                    'command': True,
+                    'coll_policy_name': True
+                }
+                return verify_result
+            else:
+                verify_result = {
+                    'ostype': True,
+                    'snmp_oid': True,
+                    'command': True,
+                    'coll_policy_name': True
+                }
                 return verify_result
         except Exception, e:
             if constants.DEBUG_FLAG:
@@ -225,7 +268,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 'name': 'name',
                 'desc': 'desc',
                 'cli_command': 'cli_command',
-                'ostype': 'ostype__name',
+                'ostype__name': 'ostype__name',
                 'snmp_oid': 'snmp_oid',
                 'policy_type': 'policy_type',
             }
@@ -233,11 +276,11 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 'name': self.name,
                 'desc': self.desc,
                 'cli_command': self.cli_command,
-                'ostype__name': self.ostype,
+                'ostype__name': self.ostype_for_search,
                 'snmp_oid': self.snmp_oid,
                 'policy_type': self.policy_type,
             }
-            search_fields = ['name', 'ostype', 'cli_command', 'desc', 'snmp_oid']
+            search_fields = ['name', 'ostype__name', 'cli_command', 'desc', 'snmp_oid']
             sorts, search_conditions = views_helper.get_search_conditions(self.request, field_relation_ships,
                                                                           query_data, search_fields)
             total_num = len(CollPolicy.objects.filter(**{'policy_type': self.policy_type}))
@@ -336,6 +379,16 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     'snmp_oid': self.snmp_oid,
                     'value_type': self.value_type,
                 }
+                self.execute_ing = Tool().get_policy_status(int(id))
+                if self.execute_ing:
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.COLLECTION_POLICY_IS_EXECUTING
+                        }
+                    }
+                    return api_return(data=data)
                 if queryset is False:
                     data = {
                         'new_token': self.new_token,
@@ -371,7 +424,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
         @return data: the status of whether deleted successful
         """
         try:
-            self.get_execute_ing()
+            self.execute_ing = Tool().get_policy_status(int(id))
             with transaction.atomic():
                 kwargs = {'coll_policy_id': self.id}
                 collection_policy_in_cp = self.get_cp(**kwargs)
@@ -380,9 +433,6 @@ class CollPolicyViewSet(viewsets.ViewSet):
                 pg = self.get_cp_from_policys_groups(**{'policy_id': self.id})
                 if self.execute_ing:
                     data = {
-                        # 'data': {
-                        #     'data': constants.COLLECTION_POLICY_IS_EXECUTING
-                        # },
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,

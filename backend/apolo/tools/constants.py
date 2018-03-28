@@ -129,6 +129,8 @@ COLLECTION_POLICY_NAME_DUPLICATE = gettext('Collection policy name is exist in s
 #########################################
 # Collection Policy Group Related define
 #########################################
+COLL_POLICY_GROUP_NOT_FOUND = gettext('Collection policy group not exist in system.')
+COLLECTION_POLICY_GROUP_NAME_DUPLICATE = gettext('Collection policy group name is exist in system.')
 COLL_POLICY_GROUP_EXIST_IN_SCHEDULE = gettext('Collection policy group is running in system.')
 #########################################
 # Policy Tree Node's information
