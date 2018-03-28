@@ -1,10 +1,8 @@
 import sys
-#from apolo_server.processor.parser.common_policy_tree.dispatch
+
 from apolo_server.processor.db_units.db_units import *
 from backend.apolo.apolomgr.resource.common.common_policy_tree.dispatch import Dispatch
 from apolo_server.processor.constants import ParserConstants, CommonConstants
-#from apolo_server.processor.parser.common_policy_tree.tool import Tool
-from apolo_server.processor.db_units.memcached_helper import ItemMemCacheDb, RulesMemCacheDb
 from apolo_server.processor.db_units.db_helper import ParserDbHelp
 from multiprocessing.dummy import Pool as ThreadPool
 import threading

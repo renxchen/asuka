@@ -5,7 +5,7 @@ import time
 import copy
 import json
 from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
-from apolo_server.processor.db_units.memcached_helper import RulesMemCacheDb, ItemMemCacheDb
+from apolo_server.processor.db_units.memcached_helper import ItemMemCacheDb
 from apolo_server.processor.db_units.db_helper import DeviceDbHelp, ItemsDbHelp
 from apolo_server.processor.parser.common_policy_tree.tool import Tool
 

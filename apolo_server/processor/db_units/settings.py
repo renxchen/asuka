@@ -26,25 +26,6 @@ INSTALLED_APPS = [
     'backend.apolo'
 ]
 
-#DEBUG = True
+from backend.server.settings import DATABASES as db
 
-ALLOWED_HOSTS = ['*']
-
-DATABASES = {
-    'default': {
-        #'ENGINE': 'PyMysqlPool.mysql.connector.django',
-        'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        # 'NAME': "tmp",
-        'NAME': "apolo",
-        # 'NAME': "newwebday2",
-        # 'HOST': '10.79.148.225',
-        'HOST': '127.0.0.1',
-        # 'HOST': '10.71.244.134',
-        # "USER": "webday2",
-        "USER": "apolo",
-        #"PASSWORD": "1234",
-         "PASSWORD": "apolo123"
-     
-    }
-}
+DATABASES = db
