@@ -291,7 +291,7 @@ class Policy_tree(DBOpt):
 
             if node.parent_tree_id == parent_node_id:
                 node_num += 1
-                d = {#'id': 'j1-{}'.format(node_num),
+                d = {
                      'text': node.rule_name,
                      'icon': '',
                      'data': {
@@ -303,7 +303,7 @@ class Policy_tree(DBOpt):
                      },
                      'children': []
                      }
-                if node.is_leaf and node.rule_type < 5:
+                if node.is_leaf and (node.rule_type < 5 or node.rule_type ==9):
                     d['icon'] = constants.DATA_NODE_ICON
                 else:
                     d['icon'] = constants.BLOCK_NODE_ICON
