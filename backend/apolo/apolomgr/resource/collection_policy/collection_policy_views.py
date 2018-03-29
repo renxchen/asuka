@@ -26,6 +26,7 @@ from django.db import transaction
 import time
 import requests
 import simplejson as json
+from django.db.models import Q
 
 
 class CollPolicyViewSet(viewsets.ViewSet):
@@ -379,16 +380,24 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     'snmp_oid': self.snmp_oid,
                     'value_type': self.value_type,
                 }
-                if self.name is not '':
-                    get_name_from_cp = self.get_cp(**{'name': self.name})
-                    if get_name_from_cp is not False:
-                        data = {
-                            constants.STATUS: {
-                                constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: constants.COLLECTION_POLICY_NAME_DUPLICATE
-                            }
+                # if self.name is not '':
+                #     get_name_from_cp = self.get_cp(**{'name': self.name})
+                #     if get_name_from_cp is not False:
+                #         data = {
+                #             constants.STATUS: {
+                #                 constants.STATUS: constants.FALSE,
+                #                 constants.MESSAGE: constants.COLLECTION_POLICY_NAME_DUPLICATE
+                #             }
+                #         }
+                #         return api_return(data=data)
+                if len(CollPolicy.objects.filter(~Q(coll_policy_id=self.id), name=self.name)):
+                    data = {
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.COLLECTION_POLICY_NAME_DUPLICATE
                         }
-                        return api_return(data=data)
+                    }
+                    return api_return(data=data)
                 self.execute_ing = Tool().get_policy_status(int(self.id))
                 if self.execute_ing:
                     data = {
