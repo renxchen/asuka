@@ -80,7 +80,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                 { label: 'CLI タイムアウト値', name: 'telnet_timeout', index: 'telnet_timeout', width: 140, align: 'center', search: true },
                 { label: 'SNMP タイムアウト値', name: 'snmp_timeout', index: 'snmp_timeout', width: 140, align: 'center', search: true },
                 {
-                    label: 'アクション', name: 'action', width: 120, align: 'center', search: false,
+                    label: 'アクション', name: 'action', width: 120, align: 'center', search: false, sortable: false,
                     formatter: _t.formatterBtn
                 }
             ],

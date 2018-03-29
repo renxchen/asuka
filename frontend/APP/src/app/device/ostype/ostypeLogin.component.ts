@@ -170,9 +170,6 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             }
         }
     }
-    trackByIndex(index: number, value: number) {
-        return index;
-    }
     public ostypeCheck() {
         let starts = _.cloneDeep(this.startCmds);
         let ends = _.cloneDeep(this.endCmds);
