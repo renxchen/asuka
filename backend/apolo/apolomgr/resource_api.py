@@ -261,7 +261,7 @@ def api_expression_verify(request):
 @auth_if_refresh_required
 @permission_classes((IsAuthenticated,))
 def api_action_policy_mem_cache(request):
-    resource_object = mem_cache_trigger_and_trigger_detial.MemCacheTriggerTriggerDetial(request=request)
+    resource_object = mem_cache_trigger_and_trigger_detial.MemCacheTriggerTriggerDetail(request=request)
     return HttpResponse(run_request_method(resource_object))
 
 

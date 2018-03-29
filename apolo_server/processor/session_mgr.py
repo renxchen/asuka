@@ -28,7 +28,7 @@ class SessionManager(Thread):
 
     def update_device(self,task_id,device_info):
         try:
-            self.data_set[task_id].update(dict(device_info=device_info))
+            self.data_set[task_id]["device_info"].update(device_info)
         except KeyError:
             pass
 

@@ -7,8 +7,7 @@ import json
 from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
 from apolo_server.processor.db_units.memcached_helper import ItemMemCacheDb
 from apolo_server.processor.db_units.db_helper import DeviceDbHelp, ItemsDbHelp
-from apolo_server.processor.parser.common_policy_tree.tool import Tool
-
+from backend.apolo.apolomgr.resource.common.tool import Tool
 
 __version__ = '0.1'
 __author__ = 'Rubick <haonchen@cisco.com>'

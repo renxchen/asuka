@@ -93,9 +93,12 @@ TRIGGER_TYPE_EXPRESSION_COMPARE = '演算比較'
 TRIGGER_TYPE_INTEGER_COMPARE = '数値比較'
 TRIGGER_TYPE_STRING__COMPARE = '文字列比較'
 TRIGGER_TYPE_FAILED = '取得失敗'
-COLUMN_A_OR_COLUMN_B_NOT_EXIST = gettext('Column A or Column B is not exist in current system, please connect Administrator.')
-COLUMN_A_COLUMN_B_VERIFY_FAILED = gettext('Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).')
-EXPRESSION_ILLEGAL = gettext('There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1).')
+COLUMN_A_OR_COLUMN_B_NOT_EXIST = gettext(
+    'Column A or Column B is not exist in current system, please connect Administrator.')
+COLUMN_A_COLUMN_B_VERIFY_FAILED = gettext(
+    'Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).')
+EXPRESSION_ILLEGAL = gettext(
+    'There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1).')
 EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = gettext('A and B maybe do not have the same value type(String or Integer).')
 EXPRESSION_A_B_NOT_EXIST = gettext('There is not A or B in expression, should be at least A in expression.')
 EXPRESSION_CONDITION_ILLEGAL = gettext('The expression condition should be in <=, >=, ==, !=, >, <.')
@@ -165,15 +168,15 @@ CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 #########################################
 # value_type of policy tree rule
 #########################################
-VALUE_TYPE_INT = 1
+VALUE_TYPE_INT = 0
 VALUE_TYPE_FLOAT = 2
 VALUE_TYPE_STRING = 3
-VALUE_TYPE_TEXT = 4
+VALUE_TYPE_TEXT = 1
 #########################################
 # data collection value setting
 #########################################
 SCHEDULE_STATUS_DEFAULT = 1
-ITEM_TABLE_STATUS_DEFAULT = 0
+ITEM_TABLE_STATUS_DEFAULT = 1
 ITEM_TYPE_CLI = 0  # cli
 ITEM_TYPE_SNMP = 1  # snmp
 VALUE_TYPE = {
@@ -212,13 +215,13 @@ CP_STATUS_ON_VAULE = 1
 #########################################
 # data collection Error Message
 #########################################
-# 各グループにおけるあるデバイスとあるコレクションポリシーが紐付いています。かつ、同じ優先度が同じです。追加不可です。
-POLICY_DEVICE_COMBINATION = 'the combination of policy and device is used'  # device id and policy id の組み合わせが利用されている
+
+POLICY_DEVICE_COMBINATION = 'There is the same configure in the schedule'  # 同一のコレクションポリシー、ディバイスと優先度が設定されています
 CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
 CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
-NO_ITEMS_IN_GROUP = 'no items in group,please check the group'
-DATA_COLLECTION_POST_URL = 'http://10.71.244.134:7777/api/v1/getItems'
-POLICY_POST_URL = 'http://10.71.244.134:7777/api/v1/valid'
+NO_DEVICE_IN_DEVICE_GROUP = 'There is no device in device group,please check the group'
+NO_CP_IN_CP_GROUP = 'There is no policy in policy group,please check the group'
+NULL_TREE_IN_CP = 'This is a null tree in the cp'
 #########################################
 # render
 #########################################

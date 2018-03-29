@@ -19,9 +19,9 @@ import logging
 from django.db.models import *
 
 
-class MemCacheTriggerTriggerDetial(viewsets.ViewSet):
+class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
     def __init__(self, **kwargs):
-        super(MemCacheTriggerTriggerDetial, self).__init__(**kwargs)
+        super(MemCacheTriggerTriggerDetail, self).__init__(**kwargs)
         self.logger = logging.getLogger("apolo.log")
 
     @staticmethod

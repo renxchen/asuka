@@ -233,6 +233,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
                             obj.update(**new_dict)
                             Schedules.objects.filter(device_group=device_group_id).update(status=0)
                     else:
+
                         if old_status == 0:
                             # the old schedule status are chanced from all function off to all function on
                             Schedules.objects.filter(device_group=obj[0].device_group).update(status=1)
@@ -242,12 +243,23 @@ class DataCollectionViewSet(viewsets.ViewSet):
 
                     devices = opt.get_devices()
                     policies = opt.get_coll_policies()
-                    opt.insert_new_items(devices, schedule_id, policies)
+                    if opt.insert_data_check(devices, policies):
+                       opt.insert_new_items(devices, schedule_id, policies)
+                    else:
+                        transaction.set_rollback(True)
+                        data = {
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.POLICY_DEVICE_COMBINATION
+                            }
+                        }
+                        return api_return(data=data)
             data = {
                 'new_token': self.new_token,
                 constants.STATUS: {
                     constants.STATUS: constants.TRUE,
-                    constants.MESSAGE: constants.SUCCESS  # can not delete
+                    constants.MESSAGE: constants.SUCCESS
                 }
             }
             return api_return(data=data)
@@ -301,7 +313,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
     def __check_is_Processing(arry):
         is_processing = False
         data = Tool.get_data_from_collection_server()
-        for recoder in data['items']:
+        for recoder in data:
             if recoder['valid_status']:
                 if recoder['item_id'] in arry:
                     is_processing = True

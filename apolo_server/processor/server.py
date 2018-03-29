@@ -30,8 +30,6 @@ class TaskDispatcher(Thread):
             task_id = None
             if len(result) == 2:
                 task_id = result[1]
-            
-
             #tmp_q = task_q[channel]
             if channel in "cli snmp":
                 _device_q = device_q[channel]
@@ -55,8 +53,6 @@ class TaskDispatcher(Thread):
             else:
                 zmq_dispatch.send_string(b'')
 
-
-
 class CommandApiHandler(web.RequestHandler):
     @web.asynchronous
     def post(self, *args, **kwargs):
@@ -65,18 +61,15 @@ class CommandApiHandler(web.RequestHandler):
         method = args[0]
         channel = args[1]
 
-        #params = json.loads(self.request.body)
-        #now_time = param["now_time"]
-
         # url should be valid
-        if method not in 'sync' or channel not in 'cli snmp':
+        if method != 'sync' or channel not in 'cli snmp':
             self.write(json.dumps(dict(status='error',
                                        message='Not support method')))
             self.finish()
             return
 
-           
-        devices,tmp_devices_dict = get_devices(int(time.time()), channel)
+        #get device and deviceinfo
+        devices,device_info_dict = get_devices(int(time.time()), channel)
 
         #get snmp or cli device q
         if channel not in device_q:
@@ -87,22 +80,20 @@ class CommandApiHandler(web.RequestHandler):
         device_pending_dict = cli_device_pending_dict if channel == "cli" else snmp_device_pendding_dict
         device_task_dict = cli_device_task_dict if channel == "cli" else snmp_device_task_dict
         
-
         for device_id in devices:
-            
-            device_info = tmp_devices_dict[device_id]
-
+            #get device info
+            device_info = device_info_dict[device_id]
             if device_id in device_pending_dict:
                 #update pending data
-                device_pending_dict.update(dict(device_id=device_info))
+                device_pending_dict[device_id].update(device_info)
                 continue
 
+            #check device in device q
             if device_id in _device_q.queue:
-                
                 #get task by device id and update device_info
                 task_id =  device_task_dict[device_id]
                 task = session_mgr.get(task_id)
-                if task["status"]=="coll_queue":
+                if task["status"] == "coll_queue":
                     session_mgr.update_device(task_id,device_info)
                 continue
     
