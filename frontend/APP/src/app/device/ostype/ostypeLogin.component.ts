@@ -30,7 +30,7 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
     uniqueFlg: Boolean = true;
     startRegFlg: Boolean = true;
     endRegFlg: Boolean = true;
-    regFlg: Boolean = true;
+    logRegFlg: Boolean = true;
     telPromptFlg: Boolean = true;
     telPromptNotNull: Boolean = true;
     telTimeoutFlg: Boolean = true;
@@ -48,28 +48,34 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
         this.endCmdsInit();
         this.logsInit();
     }
-    ngAfterViewInit() { }
+    ngAfterViewInit() {
+    }
     public startCmdsInit() {
+        this.startCmds = [];
         this.countStart = 1;
         let firstStartCmd = {
             'id': this.countStart,
             'name': '',
             'startCmdFlg': false,
-            'cmdRegFlg': true,
+            'startRegFlg': true,
         };
         this.startCmds.push(firstStartCmd);
+        return firstStartCmd;
     }
     public endCmdsInit() {
+        this.endCmds = [];
         this.countEnd = 1;
         let firstEndCmd = {
-            'id': this.countStart,
+            'id': this.countEnd,
             'name': '',
             'endCmdFlg': false,
-            'cmdRegFlg': true,
+            'endRegFlg': true,
         };
         this.endCmds.push(firstEndCmd);
+        return firstEndCmd;
     }
     public logsInit() {
+        this.logs = [];
         this.countLog = 1;
         let firstLog = {
             'id': this.countLog,
@@ -85,7 +91,7 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             'id': this.startCmds.length + 1,
             'name': '',
             'startCmdFlg': false,
-            'cmdRegFlg': true,
+            'startRegFlg': true,
         };
         let id: any = startCmdInfo['id'];
         let penult = id - 1;
@@ -113,7 +119,7 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             'id': this.endCmds.length + 1,
             'name': '',
             'endCmdFlg': false,
-            'cmdRegFlg': true,
+            'endRegFlg': true,
         };
         let id: any = endCmdInfo['id'];
         let penult = id - 1;
@@ -164,10 +170,16 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             }
         }
     }
+    trackByIndex(index: number, value: number) {
+        return index;
+    }
     public ostypeCheck() {
-        this.startRegFlg = this.multiStartCmdRegFomatter(this.startCmds);
-        this.endRegFlg = this.multiEndCmdRegFomatter(this.endCmds);
-        this.regFlg = this.multiLogsFomatter(this.logs);
+        let starts = _.cloneDeep(this.startCmds);
+        let ends = _.cloneDeep(this.endCmds);
+        let logs = _.cloneDeep(this.logs);
+        this.startRegFlg = this.multiStartCmdRegFomatter(starts);
+        this.endRegFlg = this.multiEndCmdRegFomatter(ends);
+        this.logRegFlg = this.multiLogsFomatter(logs);
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
@@ -175,7 +187,7 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
         }
         this.telPromptNotNull = Validator.notNullCheck(this.telPrompt);
         if (this.telPromptNotNull) {
-            this.telPromptFlg = Validator.regTest(this.telPrompt);
+            this.telPromptFlg = Validator.halfWidthReg(this.telPrompt);
         }
         this.telTimeoutNotNull = Validator.notNullCheck(this.telTimeout);
         if (this.telTimeoutNotNull) {
@@ -183,13 +195,13 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
         }
         this.snmpTimeoutNotNull = Validator.notNullCheck(this.snmpTimeout);
         if (this.snmpTimeoutNotNull) {
-            this.snmpTimeoutNotNull = Validator.numRegCheck(this.snmpTimeout);
+            this.snmpTimeoutFlg = Validator.numRegCheck(this.snmpTimeout);
         }
         if (this.nameNotNull && this.nameFlg
             && this.telTimeoutNotNull && this.telTimeoutFlg
             && this.snmpTimeoutNotNull && this.snmpTimeoutFlg
             && this.telPromptNotNull && this.telPromptFlg
-            && this.regFlg) {
+            && this.logRegFlg && this.startRegFlg && this.endRegFlg) {
             return true;
         } else {
             return false;
@@ -197,73 +209,87 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
     }
     public multiLogsFomatter(multiLogs: any) {
         let regFlgTmp = true;
-        let uniqData: any = _.uniqBy(multiLogs, 'name');
-        _.remove(uniqData, function (value) {
+        _.each(multiLogs, function (value) {
+            return value['name'] = value['name'].trim();
+        });
+        _.remove(multiLogs, function (value) {
             return value['name'] === '';
         });
+        let uniqData: any = [];
+        uniqData = _.uniqBy(multiLogs, 'name');
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
-                if (!Validator.regTest(uniqData[i].name)) {
-                    uniqData[i].logRegFlg = false;
-                    regFlgTmp = false;
-                } else {
+                if (Validator.halfWidthReg(uniqData[i].name)) {
                     uniqData[i].logRegFlg = true;
+                } else {
+                    regFlgTmp = false;
+                    uniqData[i].logRegFlg = false;
                 }
             }
             uniqData[len - 1]['logFlg'] = false;
         } else {
             uniqData.push(this.logsInit());
         }
-        this.logs = uniqData;
+        this.logs = _.cloneDeep(uniqData);
         return regFlgTmp;
     }
     // startCommandReg Check
     public multiStartCmdRegFomatter(multiStartCmds: any) {
         let regFlgTmp = true;
-        let uniqData: any = _.uniqBy(multiStartCmds, 'name');
-        _.remove(uniqData, function (value) {
+        _.each(multiStartCmds, function (value) {
+            return value['name'] = value['name'].trim();
+        });
+        _.remove(multiStartCmds, function (value) {
             return value['name'] === '';
         });
+        let uniqData: any = [];
+        uniqData = _.uniqBy(multiStartCmds, 'name');
+        console.log('fina', uniqData);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
-                if (!Validator.halfWidthReg(uniqData[i].name)) {
-                    uniqData[i].cmdRegFlg = false;
-                    regFlgTmp = false;
+                if (Validator.halfWidthReg(uniqData[i].name)) {
+                    uniqData[i].startRegFlg = true;
                 } else {
-                    uniqData[i].cmdRegFlg = true;
+                    uniqData[i].startRegFlg = false;
+                    regFlgTmp = false;
                 }
             }
             uniqData[len - 1]['startCmdFlg'] = false;
         } else {
             uniqData.push(this.startCmdsInit());
         }
-        this.logs = uniqData;
+        this.startCmds = _.cloneDeep(uniqData);
+        console.log('start1', this.startCmds);
         return regFlgTmp;
     }
     // endCommandReg Check
     public multiEndCmdRegFomatter(multiendCmds: any) {
         let regFlgTmp = true;
-        let uniqData: any = _.uniqBy(multiendCmds, 'name');
-        _.remove(uniqData, function (value) {
+        _.each(multiendCmds, function (value) {
+            return value['name'] = value['name'].trim();
+        });
+        _.remove(multiendCmds, function (value) {
             return value['name'] === '';
         });
+        let uniqData: any = [];
+        uniqData = _.uniqBy(multiendCmds, 'name');
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
-                if (!Validator.halfWidthReg(uniqData[i].name)) {
-                    uniqData[i].cmdRegFlg = false;
-                    regFlgTmp = false;
+                if (Validator.halfWidthReg(uniqData[i].name)) {
+                    uniqData[i].endRegFlg = true;
                 } else {
-                    uniqData[i].cmdRegFlg = true;
+                    regFlgTmp = false;
+                    uniqData[i].endRegFlg = false;
                 }
             }
             uniqData[len - 1]['endCmdFlg'] = false;
         } else {
             uniqData.push(this.endCmdsInit());
         }
-        this.logs = uniqData;
+        this.endCmds = _.cloneDeep(uniqData);
         return regFlgTmp;
     }
     //
@@ -273,17 +299,6 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             return value['name'] === '';
         });
         return uniqData;
-        // console.log('return data', uniqData);
-        // 返回格式以逗号分隔“，”包含“，”这种情况是否考虑;只能是数字和机会记号（指的是什么）
-        // if (dataString !== '') {
-        //     alert(dataString);
-        //     alert(dataString.substring(0, dataString.length - 1));
-        //     console.log('dataString', typeof (dataString), dataString.substring(0, dataString.length - 1));
-        //     return dataString.substring(0, dataString.length - 1);
-        // } else {
-        //     console.log('null', dataString);
-        //     return dataString;
-        // }
     }
     public ostypeLogin() {
         if (this.ostypeCheck()) {
@@ -291,15 +306,14 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             let ostypeInfo: any = {
                 'name': this.name,
                 'desc': this.desc,
-                'start_default_commands': this.multiDataFomatter(this.startCmds),
-                'end_default_commands': this.multiDataFomatter(this.endCmds),
-                'log_fail_judges': this.multiDataFomatter(this.logs),
+                'start_default_commands': this.startCmds,
+                'end_default_commands': this.endCmds,
+                'log_fail_judges': this.logs,
                 'telnet_prompt': this.telPrompt,
                 'snmp_timeout': this.snmpTimeout,
                 'telnet_timeout': this.telTimeout,
                 'status': this.status
             };
-            // console.log(ostypeInfo);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post('/api_device_ostype/', ostypeInfo))

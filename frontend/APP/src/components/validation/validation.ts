@@ -9,7 +9,7 @@ export class Validator {
     // static oidReg: RegExp = /^[1-9](\.(?!0+)\d+)*$/;
     // static oidReg: RegExp = /^1(\.(?!0)\d+)*$/;
     static oidReg: RegExp = /^1(\.(?!0+)\d+)*$/;
-    static numReg: RegExp = /[0-9]/;
+    static numReg: RegExp = /^\+?[1-9]\d*$/;
     static xOffsetReg: RegExp = /^-?[1-9]\d*$/;
     static offsetReg: RegExp = /^-?[0-9]\d*$/;
     static regTest(reg: any, value?: any) {

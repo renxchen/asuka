@@ -28,10 +28,8 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
     endMrkStr: any;
     isInclude: any;
     isSerial: any;
-    // data rule
     extractKey: any = null;
-    // warning flg
-    // descFlg: Boolean = false;
+    // flg
     nameNotNull: Boolean = true;
     nameFlg: Boolean = true;
     uniqueFlg: Boolean = true;
@@ -79,6 +77,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         }, 0);
     }
     public typeFomatter(param: any) {
+        /**
+        * @brief format the data in checkbox
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         if (param && param.toString() === '0') {
             return false;
         } else if (param && param.toString() === '1') {
@@ -98,6 +101,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         return this.httpClient.toJson(this.httpClient.get(url));
     }
     public getDataRule(cpId: any, ruleId: any) {
+        /**
+        * @brief get rule info
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.commInfo(cpId, ruleId).subscribe(res => {
             this.processFlg = _.get(res, 'is_processing');
             this.lockFlg = _.get(res, 'is_locked');
@@ -125,6 +133,12 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         });
     }
     public blockRuleADCheck() {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.uniqueFlg = true;
         this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
@@ -148,6 +162,12 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         }
     }
     public blockRuleBCheck() {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.uniqueFlg = true;
         this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
@@ -178,6 +198,12 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         }
     }
     public blockRuleCCheck() {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.uniqueFlg = true;
         this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
@@ -212,6 +238,11 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
 
     }
     public blockRulePrepare() {
+        /**
+        * @brief Collect data from the page
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         let sendRuleInfo: any = {};
         let rule_info: any = {};
         if (this.ruleType === 'block_rule_1') {
@@ -271,6 +302,12 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         return '';
     }
     public saveRule() {
+        /**
+        * @brief save data
+        * @post send the returned data to the 'cpEdit' page and close popup if save successly
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.apiPrefix = '/v1';
         let id = this.ruleId;
         let editUrl = '/api_policy_tree_rule/?rule_id=' + id;
@@ -289,7 +326,6 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                         if (data) {
                             let blockInfo: any = {};
                             blockInfo['blockTree'] = _.get(data, 'block_rule_tree_json');
-                            // blockInfo['name'] = _.get(data, 'name');
                             alert('保存しました。');
                             this.bsModalRef.hide();
                             this.modalService.setDismissReason(blockInfo);
@@ -349,6 +385,12 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         }
     }
     public deleteRule() {
+        /**
+        * @brief delete the block rule if it isn't in the database or on the policy tree.
+        * @post send the returned data to the 'cpEdit' page and close popup if delete successly
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         let alt = confirm('このルールを削除します。よろしいですか？');
         this.apiPrefix = '/v1';
         let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;

@@ -63,11 +63,11 @@
                     </label>
                     <div class="col-sm-8">
                         <div *ngFor="let startCmd of startCmds" style="width:100%">
-                            <div class="multi-input" [ngClass]="{'has-warning': !startCmd.cmdRegFlg}">
+                            <div class="multi-input" [ngClass]="{'has-warning': !startCmd.startRegFlg}">
                                 <input type="text" 
                                     class="form-control" 
                                     id="start_id_{{startCmd.id}}"
-                                    name="start_name_{{startCmd.id}}" 
+                                    name="start_name_{{startCmd.id}}"
                                     maxlength="256"
                                     placeholder="英数字、記号のみ"
                                     [(ngModel)]="startCmd.name"
@@ -103,12 +103,12 @@
                     </label>
                     <div class="col-sm-8">
                         <div *ngFor="let endCmd of endCmds" style="width:100%">
-                            <div class="multi-input" [ngClass]="{'has-warning': !endCmd.cmdRegFlg}">
+                            <div class="multi-input" [ngClass]="{'has-warning': !endCmd.endRegFlg}">
                                 <input
                                     type="text" 
                                     class="form-control" 
                                     id="end_id_{{endCmd.id}}"
-                                    name="end_name_{{endCmd.id}}" 
+                                    name="end_name_{{endCmd.id}}"
                                     maxlength="256"
                                     placeholder="英数字、記号のみ"
                                     [(ngModel)]="endCmd.name"
@@ -141,7 +141,7 @@
                     <label
                         for="log"
                         class="col-sm-4 control-label"
-                        [ngClass]="{'text-warning': !regFlg}"
+                        [ngClass]="{'text-warning': !logRegFlg}"
                     >
                         CLIエラー文字列
                     </label>
@@ -152,7 +152,7 @@
                                     type="text" 
                                     class="form-control" 
                                     id="log_id_{{log.id}}"
-                                    name="log_name_{{log.id}}" 
+                                    name="log_name_{{log.id}}"
                                     [(ngModel)]="log.name"
                                     maxlength="256"
                                     placeholder="正規表現形式"
@@ -263,7 +263,7 @@
                 <div class="col-sm-12 text-warning" *ngIf='!endRegFlg'>
                     CLI情報取得完了後デフォルト実行コマンドは半角英数字と記号のみで入力してください。
                 </div> 
-                <div class="col-sm-12 text-warning" *ngIf='!regFlg'>
+                <div class="col-sm-12 text-warning" *ngIf='!logRegFlg'>
                     CLIエラー文字列は半角英数字と記号のみで入力してください。
                 </div> 
                 <div class="col-sm-12 text-warning" *ngIf='!telPromptNotNull'>
@@ -272,16 +272,16 @@
                 <div class="col-sm-12 text-warning" *ngIf='telPromptNotNull&&!telPromptFlg'>
                     CLIデフォルトプロンプト文字列は半角英数字と記号のみで入力してください。
                 </div> 
-                <div class="col-sm-12 text-warning" *ngIf='!telTimeoutFlg'>
+                <div class="col-sm-12 text-warning" *ngIf='!telTimeoutNotNull'>
                     CLI(Telnet) タイムアウト値は必須入力です。
                 </div> 
-                <div class="col-sm-12 text-warning" *ngIf='!snmpTimeoutFlg'>
-                    SNMP タイムアウト値は必須入力です。
-                </div> 
-                <div class="col-sm-12 text-warning" *ngIf='!telTimeoutFlg'>
+                <div class="col-sm-12 text-warning" *ngIf='telTimeoutNotNull&&!telTimeoutFlg'>
                     CLI(Telnet) タイムアウト値は数値のみ。
                 </div> 
-                <div class="col-sm-12 text-warning" *ngIf='!snmpTimeoutFlg'>
+                <div class="col-sm-12 text-warning" *ngIf='!snmpTimeoutNotNull'>
+                    SNMP タイムアウト値は必須入力です。
+                </div> 
+                <div class="col-sm-12 text-warning" *ngIf="snmpTimeoutNotNull&&!snmpTimeoutFlg">
                     SNMP タイムアウト値は数値のみ。
                 </div> 
             </form>
