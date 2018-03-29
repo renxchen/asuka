@@ -6,7 +6,7 @@ __author__ = 'zhutong <zhtong@cisco.com>'
 import sys
 from worker_base import WorkerBase, main,SYS_PATH
 sys.path.append(SYS_PATH)
-from cisco_cli_helper import CiscoCLI
+from cisco_cli_helper import CiscoCLI,LoginException
 import json
 
 
@@ -34,47 +34,29 @@ class CiscoCliWorker(WorkerBase):
                     if command not in commands:
                         commands.append(command)
 
-        #print commands
-        #commands = task['commands']
-
         given_name = device_info.get('hostname')
-        #output = []
 
-        #return dict(command=command, status=status, output=output, timestamp=timestamp)
-        print device_info
         worker = CiscoCLI(device_info, logger=logger)
         try:
             worker.login()
-            hostname = worker.hostname
-            if given_name and given_name != hostname:
-                message = 'Hostname not match. Given: %s, Got: %s' % (given_name, hostname)
-                raise Exception(message)
-            else:
-                status = 'success'
-                message = ''
-            for index,cmd in enumerate(commands):
-                cmd_out = worker.execute(cmd)
-                
-                """
-                if index == 0:
-                    first_element = True
-                else:
-                    first_element = False
-                
-                if index == len(commands)-1:
-                    next_element = -1
-                else:
-                    next_element = commands[index]
-                """
-                
-                cmd_out.update(dict(result_type="element_result",task_id=task_id,item_ids=command_dict[cmd]))
-                self.zmq_push.send(json.dumps(cmd_out))
+            for cmd in commands:
+                try:
+                    cmd_out = worker.execute(cmd)
+                    cmd_out.update(dict(result_type="element_result",task_id=task_id,item_ids=command_dict[cmd]))
+                    self.zmq_push.send(json.dumps(cmd_out))
+                except LoginException as e:
+                    if e.err_code == LoginException.LOGIN_TIMEOUT:
+                        worker.recover_prompt()
+                    else:
+                        raise
 
+            worker.exe_end_default_command()
 
         except Exception as e:
             status = 'fail'
             message = str(e)
-            hostname = given_name
+            logger.error(e)
+            
         finally:
             worker.close()
 
@@ -82,7 +64,7 @@ class CiscoCliWorker(WorkerBase):
                     task_id=task_id,
                     #ip=device_info['ip'],
                     device_id=device_info['device_id'],
-                    #hostname=hostname,
+                    hostname=given_name,
                     message=message,
                     channel=task['channel'],
                     result_type="task_result"

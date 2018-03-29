@@ -14,21 +14,15 @@ class SNMPWorker(WorkerBase):
 
     def handler(self, task_id, task,data, logger):
         device_info = task['device_info']
-
         ip = device_info['ip']
         community = device_info['community']
-        commands = {}
         operate = 'bulk_get'
         snmp_model = device_info['snmp_model'] if "snmp_model" in device_info else 1
-        is_translate = False if "is_translate" in device_info else True
-
-        try:
-            timeout = int(device_info["timeout"])
-        except:
-            timeout = 5
-
+        is_translate = True
+        device_log_info = "Device ID: %s,IP: %s,HostName: %s" % (device_info["device_id"],ip,device_info["hostname"])
+        maxvars = 20
+      
         oids=[]
-        #items=[]
         oid_dict = {}
         for key in ["items_1day","items_1hour","items_15min","items_5min","items_1min"]:
             if key in device_info:
@@ -44,18 +38,14 @@ class SNMPWorker(WorkerBase):
                     if oid not in oids:
                         oids.append(oid)
 
-   
-        maxvars = 2
-
         logger.info('%s for %s started', operate.upper(), ip)
         worker = SNMP(ip,
                       community,
                       logger=logger,
-                      port=commands.get('port', 161),
-                      timeout=timeout,
-                      retries=commands.get('retries', 2),
-                      non_repeaters=commands.get('non_repeaters', 0),
-                      max_repetitions=commands.get('max_repetitions', 25),
+                      port=device_info.get('port', 161),
+                      timeout=device_info.get("timeout",5),
+                      retries=device_info.get('retries', 2),
+                      device_log_info=device_log_info,
                       model_version=snmp_model,
                       is_translate=is_translate
                       )
@@ -68,10 +58,8 @@ class SNMPWorker(WorkerBase):
                             status='error',
                             message='Not support SNMP operate')
             
-            
             if len(oids) > maxvars:
                 _oid_splits = chunks(oids, maxvars)
-            
             else:
                 _oid_splits = [oids]
 
@@ -94,6 +82,7 @@ class SNMPWorker(WorkerBase):
         except Exception as e:            
             status = 'fail'
             message = str(e)
+            logger.error("%s %s"%(device_log_info, str(e)))
 
         result = dict(task_id=task_id,
              status=status,

@@ -26,8 +26,7 @@ def chunks(l, n):
 
 class SNMP(object):
     def __init__(self, ip, community, logger,
-                 port, timeout, retries,
-                 non_repeaters, max_repetitions,
+                 port, timeout, retries,device_log_info,
                  model_version=1, is_translate=False):
         self._syntax = {
             0: {
@@ -76,6 +75,7 @@ class SNMP(object):
         self.port = port
         self.timeout = timeout
         self.retries = retries
+        self.device_log_info = device_log_info
         self.non_repeaters = non_repeaters
         self.max_repetitions = max_repetitions
         self.cmd_gen = cmdgen.CommandGenerator()
@@ -202,42 +202,22 @@ class SNMP(object):
         output = []
         cmd_gen = self.cmd_gen
 
-        print "timeout"+str(self.timeout)
-        #if len(oid_str) > self.maxvars:
-        #    _oid_splits = chunks(oid_str, self.maxvars)
-        #else:
-        #    _oid_splits = [oid_str]
-
-        #for _oid_strs in _oid_splits:
         exception_msg, error_indication, error_status = "", "", ""
         try:
-            start_time = time.time()
+           
             error_indication, error_status, error_index, var_binds = cmd_gen.getCmd(
                 self.community_data,
                 self.transport_target,
                 *_oid_strs
             )
-            end_time = time.time()
-            print str(end_time - start_time)
+           
         except Exception, e:
             exception_msg = str(e)
 
         # if error_indication:
-            
         if error_indication and str(error_indication).find("response received before timeout") > 0:
-                self.logger.error('%s: %s', error_indication, self.ip)
-                for oid in oids:
-                    output.append(dict( status="fail",
-                                            origin_oid=oid,
-                                            oid=oid,
-                                            value="",
-                                            message=str(error_indication)))
-
-
-                return dict(status='fail',
-                    message=str(error_indication),
-                    output=output)
-
+                raise Exception(str(error_indication))
+ 
         if error_indication or error_status or exception_msg:
             if len(_oid_strs) > 1:
                 for index,_oid_str in enumerate(_oid_strs):
@@ -252,7 +232,9 @@ class SNMP(object):
                     except Exception, e:
                         _exception_msg = str(e)
 
+                    err_msg = ""
                     if _exception_msg:
+                        err_msg = "%s OID:%s Error Info:%s"%(device_log_info,origin_oid,str(_exception_msg))
                         output.append(dict( status="fail",
                                             origin_oid=origin_oid,
                                             oid=_oid_str,
@@ -260,18 +242,15 @@ class SNMP(object):
                                             message=str(_exception_msg)))
 
                     elif _error_indication:
-                        self.logger.error('%s: %s', _error_indication, self.ip)
+                        err_msg = "%s OID:%s Error Info:%s"%(device_log_info,origin_oid,str(_error_indication))
                         output.append(dict(status="fail",
                                             origin_oid=origin_oid,
                                             oid=_oid_str,
                                             value="",
                                             message=str(_error_indication)))
                     elif _error_status:
-
                         error_msg = _error_status.prettyPrint()
-                        self.logger.error('%s: %s at %s', self.ip, error_msg,
-                                            _error_index and _var_binds[-1][int(_error_index) - 1] or '?')
-
+                        error_msg = '%s: OID:%s Error Info:%s at %s' % (device_log_info,origin_oid,error_msg,_error_index and _var_binds[-1][int(_error_index) - 1] or '?')
                         output.append(dict(
                                             status="fail",
                                             origin_oid=origin_oid,
@@ -284,8 +263,13 @@ class SNMP(object):
                                                 origin_oid=origin_oid,
                                                 oid=str(value[0]),
                                                 value=self.translate(value)))
+                    
+                    if error_msg:
+                        self.logger.error(err_msg)
             else:
+                err_msg = ""
                 if exception_msg:
+                    err_msg = "%s OID:%s Error Info:%s"%(device_log_info,oids[0],str(exception_msg))
                     output.append(dict(status="fail",
                                         origin_oid=oids[0],
                                         oid=_oid_strs[0],
@@ -293,7 +277,8 @@ class SNMP(object):
                                         message=str(exception_msg)))
 
                 elif error_indication:
-                    self.logger.error('%s: %s', error_indication, self.ip)
+                    err_msg = "%s OID:%s Error Info:%s"%(device_log_info,oids[0],str(error_indication))
+                    #self.logger.error('%s: %s', error_indication, self.ip)
                     output.append(dict(
                                         status="fail",
                                         origin_oid=oids[0],
@@ -302,14 +287,15 @@ class SNMP(object):
                                         message=str(error_indication)))
                 elif error_status:
                     error_msg = error_status.prettyPrint()
-                    self.logger.error('%s: %s at %s', self.ip, error_msg,
-                                        error_index and var_binds[-1][int(error_index) - 1] or '?')
+                    error_msg = '%s: OID:%s Error Info:%s at %s' % (device_log_info,oids[0],error_msg,error_index and var_binds[-1][int(error_index) - 1] or '?')
                     output.append(dict(status="fail",
                                         origin_oid=oids[0],
                                         oid=_oid_strs[0],
                                         value="",
                                         message=str(error_msg)))
-
+                
+                if err_msg:
+                    self.logger.error(err_msg)
         else:
             for index,value in enumerate(var_binds):
                 output.append(dict( status="success",

@@ -192,7 +192,11 @@ def __merge_cli(item, deviceinfo_dict,rule_dict):
         #deviceinfo_dict['hostname'] = "crs1000_1"
         #deviceinfo_dict['expect'] = "ssword:,cisco,>,enable,:,cisco123,#"
 
-        deviceinfo_dict['default_commands'] = item['device__ostype__start_default_commands']
+        deviceinfo_dict['start_default_commands'] = item['device__ostype__start_default_commands']
+        deviceinfo_dict['end_default_commands'] = item['device__ostype__end_default_commands']
+        deviceinfo_dict['fail_judges'] = item['device__ostype__fail_judges']
+
+        deviceinfo_dict['prompt'] = item['device__ostype__end_telnet_prompt']
         deviceinfo_dict['timeout'] = item['device__ostype__telnet_timeout']
         deviceinfo_dict['method'] = DevicesConstants.CLI_COLLECTION_DEFAULT_METHOD
 

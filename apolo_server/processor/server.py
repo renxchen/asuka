@@ -25,31 +25,31 @@ class TaskDispatcher(Thread):
     """
     def run(self):
         while True:
-            result = zmq_dispatch.recv_string().split()  # got task request from worker
+            # got task request from worker
+            result = zmq_dispatch.recv_string().split()  
             channel = result[0]
             task_id = None
             if len(result) == 2:
                 task_id = result[1]
-            #tmp_q = task_q[channel]
+            
+            logging.debug('Receive request from %s worker' % channel)
             if channel in "cli snmp":
                 _device_q = device_q[channel]
-
-                logging.debug('Receive request from %s worker' % channel)
                 if _device_q.qsize():
-                    device_id = _device_q.get()
                     device_task_dict = cli_device_task_dict if channel == "cli" else snmp_device_task_dict
+                    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+
+                    device_id = _device_q.get()
                     task_id = device_task_dict[device_id]
                     task = session_mgr.get(task_id)
-                    timer = time.time()
-                    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
                     session_mgr.update(task_id, dict(status='coll_start',coll_start_timestamp=timestamp))
                     zmq_dispatch.send_string(b'%s %s' % (task_id, json.dumps(task)))
                     logging.debug('Sent task %s to %s worker' % (task_id, channel))
             elif channel.startswith("parser"):
-                #session_mgr.update(task_id, dict(status='coll_start',coll_start_timestamp=timestamp))
-                task = session_mgr.get(task_id)
-                zmq_dispatch.send_string(b'%s %s' % (task_id, json.dumps(task)))
-
+                if task_id:
+                    task = session_mgr.get(task_id)
+                    zmq_dispatch.send_string(b'%s %s' % (task_id, json.dumps(task)))
+                    logging.debug('Sent task %s to %s worker' % (task_id, channel))
             else:
                 zmq_dispatch.send_string(b'')
 
@@ -95,19 +95,19 @@ class CommandApiHandler(web.RequestHandler):
                 task = session_mgr.get(task_id)
                 if task["status"] == "coll_queue":
                     session_mgr.update_device(task_id,device_info)
-                continue
+                    continue
     
             if device_id in device_task_dict:
                 task_id = device_task_dict[device_id]
                 task = session_mgr.get(task_id)
-                if task["status"] == "coll_start":
+                if task["status"] != "coll_queue":
                     device_pending_dict[device_id] = device_info
                     
             else:
-
+                # create new task
                 task_id = uuid.uuid4().hex
                 device_task_dict[device_id] = task_id
-                # create new task
+                
                 timer = time.time()
                 timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
                 session_mgr.put(task_id,
@@ -115,15 +115,12 @@ class CommandApiHandler(web.RequestHandler):
                                     device_info=device_info,
                                     timer=timer,
                                     coll_queue_timestamp=timestamp,
-                                    #read=False,
                                     channel=channel,
-                                    #parser_queue=Queue.Queue(),
                                     parser_status="queue"
 
                                     ))
                 
                 session_mgr.init_parser_queue(task_id)
-
                 _device_q.put(device_id)
 
                 # publish the new task to the channel
@@ -138,9 +135,6 @@ class CommandApiHandler(web.RequestHandler):
     
         self.write(json.dumps(result))
         self.finish()
-
-
-
 
 def on_worker_data_in(data):
     
@@ -176,8 +170,6 @@ def on_worker_data_in(data):
         #logging.info('Collection Task %s %s done, status: %s' % (task_id, status))
     elif result_type == "task_result":
 
-        # create new task
-        print "finish?"
         timer = time.time()
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
@@ -185,17 +177,16 @@ def on_worker_data_in(data):
                                          coll_finish_timestamp=timestamp,
                                          coll_result=result))
         
-        #channel = result["channel"]
         device_id = result["device_id"]
         device_pending_dict = cli_device_pending_dict if channel == "cli" else snmp_device_pendding_dict
         device_task_dict = cli_device_task_dict if channel == "cli" else snmp_device_task_dict
 
-        
+
         if device_id in device_task_dict:
             del device_task_dict[device_id]
 
+        # create new task
         if device_id in device_pending_dict:
-            device_info = device_pending_dict[device_id]
             
             if channel not in device_q:
                 device_q[channel] = Queue.Queue()
@@ -203,7 +194,9 @@ def on_worker_data_in(data):
 
             task_id = uuid.uuid4().hex
             device_task_dict[device_id] = task_id
-         
+
+            session_mgr.init_parser_queue(task_id)
+            device_info = device_pending_dict[device_id]
             session_mgr.put(task_id,
                                 dict(status='coll_queue',
                                     device_info=device_info,
@@ -212,15 +205,12 @@ def on_worker_data_in(data):
                                     channel=channel,
                                     parser_status="queue"
                                     ))
-                
-            session_mgr.init_parser_queue(task_id)
-
             _device_q.put(device_id)
             del device_pending_dict[device_id]
 
             zmq_publish.send_string(b'%s task' % channel)
+            logging.info('Publish new task %s to %s' % (task_id, channel))
            
-
     elif result_type == "parser":
         session_mgr.update_parser_result(task_id,result)
 
