@@ -39,11 +39,16 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
         }
     }
     ngOnInit() {
-        this.getOsType();
+        // this.getOsType();
     }
     ngAfterViewInit() {
     }
     public getSNMPCPInfo(id: any) {
+        /**
+        * @brief get snmp info
+        * @author Dan Lv
+        * @date 2018/01/25
+        */
         this.apiPrefix = '/v1';
         let url = '/api_collection_policy/?id=' + id;
         this.httpClient.setUrl(this.apiPrefix);
@@ -70,6 +75,11 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
             });
     }
     public getOsType() {
+        /**
+        * @brief get ostype info
+        * @author Dan Lv
+        * @date 2018/01/25
+        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -88,6 +98,11 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
             });
     }
     public navSNMPEdit() {
+        /**
+        * @brief jump to the current snmp edit page
+        * @author Dan Lv
+        * @date 2018/01/25
+        */
         this.router.navigate(['/index/snmpcpedit'], { queryParams: { 'id': this.cPId } });
     }
 }

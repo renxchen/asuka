@@ -44,10 +44,6 @@ import { DataCollectionLoginComponent } from './dataCollection/dataCollectionLog
 // action policy
 import { ActionPolicyViewComponent } from './actionPolicy/actionPolicyView.component';
 import { ActionPolicyLoginComponent } from './actionPolicy/actionPolicyLogin.component';
-// import {
-//     DataTableViewComponent, FirstStepComponent, SecondComponent,
-//     ThirdStepComponent, FourthStepComponent
-// } from './actionPolicy/dataTableView.backup.component';
 import {DataTableViewComponent} from './actionPolicy/dataTableView.component';
 import { ActionPolicyHistoryComponent } from './actionPolicy/actionPolicyHistory.component';
 import { DataTableLoginComponent } from './actionPolicy/dataTableLogin.component';
@@ -320,8 +316,4 @@ export const entryComponentList: any[] = [
     DataTableDetailComponent,
     // action policy
     ActionPolicyLoginComponent,
-    // FirstStepComponent,
-    // SecondComponent,
-    // ThirdStepComponent,
-    // FourthStepComponent
 ];

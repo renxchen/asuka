@@ -61,7 +61,9 @@ export class DeviceLoginComponent implements OnInit {
             this.filename = file.name;
             this.formData = new FormData();
             this.formData.append('file', file);
-            if (fileType === 'application/vnd.ms-excel') {
+            // if (fileType === 'application/vnd.ms-excel') {
+            if (this.filename.indexOf('.csv') > -1) {
+                console.log(file, fileType);
                 this.uploadFlg = 'csv';
                 this.loginFlg = false;
             } else {
@@ -90,9 +92,9 @@ export class DeviceLoginComponent implements OnInit {
                 this.optId = _.get(res, 'operation_id');
                 if (status && status['status'].toLowerCase() === 'true') {
                     // $('#devLoginTable').trigger('reloadGrid');
+                    this.processbar.hide();
                     this.drawDevLoginTable();
                     this.actionFlg = false;
-                    this.processbar.hide();
                     if (data && data.length > 0) {
                         this.modalRef = this.modalService.show(DeviceErrorTableComponent, this.modalConfigLg);
                         this.modalRef.content.closeMsg = '閉じる';
