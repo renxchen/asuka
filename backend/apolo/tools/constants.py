@@ -254,6 +254,7 @@ SPAN_END = '</span>'
 # device, group and ostype information define
 #########################################
 CSV_TITLE_ERROR = 'The title in csv_flie is wrong, please check'
+CSV_FORMAT_ERROR = 'The type of file is wrong, please check'
 CSV_HOSTNAME_EMPTY = 'Empty Hostname'
 CSV_HOSTNAME_DUPLICATE = 'Duplicate Hostname'
 GROUP_NOT_EXIST = 'There is no result for current query.'
