@@ -88,6 +88,16 @@ class DevicePreViewSet(APIView):
                     os.mkdir(file_dir)
                 path_csv = os.path.abspath(os.path.join(file_dir, str(operation_id) + "_" + filename.name))
                 for f in reader:
+                    if len(f) != 10:
+                        data = {
+                            'data': [],
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.CSV_FORMAT_ERROR
+                            },
+                        }
+                        return api_return(data=data)
                     file_x.append(f)
                     # hostname check
                     if f.get(hostname).strip() != '':
