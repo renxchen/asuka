@@ -395,7 +395,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                 .toJson(this.httpClient.post(url, groups))
                 .subscribe(res => {
                     let status = _.get(res, 'status');
-                    let msg = _.get(status, 'msg');
+                    let msg = _.get(status, 'message');
                     if (status && status['status'].toLowerCase() === 'true') {
                         alert('保存しました。');
                         this.bsModalRef.hide();
