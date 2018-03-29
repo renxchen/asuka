@@ -63,7 +63,6 @@ export class DeviceLoginComponent implements OnInit {
             this.formData.append('file', file);
             // if (fileType === 'application/vnd.ms-excel') {
             if (this.filename.indexOf('.csv') > -1) {
-                console.log(file, fileType);
                 this.uploadFlg = 'csv';
                 this.loginFlg = false;
             } else {
@@ -71,7 +70,11 @@ export class DeviceLoginComponent implements OnInit {
                 this.loginFlg = true;
             }
         } else {
-            this.loginFlg = true;
+            if (this.filename) {
+                this.loginFlg = false;
+            } else {
+                this.loginFlg = true;
+            }
         }
     }
     public uploadFile() {
