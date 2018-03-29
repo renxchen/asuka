@@ -295,7 +295,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             && this.telTimeoutNotNull && this.telTimeoutFlg
             && this.snmpTimeoutNotNull && this.snmpTimeoutFlg
             && this.telPromptNotNull && this.telPromptFlg
-            && this.logRegFlg) {
+            && this.logRegFlg && this.startRegFlg && this.endRegFlg) {
             return true;
         } else {
             return false;
