@@ -33,7 +33,7 @@
                         id="name" 
                         name="name" 
                         [(ngModel)]="name" 
-                        placeholder="半角英数字，記号" 
+                        placeholder="日本語、英数字、記号可" 
                         maxlength="256"
                         autocomplete="off"
                     />
@@ -71,6 +71,7 @@
                 </label>
                 <div class="col-sm-7">
                     <select 
+                        title=""
                         class="form-control" 
                         id="osType" 
                         name="selectedOsType"

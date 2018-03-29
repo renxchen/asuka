@@ -94,6 +94,7 @@ class CollectionValidate(object):
             self.__check_schedule_time(item, now_time)
             self.__check_device_priority(item, item_prioriy_dict, index)
 
+
         for item in self.items:
             priority_key = "%d_%d" % (item["coll_policy_id"], item["device__device_id"])
             if priority_key in item_prioriy_dict and item['valid_status'] and \
@@ -103,6 +104,7 @@ class CollectionValidate(object):
                 if item['valid_status']:
                     valid_items.append(item)
             else:
+
                 item['valid_status'] = False
 
 
@@ -252,7 +254,7 @@ class GetValidItem(CollectionValidate):
         super(GetValidItem, self).__init__()
 
     def valid(self, now_time):
-        self.items = self.get_items()
+        self.items = self.get_items({"policys_groups__status": 1, "schedule__status": 1})
         return self.valid_items(now_time)
 
 
@@ -263,7 +265,7 @@ class GetValidItemByPolicy(CollectionValidate):
     def valid(self, now_time, policy_id):
         self.items = self.get_items({"policys_groups__status": 1, "schedule__status": 1, "status": 1})
         self.valid_items(now_time)
-        return len([item for item in self.items if item['valid_status'] and item['coll_policy_id'] == policy_id])
+        return len([item for item in self.items if item['valid_status'] and item['coll_policy_id'] == int(policy_id)])
 
 
 class GetValidItemByPolicyGroup(CollectionValidate):
@@ -274,7 +276,7 @@ class GetValidItemByPolicyGroup(CollectionValidate):
         self.items = self.get_items({"policys_groups__status": 1, "schedule__status": 1, "status": 1})
         self.valid_items(now_time)
         return len([item for item in self.items if item['valid_status'] and
-                    item['policys_groups__policy_group_id'] == policy_group])
+                    item['policys_groups__policy_group_id'] == int(policy_group)])
 
 
 if __name__ == "__main__":

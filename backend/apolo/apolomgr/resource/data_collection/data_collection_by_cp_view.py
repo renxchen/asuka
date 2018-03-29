@@ -49,7 +49,7 @@ class DataCollectionByCPViewSet(viewsets.ViewSet):
         else:
             response_json_data = Tool.get_data_from_collection_server()
             arry = []
-            for one_recoder in response_json_data['items']:
+            for one_recoder in response_json_data:
                 if device_name:
                     if device_name in one_recoder['device_name']:
                         isFilter = True

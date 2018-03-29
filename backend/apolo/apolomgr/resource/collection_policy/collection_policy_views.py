@@ -26,6 +26,7 @@ from django.db import transaction
 import time
 import requests
 import simplejson as json
+from django.db.models import Q
 
 
 class CollPolicyViewSet(viewsets.ViewSet):
@@ -379,7 +380,25 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     'snmp_oid': self.snmp_oid,
                     'value_type': self.value_type,
                 }
-                self.execute_ing = Tool().get_policy_status(int(id))
+                # if self.name is not '':
+                #     get_name_from_cp = self.get_cp(**{'name': self.name})
+                #     if get_name_from_cp is not False:
+                #         data = {
+                #             constants.STATUS: {
+                #                 constants.STATUS: constants.FALSE,
+                #                 constants.MESSAGE: constants.COLLECTION_POLICY_NAME_DUPLICATE
+                #             }
+                #         }
+                #         return api_return(data=data)
+                if len(CollPolicy.objects.filter(~Q(coll_policy_id=self.id), name=self.name)):
+                    data = {
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.COLLECTION_POLICY_NAME_DUPLICATE
+                        }
+                    }
+                    return api_return(data=data)
+                self.execute_ing = Tool().get_policy_status(int(self.id))
                 if self.execute_ing:
                     data = {
                         'new_token': self.new_token,
@@ -424,13 +443,13 @@ class CollPolicyViewSet(viewsets.ViewSet):
         @return data: the status of whether deleted successful
         """
         try:
-            self.execute_ing = Tool().get_policy_status(int(id))
             with transaction.atomic():
                 kwargs = {'coll_policy_id': self.id}
                 collection_policy_in_cp = self.get_cp(**kwargs)
                 cp_rule_tree = self.get_tree_from_coll_policy_rule_tree(**kwargs)
                 cp_cli_rule = self.get_tree_from_coll_policy_cli_rule(**kwargs)
                 pg = self.get_cp_from_policys_groups(**{'policy_id': self.id})
+                self.execute_ing = Tool().get_policy_status(int(self.id))
                 if self.execute_ing:
                     data = {
                         'new_token': self.new_token,

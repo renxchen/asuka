@@ -24,6 +24,7 @@ import time
 from django.db import transaction
 import simplejson as json
 import requests
+from django.db.models import Q
 
 
 class CollPolicyGroupViewSet(viewsets.ViewSet):
@@ -346,7 +347,7 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                 }
                 if self.name is not '':
                     get_name_from_cpg = self.get_cp_group(**{'name': self.name})
-                    if get_name_from_cpg is False:
+                    if get_name_from_cpg is not False:
                         data = {
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
@@ -409,6 +410,24 @@ class CollPolicyGroupViewSet(viewsets.ViewSet):
                     'desc': self.desc,
                     'ostypeid': self.ostype,
                 }
+                # if self.name is not '':
+                #     get_name_from_cpg = self.get_cp_group(**{'name': self.name})
+                #     if get_name_from_cpg is not False:
+                #         data = {
+                #             constants.STATUS: {
+                #                 constants.STATUS: constants.FALSE,
+                #                 constants.MESSAGE: constants.COLLECTION_POLICY_GROUP_NAME_DUPLICATE
+                #             }
+                #         }
+                #         return api_return(data=data)
+                if len(CollPolicyGroups.objects.filter(~Q(policy_group_id=self.id), name=self.name)):
+                    data = {
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.COLLECTION_POLICY_GROUP_NAME_DUPLICATE
+                        }
+                    }
+                    return api_return(data=data)
                 # collection policy group is running, just name, desc and on/off in table can modify.
                 verify_result = self.verify_column(self.id)
                 if not verify_result['status']:

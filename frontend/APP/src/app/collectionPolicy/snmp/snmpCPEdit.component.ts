@@ -207,7 +207,7 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                         } else {
                             // alert(msg);
                             this.modalMsg = msg;
-                            this.closeMsg = '一覧へ戻る';
+                            this.closeMsg = '閉じる';
                             this.showAlertModal(this.modalMsg, this.closeMsg);
                         }
                     }

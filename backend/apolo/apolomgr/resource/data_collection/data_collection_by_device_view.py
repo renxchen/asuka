@@ -75,9 +75,9 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
                 policys_groups_id_queryset = PolicysGroups.objects.filter(policy=coll_policy_id,
                                                               policy_group=policy_group_id)
 
-
                 with transaction.atomic():
                     for obj in policys_groups_id_queryset:
+                        print device_id, obj.policys_groups_id,status,obj.policy
                         Items.objects.filter(device=device_id,
                                              coll_policy=obj.policy,
                                              policys_groups=obj.policys_groups_id).update(status=status)
@@ -100,17 +100,27 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
         response_json_data = Tool.get_data_from_collection_server()
         arry = []
         cp_group_line_rowspan_dict = dict()
+        cp_priority_rowspan_dict = dict()
         device_line_rowspan = 0
         # device_id = 1
         table_dict = dict()
-        for one_recoder in response_json_data['items']:
+        for one_recoder in response_json_data:
             if one_recoder['device_id'] == int(device_id):
                 device_line_rowspan += 1
                 cp_group_name = one_recoder['policy_group_name']
+                cp_priority = Tool.set_priority_mapping(one_recoder['priority'])
                 if cp_group_line_rowspan_dict.has_key(cp_group_name):
                     cp_group_line_rowspan_dict[cp_group_name] += 1
+                    if cp_priority_rowspan_dict[cp_group_name].has_key(cp_priority):
+                        cp_priority_rowspan_dict[cp_group_name][cp_priority] +=1
+                    else:
+
+                        cp_priority_rowspan_dict[cp_group_name].update({cp_priority: 1})
                 else:
                     cp_group_line_rowspan_dict.update({cp_group_name: 1})
+                    cp_priority_rowspan_dict.update({cp_group_name: {cp_priority: 1}})
+
+                print cp_priority_rowspan_dict,cp_priority_rowspan_dict
 
                 if table_dict.has_key(cp_group_name):
                     table_dict[cp_group_name].append(
@@ -124,9 +134,6 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
                             'priority': Tool.set_priority_mapping(one_recoder['priority']),
                             'policy': '{} {}'.format(one_recoder['policy_name'], one_recoder['exec_interval']),
                             'attr': {
-                                'device': {
-                                    'rowspan': None
-                                },
                                 'cpGroup': {
                                     'rowspan': None
                                 },
@@ -146,9 +153,6 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
                         'priority': Tool.set_priority_mapping(one_recoder['priority']),
                         'policy': '{} {}'.format(one_recoder['policy_name'], one_recoder['exec_interval']),
                         'attr': {
-                            'device': {
-                                'rowspan': None
-                            },
                             'cpGroup': {
                                 'rowspan': None
                             },
@@ -157,16 +161,16 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
                             }
                         }
                     }]
-        is_the_first_device = True
         for k, v in table_dict.items():
             for recoder in v:
-                if is_the_first_device:
-                    is_the_first_device = False
-                    recoder['attr']['device']['rowspan'] = device_line_rowspan
-                if cp_group_line_rowspan_dict.has_key(k):
-                    recoder['attr']['cpGroup']['rowspan'] = cp_group_line_rowspan_dict[k]
-                    recoder['attr']['priority']['rowspan'] = cp_group_line_rowspan_dict[k]
-                    del cp_group_line_rowspan_dict[k]
+                cpg_name = recoder['cpGroup']
+                cp_priority = recoder['priority']
+                if cp_group_line_rowspan_dict.has_key(cpg_name):
+                    recoder['attr']['cpGroup']['rowspan'] = cp_group_line_rowspan_dict[cpg_name]
+                    del cp_group_line_rowspan_dict[cpg_name]
+                if cp_priority_rowspan_dict[cpg_name].has_key(cp_priority):
+                    recoder['attr']['priority']['rowspan'] = cp_priority_rowspan_dict[cpg_name][cp_priority]
+                    del cp_priority_rowspan_dict[cpg_name][cp_priority]
                 arry.append(recoder)
         return arry
 
