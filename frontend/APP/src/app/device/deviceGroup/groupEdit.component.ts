@@ -104,7 +104,7 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
         let url = '/api_device_groups/';
         let group: any = {};
         if (this.doCheck()) {
-            group['group_id'] = this.id;
+            group['group_id'] = parseInt(this.id, 0);
             group['name'] = this.name;
             group['ostype_id'] = this.selectedOsType;
             group['desc'] = this.desc;

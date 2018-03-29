@@ -281,7 +281,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         }
         this.telPromptNotNull = Validator.notNullCheck(this.telPrompt);
         if (this.telPromptNotNull) {
-            this.telPromptFlg = Validator.regTest(this.telPrompt);
+            this.telPromptFlg = Validator.halfWidthReg(this.telPrompt);
         }
         this.telTimeoutNotNull = Validator.notNullCheck(this.telTimeout);
         if (this.telTimeoutNotNull) {
@@ -315,11 +315,11 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
-                if (!Validator.halfWidthReg(uniqData[i].name)) {
-                    uniqData[i].startRegFlg = false;
-                    regFlgTmp = false;
-                } else {
+                if (Validator.halfWidthReg(uniqData[i].name)) {
                     uniqData[i].startRegFlg = true;
+                } else {
+                    regFlgTmp = false;
+                    uniqData[i].startRegFlg = false;
                 }
             }
             uniqData[len - 1]['startCmdFlg'] = false;
@@ -343,11 +343,11 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
-                if (!Validator.halfWidthReg(uniqData[i].name)) {
-                    uniqData[i].endRegFlg = false;
-                    regFlgTmp = false;
-                } else {
+                if (Validator.halfWidthReg(uniqData[i].name)) {
                     uniqData[i].endRegFlg = true;
+                } else {
+                    regFlgTmp = false;
+                    uniqData[i].endRegFlg = false;
                 }
             }
             uniqData[len - 1]['endCmdFlg'] = false;
@@ -370,11 +370,11 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
-                if (!Validator.regTest(uniqData[i].name)) {
+                if (Validator.halfWidthReg(uniqData[i].name)) {
+                    uniqData[i].logRegFlg = true;
+                } else {
                     uniqData[i].logRegFlg = false;
                     regFlgTmp = false;
-                } else {
-                    uniqData[i].logRegFlg = true;
                 }
             }
             uniqData[len - 1]['logFlg'] = false;
