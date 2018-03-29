@@ -25,8 +25,8 @@
                     <input 
                         type="text" 
                         class="form-control" 
-                        id="name" 
-                        name="name"
+                        id="id_{{name}}" 
+                        name="os_{{name}}"
                         maxlength="30"
                         placeholder="日本語、英数字、記号可"
                         [(ngModel)]="name"
@@ -62,7 +62,7 @@
                 </label>
                 <div class="col-sm-8">
                     <div *ngFor="let startCmd of startCmds" style="width:100%">
-                        <div class="multi-input" [ngClass]="{'has-warning': !startCmd.cmdRegFlg}">
+                        <div class="multi-input" [ngClass]="{'has-warning': !startCmd.startRegFlg}">
                             <input type="text" 
                                 class="form-control" 
                                 id="start_id_{{startCmd.id}}"
@@ -102,7 +102,7 @@
                 </label>
                 <div class="col-sm-8">
                     <div *ngFor="let endCmd of endCmds" style="width:100%">
-                        <div class="multi-input" [ngClass]="{'has-warning': !endCmd.cmdRegFlg}">
+                        <div class="multi-input" [ngClass]="{'has-warning': !endCmd.endRegFlg}">
                             <input type="text" 
                                 class="form-control" 
                                 id="end_id_{{endCmd.id}}"
@@ -136,12 +136,12 @@
                 <label
                     for="log"
                     class="col-sm-4 control-label"
-                    [ngClass]="{'text-warning': !regFlg}"
+                    [ngClass]="{'text-warning': !logRegFlg}"
                 >
                     CLIエラー文字列
                 </label>
                 <div class="col-sm-8">
-                    <div *ngFor="let log of logs" style="width:100%">
+                    <div *ngFor="let log of logs" style="width:100%" >
                         <div class="multi-input" [ngClass]="{'has-warning': !log.logRegFlg}">
                             <input 
                                 type="text" 
@@ -260,7 +260,7 @@
             <div class="col-sm-12 text-warning" *ngIf='!endRegFlg'>
                 CLI情報取得完了後デフォルト実行コマンドは半角英数字と記号のみで入力してください。
             </div> 
-            <div class="col-sm-12 text-warning" *ngIf='!regFlg'>
+            <div class="col-sm-12 text-warning" *ngIf='!logRegFlg'>
                 CLIエラー文字列は半角英数字と記号のみで入力してください。
             </div> 
             <div class="col-sm-12 text-warning" *ngIf='!telPromptNotNull'>

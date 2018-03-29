@@ -61,8 +61,8 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.selCPName = 'null';
         this.selExecInterval = 'null';
-        // this.selExpiDurantion = '1';
         this.getOsType();
+        // this.selExpiDurantion = '1';
         // this.getCPNames();
     }
     ngAfterViewInit() {
@@ -71,6 +71,11 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         }, 0);
     }
     public getOsType() {
+        /**
+        * @brief get ostype data
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -245,6 +250,13 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         return -1;
     }
     public moreInfoTable(data: any) {
+         /**
+        * @brief get data and display it in the grid
+        * @param data: cell value
+        * @pre called when data is changed
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
         _t.cpgActionGrid$ = $('#moreInfoTable').jqGrid({
             datatype: 'local',
@@ -325,6 +337,11 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         $('#moreInfoTable').jqGrid({ searchOnEnter: true, defaultSearch: 'cn' });
     }
     public execIntervalFomatter(id: any) {
+        /**
+        * @brief format data
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         if (id.toString() === '60') {
             return '1分';
         } else if (id.toString() === '300') {
@@ -340,11 +357,17 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         }
     }
     public doCheck(): boolean {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            // this.nameFlg = Validator.fullWithoutSpecial(this.name);
-            this.nameFlg = Validator.halfWithoutSpecial(this.name);
+            this.nameFlg = Validator.fullWithoutSpecial(this.name);
+            // this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         if (this.nameNotNull && this.nameFlg && this.selectedOsType) {
             return true;
@@ -353,6 +376,12 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         }
     }
     public cPGLogin() {
+        /**
+        * @brief save data
+        * @post send the returned data to the 'cpgView' page and close popup if save successly
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.apiPrefix = '/v1';
         let groups: any = {};
         if (this.doCheck()) {
@@ -360,9 +389,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             groups['name'] = this.name;
             groups['ostype_name'] = this.selectedOsType;
             groups['desc'] = this.desc;
-            // console.log(this.cpList, groups);
             let url = '/api_collection_policy_group/';
-            // console.log(url + '---' + groups);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.post(url, groups))
@@ -390,7 +417,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         /**
         * @brief show modal dialog
         * @author Dan Lv
-        * @date 2018/01/25
+        * @date 2018/03/13
         */
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;

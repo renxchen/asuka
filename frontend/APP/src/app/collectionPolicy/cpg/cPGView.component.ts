@@ -48,6 +48,12 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         this.drawCPGTable();
     }
     public drawCPGTable() {
+        /**
+        * @brief get data and display it in the grid
+        * @pre called after the Dom has been ready
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
         this.cpgTable$ = $('#cpgTable').jqGrid({
             url: '/v1/api_collection_policy_group/',
@@ -109,6 +115,16 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
     }
     // btn formatter
     public formatterBtn(cellvalue, options, rowObject) {
+        /**
+         * @brief format the action buttons
+         * @param cellvalue: value of the cell;
+                  options:includes attributes such as RowId,colModel;
+                  rowObject:json data of the row
+         * @pre called during calling the function of drawCPTable
+         * @return renturn action buttons with rowId
+         * @author Dan Lv
+         * @date 2018/03/13
+         */
         return '<button class="btn btn-xs btn-primary detail" id='
             + rowObject['policy_group_id'] + '><i class="fa fa-info-circle"></i> 確認</button>&nbsp;'
             + '<button class="btn btn-xs btn-success edit" id='
@@ -124,41 +140,18 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             return cellvalue;
         }
     }
-    public checkCPGRun(id: any): any {
-        this.apiPrefix = '/v1';
-        let url = '/api_collection_policy_group/?id=';
-        this.httpClient.setUrl(this.apiPrefix);
-        this.httpClient
-            .toJson(this.httpClient.get(url + id)).subscribe(res => {
-                let status = _.get(res, 'status');
-                let msg = _.get(status, 'message');
-                let groupData = _.get(res, 'policy_group_data');
-                let groupsData = _.get(res, 'policys_groups_data');
-                let data: any = {};
-                if (status && status['status'].toLowerCase() === 'true') {
-                    if (groupData) {
-                        data['groupData'] = groupData;
-                    }
-                    if (groupsData) {
-                        data['groupsData'] = groupsData;
-                    }
-                    if (msg === 'POLICY_GROUP_EXIST_IN_SCHEDULE') {
-                        data['operation'] = false;
-                    } else {
-                        data['operation'] = true;
-                    }
-                }
-                return data;
-            });
-    }
     public detailBtn() {
+        /**
+        * @brief get the collection policy group id and jump to detail page
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
         _t.apiPrefix = '/v1';
         let url = '/api_collection_policy_group/?id=';
         $('.detail').click(function (event) {
             let detaiId = $(event)[0].target.id;
             if (detaiId) {
-                console.log(detaiId);
                 _t.router.navigate(['/index/cpgdetail'],
                     { queryParams: { 'id': detaiId } });
             }
@@ -166,6 +159,11 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         });
     }
     public editBtn() {
+        /**
+        * @brief get the collection policy group id and jump to edit page
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
         _t.apiPrefix = '/v1';
         let url = '/api_collection_policy_group/?id=';
@@ -174,21 +172,17 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             if (editId) {
                 _t.router.navigate(['/index/cpgedit'],
                     { queryParams: { 'id': editId } });
-                // _t.modalRef = _t.modalService.show(CPGActionComponent, _t.modalConfig);
-                // _t.modalRef.content.id = id;
-                // _t.modalRef.content.actionType = 'edit';
-                // let cpgEdit$ = _t.modalService.onHidden.subscribe(o => {
-                //     if (o) {
-                //         _t.cpgTable$.GridUnload();
-                //         _t.drawCPGTable();
-                //     }
-                //     _t.unsubscribe(cpgEdit$);
-                // });
             }
             event.stopPropagation();
         });
     }
     public deleteBtn() {
+        /**
+        * @brief get the collection policy group id and delete this collection policy group
+        * @post reload cpgTable if delete sucessfully
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
         _t.apiPrefix = '/v1';
         let url = '/api_collection_policy_group/?id=';
@@ -215,7 +209,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                                     // $('#cpgTable').jqGrid().trigger('reloadGrid');
                                 });
                             } else {
-                                // check this cp occupation
                                 if (msg) {
                                     this.modalMsg = msg;
                                     this.closeMsg = '閉じる';
@@ -235,20 +228,30 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             event.stopPropagation();
         });
     }
-    public cpLogin() {
+    public cpgLogin() {
+        /**
+        * @brief show cpgLogin Popup
+        * @post reload cpgTable after receiving the returned data
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.modalRef = this.modalService.show(CPGLoginComponent, this.modalConfig);
-        this.modalRef.content.actionType = 'create';
         let cpgLogin$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
                 // this.cpgTable$.GridUnload();
+                // this.drawCPGTable();
                 $('#cpgTable').jqGrid('clearGridData');
                 $('#cpgTable').trigger('reloadGrid');
-                // this.drawCPGTable();
             }
             this.unsubscribe(cpgLogin$);
         });
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
+        /**
+        * @brief show modal dialog
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;

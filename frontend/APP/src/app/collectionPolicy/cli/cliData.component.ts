@@ -1,3 +1,10 @@
+/**
+* @author: Dan Lv
+* @contact: danlv@cisco.com
+* @file: cliData.component.ts
+* @time: 2018/03/14
+* @desc: create and edit data rule;
+*/
 import { Component, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Validator } from '../../../components/validation/validation';
@@ -27,7 +34,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     xOffset: any;
     yOffset: any;
     extractKey: any;
-    lineNums: any;
     selectedRtnType: any;
     otherChar: any;
     // Flg
@@ -40,19 +46,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     keyStrFlg: Boolean = true;
     keyUnqFlg: Boolean = true;
     extractKeyFlg: Boolean = true;
-    commandNotNull: Boolean = true;
-    commandFlg: Boolean = true;
-    commandUnqFlg: Boolean = true;
-    lineNumsNotNull: Boolean = true;
-    lineNumsFlg: Boolean = true;
-    lineNumsUnqFlg: Boolean = true;
     xOffsetNotNull: Boolean = true;
     xOffsetNotNullB: Boolean = true;
     xOffsetFlg: Boolean = true;
     xOffsetFlgB: Boolean = true;
     yOffsetNotNull: Boolean = true;
     yOffsetFlg: Boolean = true;
-    extKeyNotNull: Boolean = true;
     delBtn: Boolean = false;
     otherCharFlg: Boolean = true;
     otherCharRegFlg: Boolean = true;
@@ -73,9 +72,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {
         setTimeout(() => {
             if (typeof (this.info) !== 'undefined') {
-                // console.log('this', this.info);
                 this.cpId = this.info['cPId'];
-                // console.log('cpid', this.info);
                 this.ruleType = this.info['ruleType'];
                 this.actionType = this.info['actionType'];
                 if (this.actionType === 'edit') {
@@ -92,6 +89,11 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         return this.httpClient.toJson(this.httpClient.get(url));
     }
     public getDataRule(cpId: any, ruleId: any) {
+         /**
+        * @brief get rule info
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.commInfo(cpId, ruleId).subscribe(res => {
             this.processFlg = _.get(res, 'is_processing');
             this.lockFlg = _.get(res, 'is_locked');
@@ -106,14 +108,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                     this.selSplitChar = _.get(data, 'split_char');
                     this.xOffset = _.get(data, 'x_offset');
                     this.yOffset = _.get(data, 'y_offset');
-                    // this.lineNums = _.get(data, 'line_nums');
                     this.extractKey = _.get(data, 'extract_key');
                     this.selectedRtnType = _.get(data, 'value_type');
                     this.otherChar = _.get(data, 'other_char');
                 }
             }
             if (isUsed || this.info['delFlg']) {
-                console.log(33);
                 this.delBtn = false;
             } else {
                 this.delBtn = true;
@@ -121,6 +121,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         });
     }
     public dataRuleACheck() {
+         /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.uniqueFlg = true;
         this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
@@ -140,12 +146,16 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.xOffsetFlg = Validator.xOffsetCheck(this.xOffset.toString());
         }
         if (this.selSplitChar === '3') {
-            if (this.otherChar) {
-                this.otherCharFlg = true;
+            // if (this.otherChar) {
+            //     this.otherCharFlg = true;
+            //     this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
+            // } else {
+            //     this.otherCharFlg = false;
+            //     this.otherCharRegFlg = true;
+            // }
+            this.otherCharFlg = Validator.notNullCheck(this.otherChar);
+            if (this.otherCharFlg) {
                 this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
-            } else {
-                this.otherCharFlg = false;
-                this.otherCharRegFlg = true;
             }
         }
         if (this.extractKey) {
@@ -153,7 +163,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         } else {
             this.extractKeyFlg = true;
         }
-        // this.yOffsetFlg = Number.isInteger(this.yOffset);
         if (this.nameNotNull && this.nameFlg
             && this.keyStrNotNull && this.keyStrFlg
             && this.mrkStrNotNull && this.mrkStrFlg
@@ -166,6 +175,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
     }
     public dataRuleBCheck() {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.uniqueFlg = true;
         this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
@@ -189,12 +204,16 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.yOffsetFlg = Validator.offsetCheck(this.yOffset);
         }
         if (this.selSplitChar === '3') {
-            if (this.otherChar) {
-                this.otherCharFlg = true;
+            // if (this.otherChar) {
+            //     this.otherCharFlg = true;
+            //     this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
+            // } else {
+            //     this.otherCharFlg = false;
+            //     this.otherCharRegFlg = true;
+            // }
+            this.otherCharFlg = Validator.notNullCheck(this.otherChar);
+            if (this.otherCharFlg) {
                 this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
-            } else {
-                this.otherCharFlg = false;
-                this.otherCharRegFlg = true;
             }
         }
         if (this.extractKey) {
@@ -215,6 +234,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
     }
     public dataRuleCCheck() {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.uniqueFlg = true;
         this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
@@ -239,6 +264,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
     }
     // backend feedback:data valid error in saving the rule
     public dataRuleDCheck() {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.uniqueFlg = true;
         this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
@@ -257,6 +288,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
     }
     public dataRuleECheck() {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.uniqueFlg = true;
         this.keyUnqFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
@@ -275,11 +312,15 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
     }
     public dataRulePrepare() {
+        /**
+        * @brief Collect data from the page
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         let sendRuleInfo: any = {};
         let rule_info: any = {};
         if (this.ruleType === 'data_rule_1') {
             if (this.dataRuleACheck()) {
-                // console.log('b1');
                 rule_info['coll_policy'] = this.cpId;
                 rule_info['rule_type'] = this.ruleType;
                 rule_info['name'] = this.name;
@@ -291,12 +332,10 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                 rule_info['extract_key'] = this.extractKey;
                 rule_info['value_type'] = this.selectedRtnType;
                 rule_info['other_char'] = this.otherChar;
-                // console.log('rule_info', rule_info);
                 sendRuleInfo['rule_info'] = rule_info;
                 return sendRuleInfo;
             }
         } else if (this.ruleType === 'data_rule_2') {
-            // console.log(12);
             if (this.dataRuleBCheck()) {
                 rule_info['coll_policy'] = this.cpId;
                 rule_info['rule_type'] = this.ruleType;
@@ -323,7 +362,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
                 rule_info['key_str'] = this.keyStr;
                 rule_info['value_type'] = this.selectedRtnType;
                 sendRuleInfo['rule_info'] = rule_info;
-                // console.log('da3', sendRuleInfo);
                 return sendRuleInfo;
             }
         } else if (this.ruleType === 'data_rule_4') {
@@ -352,18 +390,22 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         return '';
     }
     public saveRule() {
+        /**
+        * @brief save data
+        * @post send the returned data to the 'cpEdit' page and close popup if save successly
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.apiPrefix = '/v1';
         let id = this.ruleId;
         let editUrl = '/api_policy_tree_rule/?rule_id=' + id;
         let createUrl = '/api_policy_tree_rule/';
         this.httpClient.setUrl(this.apiPrefix);
         let sendInfo = this.dataRulePrepare();
-        // console.log('sendInfo', sendInfo);
         if (this.actionType === 'create' && sendInfo !== '') {
             this.httpClient
                 .toJson(this.httpClient.post(createUrl, sendInfo))
                 .subscribe(res => {
-                    // console.log(res);
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
@@ -399,7 +441,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.httpClient
                 .toJson(this.httpClient.put(editUrl, sendInfo))
                 .subscribe(res => {
-                    // console.log(res);
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
@@ -433,6 +474,12 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         }
     }
     public deleteRule() {
+        /**
+        * @brief delete the data rule if it isn't in the database or on the policy tree.
+        * @post send the returned data to the 'cpEdit' page and close popup if delete successly
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         let alt = confirm('このルールを削除します。よろしいですか？');
         this.apiPrefix = '/v1';
         let delUrl = '/api_policy_tree_rule/?rule_id=' + this.ruleId + '&coll_policy_id=' + this.cpId;
