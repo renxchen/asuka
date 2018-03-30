@@ -67,12 +67,6 @@ urlpatterns = [
     url(r'^v1/api_device/', resource_api.api_device),
     url(r'^v1/api_device_pre/', resource_api.api_device_pre),
     # device view related end
-
-    # # collection test start
-    # url(r'^v1/api_cli_collection_test/', resource_api.api_cli_collection_test),
-    # url(r'^v1/api_snmp_collection_test/', resource_api.api_snmp_collection_test),
-    # # collection test end
-
     # url(r'^users/$', user_list, name='user-list'),
     # url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
@@ -83,3 +77,12 @@ urlpatterns += [
     url(r'^api-token-refresh/', refresh_jwt_token),
     url(r'^api-token-verify/', verify_jwt_token),
 ]
+# collection test start
+import platform
+
+if 'WINDOWS' not in platform.system().upper():
+    urlpatterns += [
+        url(r'^v1/api_cli_collection_test/', resource_api.api_cli_collection_test),
+        url(r'^v1/api_snmp_collection_test/', resource_api.api_snmp_collection_test),
+    ]
+# collection test end
