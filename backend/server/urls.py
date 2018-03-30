@@ -67,6 +67,12 @@ urlpatterns = [
     url(r'^v1/api_device/', resource_api.api_device),
     url(r'^v1/api_device_pre/', resource_api.api_device_pre),
     # device view related end
+
+    # # collection test start
+    # url(r'^v1/api_cli_collection_test/', resource_api.api_cli_collection_test),
+    # url(r'^v1/api_snmp_collection_test/', resource_api.api_snmp_collection_test),
+    # # collection test end
+
     # url(r'^users/$', user_list, name='user-list'),
     # url(r'^i18n/', include('django.conf.urls.i18n')),
 ]
