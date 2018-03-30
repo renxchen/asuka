@@ -291,9 +291,8 @@ class DevicesViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
 
     def post(self):
         """@brief
@@ -362,7 +361,7 @@ class DevicesViewSet(viewsets.ViewSet):
                                     'status': 1,
                                 }
                                 serializer = DevicesSerializer(current, data=data, partial=True)
-                                if serializer.is_valid():
+                                if serializer.is_valid(Exception):
                                     serializer.save(ostype_id=tmp.ostype.ostypeid)
                                 else:
                                     print serializer.errors
@@ -448,9 +447,8 @@ class DevicesViewSet(viewsets.ViewSet):
                 return api_return(data=data)
         except Exception, e:
             transaction.rollback()
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
 
     def put(self):
         """@brief
@@ -473,7 +471,7 @@ class DevicesViewSet(viewsets.ViewSet):
                         'telnet_status': telnet_res,
                     }
                     serializer = DevicesSerializer(device_pre, data=data, partial=True)
-                    if serializer.is_valid():
+                    if serializer.is_valid(Exception):
                         serializer.save()
                 # snmp test
                 pool = ThreadPool(CLI_THREADPOOL_SIZE)
@@ -488,7 +486,7 @@ class DevicesViewSet(viewsets.ViewSet):
                         'snmp_status': snmp_res,
                     }
                     serializer = DevicesSerializer(device_pre, data=data, partial=True)
-                    if serializer.is_valid():
+                    if serializer.is_valid(Exception):
                         serializer.save()
                     data_return.append(serializer.data)
                 data = {
@@ -502,6 +500,6 @@ class DevicesViewSet(viewsets.ViewSet):
                 return api_return(data=data)
         except Exception, e:
             transaction.rollback()
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
+

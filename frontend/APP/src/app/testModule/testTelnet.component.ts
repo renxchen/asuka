@@ -11,9 +11,7 @@ declare var $: any;
 })
 export class TestTelnetComponent implements OnInit, AfterViewInit {
 
-    apiPrefix: any = '/v1';
     cliParameter1: string;
-    snmpParameter1: string;
 
 
     constructor(
@@ -23,7 +21,6 @@ export class TestTelnetComponent implements OnInit, AfterViewInit {
     ) {}
 
     ngOnInit(){
-        // this.httpClient.setUrl(this.apiPrefix);
     }
 
     ngAfterViewInit() {
@@ -31,8 +28,6 @@ export class TestTelnetComponent implements OnInit, AfterViewInit {
     }
     submitCli(){
         let url_cli = 'http://10.79.148.107:1111/v1/api_cli_collection_test/';
-
-
         // this.testTelnetService.sendRequest(eval("("+this.cliParameter1+")"))
         //       .subscribe(res => {
         //        console.log(res);
@@ -67,23 +62,6 @@ export class TestTelnetComponent implements OnInit, AfterViewInit {
 
           });
 
-
-
-    }
-
-    submitSnmp(){
-        let url_snmp = 'http://10.79.148.107:1111/v1/api_snmp_collection_test/';
-        $.ajax({
-            url: url_snmp,
-            type: 'post',
-            dataType: 'json',
-            data: {'device_info': eval("("+this.snmpParameter1+")")}
-          }).done(function (res) {
-              console.log(res);
-              $('#result3').html(res["data"]["data"]);
-              $('#result4').html(res["data"]["log"]);
-
-          });
     }
 
 
