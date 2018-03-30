@@ -11,7 +11,6 @@
 """
 import traceback
 from rest_framework import viewsets
-from django.utils.translation import gettext
 from django.core.paginator import Paginator
 from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
@@ -26,6 +25,7 @@ from django.db.models import *
 import sys
 from backend.apolo.apolomgr.resource.action_policy.mem_cache_trigger_and_trigger_detial import \
     MemCacheTriggerTriggerDetail
+
 # from apolo_server.processor.db_units.memcached_helper import TriggerMemCache
 
 reload(sys)
@@ -53,6 +53,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         self.action_policy_name_get_put_delete = views_helper.get_request_value(self.request, 'name_get_put_delete',
                                                                                 'GET')
         self.action_policy_name_for_search = views_helper.get_request_value(self.request, 'name_for_search', method)
+        self.action_policy_column_for_search = views_helper.get_request_value(self.request, 'column_for_search', method)
         self.device_group_name_for_search = views_helper.get_request_value(self.request, 'device_group_name_for_search',
                                                                            method)
         self.coll_policy_group_name_for_search = views_helper.get_request_value(self.request,
@@ -944,6 +945,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             'critical_priority': self.critical_priority,
             'column_a': self.column_a,
             'column_b': self.column_b,
+            'column': self.action_policy_column_for_search,
             'device_group': self.device_group_name_for_search,
             'coll_policy_group': self.coll_policy_group_name_for_search,
             'major_priority': self.major_priority,
@@ -982,6 +984,12 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 continue
             if search_data['desc'] and search_data['desc'] not in desc:
                 continue
+            if search_data['coll_policy_group'] and search_data['coll_policy_group'] not in coll_policy_group:
+                continue
+            if search_data['device_group'] and search_data['device_group'] not in device_group:
+                continue
+            if search_data['column'] and search_data['column'] not in column:
+                continue
             search_sort_data['name'] = name
             search_sort_data['trigger_type'] = trigger_type
             search_sort_data['column'] = column
@@ -994,7 +1002,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             search_sort_data['minor_priority'] = minor_priority
             search_sort_data['desc'] = desc
             result.append(search_sort_data.copy())
-        sort_by_list = ['name', 'trigger_type', 'critical_priority', 'major_priority', 'minor_priority', 'desc']
+        sort_by_list = ['name', 'trigger_type', 'critical_priority', 'major_priority', 'minor_priority', 'desc',
+                        'device_group', 'coll_policy_group', 'column']
         if self.sort_by and self.sort_by in sort_by_list:
             if self.order:
                 # True: asc, False: desc
