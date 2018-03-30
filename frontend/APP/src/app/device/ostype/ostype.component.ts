@@ -198,7 +198,9 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                             _t.closeMsg = '閉じる';
                             _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                             $('#modalButton').on('click', function () {
-                                $('#ostypeTable').jqGrid().trigger('reloadGrid');
+                                // $('#ostypeTable').jqGrid().trigger('reloadGrid');
+                                $('#ostypeTable').jqGrid('clearGridData');
+                                $('#ostypeTable').trigger('reloadGrid');
                             });
                         } else {
                             // check this ostype occupation, check with backend

@@ -257,7 +257,9 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                                 this.closeMsg = '閉じる';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
                                 $('#modalButton').on('click', function () {
-                                    $('#cpTable').jqGrid().trigger('reloadGrid');
+                                    // $('#cpTable').jqGrid().trigger('reloadGrid');
+                                    $('#cpTable').jqGrid('clearGridData');
+                                    $('#cpTable').trigger('reloadGrid');
                                 });
                             } else {
                                 if (msg) {
