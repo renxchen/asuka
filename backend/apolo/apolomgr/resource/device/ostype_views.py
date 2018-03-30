@@ -62,8 +62,6 @@ class OsTypeViewSet(viewsets.ViewSet):
             ostype_info = Ostype.objects.get(**kwargs)
             return ostype_info
         except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
             return exception_handler(e)
 
     def get(self):
@@ -148,9 +146,8 @@ class OsTypeViewSet(viewsets.ViewSet):
                 }
             return api_return(data=data)
         except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
 
     def post(self):
         """@brief
@@ -305,9 +302,8 @@ class OsTypeViewSet(viewsets.ViewSet):
                     return api_return(data=data)
         except Exception, e:
             transaction.rollback()
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
 
     def put(self):
         """@brief
@@ -466,9 +462,8 @@ class OsTypeViewSet(viewsets.ViewSet):
 
         except Exception, e:
             transaction.rollback()
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
 
     def delete(self):
         """@brief
@@ -526,6 +521,6 @@ class OsTypeViewSet(viewsets.ViewSet):
                         return api_return(data=data)
         except Exception, e:
             transaction.rollback()
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
+

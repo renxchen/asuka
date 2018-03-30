@@ -112,6 +112,5 @@ class ExportDevicesViewSet(viewsets.ViewSet):
             return result
 
         except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e

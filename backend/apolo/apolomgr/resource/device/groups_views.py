@@ -70,8 +70,6 @@ class GroupsViewSet(viewsets.ViewSet):
             ostype_info = Ostype.objects.get(**kwargs)
             return ostype_info
         except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
             return exception_handler(e)
 
     def get(self):
@@ -119,9 +117,8 @@ class GroupsViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
 
     def post(self):
         """@brief
@@ -160,7 +157,7 @@ class GroupsViewSet(viewsets.ViewSet):
                     'ostype': ostype,
                 }
                 serializer = DeviceGroupIDNameSerializer(data=data)
-                if serializer.is_valid():
+                if serializer.is_valid(Exception):
                     serializer.save(ostype_id=ostype_id)
                     data = {
                         'data': serializer.data,
@@ -173,9 +170,8 @@ class GroupsViewSet(viewsets.ViewSet):
                 return api_return(data=data)
         except Exception, e:
             transaction.rollback()
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
 
     def put(self):
         """@brief
@@ -231,7 +227,7 @@ class GroupsViewSet(viewsets.ViewSet):
                     }
                     return api_return(data=data)
                 serializer = DeviceGroupIDNameSerializer(group, data=data, partial=True)
-                if serializer.is_valid():
+                if serializer.is_valid(Exception):
                     if not isinstance(ostype, str):
                         serializer.save(ostype_id=ostype.ostypeid)
                     else:
@@ -256,9 +252,9 @@ class GroupsViewSet(viewsets.ViewSet):
                     return api_return(data=data)
         except Exception, e:
             transaction.rollback()
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
+
 
     def delete(self):
         """@brief
@@ -312,6 +308,6 @@ class GroupsViewSet(viewsets.ViewSet):
                     return api_return(data=data)
         except Exception, e:
             transaction.rollback()
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
+
