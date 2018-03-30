@@ -96,7 +96,7 @@ TRIGGER_TYPE_FAILED = '取得失敗'
 COLUMN_A_OR_COLUMN_B_NOT_EXIST = gettext(
     'Column A or Column B is not exist in current system, please connect Administrator.')
 COLUMN_A_COLUMN_B_VERIFY_FAILED = gettext(
-    'Column A and Column B maybe do not belong to the same device group or value type(String or Integer) or policy type(CLI or SNMP).')
+    'Column A and Column B may do not have the same device group or schedule or collection interval.')
 EXPRESSION_ILLEGAL = gettext(
     'There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1).')
 EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = gettext('A and B maybe do not have the same value type(String or Integer).')

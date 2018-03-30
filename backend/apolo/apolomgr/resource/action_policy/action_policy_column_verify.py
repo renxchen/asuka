@@ -47,24 +47,37 @@ class ActionPolicyColumnVerifyViewSet(viewsets.ViewSet):
 
     def get(self):
         """!@brief
-        When select column2 after choose column1 in 新规页面, column1 and column2 should have the same device group,
-        the same value type(both str or both int), the same policy type(both cli or both snmp)
+        When select column2 after choosing column1 in 新规页面, column1 and column2 should be same with below 3 points:
+        1.the same device group
+        2.the same schedule_id(data_table_item-->item-->schedule)
+        3.the same policy execute inteval(data_table_item-->item-->policys_groups)
         @post return verify result
         @return data: return verify result
         """
         try:
             if self.table_id_A is not '' and self.table_id_B is not '':
-                table_a = DataTable.objects.filter(table_id=self.table_id_A).values('groups', 'coll_policy__value_type',
-                                                                                    'coll_policy__policy_type')
-                table_a_str = str(table_a[0]['groups']) + '_' + str(table_a[0]['coll_policy__value_type']) + '_' + str(
-                    table_a[0]['coll_policy__policy_type'])
-                table_b = DataTable.objects.filter(table_id=self.table_id_B).values('groups', 'coll_policy__value_type',
-                                                                                    'coll_policy__policy_type')
-                table_b_str = str(table_b[0]['groups']) + '_' + str(table_b[0]['coll_policy__value_type']) + '_' + str(
-                    table_b[0]['coll_policy__policy_type'])
+                # table_a = DataTable.objects.filter(table_id=self.table_id_A).values('groups', 'coll_policy__value_type',
+                #                                                                     'coll_policy__policy_type')
+                table_a_str = ''
+                table_b_str = ''
+                table_a = DataTableItems.objects.filter(table_id=self.table_id_A).values('table__groups',
+                                                                                         'item__schedule',
+                                                                                         'item__policys_groups')
+                if table_a:
+                    table_a_str = str(table_a[0]['table__groups']) + '_' + str(
+                        table_a[0]['item__schedule']) + '_' + str(
+                        table_a[0]['item__policys_groups'])
+                # table_b = DataTable.objects.filter(table_id=self.table_id_B).values('groups', 'coll_policy__value_type',
+                #                                                                     'coll_policy__policy_type')
+                table_b = DataTableItems.objects.filter(table_id=self.table_id_B).values('table__groups',
+                                                                                         'item__schedule',
+                                                                                         'item__policys_groups')
+                if table_b:
+                    table_b_str = str(table_b[0]['table__groups']) + '_' + str(
+                        table_b[0]['item__schedule']) + '_' + str(
+                        table_b[0]['item__policys_groups'])
                 if table_a_str == table_b_str:
                     data = {
-                        'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.TRUE,
                             constants.MESSAGE: constants.SUCCESS
@@ -72,7 +85,6 @@ class ActionPolicyColumnVerifyViewSet(viewsets.ViewSet):
                     }
                     return api_return(data=data)
                 data = {
-                    'new_token': self.new_token,
                     constants.STATUS: {
                         constants.STATUS: constants.FALSE,
                         constants.MESSAGE: constants.COLUMN_A_COLUMN_B_VERIFY_FAILED

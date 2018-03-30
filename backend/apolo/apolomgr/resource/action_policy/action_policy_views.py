@@ -1077,10 +1077,14 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 coll_policy_group_b_id = \
                     DataTable.objects.filter(table_id=int(result_in_trigger[0].columnB)).values('policy_group')[0][
                         'policy_group']
-            data_dic['column'] = str(column_a) + ',' + str(column_b)
+            data_dic['column'] = str(column_a)
+            if column_b:
+                data_dic['column'] = str(column_a) + ',' + str(column_b)
             data_dic['device_group'] = str(device_group_a)
             data_dic['device_group_id'] = str(device_group_a_id)
-            data_dic['coll_policy_group'] = str(coll_policy_group_a) + ',' + str(coll_policy_group_b)
+            data_dic['coll_policy_group'] = str(coll_policy_group_a)
+            if coll_policy_group_b:
+                data_dic['coll_policy_group'] = str(coll_policy_group_a) + ',' + str(coll_policy_group_b)
             data_dic['coll_policy_group_id'] = str(coll_policy_group_a_id) + ',' + str(coll_policy_group_b_id)
             for per_priority in priority_dic:
                 if per_priority == constants.NUMBER_ZERO:

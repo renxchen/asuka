@@ -22,6 +22,24 @@ from backend.apolo.apolomgr.resource.login.authentication import auth_if_refresh
 from backend.apolo.tools import constants
 from backend.apolo.tools.exception import exception_handler
 
+# collection test start
+# from backend.apolo.apolomgr.resource.collection_test_case import cli_collection_test, snmp_collection_test
+#
+#
+# @api_view(['POST'])
+# def api_cli_collection_test(request):
+#     resource_object = cli_collection_test.CliCollectionTest(request=request)
+#     return HttpResponse(run_request_method(resource_object))
+#
+#
+# @api_view(['POST'])
+# def api_snmp_collection_test(request):
+#     resource_object = snmp_collection_test.SnmpCollectionTest(request=request)
+#     return HttpResponse(run_request_method(resource_object))
+#
+#
+# collection test end
+
 
 def run_request_method(resource_object):
     try:
