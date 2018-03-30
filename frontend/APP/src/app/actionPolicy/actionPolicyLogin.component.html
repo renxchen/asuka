@@ -6,7 +6,7 @@
                 アクションポリシー名:
             </label>
             <div class="col-sm-6" >
-                <input type="text" class="form-control" [(ngModel)]="actionPolicyName">
+                <input type="text" maxLength="256" class="form-control" [(ngModel)]="actionPolicyName">
             </div>
         </div>
         <div class="form-group">
@@ -15,7 +15,7 @@
                 概要:
             </label>
             <div class="col-sm-6" >
-                <textarea class="form-control" style="height: 100px" [(ngModel)]="actionPolicyDescription"></textarea>
+                <textarea maxLength="1000" class="form-control" style="height: 100px" [(ngModel)]="actionPolicyDescription"></textarea>
             </div>
         </div>
         <div class="form-group">
@@ -89,9 +89,9 @@
                 <tbody>
                     <tr *ngIf="triggerType == 2 || triggerType == 1">
                         <th style="text-align: center">閾値</th>
-                        <td><input class="form-control" type="text" [(ngModel)]="critical_value"></td>
-                        <td><input class="form-control" type="text" [(ngModel)]="major_value"></td>
-                        <td><input class="form-control" type="text" [(ngModel)]="minor_value"></td>
+                        <td><input class="form-control" maxLength="256" type="text" [(ngModel)]="critical_value"></td>
+                        <td><input class="form-control" maxLength="256" type="text" [(ngModel)]="major_value"></td>
+                        <td><input class="form-control" maxLength="256" type="text" [(ngModel)]="minor_value"></td>
                     </tr>
                     <tr *ngIf="triggerType == 2">
                         <th style="text-align: center">条件</th>
@@ -140,9 +140,9 @@
                     </tr>
                     <tr *ngIf="triggerType == 0">
                         <th style="text-align: center">演算式</th>
-                        <td><input class="form-control" type="text" [(ngModel)]="critical_function"></td>
-                        <td><input class="form-control" type="text" [(ngModel)]="major_function"></td>
-                        <td><input class="form-control" type="text" [(ngModel)]="minor_function"></td>
+                        <td><input class="form-control" maxLength="256" type="text" [(ngModel)]="critical_function"></td>
+                        <td><input class="form-control" maxLength="256" type="text" [(ngModel)]="major_function"></td>
+                        <td><input class="form-control" maxLength="256" type="text" [(ngModel)]="minor_function"></td>
                     </tr>
                     <tr *ngIf="triggerType != 3">
                         <th style="text-align: center">連続超過条件</th>

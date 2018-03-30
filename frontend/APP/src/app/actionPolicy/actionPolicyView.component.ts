@@ -4,7 +4,7 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 declare var $: any;
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
 
 @Component({
     selector: 'action-policy-view',
@@ -21,7 +21,7 @@ export class ActionPolicyViewComponent implements OnInit, AfterViewInit {
         {label: 'deviceGroupId', hidden: true, name:'device_group_id'},
         {label: 'デバイスグループ',  name: 'device_group', width: 30, align: 'center', formatter: this.formatterDeviceGroup},
         {label: 'policyGroupId', hidden: true, name: 'coll_policy_group_id'},
-        {label: 'コレクションポリシーグループ',  name: 'coll_policy_group', width: 30, align: 'center'},
+        {label: 'コレクションポリシーグループ',  name: 'coll_policy_group', width: 30, align: 'center', formatter: this.formatterColumns},
         {label: '閾値タイプ',  name: 'trigger_type', width: 30, align: 'center'},
         {label: 'カラム名',  name: 'column', width: 30, align: 'center', formatter: this.formatterColumns},
         {label: 'Critical',  name: 'critical_priority', width: 30, align: 'center', formatter: this.formatterColumns},
@@ -29,7 +29,7 @@ export class ActionPolicyViewComponent implements OnInit, AfterViewInit {
         {label: 'Minor',  name: 'minor_priority', width: 30, align: 'center', formatter: this.formatterColumns},
         {label: '概要', name: 'desc', width: 30, align: 'center'},
         {label: 'アクション', name: 'action', width: 60, align: 'center', search: false,
-        formatter: this.formatterbtns},
+        formatter: this.formatterbtns, sortable:false},
     ];
 
     testData: any = [
@@ -70,7 +70,12 @@ export class ActionPolicyViewComponent implements OnInit, AfterViewInit {
     }
 
     formatterColumns(cellvalue, options, rowObject) {
-        return '<i class="fa fa-genderless"></i> ' + cellvalue.replace(/,/g, '<br /><i class="fa fa-genderless"></i> ');
+        if (cellvalue != ''){
+            return '<i class="fa fa-genderless"></i> ' + cellvalue.replace(/,/g, '<br /><i class="fa fa-genderless"></i> ');
+        } else {
+            return '————'
+        }
+
     }
 
     formatterDeviceGroup(cellvalue, options, rowObject){

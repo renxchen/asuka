@@ -30,18 +30,18 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
     columnModel: any = [
         {label: 'table_id', hidden: true, name: 'table_id'},
         {label: 'policy_id', hidden: true, name: 'policy_id'},
-        {label: 'コレクションポリシー名',  name: 'policy_name', width: 30, align: 'center'},
-        {label: 'テーブル名',  name: 'name', width: 30, align: 'center'},
-        {label: '概要', name: 'desc', width: 30, align: 'center'},
+        {label: 'コレクションポリシー名',  name: 'policy_name', width: 30, align: 'center', sortable:false},
+        {label: 'テーブル名',  name: 'name', width: 30, align: 'center', sortable:false},
+        {label: '概要', name: 'desc', width: 30, align: 'center', sortable:false},
 
     ];
     columnSelected: number;
 
     historyDataModel: any = [
-        {label: 'デバイス名',  name: 'hostname', width: 30, align: 'center'},
-        {label: 'Time Stamp',  name: 'date', width: 30, align: 'center'},
-        {label: 'Path',  name: 'path', width: 30, align: 'center'},
-        {label: 'value', name: 'value', width: 30, align: 'center'},
+        {label: 'デバイス名',  name: 'hostname', width: 30, align: 'center', sortable:false},
+        {label: 'Time Stamp',  name: 'date', width: 30, align: 'center', sortable:false},
+        {label: 'Path',  name: 'path', width: 30, align: 'center', sortable:false},
+        {label: 'value', name: 'value', width: 30, align: 'center', sortable:false},
 
     ];
 
@@ -214,17 +214,17 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get(url))
             .subscribe(res => {
-                this.initVariable(res);
-                // if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                //     if (res['data']) {
-                //         this.initVariable(res['data']);
-                //     }
-                // } else {
-                //     if (res['status'] && res['status']['message']) {
-                //         alert(res['status']['message']);
-                //         // jump to view
-                //     }
-                // }
+                // this.initVariable(res);
+                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                    if (res['data']) {
+                        this.initVariable(res['data']);
+                    }
+                } else {
+                    if (res['status'] && res['status']['message']) {
+                        alert(res['status']['message']);
+                        // jump to view
+                    }
+                }
         });
     }
 
@@ -233,6 +233,7 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
         let commonData = data['common_data'];
         this.actionPolicyName = commonData['name'];
         this.actionPolicyDescription = commonData['desc'];
+        this.triggerType = commonData['trigger_type'];
 
         if (data['critical']){
 
@@ -316,7 +317,7 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
             // datatype: 'local',
             mtype: 'get',
             colModel: _this.historyDataModel,
-            // postData: { 'id': table_id,  'policy_id': policy_id},
+            postData: { 'id': table_id,  'policy_id': policy_id},
             // data: _this.testData,
             // viewrecords: true,
             // onSelectRow: function(rowid,status,e) {
@@ -343,14 +344,14 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
     }
 
     drawHistoryDataTableLastTitle(res){
-        let title = res.data;
+        let title = res.data['data_history'];
         console.log(title);
         // $('#historyDataTable').jqGrid('setLabel', 'valid_status', title);
     }
 
     drawPolicyTree(res){
         let _t = this;
-        let data = res['data'][''];
+        let data = res['data']['policy_tree'];
         $('#policyTree').jstree({
             'core': {
                 'check_callback': false,
