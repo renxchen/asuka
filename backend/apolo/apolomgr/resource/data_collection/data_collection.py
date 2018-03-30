@@ -288,27 +288,33 @@ class DataCollectionOptCls(object):
                                                                                                    'policy_group',
                                                                                                    'device_group')
             item_table_id_pair = []
+            items_list = []
             for schedule in schedule_list:
                 if schedule['policy_group']:
                     # select all policies  corresponding to the policy group
                     policy_list = self.get_coll_policies(cp_group_id=schedule['policy_group'])
                     # add items
                     devices = [{"device_id": device_id, "device_group_id": schedule['device_group']}]
-                    items_list = self.insert_new_items(devices, schedule['schedule_id'], policy_list)
-                    for obj in items_list:
-                        # create the pair of item_id and table_id
-                        item_id = obj['item_id']
-                        coll_policy_id = obj['coll_policy']
-                        tree_id = obj['coll_policy_rule_tree_treeid']
-                        device_group_id = obj['groups']
-                        data_table_queryset = DataTable.objects.filter(coll_policy=coll_policy_id,
-                                                            groups=device_group_id,
-                                                            tree_id=tree_id).values()
+                    items_list.extend(self.insert_new_items(devices, schedule['schedule_id'], policy_list))
 
-                        for data_table in data_table_queryset:
-                            item_table_id_pair.append({'item': item_id, 'table': data_table['table_id']})
-                # insert the pair of item_id and table_id into data_table_items table
-            serializer =DataTableItemsSerializer(data=item_table_id_pair, many=True)
+            for obj in items_list:
+                # create the pair of item_id and table_id
+                item_id = obj['item_id']
+                coll_policy_id = obj['coll_policy']
+                tree_id = obj['coll_policy_rule_tree_treeid']
+                device_group_id = obj['groups']
+                data_table_id_list = DataTable.objects.filter(coll_policy=coll_policy_id,
+                                                    groups=device_group_id,
+                                                    tree_id=tree_id).values('table_id')
+                item_table_id_pair.append({{'item': item_id, 'table': data_table_id_list}})
+
+            buff_list = []
+
+            for pair in item_table_id_pair:
+                item_id = pair['item']
+                for table_id in pair['table']:
+                    buff_list.append({{'item': item_id, 'table': table_id}})
+            serializer =DataTableItemsSerializer(data=buff_list, many=True)
             if serializer.is_valid(BaseException):
                 serializer.save()
         except Exception as e:
