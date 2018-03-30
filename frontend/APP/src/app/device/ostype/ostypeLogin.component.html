@@ -42,10 +42,11 @@
                 </label>
                 <div class="col-sm-8">
                     <textarea
-                        class="form-control"
+                        class="form-control textarea-height" 
+                        title="{{desc}}"
                         id="desc"
                         name="desc"
-                        maxlength="100"
+                        maxlength="1000"
                         placeholder="日本語、英数字、記号可"
                         [(ngModel)]="desc"
                     >
@@ -112,7 +113,7 @@
                                 [(ngModel)]="endCmd.name"
                             >
                         </div>
-                        <div class="multi-i pull-right">
+                        <div class="multi-i">
                             <span>
                                 <i class="fa fa-lg fa-trash-o"
                                     style="color:#f8ac59;"
@@ -138,7 +139,7 @@
                     class="col-sm-4 control-label"
                     [ngClass]="{'text-warning': !logRegFlg}"
                 >
-                    CLIエラー文字列
+                    CLIエラー文字列:
                 </label>
                 <div class="col-sm-8">
                     <div *ngFor="let log of logs" style="width:100%" >

@@ -11,15 +11,18 @@
 }
 .table {
     // border-radius:4px;
+    table-layout: fixed;
+    height: 100%;
+    width: 100%;
     tbody {
-        height:250px;
-        display:inline-block;
-        overflow-y: auto;
         tr {
             border: 1px solid #e7eaec
         }
         td{
-            width: 325px;
+            text-overflow: ellipsis;
+            white-space: nowrap; 
+            overflow: hidden;    
+            color: #337ab7;
         }
     }
 }
@@ -54,5 +57,15 @@
     }
     .panel-body {
         color: #333333;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
+}
+.wrap-table {
+    max-height: 245px;
+    overflow-y: scroll;
+}
+.textarea-height{
+    height: 200;
 }

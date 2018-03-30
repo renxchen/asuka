@@ -43,10 +43,11 @@
                     </label>
                     <div class="col-sm-8">
                         <textarea
-                            class="form-control"
+                            class="form-control textarea-height" 
+                            title="{{desc}}"
                             id="desc"
                             name="desc"
-                            maxlength="100"
+                            maxlength="1000"
                             placeholder="日本語、英数字、記号可"
                             [(ngModel)]="desc"
                         >

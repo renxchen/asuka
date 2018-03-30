@@ -50,7 +50,8 @@
                 </label>
                 <div class="col-sm-7">
                     <textarea 
-                        class="form-control" 
+                        class="form-control textarea-height" 
+                        title="{{desc}}" 
                         id="desc" 
                         name="desc"
                         [(ngModel)]="desc" 
@@ -81,6 +82,7 @@
                         <option 
                             *ngFor="let item of osType" 
                             value="{{item.ostypeid}}"
+                            title="item.name"
                         >
                             {{item.name}}
                         </option>
@@ -130,8 +132,9 @@
                         <option 
                             *ngFor="let cpName of cpNames"
                             value="{{cpName.coll_policy_id}}"
+                            title="{{cpName.name}}"
                         >
-                            {{cpName.name}}
+                            {{cpName.nameTmp}}
                         </option>
                     </select>
                 </div>
