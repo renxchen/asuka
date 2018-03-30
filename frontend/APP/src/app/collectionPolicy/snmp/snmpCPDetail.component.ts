@@ -39,7 +39,7 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
         }
     }
     ngOnInit() {
-        // this.getOsType();
+        this.getOsType();
     }
     ngAfterViewInit() {
     }

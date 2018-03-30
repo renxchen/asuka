@@ -12,6 +12,7 @@ import { Validator } from '../../../components/validation/validation';
 import { ModalComponent } from '../../../components/modal/modal.component';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
 import { validateConfig } from '@angular/router/src/config';
 declare var $: any;
@@ -52,6 +53,9 @@ export class CPGEditComponent implements OnInit {
     exeFlg: Boolean = true;
     sameCPFlg: Boolean = true;
     bsModalRef: any;
+    modalRef: BsModalRef;
+    modalMsg: any;
+    closeMsg: any;
     constructor(
         private httpClient: HttpClientComponent,
         private activatedRoute: ActivatedRoute,
@@ -152,8 +156,10 @@ export class CPGEditComponent implements OnInit {
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
+                        _.each(res['data'], function (value) {
+                            return value['nameTmp'] = value['name'].length > 60 ? value['name'].slice(0, 60) + '...' : value['name'];
+                        });
                         this.cpNames = res['data'];
-                        this.cpNamesTmp = res['data'];
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
@@ -439,16 +445,31 @@ export class CPGEditComponent implements OnInit {
                 .toJson(this.httpClient.put(url, groups))
                 .subscribe(res => {
                     let status = _.get(res, 'status');
-                    let msg = _.get(status, 'msg');
+                    let msg = _.get(status, 'message');
                     if (status && status['status'].toLowerCase() === 'true') {
                         alert('保存しました。');
                         this.router.navigate(['/index/cpgview/']);
                     } else {
-                        if (msg) {
-                            alert(msg);
+                        if (msg && msg === 'Collection policy group name is exist in system.') {
+                            this.uniqueFlg = false;
+                        } else {
+                            // alert(msg);
+                            this.modalMsg = msg;
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
                         }
                     }
                 });
         }
+    }
+    public showAlertModal(modalMsg: any, closeMsg: any) {
+        /**
+        * @brief show modal dialog
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
+        this.modalRef = this.modalService.show(ModalComponent);
+        this.modalRef.content.modalMsg = modalMsg;
+        this.modalRef.content.closeMsg = closeMsg;
     }
 }

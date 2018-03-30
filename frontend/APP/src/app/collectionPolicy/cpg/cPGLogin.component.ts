@@ -107,8 +107,10 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
+                        _.each(res['data'], function (value) {
+                            return value['nameTmp'] = value['name'].length > 60 ? value['name'].slice(0, 60) + '...' : value['name'];
+                        });
                         this.cpNames = res['data'];
-                        this.cpNamesTmp = res['data'];
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
@@ -250,13 +252,13 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         return -1;
     }
     public moreInfoTable(data: any) {
-         /**
-        * @brief get data and display it in the grid
-        * @param data: cell value
-        * @pre called when data is changed
-        * @author Dan Lv
-        * @date 2018/03/13
-        */
+        /**
+       * @brief get data and display it in the grid
+       * @param data: cell value
+       * @pre called when data is changed
+       * @author Dan Lv
+       * @date 2018/03/13
+       */
         let _t = this;
         _t.cpgActionGrid$ = $('#moreInfoTable').jqGrid({
             datatype: 'local',
@@ -395,7 +397,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                 .toJson(this.httpClient.post(url, groups))
                 .subscribe(res => {
                     let status = _.get(res, 'status');
-                    let msg = _.get(status, 'msg');
+                    let msg = _.get(status, 'message');
                     if (status && status['status'].toLowerCase() === 'true') {
                         alert('保存しました。');
                         this.bsModalRef.hide();

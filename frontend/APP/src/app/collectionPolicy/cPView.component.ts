@@ -95,7 +95,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             $('#cpTable').jqGrid('clearGridData');
             $('#cpTable').jqGrid('setLabel', 'snmp_oid', 'show コマンド');
             $('#cpTable').setColProp('snmp_oid', { index: 'cli_command', name: 'cli_command', label: 'OID', });
-            $('#cpTable').jqGrid('setGridParam', { postData: { 'policy_type': this.cPType }}).trigger('reloadGrid');
+            $('#cpTable').jqGrid('setGridParam', { postData: { 'policy_type': this.cPType } }).trigger('reloadGrid');
             // this.cPTable.GridUnload();
             // setColProp('dxts',{index, 'dxts',width: 100,formatter: dxtsFormatter});
             //     $('#cpTable').trigger('reloadGrid');
@@ -104,7 +104,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             $('#cpTable').jqGrid('clearGridData');
             $('#cpTable').jqGrid('setLabel', 'cli_command', 'OID');
             $('#cpTable').setColProp('cli_command', { index: 'snmp_oid', name: 'snmp_oid', label: 'show コマンド', });
-            $('#cpTable').jqGrid('setGridParam', { postData: { 'policy_type': this.cPType }}).trigger('reloadGrid');
+            $('#cpTable').jqGrid('setGridParam', { postData: { 'policy_type': this.cPType } }).trigger('reloadGrid');
             // this.cPTable.GridUnload();
             // $('#cpTable') .jqGrid('setGridParam', { postData: { 'policy_type': this.cPType }});
             // $('#cpTable') .trigger('reloadGrid');
@@ -137,7 +137,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 },
                 {
                     label: 'アクション', name: 'action', width: 50, align: 'center', search: false,
-                    formatter: _t.formatterBtn, resizable: false
+                    formatter: _t.formatterBtn, resizable: false, sortable: false
                 }
             ],
             gridComplete: function () {
@@ -257,7 +257,9 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                                 this.closeMsg = '閉じる';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
                                 $('#modalButton').on('click', function () {
-                                    $('#cpTable').jqGrid().trigger('reloadGrid');
+                                    // $('#cpTable').jqGrid().trigger('reloadGrid');
+                                    $('#cpTable').jqGrid('clearGridData');
+                                    $('#cpTable').trigger('reloadGrid');
                                 });
                             } else {
                                 if (msg) {
