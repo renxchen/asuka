@@ -107,7 +107,10 @@ export class DeviceLoginComponent implements OnInit {
                 } else {
                     this.processbar.hide();
                     this.actionFlg = true;
-                    alert(msg);
+                    // alert(msg);
+                    this.modalMsg = msg;
+                    this.closeMsg = '閉じる';
+                    this.showAlertModal(this.modalMsg, this.closeMsg);
                 }
             });
     }
@@ -152,6 +155,14 @@ export class DeviceLoginComponent implements OnInit {
                 { name: 'telnet_status', index: 'telnet_status', width: 50, align: 'center', search: true },
                 { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
             ],
+            loadComplete: function (res) {
+                let code: any = _.get(_.get(res, 'new_token'), 'code');
+                let msg: any = _.get(_.get(res, 'new_token'), 'message');
+                if (code === 102 || code === 103) {
+                    localStorage.setItem('sessionTimeOut', msg);
+                    _t.router.navigate(['/login/']);
+                }
+            },
             // beforeSelectRow: function (rowid, e) { return false; },
             // beforeRequest: function () {
             //     let currentPage: any = $('#devLoginTable').jqGrid('getGridParam', 'page');

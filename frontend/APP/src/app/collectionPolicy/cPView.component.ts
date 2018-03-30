@@ -146,13 +146,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.deleteBtn();
             },
             loadComplete: function (res) {
-                let code = _.get(_.get(res, 'new_token'), 'code');
-                if (code === 102) {
-                    alert('Signature has expired,please login again.');
-                    _t.router.navigate(['/login/']);
-                }
-                if (code === 103) {
-                    alert('This user is not authorized to access, please login again.');
+                let code: any = _.get(_.get(res, 'new_token'), 'code');
+                let msg: any = _.get(_.get(res, 'new_token'), 'message');
+                if (code === 102 || code === 103) {
+                    localStorage.setItem('sessionTimeOut', msg);
                     _t.router.navigate(['/login/']);
                 }
             },

@@ -97,14 +97,11 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
             //     }
             // },
             loadComplete: function (res) {
-                let code = _.get(_.get(res, 'new_token'), 'code');
-                if (code === 102) {
-                    alert(_.get(_.get(res, 'new_token'), 'message'));
+                let code: any = _.get(_.get(res, 'new_token'), 'code');
+                let msg: any = _.get(_.get(res, 'new_token'), 'message');
+                if (code === 102 || code === 103) {
+                    localStorage.setItem('sessionTimeOut', msg);
                     _t.router.navigate(['/login/']);
-                }
-                if (code === 103) {
-                    alert(_.get(_.get(res, 'new_token'), 'message'));
-                    _t.router.navigate(['/login']);
                 }
             },
             pager: '#devViewPager',

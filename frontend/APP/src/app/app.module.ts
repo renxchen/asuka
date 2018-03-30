@@ -15,6 +15,7 @@ import { ValidationModule } from '../components/validation/validation.module';
 import { BreadCrumbModule } from '../components/breadCrumb/bread-crumb.module';
 import { ModModule } from '../components/modal/modal.module';
 import { LoginComponentModule } from './login/login.module';
+import { NotFoundModule } from '../components/404/notFound.module';
 import { IndexComponentModule } from './index/index.module';
 import { DeviceModule } from './device/device.module';
 import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.module';
@@ -52,6 +53,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         DeviceModule,
         CPViewComponentModule,
         LoginComponentModule,
+        NotFoundModule,
         IndexComponentModule,
         DataCollectionComponentModule,
         ActionPolicyComponentModule,
