@@ -312,6 +312,6 @@ class DevicePreViewSet(APIView):
                 }
                 return api_return(data=data)
         except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
+

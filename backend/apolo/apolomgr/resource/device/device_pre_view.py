@@ -201,9 +201,8 @@ class DevicePreViewSet(APIView):
             }
             return api_return(data=data)
         except Exception, e:
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
 
     def put(self):
         """@brief
@@ -226,7 +225,7 @@ class DevicePreViewSet(APIView):
                         'telnet_status': telnet_res,
                     }
                     serializer = DevicesTmpSerializer(device_pre, data=data, partial=True)
-                    if serializer.is_valid():
+                    if serializer.is_valid(Exception):
                         serializer.save()
                 # snmp test
                 pool = ThreadPool(device_views.CLI_THREADPOOL_SIZE)
@@ -241,7 +240,7 @@ class DevicePreViewSet(APIView):
                         'snmp_status': snmp_res,
                     }
                     serializer = DevicesTmpSerializer(device_pre, data=data, partial=True)
-                    if serializer.is_valid():
+                    if serializer.is_valid(Exception):
                         serializer.save()
                     data_return.append(serializer.data)
                 data = {
@@ -255,6 +254,5 @@ class DevicePreViewSet(APIView):
                 return api_return(data=data)
         except Exception, e:
             transaction.rollback()
-            if constants.DEBUG_FLAG:
-                print traceback.format_exc(e)
-            return exception_handler(e)
+            print e
+            raise e
