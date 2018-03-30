@@ -24,7 +24,8 @@ class CliCollectionTest(viewsets.ViewSet):
         self.request = request
         # self.device_info = eval(views_helper.get_request_value(self.request, 'device_info', method))
         try:
-            self.device_info = eval(request.body).get('device_info')
+            # self.device_info = eval(request.body).get('device_info')
+            self.device_info = eval(self.request.POST.get('device_info'))
             self.device_info['start_default_commands'] = '，'.join(self.device_info['start_default_commands'])
             self.device_info['end_default_commands'] = '，'.join(self.device_info['end_default_commands'])
             self.device_info['fail_judges'] = '，'.join(self.device_info['fail_judges'])

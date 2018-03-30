@@ -61,9 +61,9 @@ USERNAME = 'username'
 PASSWORD = 'password'
 TOKEN_EXPIRED_MSG = gettext('Token has expired.')
 TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = gettext('There was no token found for current user.')
-NO_USERNAME_OR_PASSWORD_FONUD_ERROR = gettext("No username or password found")
+NO_USERNAME_OR_PASSWORD_FONUD_ERROR = gettext("No access, please login first.")
 LOGIN_FAILED_ERROR = gettext("Login failed with incorrect username or password.")
-REFRESH_EXPIRED = gettext("Refresh has expired.")
+REFRESH_EXPIRED = gettext("Access is expired, please login again.")
 ORIG_IAT_REQUIRED = gettext("orig_iat field is required.")
 USERNAME_INACTIVE_ERROR = gettext("Username is inactive.")
 LOGIN_SUCCESSFUL = gettext("Login successful.")
@@ -96,7 +96,7 @@ TRIGGER_TYPE_FAILED = '取得失敗'
 COLUMN_A_OR_COLUMN_B_NOT_EXIST = gettext(
     'Column A or Column B is not exist in current system, please connect Administrator.')
 COLUMN_A_COLUMN_B_VERIFY_FAILED = gettext(
-    'Column A and Column B may do not have the same device group or schedule or collection interval.')
+    'Column A and Column B may do not have the same device group or schedule or collectionNo access, please login first. interval.')
 EXPRESSION_ILLEGAL = gettext(
     'There is illegal format in current expression, legal formats like: A[1], B[1], A(1), B(1).')
 EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = gettext('A and B maybe do not have the same value type(String or Integer).')

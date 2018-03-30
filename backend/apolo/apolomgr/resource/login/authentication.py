@@ -271,7 +271,8 @@ def auth_if_refresh_required(view):
                 data = {
                     constants.STATUS: {
                         constants.CODE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE,
-                        constants.MESSAGE: constants.NO_USERNAME_OR_PASSWORD_FONUD_ERROR
+                        constants.MESSAGE: constants.NO_USERNAME_OR_PASSWORD_FONUD_ERROR,
+                        constants.STATUS: constants.FALSE
                     }
                 }
                 return HttpResponse(json.dumps(data))
@@ -295,7 +296,8 @@ def auth_if_refresh_required(view):
                 data = {
                     constants.STATUS: {
                         constants.MESSAGE: constants.TOKEN_EXPIRED_MSG,
-                        constants.CODE: constants.TOKEN_ALREADY_EXPIRED_CODE
+                        constants.CODE: constants.TOKEN_ALREADY_EXPIRED_CODE,
+                        constants.STATUS: constants.FALSE
                     }
                 }
                 return HttpResponse(json.dumps(data))
