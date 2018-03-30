@@ -20,6 +20,7 @@ import { DeviceModule } from './device/device.module';
 import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.module';
 import { DataCollectionComponentModule } from './dataCollection/dataCollection.module';
 import { ActionPolicyComponentModule } from './actionPolicy/actionPolicy.module';
+import { TestComponentModule } from './testModule/test.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -57,6 +58,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         ActionPolicyComponentModule,
         BreadCrumbModule,
         ModModule,
+        TestComponentModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

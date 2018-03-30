@@ -49,6 +49,9 @@ import { ActionPolicyHistoryComponent } from './actionPolicy/actionPolicyHistory
 import { DataTableLoginComponent } from './actionPolicy/dataTableLogin.component';
 import { DataTableDetailComponent } from './actionPolicy/dataTableDetail.component';
 
+//test
+import { TestTelnetComponent} from './testModule/testTelnet.component';
+
 const routes: Routes = [
     {
         path: '',
@@ -63,6 +66,14 @@ const routes: Routes = [
         path: 'index',
         component: IndexComponent,
         children: [
+            {
+              path: 'testTelnet',
+                component:TestTelnetComponent,
+                data: {
+                  parentTitle: 'test',
+                    title: 'telnet'
+                }
+            },
             {
                 path: '',
                 component: DeviceViewComponent,
