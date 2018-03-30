@@ -51,6 +51,7 @@ import { DataTableDetailComponent } from './actionPolicy/dataTableDetail.compone
 
 //test
 import { TestTelnetComponent} from './testModule/testTelnet.component';
+import { TestSnmpComponent } from './testModule/testSnmp.component';
 
 const routes: Routes = [
     {
@@ -72,6 +73,14 @@ const routes: Routes = [
                 data: {
                   parentTitle: 'test',
                     title: 'telnet'
+                }
+            },
+            {
+              path: 'testSnmp',
+                component:TestSnmpComponent,
+                data: {
+                  parentTitle: 'test',
+                    title: 'snmp'
                 }
             },
             {
