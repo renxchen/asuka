@@ -4,6 +4,9 @@ import { ProgressbarComponent } from '../components/processbar/processbar.compon
 
 // login
 import { LoginComponent } from './login/login.component';
+// 404
+import { NotFoundComponent } from '../components/404/notFound.component';
+
 // index
 import { IndexComponent } from './index/index.component';
 // device
@@ -44,13 +47,13 @@ import { DataCollectionLoginComponent } from './dataCollection/dataCollectionLog
 // action policy
 import { ActionPolicyViewComponent } from './actionPolicy/actionPolicyView.component';
 import { ActionPolicyLoginComponent } from './actionPolicy/actionPolicyLogin.component';
-import {DataTableViewComponent} from './actionPolicy/dataTableView.component';
+import { DataTableViewComponent } from './actionPolicy/dataTableView.component';
 import { ActionPolicyHistoryComponent } from './actionPolicy/actionPolicyHistory.component';
 import { DataTableLoginComponent } from './actionPolicy/dataTableLogin.component';
 import { DataTableDetailComponent } from './actionPolicy/dataTableDetail.component';
 
-//test
-import { TestTelnetComponent} from './testModule/testTelnet.component';
+// test
+import { TestTelnetComponent } from './testModule/testTelnet.component';
 import { TestSnmpComponent } from './testModule/testSnmp.component';
 
 const routes: Routes = [
@@ -58,6 +61,10 @@ const routes: Routes = [
         path: '',
         redirectTo: localStorage.getItem('sessionTimeOut') !== '' ? 'login' : 'index',
         pathMatch: 'full'
+    },
+    {
+        path: '404',
+        component: NotFoundComponent
     },
     {
         path: 'login',
@@ -68,18 +75,18 @@ const routes: Routes = [
         component: IndexComponent,
         children: [
             {
-              path: 'testTelnet',
-                component:TestTelnetComponent,
+                path: 'testTelnet',
+                component: TestTelnetComponent,
                 data: {
-                  parentTitle: 'test',
+                    parentTitle: 'test',
                     title: 'telnet'
                 }
             },
             {
-              path: 'testSnmp',
-                component:TestSnmpComponent,
+                path: 'testSnmp',
+                component: TestSnmpComponent,
                 data: {
-                  parentTitle: 'test',
+                    parentTitle: 'test',
                     title: 'snmp'
                 }
             },
@@ -311,9 +318,10 @@ const routes: Routes = [
                     parentTitle: 'アクションポリシー',
                     title: 'アクション実行履歴'
                 }
-            }
+            },
         ]
-    }
+    },
+    { path: '**', redirectTo: '404' }
 ];
 export const appRouting = RouterModule.forRoot(routes);
 export const entryComponentList: any[] = [
