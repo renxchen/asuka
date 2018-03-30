@@ -58,7 +58,6 @@ export class IndexComponent implements OnInit, AfterViewInit {
     public logout() {
         this.service.logout().subscribe(res => {});
         localStorage.removeItem('token');
-        localStorage.removeItem('username');
         localStorage.removeItem('sessionTimeOut');
       }
 }

@@ -14,24 +14,16 @@
                                 <div class="panel-body">
                                     <!-- practice -->
                                     <div class="wrap-table">
-                                        <table>
-                                            <tbody>
-                                                <tr>
-                                                    <td width="13">aaa</td>
-                                                    <td width="50">bbb</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
                                         <table class="table">
                                             <tbody>
                                                 <tr>
-                                                    <td style="width:100%" colspan="2" (click)="getGroupInfo('-1')" [ngClass]="{'active': (groupId)=='-1'}">
+                                                    <td style="width:100%" colspan="5" (click)="getGroupInfo('-1')" [ngClass]="{'active': (groupId)=='-1'}">
                                                         無所属
                                                     </td>
                                                 </tr>
                                                 <tr *ngFor="let group of groups">
                                                     <td 
-                                                        width="78%" 
+                                                        colspan="4"
                                                         (click)="getGroupInfo(group.group_id)" 
                                                         [ngClass]="{'active': (groupId)==group.group_id}"
                                                         title="{{group.name}}"
