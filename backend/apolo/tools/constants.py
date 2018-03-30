@@ -158,7 +158,7 @@ RULE_NODE_ICON = 'fa fa-folder-o'
 #########################################
 NODE_IS_EXISTENCE = 'The node is exist in the tree'  # ツリー内に定義されているため、編集できません。
 RULE_NAME_IS_EXISTENCE = 'RULE_NAME_IS_EXISTENCE'  # 既に同じ表示名のルールが登録されています。
-POLICY_IS_APPLIED = 'The policy is being applied by schedule function.'  # このコレクションポリシーがスケジュールに利用されています。
+POLICY_IS_APPLIED = 'The policy is be setting in schedule function.'  # このコレクションポリシーがスケジュールに利用されています。
 POLICY_DATA_VALID_ERROR = 'data valid error when insert policy tree rules'  # コレクションポリシーツリーに追加されたデータが適切ではないです。
 RULE_DATA_VALID_ERROR = 'data valid error in saving the rule'  # ルールを追加する時に、データが適切ではないです
 LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定義されていないです

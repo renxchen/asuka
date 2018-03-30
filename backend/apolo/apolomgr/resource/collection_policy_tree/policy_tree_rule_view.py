@@ -48,7 +48,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
             is_locked = False
             if len(query_set) > 0:
                 is_processing = self.__judge_rule_is_processing(coll_policy_id)
-                is_locked = self.__judge_rule_is_locked(rule_id, coll_policy_id)
+                is_locked = self.__judge_rule_is_locked(coll_policy_id)
                 is_used = True
             rule_info = CollPolicyCliRule.objects.get(ruleid=rule_id)
             result_dict = CollPolicyCliRuleSerializer(rule_info).data
@@ -456,7 +456,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         return Tool.get_policy_status(coll_policy_id)
 
     @staticmethod
-    def __judge_rule_is_locked(rule_id, coll_policy_id):
+    def __judge_rule_is_locked(coll_policy_id):
         """!@brief
        judge the rule status is lock
        if  the tree_id corresponding to the rule_id is existing in the data_table table,
@@ -469,8 +469,9 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
        @author kimli
        @date 2017/12/25
        """
-        tree_id = CollPolicyRuleTree.objects.filter(rule=rule_id, coll_policy=coll_policy_id).values('treeid')
-        tree_count = len(DataTable.objects.filter(tree__in=tree_id))
+        # tree_id = CollPolicyRuleTree.objects.filter(rule=rule_id, coll_policy=coll_policy_id).values('treeid')
+        # tree_count = len(DataTable.objects.filter(tree__in=tree_id))
+        tree_count = len(DataTable.objects.filter(coll_policy=coll_policy_id))
         if tree_count > 0:
             return True
         else:
