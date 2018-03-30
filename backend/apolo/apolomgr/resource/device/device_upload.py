@@ -53,7 +53,7 @@ class DevicePreViewSet(APIView):
                     reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8", errors="ignore"), delimiter=',',
                                             dialect=dialect)
                     headers = reader.fieldnames
-                except Exception,e:
+                except Exception, e:
                     data = {
                         'data': [],
                         'new_token': self.new_token,
@@ -88,6 +88,16 @@ class DevicePreViewSet(APIView):
                     os.mkdir(file_dir)
                 path_csv = os.path.abspath(os.path.join(file_dir, str(operation_id) + "_" + filename.name))
                 for f in reader:
+                    if len(f) != 10:
+                        data = {
+                            'data': [],
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.CSV_FORMAT_ERROR
+                            },
+                        }
+                        return api_return(data=data)
                     file_x.append(f)
                     # hostname check
                     if f.get(hostname).strip() != '':
@@ -122,22 +132,25 @@ class DevicePreViewSet(APIView):
                 ostype_list = Ostype.objects.all()
                 for f in file_x:
                     flag_err = 0
-                    # ipv4 check
                     dict_check = {}
+                    # hostname check
                     hostname_csv = f.get(hostname)
                     if len(hostname_csv) > 30:
                         dict_check['hostname_check'] = False
+                        flag_err += 1
                     else:
                         for letter in hostname_csv:
                             if not (str(letter).isalnum() or (str(letter) in string.punctuation and str(letter) != ' '
                                                               and str(letter) != r"'" and str(letter) != "\""
                                                               and str(letter) != r",")):
                                 dict_check['hostname_check'] = False
+                                flag_err += 1
                             else:
                                 dict_check['hostname_check'] = True
                     dict_check['hostname'] = hostname_csv
+                    # ipv4 check
                     ip = f.get('IP Address')
-                    pattern_ip = "((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))"
+                    pattern_ip = "^((?:(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(?:25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d))))$"
                     if re.match(pattern_ip, ip) is None:
                         dict_check['ip'] = False
                         flag_err += 1
@@ -146,39 +159,34 @@ class DevicePreViewSet(APIView):
                     # telnet port check
                     telnet_port = f.get('Telnet Port')
                     try:
-                        if str(telnet_port).find('.') != -1 or telnet_port.strip() == '':
+                        telnet_port = int(telnet_port)
+                        if telnet_port < 0 or telnet_port > 65535:
                             dict_check['telnet_port'] = False
                             flag_err += 1
                         else:
-                            telnet_port = int(telnet_port)
-                            if telnet_port < 0 or telnet_port > 65535:
-                                dict_check['telnet_port'] = False
-                                flag_err += 1
-                            else:
-                                dict_check['telnet_port'] = True
+                            dict_check['telnet_port'] = True
                     except ValueError:
                         dict_check['telnet_port'] = False
+                        flag_err += 1
                     # snmp port check
                     snmp_port = f.get('SNMP Port')
                     try:
-                        if str(snmp_port).find('.') != -1 or snmp_port.strip() == '':
+                        snmp_port = int(snmp_port)
+                        if snmp_port < 0 or snmp_port > 65535:
                             dict_check['snmp_port'] = False
                             flag_err += 1
                         else:
-                            snmp_port = int(snmp_port)
-                            if snmp_port < 0 or snmp_port > 65535:
-                                dict_check['snmp_port'] = False
-                                flag_err += 1
-                            else:
-                                dict_check['snmp_port'] = True
+                            dict_check['snmp_port'] = True
                     except ValueError:
                         dict_check['snmp_port'] = False
+                        flag_err += 1
                     # snmp community check
                     snmp_community = f.get('SNMP Community')
                     if snmp_community == '':
                         dict_check['snmp_community'] = True
                     elif len(snmp_community) > 30:
                         dict_check['snmp_community'] = False
+                        flag_err += 1
                     else:
                         for letter in snmp_community:
                             if not (str(letter).isalnum() or str(letter) in string.punctuation or str(letter) == ' '):
@@ -197,17 +205,19 @@ class DevicePreViewSet(APIView):
                         else:
                             dict_check['snmp_version'] = True
                     # login expect
-                    login_expect = str(f.get('Login Expect')).split(',')
+                    login_expect = str(f.get('Login Expect'))
                     if login_expect == '':
                         dict_check['login_expect'] = True
                     elif len(login_expect) > 1000:
                         dict_check['login_expect'] = False
+                        flag_err += 1
                     else:
                         flag_expect = 0
                         for symbol in login_expect:
                             for letter in symbol:
                                 if not (str(letter).isalnum() or str(letter) in string.punctuation or str(
                                         letter) == ' '):
+                                    dict_check['login_expect'] = False
                                     flag_expect += 1
                         if flag_expect > 0:
                             dict_check['login_expect'] = False
@@ -220,6 +230,7 @@ class DevicePreViewSet(APIView):
                         dict_check['device_type'] = True
                     elif len(device_type) > 30:
                         dict_check['device_type'] = False
+                        flag_err += 1
                     else:
                         flag_type = 0
                         for letter in device_type:
@@ -248,8 +259,9 @@ class DevicePreViewSet(APIView):
                     group = f.get('Group')
                     if group != '':
                         group = group.split(',')
-                        if len(group) > 5:
+                        if len(group) > 5 or len(group) != len(set(group)):
                             dict_check['group'] = False
+                            flag_err += 1
                         else:
                             flag_group = 0
                             for group_one in group_list:
