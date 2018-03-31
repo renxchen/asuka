@@ -127,18 +127,17 @@ export class HttpClientComponent {
                     let status = ret.status || ret.data.status;
                     let token = ret.new_token;
                     localStorage.setItem('sessionTimeOut', '');
-                    if (!status.status) {
+                    if (status.status.toString().toLowerCase() === 'false') {
                         if (status.code === 102) {
-                            localStorage.setItem('sessionTimeOut', 'User expired,please login again');
+                            localStorage.setItem('sessionTimeOut', status.message);
                             this.router.navigate(['/login'], { queryParams: this.getSearchParams() });
                         }
                         if (status.code === 103) {
-                            localStorage.setItem('sessionTimeOut', 'No access, please login first.');
+                            localStorage.setItem('sessionTimeOut', status.message);
                             this.router.navigate(['/login'], { queryParams: this.getSearchParams() });
                         }
-
                     } else {
-                        if (token.code === 100 && token.new_token) {
+                        if (token && token.code === 100 && token.new_token) {
                             localStorage.setItem('token', token.new_token);
                         }
                     }
@@ -158,7 +157,7 @@ export class HttpClientComponent {
                     });
                 });
         } else {
-            let ret: any = { 'status': { 'status': true } };
+            let ret: any = { 'status': { 'status': false } };
             localStorage.setItem('sessionTimeOut', 'No access or user expired,please login.');
             this.router.navigate(['/login'], { queryParams: this.getSearchParams() });
             return Observable.of(ret);

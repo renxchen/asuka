@@ -110,14 +110,20 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    if (res['data'] && res['data'].length > 0) {
-                        this.osType = res['data'];
+                let status = _.get(res, 'status');
+                let data: any = _.get(res, 'data');
+                let msg = _.get(status, 'message');
+                if (status && status['status'].toString().toLowerCase() === 'true') {
+                    if (data && data.length > 0) {
+                        this.osType = data;
                     }
                 } else {
-                    if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
-                    }
+                    // if (res['status'] && res['status']['message']) {
+                    //     alert(res['status']['message']);
+                    // }
+                    this.modalMsg = msg;
+                    this.closeMsg = '閉じる';
+                    this.showAlertModal(this.modalMsg, this.closeMsg);
                 }
             });
     }
@@ -128,7 +134,7 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
         * @author Dan Lv
         * @date 2018/01/25
         */
-       this.uniqueFlg = true;
+        this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);

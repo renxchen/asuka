@@ -101,11 +101,20 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             // },
             // text-overflow: ellipsis,
             loadComplete: function (res) {
-                let code: any = _.get(_.get(res, 'new_token'), 'code');
-                let msg: any = _.get(_.get(res, 'new_token'), 'message');
-                if (code === 102 || code === 103) {
-                    localStorage.setItem('sessionTimeOut', msg);
-                    _t.router.navigate(['/login/']);
+                // let code: any = _.get(_.get(res, 'new_token'), 'code');
+                // let msg: any = _.get(_.get(res, 'new_token'), 'message');
+                // if (code === 102 || code === 103) {
+                //     localStorage.setItem('sessionTimeOut', msg);
+                //     _t.router.navigate(['/login/']);
+                // }
+                let status = _.get(_.get(res, 'status'), 'status');
+                let code: any = _.get(_.get(res, 'status'), 'code');
+                let msg: any = _.get(_.get(res, 'status'), 'message');
+                if (status === 'False') {
+                    if (code === 102 || code === 103) {
+                        localStorage.setItem('sessionTimeOut', msg);
+                        _t.router.navigate(['/login/']);
+                    }
                 }
             },
             pager: '#devicePager',
