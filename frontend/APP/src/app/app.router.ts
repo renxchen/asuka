@@ -104,7 +104,7 @@ const routes: Routes = [
                 component: OstypeComponent,
                 data: {
                     parentTitle: 'デバイス',
-                    title: 'OS Type設定',
+                    title: 'OS Type 閲覧・登録',
                 }
             },
             {
@@ -112,7 +112,7 @@ const routes: Routes = [
                 component: DeviceGroupComponent,
                 data: {
                     parentTitle: 'デバイス',
-                    title: 'デバイスグループ閲覧',
+                    title: 'デバイスグループ閲覧・登録',
                 }
             },
             {
