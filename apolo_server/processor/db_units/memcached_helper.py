@@ -130,8 +130,8 @@ if __name__ == "__main__":
     #     print is
     test = {'device1': [1, 2, 3, 4], 'device2': [1, 2, 3, 4]}
     with TriggerMemCache() as trigger:
-        trigger.multi_set(test)
-        print trigger.multi_get(['device1', 'device2'])
+        # trigger.multi_set(test)
+        print trigger.multi_get(["1", "2"])
 
 
 
