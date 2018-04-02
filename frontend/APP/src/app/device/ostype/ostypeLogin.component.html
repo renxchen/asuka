@@ -27,7 +27,6 @@
                         class="form-control" 
                         id="id_{{name}}" 
                         name="os_{{name}}"
-                        maxlength="30"
                         placeholder="日本語、英数字、記号可"
                         [(ngModel)]="name"
                      >
@@ -250,7 +249,8 @@
                 OS Type名は必須入力です。
             </div>            
             <div class="col-sm-12 text-warning" *ngIf='nameNotNull&&!nameFlg'>
-                OS Type名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください。
+                <!-- OS Type名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください。 -->
+                OS Type名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください，かつOS Type名の長さを30まで入力してください。
             </div>            
             <div class="col-sm-12 text-warning" *ngIf='!uniqueFlg'>
                 OS Type名は既存データと重複しています。
