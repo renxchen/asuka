@@ -47,7 +47,7 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         this.osType = res['data'];
                         let osTypeTmp = _.clone(res['data']);
@@ -70,7 +70,7 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
                 let msg = _.get(status, 'message');
                 let data: any = _.get(res, 'data');
                 let verify = _.get(res, 'verify_result');
-                if (status && status['status'].toLowerCase() === 'true') {
+                if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (data && data.length > 0) {
                         this.name = _.get(data[0], 'name');
                         this.selectedOsType = _.get(_.get(data[0], 'ostype'), 'ostypeid');
@@ -114,7 +114,7 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('保存しました。');
                         this.bsModalRef.hide();
                         this.modalService.setDismissReason('true');

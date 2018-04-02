@@ -70,6 +70,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 }
             ],
             gridComplete: function () {
+                $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
                 _t.detailBtn();
                 _t.editBtn();
                 _t.deleteBtn();
@@ -105,7 +106,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
             rowNum: 10,
             rowList: [5, 10, 15],
             autowidth: true,
-            height: 340,
+            height: 350,
             viewrecords: false,
             emptyrecords: 'There is no data to display',
             jsonReader: {
@@ -205,7 +206,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                             let status = _.get(res, 'status');
                             let msg = _.get(status, 'message');
                             let data = _.get(res, 'data');
-                            if (status && status['status'].toLowerCase() === 'true') {
+                            if (status && status['status'].toString().toLowerCase() === 'true') {
                                 _t.modalMsg = '削除に成功しました。';
                                 _t.closeMsg = '閉じる';
                                 _t.showAlertModal(_t.modalMsg, _t.closeMsg);
