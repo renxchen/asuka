@@ -59,7 +59,7 @@ class TriggerConstants(object):
     """
     Define value for trigger service
     """
-    TRIGGER_DB_MODULES = "apolo_server.processor.db_units.models"
+    TRIGGER_DB_MODULES = "backend.apolo.models"
     TRIGGER_BASE_PATH = "apolo_server.processor.trigger"
     TRIGGER_NUMERIC = ["Float", "Int"]
     TRIGGER_EVENT_SOURCE = 0

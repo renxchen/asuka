@@ -49,7 +49,7 @@ class CiscoCLI(object):
     SSH_STR = 'ssh -p %d -o "UserKnownHostsFile /dev/null" -l %s %s'
 
     
-    SPILT_CHAT = "，"
+    SPILT_CHAT = u"，"
 
     def __init__(self, device_info, logger):
         self.device_info = device_info
@@ -134,7 +134,7 @@ class CiscoCLI(object):
                 message = "%s Execute default command failed: %s output: %s" % (self.device_log_info,command,output)
                 #self.logger.error(message)
                 raise Exception(message)
-
+            
     def __login(self):
 
         port = self.port or 23
@@ -232,17 +232,19 @@ class CiscoCLI(object):
 if __name__ == "__main__":
     import traceback
     device_info = {
+        
             #arr
-            "start_default_commands": "terminal length 2",
+            "start_default_commands": "terminal len 0，terminal pager 0",
             #arr
             "end_default_commands": "",
-            "prompt":"",
+            "prompt":"#",
             #arr
-            "fail_judges":"% In*，Error*",
+            #"fail_judges":"% In*，Error*",
+            "fail_judges":null,
             "ip": "10.71.244.135",
             "hostname": "crs1000_1",
             "expect": "ssword:,cisco,>,enable,:,cisco123,#",
-            "timeout": 5,
+            "timeout": 10,
             "device_id": "2042"
             }
 
@@ -251,7 +253,7 @@ if __name__ == "__main__":
     output = []
     try:
         worker.login()
-        commands=["show interface","show version","show clock"]
+        commands=["show interface"]
 
         for index,cmd in enumerate(commands):
 

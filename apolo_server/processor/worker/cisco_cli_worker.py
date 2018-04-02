@@ -4,10 +4,11 @@ __version__ = 0.1
 __author__ = 'zhutong <zhtong@cisco.com>'
 
 import sys
-from worker_base import WorkerBase, main,SYS_PATH
-sys.path.append(SYS_PATH)
+from worker_base import WorkerBase, main
+#sys.path.append(SYS_PATH)
 from cisco_cli_helper import CiscoCLI,LoginException
 import json
+import traceback
 
 
 class CiscoCliWorker(WorkerBase):
@@ -51,11 +52,14 @@ class CiscoCliWorker(WorkerBase):
                         raise
 
             worker.exe_end_default_command()
+            status="success"
+            message = ""
 
         except Exception as e:
             status = 'fail'
             message = str(e)
             logger.error(e)
+            print traceback.format_exc()
             
         finally:
             worker.close()

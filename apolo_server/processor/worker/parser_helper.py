@@ -13,68 +13,45 @@ import time
 import thread
 
 
-class SNMPParser(object):
-    def __init__(self):
-        pass
-        
-    def handle(self,items,result):
+
+def snmp_parse(items,result,device_log_info,logger):
+    output = result["output"]
+    clock = result["clock"]
+    ParserDbHelp().bulk_save_result(items,clock, CommonConstants.SNMP_TYPE_CODE)
+    return ""
+
+def cli_parse(items,result,device_log_info,logger):
 
         output = result["output"]
         clock = result["clock"]
-        ParserDbHelp().bulk_save_result(items,clock, CommonConstants.SNMP_TYPE_CODE)
-        return ""
-
-
-class CliParser(object):
-
-    def __init__(self):
-        pass
-        #super(CliParser, self).__init__(param)
-       
-    def handle(self,items,result):
-        rules = {}
-        #with RulesMemCacheDb() as rules:
-        #rules = rules.get()
-        #print rules
-        #trigger_detail
-
-        output = result["output"]
-        clock = result["clock"]
-        #result = []
         parser_result = {}
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-
+        
         for item in items:
-            #rule_path = CliParser.__split_path(item['tree_path'],
-            #                               item['rule_id'])
-            #raw_data = item['output']
-            #if raw_data is None:
-            #continue
             p = Dispatch(item["rule_path"], item["rules"], output)
             p.dispatch()
             arry = p.get_result()
 
-            value = arry[-1][0]['extract_data']
-            if len(value) == 0:
-                value = None
-            else:
-                value = value[0]
+            if arry[-1][0]["extract_match_flag"]:
+                value = arry[-1][0]['extract_data']
+                if value:
+                    value = value[0]
+                else:
+                    value = None
 
-            item['data'] = {"value": value,"block_path":arry[-1][0]["block_path"]}
-            #item['value'] = "test%s"%item['item_id']
-            parser_result[str(item['item_id'])] = item['data']
-            
-        ParserDbHelp().bulk_save_result(items, clock, CommonConstants.CLI_TYPE_CODE)
+                item['data'] = {"value": value,"block_path":arry[-1][0]["block_path"]}
+                parser_result[str(item['item_id'])] = item['data']
+                item["parse_status"] = True
+            else:
+                item["parse_status"] = False
+                logger.error("%s CLI PARSE ERROR, ITEM_ID:%s Error_Info:%s " % (device_log_info,['item_id'],arry[-1][0]["err_msg"]))
+
+        ParserDbHelp().bulk_save_result([item for item in items if item["parse_status"] == True], clock, CommonConstants.CLI_TYPE_CODE)
         return parser_result
 
+def parser_main(item_type,data,deviceinfo, result,device_log_info,logger):
 
-
-def parser_main(item_type,task, data):
-
-    deviceinfo = task["device_info"]
-    result = task["element_result"][data.strip()]
     items = []
-
     time_prefix = ["1day","1hour","15min","5min","1min"]
     oid_dict = {}
 
@@ -109,15 +86,13 @@ def parser_main(item_type,task, data):
                     items.append(item)
 
     if item_type == CommonConstants.CLI_TYPE_CODE:
-        func = CliParser()
+        result = cli_parse(items,result,device_log_info,logger)
+        items = [item for item in items if item["parse_status"] == True]
     else:
         #pass
-        func = SNMPParser()
-    result = func.handle(items,result)
+        result = snmp_parse(items,result,device_log_info,logger)
+    #result = func.handle(items,result)
     return items,result
-    #items = __wrapper(func.parser_params['items'])
-    #return items, func.timestamp
-
 
 if __name__ == "__main__":
     pass

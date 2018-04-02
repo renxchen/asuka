@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.append("/Users/yihli/Desktop/projects/apolo")
 import time
 import copy
 import json
@@ -29,7 +28,7 @@ def get_devices(now_time, item_type):
     ruletool = Tool()
     for rule in rules:
         format_rule = ruletool.get_rule_value(rule)
-        rule_dict[str(rule['ruleid'])] = format_rule
+        rule_dict[str(rule.ruleid)] = format_rule
     
     
     # get items from db 
@@ -188,15 +187,17 @@ def __merge_cli(item, deviceinfo_dict,rule_dict):
         deviceinfo_dict['hostname'] = item['device__hostname']
         deviceinfo_dict['expect'] = item['device__login_expect']
         
-        #deviceinfo_dict['ip'] = "10.71.244.135"
-        #deviceinfo_dict['hostname'] = "crs1000_1"
-        #deviceinfo_dict['expect'] = "ssword:,cisco,>,enable,:,cisco123,#"
+        """
+        deviceinfo_dict['ip'] = "10.71.244.135"
+        deviceinfo_dict['hostname'] = "crs1000_1"
+        deviceinfo_dict['expect'] = "ssword:,cisco,>,enable,:,cisco123,#"
+        """
 
         deviceinfo_dict['start_default_commands'] = item['device__ostype__start_default_commands']
         deviceinfo_dict['end_default_commands'] = item['device__ostype__end_default_commands']
-        deviceinfo_dict['fail_judges'] = item['device__ostype__fail_judges']
+        deviceinfo_dict['fail_judges'] = item['device__ostype__log_fail_judges']
 
-        deviceinfo_dict['prompt'] = item['device__ostype__end_telnet_prompt']
+        deviceinfo_dict['prompt'] = item['device__ostype__telnet_prompt']
         deviceinfo_dict['timeout'] = item['device__ostype__telnet_timeout']
         deviceinfo_dict['method'] = DevicesConstants.CLI_COLLECTION_DEFAULT_METHOD
 

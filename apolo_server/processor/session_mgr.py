@@ -4,23 +4,24 @@ __author__ = 'zhutong'
 A very simple session/cache manager for testing
 Should be implemented using redis
 """
-
-from threading import Thread
+import threading
+#from threading import Thread
 import time
 from helper import get_logger
 import Queue
 
 
-class SessionManager(Thread):
+class SessionManager(threading.Thread):
     data_set = {}
 
     parser_dict={}
+    mutux_dict={}
 
     polling_interval = 1
     absolute_timeout = 3600
     after_read_timeout = 30
     def __init__(self,zmq_publish):
-        Thread.__init__(self)
+        threading.Thread.__init__(self)
         self.zmq_publish = zmq_publish
 
     def put(self, k, v):
@@ -32,6 +33,17 @@ class SessionManager(Thread):
         except KeyError:
             pass
 
+    def get_threading_lock(self,device_id):
+        if device_id in self.mutux_dict:
+            self.mutux_dict[device_id]["timer"] = None
+            return self.mutux_dict[device_id]["mutex"]
+        else:
+            mutex = threading.Lock()
+            self.mutux_dict[device_id] = {
+                "timer":None,
+                "mutex":mutex
+            }
+            return mutex
 
     def update(self, k, v):
         try:
@@ -43,28 +55,21 @@ class SessionManager(Thread):
 
     def set_parser_queue(self,task_id,value):
 
-        #data = self.data_set.get(task_id)
-        #if "parser_queue" not in data:
-        #data.update(dict(parser_queue=Queue.Queue(),parser_status="queue"))
         queue = self.parser_dict[task_id]
         queue.put(value)
-        #data["parser_queue"].append(value)
 
-
-
-    def update_command_result(self,task_id,result):
-        data = self.data_set.get(task_id)
-        
-        channel = data["channel"]
-        if "element_result" not in data:
-                data.update(dict(element_result={}))
+    def update_command_result(self,task_id,task,result):
+        #data = task
+        channel = task["channel"]
+        if "element_result" not in task:
+                task.update(dict(element_result={}))
 
         if channel == "cli":
             command = result["command"]
-            data.get("element_result")[command] = result
+            task.get("element_result")[command] = result
         else:
             clock = result["clock"]
-            data.get("element_result")[clock] = result
+            task.get("element_result")[clock] = result
 
 
     def update_parser_result(self,task_id,result):
@@ -129,13 +134,13 @@ class SessionManager(Thread):
                         if not parser_queue.empty():
                             data = parser_queue.get()
                             v["parser_status"]="running"
-                            self.zmq_publish.send_string(data["publish_string"])
+                            self.zmq_publish.send_string(data)
                         
                         if status == "coll_finish" and parser_queue.empty() and v["parser_status"] != "running":
                             v["status"] = "all_finish"
                             v["finish_timer"] = time.time()
                 
-                if "finish_timer" in v and time.time() - v['finsih_timer'] > self.after_read_timeout:
+                if "finish_timer" in v and time.time() - v['finish_timer'] > self.after_read_timeout:
                     del self.data_set[k]
                     if k in self.parser_dict:
                         del self.parser_dict[k]

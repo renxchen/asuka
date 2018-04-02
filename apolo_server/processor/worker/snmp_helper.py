@@ -76,8 +76,8 @@ class SNMP(object):
         self.timeout = timeout
         self.retries = retries
         self.device_log_info = device_log_info
-        self.non_repeaters = non_repeaters
-        self.max_repetitions = max_repetitions
+        #self.non_repeaters = non_repeaters
+        #self.max_repetitions = max_repetitions
         self.cmd_gen = cmdgen.CommandGenerator()
         self.community_data = cmdgen.CommunityData(community, mpModel=self._model)
         self.transport_target = cmdgen.UdpTransportTarget((ip, port),
@@ -306,4 +306,68 @@ class SNMP(object):
         return dict(status='success',
                     message='',
                     output=output)
+
+if __name__ == "__main__":
+
+    log_pattern = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    formatter = logging.Formatter(log_pattern)
+  
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(formatter)
+    logger = logging.getLogger("SNMP")
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(ch)
+    logger.propagate = False
+    device_log_info="Device ID: 1000,IP: 10.71.244.135,HostName: crs1000"
+    #logger.info('%s for %s started', operate.upper(), ip)
+
+    worker = SNMP(  "10.71.244.135",
+                    "cisco",
+                    logger=logger,
+                    port=161,
+                    timeout=5,
+                    retries=2,
+                    device_log_info=device_log_info,
+                    model_version=1,
+                    is_translate=True
+                    )
+    try:
+        import traceback
+        import json
+        oids = []
+        maxvars = 20
+        #if operate == 'bulk_get':
+        snmp_fun = worker.bulk_get
+        with open("/Users/yihli/Desktop/projects/apolo/apolo_server/processor/worker/oids") as f:
+            oids = [line.strip() for line in f.readlines()]
+            ##sys.exit()
+        
+        if len(oids) > maxvars:
+            _oid_splits = chunks(oids, maxvars)
+        else:
+            _oid_splits = [oids]
+        fw = open("/Users/yihli/Desktop/projects/apolo/apolo_server/processor/worker/result","w")
+        for _oids in _oid_splits:
+            timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+            clock = time.time()
+            result = snmp_fun(_oids)
+            
+            #for data in result["output"]:
+            #   data["item_ids"] = oid_dict[data["origin_oid"]]
+            
+            result.update(dict(result_type="element_result",  timestamp=timestamp, clock="%f" % clock))
+            #self.zmq_push.send(json.dumps(result))
+            fw.write(json.dumps(result,indent=2))
+
+        fw.close()
+        #logger.info('%s for %s finished', operate.upper(), ip)
+        #result = snmp_fun(tuple(oids))
+        status = "success"
+        message = ""
+    except Exception as e:  
+        traceback.format_exc()          
+        status = 'fail'
+        message = str(e)
+        logger.error("%s %s"%(device_log_info, str(e)))
 

@@ -74,6 +74,9 @@ class DeviceDbHelp(DbHelp):
 
         cli_items=[
                 "device__ostype__start_default_commands",
+                "device__ostype__end_default_commands",
+                "device__ostype__log_fail_judges",
+                "device__ostype__telnet_prompt",
                 "device__ostype__telnet_timeout",
                 "device__login_expect",
                 "device__telnet_port",
@@ -157,7 +160,7 @@ class DeviceDbHelp(DbHelp):
 
     @staticmethod
     def get_all_rule():
-        rules = list(CollPolicyCliRule.objects.all().values())
+        rules = CollPolicyCliRule.objects.all()
         return rules
 
 

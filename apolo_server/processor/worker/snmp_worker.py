@@ -38,7 +38,7 @@ class SNMPWorker(WorkerBase):
                     if oid not in oids:
                         oids.append(oid)
 
-        logger.info('%s for %s started', operate.upper(), ip)
+        logger.info('%s SNMP Collection Start' % device_log_info)
         worker = SNMP(ip,
                       community,
                       logger=logger,
@@ -73,16 +73,15 @@ class SNMPWorker(WorkerBase):
                 
                 result.update(dict(result_type="element_result", task_id=task_id, timestamp=timestamp, clock="%f" % clock))
                 self.zmq_push.send(json.dumps(result))
-
-
-            logger.info('%s for %s finished', operate.upper(), ip)
-            #result = snmp_fun(tuple(oids))
+                
             status = "success"
             message = ""
         except Exception as e:            
             status = 'fail'
             message = str(e)
             logger.error("%s %s"%(device_log_info, str(e)))
+
+        logger.info('%s SNMP Collection Finished' % device_log_info)
 
         result = dict(task_id=task_id,
              status=status,
