@@ -96,6 +96,9 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
             //         $('#devViewTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
             //     }
             // },
+            gridComplete: function () {
+                $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
+            },
             loadComplete: function (res) {
                 // let code: any = _.get(_.get(res, 'new_token'), 'code');
                 // let msg: any = _.get(_.get(res, 'new_token'), 'message');
@@ -120,7 +123,7 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
             rowNum: 10,
             rowList: [5, 10, 15],
             autowidth: true,
-            height: 330,
+            height: 350,
             viewrecords: false,
             multiselect: true,
             emptyrecords: 'There is no data to display',
@@ -157,7 +160,7 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         // $('#devViewTable').jqGrid('clearGridData');
                         // $('#devViewTable').trigger('reloadGrid');
                         this.devViewTable$.GridUnload();

@@ -242,7 +242,6 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
         });
         let uniqData: any = [];
         uniqData = _.uniqBy(multiStartCmds, 'name');
-        console.log('fina', uniqData);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
@@ -258,7 +257,6 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             uniqData.push(this.startCmdsInit());
         }
         this.startCmds = _.cloneDeep(uniqData);
-        console.log('start1', this.startCmds);
         return regFlgTmp;
     }
     // endCommandReg Check

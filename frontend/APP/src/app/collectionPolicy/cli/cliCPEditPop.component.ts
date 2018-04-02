@@ -52,7 +52,7 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         this.osType = res['data'];
                     }
@@ -76,7 +76,7 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                 let data = _.get(res, 'data');
                 let verify: any = _.get(data, 'verify_result');
                 let policy: any = _.get(data, 'policy_detail');
-                if (status && status['status'].toLowerCase() === 'true') {
+                if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (policy) {
                         this.name = _.get(policy, 'name');
                         this.desc = _.get(policy, 'desc');

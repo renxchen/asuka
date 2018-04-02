@@ -118,7 +118,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         this.osType = res['data'];
                         let osTypeTmp = _.clone(res['data']);

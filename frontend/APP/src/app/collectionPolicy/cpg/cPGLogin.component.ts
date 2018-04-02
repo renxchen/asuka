@@ -84,7 +84,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'status');
                 let data: any = _.get(res, 'data');
-                if (status && status['status'].toLowerCase() === 'true') {
+                if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (data && data.length > 0) {
                         this.osType = data;
                         let osTypeTmp = _.clone(data);
@@ -105,7 +105,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_get_collection_policy_name/?id='))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         _.each(res['data'], function (value) {
                             return value['nameTmp'] = value['name'].length > 50 ? value['name'].slice(0, 50) + '...' : value['name'];
@@ -309,6 +309,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             gridComplete: function () {
                 _t.deleteBtn();
                 _t.toCPDetail();
+                $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
             },
             loadComplete: function () {
                 let iCol = _t.getColumnIndexByName($(this), 'status');
@@ -398,7 +399,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('保存しました。');
                         this.bsModalRef.hide();
                         this.modalService.setDismissReason('true');
