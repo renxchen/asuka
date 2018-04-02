@@ -180,7 +180,7 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.fullWithoutSpecial(this.name);
+            this.nameFlg = Validator.fullWithoutSpecial(this.name) && this.name.length < 31;
         }
         this.telPromptNotNull = Validator.notNullCheck(this.telPrompt);
         if (this.telPromptNotNull) {

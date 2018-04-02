@@ -25,7 +25,6 @@ export class NotFoundComponent implements OnInit, AfterViewInit {
                     localStorage.removeItem('sessionTimeOut');
                     this.router.navigate(['/login/']);
                 }
-
             });
     }
 
