@@ -160,7 +160,7 @@ class DataTableHistoryItems(models.Model):
 class DevicesTmp(models.Model):
     operation_id = models.IntegerField(blank=True, null=True)
     device_id = models.AutoField(primary_key=True)
-    hostname = models.CharField(max_length=30)
+    hostname = models.CharField(max_length=256)
     ip = models.CharField(max_length=30)
     telnet_port = models.IntegerField(blank=True, null=True)
     snmp_port = models.IntegerField(blank=True, null=True)
@@ -170,7 +170,7 @@ class DevicesTmp(models.Model):
     status = models.IntegerField(blank=True, null=True)
     telnet_status = models.CharField(max_length=255, blank=True, null=True)
     snmp_status = models.CharField(max_length=255, blank=True, null=True)
-    device_type = models.CharField(max_length=255, blank=True, null=True)
+    device_type = models.CharField(max_length=30, blank=True, null=True)
     ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
     group_name = models.CharField(max_length=2000, blank=True, null=True)
 
@@ -181,7 +181,7 @@ class DevicesTmp(models.Model):
 
 class Devices(models.Model):
     device_id = models.AutoField(primary_key=True)
-    hostname = models.CharField(max_length=30)
+    hostname = models.CharField(max_length=256)
     ip = models.CharField(max_length=30)
     telnet_port = models.IntegerField(blank=True, null=True)
     snmp_port = models.IntegerField(blank=True, null=True)
@@ -191,7 +191,7 @@ class Devices(models.Model):
     status = models.IntegerField(blank=True, null=True)
     telnet_status = models.CharField(max_length=255, blank=True, null=True)
     snmp_status = models.CharField(max_length=255, blank=True, null=True)
-    device_type = models.CharField(max_length=255, blank=True, null=True)
+    device_type = models.CharField(max_length=30, blank=True, null=True)
     ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
 
     class Meta:
@@ -383,7 +383,7 @@ class Mapping(models.Model):
 
 class Ostype(models.Model):
     ostypeid = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=30, blank=True, null=True)
     log_fail_judges = models.CharField(max_length=2048, blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
     snmp_timeout = models.IntegerField(blank=True, null=True)
@@ -391,7 +391,7 @@ class Ostype(models.Model):
     telnet_prompt = models.CharField(max_length=255, blank=True, null=True)
     start_default_commands = models.CharField(max_length=2048, blank=True, null=True)
     end_default_commands = models.CharField(max_length=2048, blank=True, null=True)
-    desc = models.CharField(max_length=45, blank=True, null=True)
+    desc = models.CharField(max_length=2000, blank=True, null=True)
 
     class Meta:
         # managed = False
