@@ -88,7 +88,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                 _t.editBtn();
                 _t.deleteBtn();
                 $('.ui-jqgrid .ui-jqgrid-htable th div').css({ 'height': '27px' });
-        $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
+                $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
             },
             loadComplete: function (res) {
                 // let code: any = _.get(_.get(res, 'new_token'), 'code');
@@ -147,6 +147,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
     public brFormatter(cellvalue, options, rowObject) {
         if (cellvalue !== null && cellvalue !== '') {
             return '<i class="fa fa-genderless"></i> ' + cellvalue.replace(/，/g, '<br /><i class="fa fa-genderless"></i> ');
+            // return '<i class="fa fa-genderless"></i> ' + cellvalue.replace(/，/g, '\n<i class="fa fa-genderless"></i> ');
         } else {
             return '-';
         }

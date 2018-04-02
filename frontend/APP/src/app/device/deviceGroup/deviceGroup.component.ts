@@ -33,7 +33,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
         keyboard: false,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: 'modal-md'
+        class: 'modal-lg'
     };
     constructor(
         public httpClient: HttpClientComponent,

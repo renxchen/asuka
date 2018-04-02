@@ -213,7 +213,8 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             return value['name'] === '';
         });
         let uniqData: any = [];
-        uniqData = _.uniqBy(multiLogs, 'name');
+        // uniqData = _.uniqBy(multiLogs, 'name');
+        uniqData = _.cloneDeep(multiLogs);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
@@ -241,7 +242,8 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             return value['name'] === '';
         });
         let uniqData: any = [];
-        uniqData = _.uniqBy(multiStartCmds, 'name');
+        // uniqData = _.uniqBy(multiStartCmds, 'name');
+        uniqData = _.cloneDeep(multiStartCmds);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
@@ -269,7 +271,8 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             return value['name'] === '';
         });
         let uniqData: any = [];
-        uniqData = _.uniqBy(multiendCmds, 'name');
+        // uniqData = _.uniqBy(multiendCmds, 'name');
+        uniqData = _.cloneDeep(multiendCmds);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
