@@ -150,7 +150,7 @@ export class HttpClientComponent {
                     localStorage.setItem('requestFailed', 'failed');
                     return Observable.of({
                         'status': {
-                            'status': true,
+                            'status': false,
                             'message': 'System access failed, please connect the administrator.'
                         },
                         'data': null

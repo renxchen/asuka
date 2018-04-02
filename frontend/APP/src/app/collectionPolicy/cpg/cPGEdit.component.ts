@@ -157,7 +157,7 @@ export class CPGEditComponent implements OnInit {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         _.each(res['data'], function (value) {
-                            return value['nameTmp'] = value['name'].length > 60 ? value['name'].slice(0, 60) + '...' : value['name'];
+                            return value['nameTmp'] = value['name'].length > 50 ? value['name'].slice(0, 50) + '...' : value['name'];
                         });
                         this.cpNames = res['data'];
                     }

@@ -62,7 +62,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let data = _.get(res, 'data');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         // change token to new_token
                         if (localStorage.getItem('sessionTimeOut')) {
                             localStorage.removeItem('sessionTimeOut');
@@ -81,7 +81,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 });
         } else {
             let _t = this;
-            _t.modalMsg = 'ユーザー名とパスワードを入力してください';
+            _t.modalMsg = 'ユーザー名とパスワードを入力してください。';
             _t.closeMsg = '閉じる';
             _t.showAlertModal(_t.modalMsg, this.closeMsg);
         }
