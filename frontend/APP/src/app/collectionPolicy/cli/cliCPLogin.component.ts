@@ -74,7 +74,7 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         if (data && data['data']) {
                             let id = _.get(data['data'], 'coll_policy_id');
                             _t.modalMsg = '保存しました。';
@@ -109,7 +109,7 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         this.osType = res['data'];
                         let osTypeTmp = _.clone(res['data']);

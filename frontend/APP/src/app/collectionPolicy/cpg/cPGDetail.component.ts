@@ -65,7 +65,7 @@ export class CPGDetailComponent implements OnInit {
                 let data = _.get(res, 'data');
                 let groupData: any[] = _.get(data, 'policy_group_data');
                 let groupsData = _.get(data, 'policys_groups_data');
-                if (status && status['status'].toLowerCase() === 'true') {
+                if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (groupData && groupData.length > 0) {
                         this.name = _.get(groupData[0], 'name');
                         this.desc = _.get(groupData[0], 'desc');
@@ -89,7 +89,7 @@ export class CPGDetailComponent implements OnInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         this.osType = res['data'];
                         let osTypeTmp = _.clone(res['data']);
@@ -113,7 +113,7 @@ export class CPGDetailComponent implements OnInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_get_collection_policy_name/'))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
                         this.cpNames = res['data'];
                     }

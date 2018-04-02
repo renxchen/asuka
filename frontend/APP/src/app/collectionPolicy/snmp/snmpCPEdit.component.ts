@@ -79,7 +79,7 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                 let data = _.get(res, 'data');
                 let verify = _.get(data, 'verify_result');
                 let snmpData: any = _.get(data, 'data');
-                if (status && status['status'].toLowerCase() === 'true') {
+                if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (snmpData && snmpData.length > 0) {
                         this.name = _.get(snmpData[0], 'name');
                         this.desc = _.get(snmpData[0], 'desc');
@@ -194,7 +194,7 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         // if (res['data']) {
                         //     let id = res['data']['coll_policy_id'];
                         //     this.router.navigate(['/index/snmpcpedit'],

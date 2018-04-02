@@ -243,7 +243,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
             .toJson(this.httpClient.post(highLightUrl, param)).subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data']) {
                         let data = res['data'];
                         // data
@@ -271,7 +271,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('保存しました');
                         this.router.navigate(['/index/clicpdetail'], { queryParams: { 'id': this.cPId } });
                     } else {

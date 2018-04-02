@@ -141,6 +141,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 }
             ],
             gridComplete: function () {
+                $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
                 _t.detailBtn();
                 _t.editBtn();
                 _t.deleteBtn();
@@ -177,7 +178,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             rowNum: 10,
             rowList: [5, 10, 15],
             autowidth: true,
-            height: 340,
+            height: 350,
             viewrecords: false,
             emptyrecords: 'There is no data to display',
             jsonReader: {
@@ -258,7 +259,7 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                             let status = _.get(res, 'status');
                             let msg: any = _.get(status, 'message');
                             let data = _.get(res, 'data');
-                            if (status && status['status'].toLowerCase() === 'true') {
+                            if (status && status['status'].toString().toLowerCase() === 'true') {
                                 this.modalMsg = '削除しました。';
                                 this.closeMsg = '閉じる';
                                 _t.showAlertModal(this.modalMsg, this.closeMsg);
