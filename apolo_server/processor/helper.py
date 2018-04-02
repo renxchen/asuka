@@ -2,7 +2,8 @@ __author__ = 'zhutong'
 
 import logging
 import os
-DEFAULT_LOG_FILE_PATH = os.path.join(os.path.dirname(__file__),"..","logs","server.log")
+from constants import SYS_PATH
+DEFAULT_LOG_FILE_PATH = os.path.join(SYS_PATH,"logs","apolo_server.log")
 DEFAULT_LOG_LEVEL = logging.DEBUG
 DEFAULT_FILE_LOG_LEVEL = logging.ERROR
 from logging.handlers import RotatingFileHandler

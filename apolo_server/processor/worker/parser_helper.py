@@ -44,7 +44,7 @@ def cli_parse(items,result,device_log_info,logger):
                 item["parse_status"] = True
             else:
                 item["parse_status"] = False
-                logger.error("%s CLI PARSE ERROR, ITEM_ID:%s Error_Info:%s " % (device_log_info,['item_id'],arry[-1][0]["err_msg"]))
+                logger.error("%s CLI PARSE ERROR, ITEM_ID:%s Error_Info:%s " % (device_log_info,['item_id'],arry[-1][0]["error_msg"]))
 
         ParserDbHelp().bulk_save_result([item for item in items if item["parse_status"] == True], clock, CommonConstants.CLI_TYPE_CODE)
         return parser_result
