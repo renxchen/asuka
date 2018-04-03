@@ -82,6 +82,9 @@ export class DeviceLoginComponent implements OnInit {
             this.devLoginTable$.GridUnload();
             // $('#devLoginTable').jqGrid('clearGridData');
         }
+        if (this.processbar) {
+            this.processbar = null;
+        }
         this.processbar = this.modalService.show(ProgressbarComponent, this.modalConfig);
         this.processbar.content.message = 'Uploading...';
         this.http.post('/v1/api_device/upload', this.formData)
@@ -105,12 +108,12 @@ export class DeviceLoginComponent implements OnInit {
                         this.modalRef.content.data = this.errorDevices;
                     }
                 } else {
-                    this.processbar.hide();
                     this.actionFlg = true;
                     // alert(msg);
                     this.modalMsg = msg;
                     this.closeMsg = '閉じる';
                     this.showAlertModal(this.modalMsg, this.closeMsg);
+                    this.processbar.hide();
                 }
             });
     }
@@ -221,7 +224,7 @@ export class DeviceLoginComponent implements OnInit {
         checkInfo['operation_id'] = this.optId;
         if (deviceSel.length > 0) {
             this.processbar = this.modalService.show(ProgressbarComponent, this.modalConfig);
-            this.processbar.content.message = 'Check...';
+            this.processbar.content.message = 'Checking...';
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put(checkUrl, checkInfo))
@@ -229,21 +232,28 @@ export class DeviceLoginComponent implements OnInit {
                     let status = _.get(res, 'status');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         this.devLoginTable$.GridUnload();
+                        this.processbar.hide();
                         this.drawDevLoginTable();
                         // $('#devLoginTable').jqGrid('clearGridData');
                         // $('#devLoginTable').trigger('reloadGrid');
-                        this.processbar.hide();
                     } else {
+                        this.modalMsg = _.get(status, 'message');
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                         this.processbar.hide();
-                        alert('Status check failed.');
                     }
                 });
         } else {
-            alert('Please choose one device at least.');
+            // alert('Please choose one device at least.');
+            this.modalMsg = 'Please choose one device at least.';
+            this.closeMsg = '閉じる';
+            this.showAlertModal(this.modalMsg, this.closeMsg);
         }
     }
     // save to database;
     public deviceLogin() {
+        this.processbar = this.modalService.show(ProgressbarComponent, this.modalConfig);
+        this.processbar.content.message = 'Waiting...';
         this.apiPrefix = '/v1';
         let databaseUrl = '/api_device/';
         let loginInfo: any = {};
@@ -254,9 +264,14 @@ export class DeviceLoginComponent implements OnInit {
             .subscribe(res => {
                 let status = _.get(res, 'status');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
+                    this.processbar.hide();
                     this.router.navigate(['index/deviceview/']);
                 } else {
-                    alert('Save failed.');
+                    // alert('Save failed.');
+                    this.modalMsg = _.get(status, 'message');
+                    this.closeMsg = '閉じる';
+                    this.showAlertModal(this.modalMsg, this.closeMsg);
+                    this.processbar.hide();
                 }
             });
     }
