@@ -98,7 +98,7 @@ export class DeviceLoginComponent implements OnInit {
                 this.optId = _.get(res, 'operation_id');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
                     // $('#devLoginTable').trigger('reloadGrid');
-                    this.processbar.hide();
+                    $('.modal').hide();
                     this.drawDevLoginTable();
                     this.actionFlg = false;
                     if (data && data.length > 0) {
@@ -233,7 +233,7 @@ export class DeviceLoginComponent implements OnInit {
                     let status = _.get(res, 'status');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         this.devLoginTable$.GridUnload();
-                        this.processbar.hide();
+                        $('.modal').hide();
                         this.drawDevLoginTable();
                         // $('#devLoginTable').jqGrid('clearGridData');
                         // $('#devLoginTable').trigger('reloadGrid');
@@ -266,7 +266,7 @@ export class DeviceLoginComponent implements OnInit {
             .subscribe(res => {
                 let status = _.get(res, 'status');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
-                    this.processbar.hide();
+                    $('.modal').hide();
                     this.router.navigate(['index/deviceview/']);
                 } else {
                     $('.modal').hide();
