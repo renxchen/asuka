@@ -123,8 +123,8 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                         } else {
                             this.logs = this.logsToList(logsTmp);
                         }
-                        this.snmpTimeout = _.get(data[0], 'snmp_timeout');
-                        this.telTimeout = _.get(data[0], 'telnet_timeout');
+                        this.snmpTimeout = _.get(data[0], 'snmp_timeout').toString();
+                        this.telTimeout = _.get(data[0], 'telnet_timeout').toString();
                     }
                     if (verify) {
                         this.ostypeMFlg = _.get(verify, 'name');
