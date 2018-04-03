@@ -166,9 +166,9 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         // $('#devViewTable').jqGrid('clearGridData');
                         // $('#devViewTable').trigger('reloadGrid');
+                        $('.modal').hide();
                         this.devViewTable$.GridUnload();
                         this.drawdevViewTable();
-                        this.processbar.hide();
                     } else {
                         // this.processbar.hide();
                         $('.modal').hide();
