@@ -260,9 +260,9 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                             let msg: any = _.get(status, 'message');
                             let data = _.get(res, 'data');
                             if (status && status['status'].toString().toLowerCase() === 'true') {
-                                this.modalMsg = '削除しました。';
-                                this.closeMsg = '閉じる';
-                                _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                _t.modalMsg = '削除しました。';
+                                _t.closeMsg = '閉じる';
+                                _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                                 $('#modalButton').on('click', function () {
                                     // $('#cpTable').jqGrid().trigger('reloadGrid');
                                     $('#cpTable').jqGrid('clearGridData');
@@ -270,19 +270,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                                 });
                             } else {
                                 if (msg) {
-                                    this.modalMsg = msg;
-                                    this.closeMsg = '閉じる';
-                                    _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                    _t.modalMsg = msg;
+                                    _t.closeMsg = '閉じる';
+                                    _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                                 }
-                                // if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
-                                //     this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
-                                //     this.closeMsg = '閉じる';
-                                //     _t.showAlertModal(this.modalMsg, this.closeMsg);
-                                // } else {
-                                //     if (msg) {
-                                //         alert(msg);
-                                //     }
-                                // }
                             }
                         });
                 }
