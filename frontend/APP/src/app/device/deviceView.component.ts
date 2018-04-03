@@ -170,11 +170,12 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                         this.drawdevViewTable();
                         this.processbar.hide();
                     } else {
+                        // this.processbar.hide();
+                        $('#processBar').hide();
                         // alert(msg);
                         this.modalMsg = msg;
                         this.closeMsg = '閉じる';
                         this.showAlertModal(this.modalMsg, this.closeMsg);
-                        this.processbar.hide();
                     }
                 });
         } else {

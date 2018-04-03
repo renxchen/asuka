@@ -108,12 +108,13 @@ export class DeviceLoginComponent implements OnInit {
                         this.modalRef.content.data = this.errorDevices;
                     }
                 } else {
+                    // this.processbar.hide();
+                    $('#processBar').hide();
                     this.actionFlg = true;
                     // alert(msg);
                     this.modalMsg = msg;
                     this.closeMsg = '閉じる';
                     this.showAlertModal(this.modalMsg, this.closeMsg);
-                    this.processbar.hide();
                 }
             });
     }
@@ -237,10 +238,11 @@ export class DeviceLoginComponent implements OnInit {
                         // $('#devLoginTable').jqGrid('clearGridData');
                         // $('#devLoginTable').trigger('reloadGrid');
                     } else {
+                        $('#processBar').hide();
+                        // this.processbar.hide();
                         this.modalMsg = _.get(status, 'message');
                         this.closeMsg = '閉じる';
                         this.showAlertModal(this.modalMsg, this.closeMsg);
-                        this.processbar.hide();
                     }
                 });
         } else {
@@ -267,11 +269,12 @@ export class DeviceLoginComponent implements OnInit {
                     this.processbar.hide();
                     this.router.navigate(['index/deviceview/']);
                 } else {
+                    $('#processBar').hide();
+                    // this.processbar.hide();
                     // alert('Save failed.');
                     this.modalMsg = _.get(status, 'message');
                     this.closeMsg = '閉じる';
                     this.showAlertModal(this.modalMsg, this.closeMsg);
-                    this.processbar.hide();
                 }
             });
     }
