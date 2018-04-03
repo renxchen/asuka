@@ -103,7 +103,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
-            .toJson(this.httpClient.get('/api_get_collection_policy_name/?id='))
+            .toJson(this.httpClient.get('/api_get_collection_policy_name/?id=' + id))
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data'] && res['data'].length > 0) {
