@@ -100,6 +100,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             });
     }
     public getCPNames(id?: any) {
+        this.cpNames = [];
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
