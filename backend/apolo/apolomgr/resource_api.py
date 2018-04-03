@@ -196,9 +196,9 @@ def api_data_table_name_verify(request):
     return HttpResponse(run_request_method(resource_object))
 
 
-@api_view(["GET"])
-@auth_if_refresh_required
-@permission_classes((IsAuthenticated,))
+# @api_view(["GET"])
+# @auth_if_refresh_required
+# @permission_classes((IsAuthenticated,))
 def api_data_table_csv_export(request):
     resource_object = data_table_step1_views.TableViewsSet(request=request).csv_export()
     return resource_object
@@ -318,9 +318,9 @@ def api_device_pre(request):
     return HttpResponse(run_request_method(resource_object))
 
 
-@api_view(['GET'])
-@auth_if_refresh_required
-@permission_classes((IsAuthenticated,))
+# @api_view(['GET'])
+# @auth_if_refresh_required
+# @permission_classes((IsAuthenticated,))
 def api_device_export(request):
     resource_object = device_export.ExportDevicesViewSet(request=request).export()
     return resource_object
