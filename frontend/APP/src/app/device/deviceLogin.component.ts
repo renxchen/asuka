@@ -109,7 +109,7 @@ export class DeviceLoginComponent implements OnInit {
                     }
                 } else {
                     // this.processbar.hide();
-                    $('#processBar').hide();
+                    $('.modal').hide();
                     this.actionFlg = true;
                     // alert(msg);
                     this.modalMsg = msg;
@@ -238,7 +238,7 @@ export class DeviceLoginComponent implements OnInit {
                         // $('#devLoginTable').jqGrid('clearGridData');
                         // $('#devLoginTable').trigger('reloadGrid');
                     } else {
-                        $('#processBar').hide();
+                        $('.modal').hide();
                         // this.processbar.hide();
                         this.modalMsg = _.get(status, 'message');
                         this.closeMsg = '閉じる';
@@ -269,7 +269,7 @@ export class DeviceLoginComponent implements OnInit {
                     this.processbar.hide();
                     this.router.navigate(['index/deviceview/']);
                 } else {
-                    $('#processBar').hide();
+                    $('.modal').hide();
                     // this.processbar.hide();
                     // alert('Save failed.');
                     this.modalMsg = _.get(status, 'message');

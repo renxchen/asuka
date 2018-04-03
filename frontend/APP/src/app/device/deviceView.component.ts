@@ -171,7 +171,7 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                         this.processbar.hide();
                     } else {
                         // this.processbar.hide();
-                        $('#processBar').hide();
+                        $('.modal').hide();
                         // alert(msg);
                         this.modalMsg = msg;
                         this.closeMsg = '閉じる';
