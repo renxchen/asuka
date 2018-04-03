@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Router, ActivatedRoute } from '@angular/router';
 declare var $: any;
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
 
 @Component({
     selector: 'devices-per-policy',
@@ -23,9 +23,9 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
         // {label: 'コレクションポリシー',  name: 'policy', width: 30, align: 'center',
         // cellattr: this.arrtSetting.bind(this), sortable: false, classes: 'policy', search: false,},
         {label: 'デバイス', name: 'device', width: 50, align: 'center',
-            classes: 'device',},
+            classes: 'device', sortable:false},
         {label: 'ステータス',  name: 'status', width: 30,
-            align: 'center', sortable: false, search: false, },
+            align: 'center', sortable: false, search: false},
 
     ];
 
