@@ -24,10 +24,6 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
     apiPrefix: any;
     groups: any = [];
     modalRef: any;
-    groupData = [{ 'group_id': 1, 'name': 'group1' },
-    { 'group_id': 2, 'name': 'group2' },
-    { 'group_id': 3, 'name': 'group3' },
-    { 'group_id': 4, 'name': 'group4' }];
     modalConfig = {
         animated: true,
         keyboard: false,
@@ -90,28 +86,21 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             ],
             beforeSelectRow: function (rowid, e) { return false; },
             // beforeRequest: function () {
-                //     let currentPage: any = $('#deviceTable').jqGrid('getGridParam', 'page');
-                //     let rowNum: any = $('#deviceTable').jqGrid('getGridParam', 'rowNum');
-                //     let records: any = $('#deviceTable').jqGrid('getGridParam', 'records');
-                //     console.log(currentPage, rowNum, records);
-                //     let totalPages = records % rowNum;
-                //     if (records > 0 && currentPage > totalPages) {
-                //         $('#deviceTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
-                //     }
-                // },
-                // text-overflow: ellipsis,
+            //     let currentPage: any = $('#deviceTable').jqGrid('getGridParam', 'page');
+            //     let rowNum: any = $('#deviceTable').jqGrid('getGridParam', 'rowNum');
+            //     let records: any = $('#deviceTable').jqGrid('getGridParam', 'records');
+            //     console.log(currentPage, rowNum, records);
+            //     let totalPages = records % rowNum;
+            //     if (records > 0 && currentPage > totalPages) {
+            //         $('#deviceTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
+            //     }
+            // },
             gridComplete: function () {
                 $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
             },
             loadComplete: function (res) {
-                // let code: any = _.get(_.get(res, 'new_token'), 'code');
-                // let msg: any = _.get(_.get(res, 'new_token'), 'message');
-                // if (code === 102 || code === 103) {
-                    //     localStorage.setItem('sessionTimeOut', msg);
-                    //     _t.router.navigate(['/login/']);
-                    // }
-                    let status = _.get(_.get(res, 'status'), 'status');
-                    $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
+                let status = _.get(_.get(res, 'status'), 'status');
+                $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
                 let code: any = _.get(_.get(res, 'status'), 'code');
                 let msg: any = _.get(_.get(res, 'status'), 'message');
                 if (status === 'False') {
@@ -133,7 +122,6 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                 page: 'current_page_num',
                 total: 'num_page',
                 records: 'total_num',
-                // userData: 'status',
                 repeatitems: false,
             },
         });
