@@ -30,7 +30,10 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
     proBar: ProgressbarComponent;
     apiPrefix: any;
     devViewTable$: any;
+    modalRef: BsModalRef;
     processbar: BsModalRef;
+    closeMsg: any;
+    modalMsg: any;
     modalConfig = {
         animated: true,
         keyboard: false,
@@ -153,7 +156,7 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
         checkInfo['id_list'] = deviceSel;
         if (deviceSel.length > 0) {
             this.processbar = this.modalService.show(ProgressbarComponent, this.modalConfig);
-            this.processbar.content.message = 'Check...';
+            this.processbar.content.message = 'Checking...';
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put(checkUrl, checkInfo))
@@ -167,14 +170,25 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                         this.drawdevViewTable();
                         this.processbar.hide();
                     } else {
+                        // alert(msg);
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                         this.processbar.hide();
-                        alert(msg);
                     }
                 });
         } else {
-            alert('Please choose one device at least.');
+            // alert('Please choose one device at least.');
+            this.modalMsg = 'Please choose one device at least.';
+            this.closeMsg = '閉じる';
+            this.showAlertModal(this.modalMsg, this.closeMsg);
         }
     }
     public CSVExport() {
+    }
+    public showAlertModal(modalMsg: any, closeMsg: any) {
+        this.modalRef = this.modalService.show(ModalComponent);
+        this.modalRef.content.modalMsg = modalMsg;
+        this.modalRef.content.closeMsg = closeMsg;
     }
 }
