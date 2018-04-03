@@ -259,7 +259,8 @@ class TokenRefresh(object):
         except Exception, e:
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
-            return exception_handler(e)
+            # return exception_handler(e)
+            return False
 
 
 def auth_if_refresh_required(view):

@@ -4,7 +4,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Router } from '@angular/router';
 import { DataCollectionLoginComponent } from './dataCollectionLogin.component';
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
 declare var $: any;
 // import { DataCollectionService } from './dataCollection.service';
 @Component({
@@ -53,7 +53,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         {label: 'ステータス', name: 'schedules_is_valid', width: 45, align: 'center', classes: 'status',
             formatter: this.formatterStatus},
         {label: 'アクション', name: 'action', width: 45, align: 'center', search: false,
-            formatter: this.fomatterBtn
+            formatter: this.fomatterBtn, sortable: false
         }
     ];
     modalRef: BsModalRef;
@@ -146,7 +146,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
         let _deviceGroup = $('.deviceGroup');
         for (let i=0;i<_deviceGroup.length;i++){
             let _target = $(_deviceGroup[i]);
-            let _content = '<div style="color:blue;">';
+            let _content = '<div style="color:blue; text-decoration: underline;">';
             _content += _target.html() + '</div>';
             _target.html(_content);
             let deviceGroupNo = _target.prev().html();
@@ -163,7 +163,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
             let _target = $(_policyGroup[i]);
             let _content = '';
             if (_target.html() != '全機能OFF'){
-                _content += '<div style="color:blue;">';
+                _content += '<div style="color:blue; text-decoration: underline;">';
                 _content += _target.html() + '</div>';
                 let policyGroupNo = _target.prev().html();
                 _target.click( function (event) {
