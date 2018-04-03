@@ -25,10 +25,13 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         // cellattr: this.arrtSetting, sortable: false,},
         {label: 'コレクションポリシーグループ名',  name: 'cpGroup', width: 100,
             align: 'center', sortable: false, cellattr: this.arrtSetting,},
+
         {label: 'プライオリティー',  name: 'priority', width: 30,
             align: 'center', sortable: false, cellattr: this.arrtSetting,},
+
         {label: 'コレクションポリシー', name: 'policy', width: 50, align: 'center',
             classes: 'policy', sortable: false,cellattr: this.renderCpColor },
+
         {label: ' ', name: 'valid_status', width: 50, align: 'center', search: false,
         formatter: this.fomatterBtn, sortable: false, height: 50,},
         // {label: '', name: 'action', width: 50, align: 'center', search: false,
@@ -181,10 +184,10 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         // console.log(rowObject);
         if (cellvalue == true){
             return '<button class="btn btn-xs btn-primary stop"' +
-                ' name="'+ rowObject["policy"] +'" id="'+ rowObject["cpGroupNo"] + "_" + rowObject["policyNo"] + '">停止</button>';
+                ' name="'+ rowObject["policy"] +'" id="'+ rowObject["cpGroupNo"] + "_" + rowObject["priority"] + "_" + rowObject["policyNo"] + '">停止</button>';
         } else if (cellvalue == 0){
             return '<button class="btn btn-xs btn-default stop"' +
-                ' name="'+ rowObject["policy"] +'" id="'+ rowObject["cpGroupNo"] + "_" +  rowObject["policyNo"] + '">解除</button>';
+                ' name="'+ rowObject["policy"] +'" id="'+ rowObject["cpGroupNo"] + "_" + rowObject["priority"] + "_" +  rowObject["policyNo"] + '">解除</button>';
         } else {
             return cellvalue;
         }
@@ -293,10 +296,10 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         $('.stop').click(function (event) {
             let id = $(event)[0].target.id;
             let policy = $(event)[0].target.name;
-            let coll_policy_id = id.split('_')[1];
+            let coll_policy_id = id.split('_')[2];
+            let priority = id.split('_')[1];
             let policy_group_id = id.split('_')[0];
             let url = '/api_data_collection_devices/';
-
 
             if ($('#'+id).html() == '停止'){
                 let _confirm = confirm('Stop '+policy+'?');
@@ -305,7 +308,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                     _this.httpClient
                         .toJson(_this.httpClient.put(url,
                                     {"is_all": 0, 'device_id': _this.deviceNo, "coll_policy_id": coll_policy_id,
-                                    "policy_group_id": policy_group_id, 'status': 0}
+                                    "policy_group_id": policy_group_id, 'priority': priority, 'status': 0}
                                 ))
                         .subscribe(res => {
                             if (res['status']['status'].toString().toLowerCase() === 'true') {
@@ -337,7 +340,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                     _this.httpClient
                         .toJson(_this.httpClient.put(url,
                                     {"is_all": 0, 'device_id': _this.deviceNo, "coll_policy_id": coll_policy_id,
-                                    "policy_group_id": policy_group_id, 'status': 1}
+                                    "policy_group_id": policy_group_id, 'priority': priority, 'status': 1}
                                 ))
                         .subscribe(res => {
                             if (res['status']['status'].toString().toLowerCase() === 'true') {
