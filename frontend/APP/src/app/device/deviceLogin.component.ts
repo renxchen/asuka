@@ -252,6 +252,8 @@ export class DeviceLoginComponent implements OnInit {
     }
     // save to database;
     public deviceLogin() {
+        this.processbar = this.modalService.show(ProgressbarComponent, this.modalConfig);
+        this.processbar.content.message = 'Waiting...';
         this.apiPrefix = '/v1';
         let databaseUrl = '/api_device/';
         let loginInfo: any = {};
@@ -262,9 +264,14 @@ export class DeviceLoginComponent implements OnInit {
             .subscribe(res => {
                 let status = _.get(res, 'status');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
+                    this.processbar.hide();
                     this.router.navigate(['index/deviceview/']);
                 } else {
-                    alert('Save failed.');
+                    // alert('Save failed.');
+                    this.modalMsg = _.get(status, 'message');
+                    this.closeMsg = '閉じる';
+                    this.showAlertModal(this.modalMsg, this.closeMsg);
+                    this.processbar.hide();
                 }
             });
     }
