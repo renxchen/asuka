@@ -259,11 +259,12 @@ class DevicePreViewSet(APIView):
                     group = f.get('Group')
                     if group != '':
                         group = group.split(',')
-                        if len(group) > 5 or len(group) != len(set(group)):
+                        if len(group) > 5 :
                             dict_check['group'] = False
                             flag_err += 1
                         else:
                             flag_group = 0
+                            group = list(set(group))
                             for group_one in group_list:
                                 for g in group:
                                     if g == group_one.name:
