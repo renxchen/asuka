@@ -76,12 +76,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                 _t.deleteBtn();
             },
             loadComplete: function (res) {
-                // let code: any = _.get(_.get(res, 'new_token'), 'code');
-                // let msg: any = _.get(_.get(res, 'new_token'), 'message');
-                // if (code === 102 || code === 103) {
-                //     localStorage.setItem('sessionTimeOut', msg);
-                //     _t.router.navigate(['/login/']);
-                // }
                 let status = _.get(_.get(res, 'status'), 'status');
                 let code: any = _.get(_.get(res, 'status'), 'code');
                 let msg: any = _.get(_.get(res, 'status'), 'message');
@@ -221,13 +215,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                                     this.closeMsg = '閉じる';
                                     _t.showAlertModal(this.modalMsg, this.closeMsg);
                                 }
-                                // if (msg && msg === 'COLL_POLICY_GROUP_EXIST_IN_SCHEDULE') {
-                                //     this.modalMsg = 'Can not been delete when policy group exits in schedule';
-                                //     this.closeMsg = '閉じる';
-                                //     _t.showAlertModal(this.modalMsg, this.closeMsg);
-                                // } else {
-                                //     alert(msg);
-                                // }
                             }
                         });
                 }
