@@ -146,13 +146,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.xOffsetFlg = Validator.xOffsetCheck(this.xOffset.toString());
         }
         if (this.selSplitChar === '3') {
-            // if (this.otherChar) {
-            //     this.otherCharFlg = true;
-            //     this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
-            // } else {
-            //     this.otherCharFlg = false;
-            //     this.otherCharRegFlg = true;
-            // }
             this.otherCharFlg = Validator.notNullCheck(this.otherChar);
             if (this.otherCharFlg) {
                 this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
@@ -204,13 +197,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.yOffsetFlg = Validator.offsetCheck(this.yOffset);
         }
         if (this.selSplitChar === '3') {
-            // if (this.otherChar) {
-            //     this.otherCharFlg = true;
-            //     this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
-            // } else {
-            //     this.otherCharFlg = false;
-            //     this.otherCharRegFlg = true;
-            // }
             this.otherCharFlg = Validator.notNullCheck(this.otherChar);
             if (this.otherCharFlg) {
                 this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
@@ -262,7 +248,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             return false;
         }
     }
-    // backend feedback:data valid error in saving the rule
     public dataRuleDCheck() {
         /**
         * @brief Verify the validity of the input information
