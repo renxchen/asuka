@@ -211,9 +211,9 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                                 });
                             } else {
                                 if (msg) {
-                                    this.modalMsg = msg;
-                                    this.closeMsg = '閉じる';
-                                    _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                    _t.modalMsg = msg;
+                                    _t.closeMsg = '閉じる';
+                                    _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                                 }
                             }
                         });

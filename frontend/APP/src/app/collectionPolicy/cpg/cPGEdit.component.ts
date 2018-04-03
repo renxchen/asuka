@@ -60,7 +60,6 @@ export class CPGEditComponent implements OnInit {
         private httpClient: HttpClientComponent,
         private activatedRoute: ActivatedRoute,
         private router: Router,
-        // private bsModalRef: BsModalRef,
         private modalService: BsModalService
     ) {
         let cPIdTmp = this.activatedRoute.snapshot.queryParams['id'];
@@ -143,7 +142,6 @@ export class CPGEditComponent implements OnInit {
                 }
             });
     }
-    // modify
     public getCPNames(id?: any) {
         /**
         * @brief get collection_policy_name data
@@ -194,22 +192,24 @@ export class CPGEditComponent implements OnInit {
         * @date 2018/03/13
         */
         let _t = this;
-            $('.delete').click(function (event) {
-                if (this.exeFlg) {
-                    let cpList: any = _t.cpList;
-                    let id = $(event)[0].target.id;
-                    for (let i = 0; i < cpList.length; i++) {
-                        if (cpList[i].policy.toString() === id) {
-                            cpList.splice(i, 1);
-                            _t.cpgActionGrid$.GridUnload();
-                            // $('#moreInfoTable').jqGrid('clearGridData');
-                            _t.moreInfoTable(cpList);
-                        }
+        $('.delete').click(function (event) {
+            if (this.exeFlg) {
+                let cpList: any = _t.cpList;
+                let id = $(event)[0].target.id;
+                for (let i = 0; i < cpList.length; i++) {
+                    if (cpList[i].policy.toString() === id) {
+                        cpList.splice(i, 1);
+                        _t.cpgActionGrid$.GridUnload();
+                        // $('#moreInfoTable').jqGrid('clearGridData');
+                        _t.moreInfoTable(cpList);
                     }
-                    _t.cpList = cpList;
-                    event.stopPropagation();
+                }
+                _t.cpList = cpList;
+                event.stopPropagation();
             } else {
-                alert('Collection policy group is running in system.');
+                this.modalMsg = 'Collection policy group is running in system.';
+                this.closeMsg = '閉じる';
+                this.showAlertModal(this.modalMsg, this.closeMsg);
             }
         });
     }
@@ -463,7 +463,7 @@ export class CPGEditComponent implements OnInit {
         * @author Dan Lv
         * @date 2018/03/13
         */
-       this.uniqueFlg = true;
+        this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.fullWithoutSpecial(this.name);
@@ -503,9 +503,11 @@ export class CPGEditComponent implements OnInit {
                         if (msg && msg === 'Collection policy group name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            this.modalMsg = msg;
-                            this.closeMsg = '閉じる';
-                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                            if (msg) {
+                                this.modalMsg = msg;
+                                this.closeMsg = '閉じる';
+                                this.showAlertModal(this.modalMsg, this.closeMsg);
+                            }
                         }
                     }
                 });
