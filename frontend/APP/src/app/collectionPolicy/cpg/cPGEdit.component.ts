@@ -149,6 +149,7 @@ export class CPGEditComponent implements OnInit {
         * @author Dan Lv
         * @date 2018/03/13
         */
+        this.cpNames = [];
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
