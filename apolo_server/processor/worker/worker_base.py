@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-tmp_path = os.path.split(os.path.dirname(__file__))[0]
-SYS_PATH = os.path.split(os.path.split(tmp_path)[0])[0]
+
+SYS_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 sys.path.append(SYS_PATH)
 import json
 import logging
