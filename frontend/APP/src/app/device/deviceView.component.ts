@@ -188,6 +188,7 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
         }
     }
     public CSVExport() {
+        window.location.href = '/v1/api_device/export';
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
         /**
