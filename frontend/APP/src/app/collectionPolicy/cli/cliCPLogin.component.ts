@@ -33,6 +33,7 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
     cmdFlg: Boolean = true;
     nameNotNull: Boolean = true;
     cmdNotNull: Boolean = true;
+    ostypeNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
     modalRef: BsModalRef;
     closeMsg: any;
@@ -148,9 +149,14 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
         if (this.cmdNotNull) {
             this.cmdFlg = Validator.halfWidthReg(this.cliCommand);
         }
+        if (this.selectedOsType) {
+            this.ostypeNotNull = true;
+        } else {
+            this.ostypeNotNull = false;
+        }
         if (this.nameNotNull && this.nameFlg
             && this.cmdNotNull && this.cmdFlg
-            && this.selectedOsType) {
+            && this.ostypeNotNull) {
             return true;
         } else {
             return false;

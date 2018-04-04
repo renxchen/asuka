@@ -73,24 +73,23 @@ class DevicePreViewSet(APIView):
         """
         device = DevicesTmp.objects.get(device_id=device_id)
         ostype = Ostype.objects.get(ostypeid=device.ostype_id)
-        default_commands = ostype.start_default_commands
         time_out = ostype.telnet_timeout
 
         payload = {
-            "commands": [
-                "show version"
-            ],
-            "default_commands": default_commands,
             "ip": device.ip,
-            "platform": "ios",
+            "hostname": device.hostname,
+            "port": device.telnet_port,
             "expect": device.login_expect,
             "timeout": time_out,
-            "task_timestamp": 1519796623,
-            "method": "telnet"
+            "channel": "status_cli"
         }
-        r = requests.post("http://10.71.244.134:8080/api/v1/sync/cli", data=json.dumps(payload))
+        r = requests.post("http://10.71.244.134:7777/api/v1/devicestatus", data=json.dumps(payload))
         response = json.loads(r.text)
-        return response.get('status'), device_id
+        if response.get('status') == 'success':
+            status = "Success"
+        else:
+            status = "Fail"
+        return status, device_id
 
     @staticmethod
     def snmp_status_check(device_id):
@@ -105,27 +104,29 @@ class DevicePreViewSet(APIView):
         ostype = Ostype.objects.get(ostypeid=device.ostype_id)
         time_out = ostype.snmp_timeout
         payload = {
-            "commands": {
-                "operate": "bulk_get",
-                "oids": [
-                    "SNMPv2-MIB::sysObjectID.0"
-                ]
-            },
             "timeout": time_out,
             "ip": device.ip,
-            "task_timestamp": 1519796765,
-            "community": device.snmp_community
+            "port": device.snmp_port,
+            "hostname": device.hostname,
+            "community": device.snmp_community,
+            "snmp_version": device.snmp_version,
+            "channel": "status_snmp"
         }
-        r = requests.post("http://10.71.244.134:8080/api/v1/sync/snmp", data=json.dumps(payload))
+        r = requests.post("http://10.71.244.134:7777/api/v1/devicestatus", data=json.dumps(payload))
         response = json.loads(r.text)
-        for x in response.get('output'):
-            if 'message' in x.keys():
-                if x.get('message').find('timeout') > -1:
-                    return 'Fali', device_id
-                else:
-                    return 'Success', device_id
-            else:
-                return 'Success', device_id
+        if response.get('status') == 'success':
+            status = "Success"
+        else:
+            status = "Fail"
+        return status, device_id
+        # for x in response.get('output'):
+        #     if 'message' in x.keys():
+        #         if x.get('message').find('timeout') > -1:
+        #             return 'Fali', device_id
+        #         else:
+        #             return 'Success', device_id
+        #     else:
+        #         return 'Success', device_id
 
     def get(self):
         """@brief

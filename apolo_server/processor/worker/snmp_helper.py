@@ -60,6 +60,13 @@ class SNMP(object):
             '0x80': 'NoSuchObject',
             '0x81': 'NoSuchInstance'
         }
+
+        self._errinfo=[
+            "No Such Instance",
+            "No Such Object"
+
+        ]
+
         self.is_translate = is_translate
         self.maxvars = 20
         self._model = model_version
@@ -188,13 +195,24 @@ class SNMP(object):
             return [self.__get_oid((oid,)) for oid in args]
         else:
             return [self.__get_oid((oid,)) for oid in args]
-
-
-
     def translate(self, value):
-        value = self._GetValueDict(value) if self.is_translate else str(value[1].prettyPrint())
-        # value = str(value[1].prettyPrint())
-        return value
+        status = "success"
+        message = ""
+        if self.is_translate:
+            value = self._GetValueDict(value) 
+            for key in value:
+                if value[key][1] in ["Exception","NoSuchObject","NoSuchInstance"]:
+                    status = "fail"
+                    message = value[key][1]
+                    break
+        else:
+            value = str(value[1].prettyPrint())
+            for err_reg in self._errinfo:
+                if re.search("^"+err_reg,value,re.IGNORECASE) is not None:
+                    status = "fail"
+                    message = value
+                    break
+        return value,status,message
 
     def bulk_get(self, oids):
         #print oids
@@ -259,10 +277,13 @@ class SNMP(object):
                                             message=str(error_msg)))
                     else:
                         for value in _var_binds:
-                            output.append(dict(status="success",
+                            _value,_status,_message = self.translate(value)
+                            output.append(dict(status=_status,
                                                 origin_oid=origin_oid,
                                                 oid=str(value[0]),
-                                                value=self.translate(value)))
+                                                value=_value,
+                                                message = _message
+                                                ))
                     
                     if error_msg:
                         self.logger.error(err_msg)
@@ -298,10 +319,13 @@ class SNMP(object):
                     self.logger.error(err_msg)
         else:
             for index,value in enumerate(var_binds):
-                output.append(dict( status="success",
+                _value,_status,_message = self.translate(value)                                 
+                output.append(dict( status=_status,
                                     origin_oid=oids[index],
                                     oid=str(value[0]),
-                                    value=self.translate(value)))
+                                    value=_value,
+                                    message=_message
+                                    ))
 
         return dict(status='success',
                     message='',
@@ -335,13 +359,13 @@ if __name__ == "__main__":
     try:
         import traceback
         import json
-        oids = []
+        #oids = ["1.3.6.1.2.1.1.2.0"]
         maxvars = 20
         #if operate == 'bulk_get':
         snmp_fun = worker.bulk_get
         with open("/Users/yihli/Desktop/projects/apolo/apolo_server/processor/worker/oids") as f:
             oids = [line.strip() for line in f.readlines()]
-            ##sys.exit()
+             #sys.exit()
         
         if len(oids) > maxvars:
             _oid_splits = chunks(oids, maxvars)
@@ -357,6 +381,7 @@ if __name__ == "__main__":
             #   data["item_ids"] = oid_dict[data["origin_oid"]]
             
             result.update(dict(result_type="element_result",  timestamp=timestamp, clock="%f" % clock))
+            print result
             #self.zmq_push.send(json.dumps(result))
             fw.write(json.dumps(result,indent=2))
 
