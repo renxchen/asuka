@@ -9,9 +9,15 @@
 @desc:
 
 '''
+import datetime
+
+import operator
+from django.db import transaction
+from django.db.models import Q
+
 from backend.apolo.db_utils.db_until import *
 from backend.apolo.models import DevicesGroups, PolicysGroups, Items, Schedules, CollPolicyRuleTree, DataTableItems, \
-    DataTable
+    DataTable, CollPolicy
 from backend.apolo.serializer.data_collection_serializer import SchedulesAddSerializer, ItemsSerializer, \
     DataTableHistoryItemsSerializer, DataTableItemsSerializer
 from backend.apolo.tools import constants
@@ -73,7 +79,6 @@ class DataCollectionOptCls(object):
                     combination = item.copy()
                     policy_device_combinations.append(combination)
 
-
             item_serializer = ItemsSerializer(data=policy_device_combinations, many=True)
             if item_serializer.is_valid(raise_exception=BaseException):
                 item_serializer.save()
@@ -83,13 +88,24 @@ class DataCollectionOptCls(object):
             raise e
 
     # when device update
-    def update_items(self):
+    def update_items_bk(self):
         items_list = self.request_param['items']
         for obj in items_list:
             if obj['del_device_group']:
                 self.__del_item_opt(obj)
             if obj['add_device_group']:
                 self.__add_item_opt(obj)
+
+    def update_items(self):
+        items_list = self.request_param['items']
+        add_item_list = []
+        for obj in items_list:
+            if obj['del_device_group']:
+                self.__del_item_opt(obj)
+            if obj['add_device_group']:
+                add_item_list.append(obj)
+        if len(add_item_list) > 0:
+            self.__add_item_opt(add_item_list)
 
     # when set off all policies  by device group,
     # update status =0 of schedule table by device_group_id
@@ -201,6 +217,7 @@ class DataCollectionOptCls(object):
     def __get_items_context(schedule_id, coll_policies):
         try:
             items_arry = []
+            cli_policy = dict()
             for arry in coll_policies:
                 coll_policy_id = arry['coll_policy_id']
                 policys_groups_id = arry['policys_groups_id']
@@ -224,28 +241,35 @@ class DataCollectionOptCls(object):
                     }
                     items_arry.append(data)
                 if item_type == constants.ITEM_TYPE_CLI:
+                    if cli_policy.has_key(coll_policy_id):
+                        cli_policy[coll_policy_id].append(arry)
+                    else:
+                        cli_policy.update({coll_policy_id: [arry]})
 
-                    leaf_query_set = CollPolicyRuleTree.objects.filter(coll_policy=coll_policy_id,
-                                                                       is_leaf=constants.LEAF_NODE_MARK)
-                    for leaf in leaf_query_set:
-                        key_str = leaf.rule.key_str
-                        value_type = leaf.rule.value_type
-                        tree_id = leaf.treeid
-                        data = {
-                            'value_type': value_type,
-                            'item_type': item_type,
-                            'key_str': key_str,
-                            'status': constants.ITEM_TABLE_STATUS_DEFAULT,
-                            'last_exec_time': None,
-                            'coll_policy': coll_policy_id,
-                            'coll_policy_rule_tree_treeid': tree_id,
-                            'device': None,
-                            'schedule': schedule_id,
-                            'policys_groups': policys_groups_id,
-                            'enable_status': 1,
-                            'groups': None
-                        }
-                        items_arry.append(data)
+            leaf_query_set = CollPolicyRuleTree.objects.filter(coll_policy__in=cli_policy.keys(),
+                                                               is_leaf=constants.LEAF_NODE_MARK)
+            for leaf in leaf_query_set:
+                key_str = leaf.rule.key_str
+                value_type = leaf.rule.value_type
+                tree_id = leaf.treeid
+                data = {
+                    'value_type': value_type,
+                    'item_type': None,
+                    'key_str': key_str,
+                    'status': constants.ITEM_TABLE_STATUS_DEFAULT,
+                    'last_exec_time': None,
+                    'coll_policy': leaf.coll_policy_id,
+                    'coll_policy_rule_tree_treeid': tree_id,
+                    'device': None,
+                    'schedule': schedule_id,
+                    'policys_groups': None,
+                    'enable_status': 1,
+                    'groups': None
+                }
+                for t in cli_policy[leaf.coll_policy_id]:
+                    data['policys_groups'] = t['policys_groups_id']
+                    data['item_type'] = t['policy_type']
+                    items_arry.append(data)
             return items_arry
         except Exception as e:
             print e
@@ -278,57 +302,146 @@ class DataCollectionOptCls(object):
             print e
             raise e
 
+    def __add_item_opt(self, add_item_info_list):
 
-    def __add_item_opt(self, add_item_info):
-        device_id = add_item_info['device_id']
-        device_group_id_list = add_item_info['add_device_group']
+        # get all device_group_id_list from item list
+        # {device_id: [device_group_id]}
         try:
-            # select schedule_id and policy group id corresponding to these device group
-            schedule_list = Schedules.objects.filter(device_group__in=device_group_id_list).values('schedule_id',
-                                                                                                   'policy_group',
-                                                                                                   'device_group')
-            item_table_id_pair = []
-            items_list = []
-            for schedule in schedule_list:
-                if schedule['policy_group']:
-                    # select all policies  corresponding to the policy group
-                    policy_list = self.get_coll_policies(cp_group_id=schedule['policy_group'])
-                    # add items
-                    devices = [{"device_id": device_id, "device_group_id": schedule['device_group']}]
-                    items_list.extend(self.insert_new_items(devices, schedule['schedule_id'], policy_list))
+            device_info_dict = dict()
+            all_device_group_list = []
+            for info in add_item_info_list:
+                device_id = info['device_id']
+                device_group_id_list = info['add_device_group']
+                device_info_dict.update({device_id: device_group_id_list})
+                all_device_group_list.extend(device_group_id_list)
 
-            for obj in items_list:
-                # create the pair of item_id and table_id
-                item_id = obj['item_id']
-                coll_policy_id = obj['coll_policy']
-                tree_id = obj['coll_policy_rule_tree_treeid']
-                device_group_id = obj['groups']
-                data_table_id_list = DataTable.objects.filter(coll_policy=coll_policy_id,
-                                                    groups=device_group_id,
-                                                    tree_id=tree_id).values('table_id')
-                item_table_id_pair.append({{'item': item_id, 'table': data_table_id_list}})
+                # get all device_group_list
+            all_device_group_list = list(set(all_device_group_list))
+            # get all schedule id by all_device_group_id_list
+            all_schedule_list = Schedules.objects.filter(device_group__in=all_device_group_list).values('schedule_id',
+                                                                                                        'policy_group',
+                                                                                                        'device_group')
 
-            buff_list = []
+            if len(all_schedule_list) > 0:
+                # get all cp group infos and all cp infos
+                all_cp_group_list = []
+                # device group
+                dgp_schedule_pair_dict = dict()
+                for schedule_info in all_schedule_list:
+                    cp_gp_id = schedule_info['policy_group']
+                    dgp_id = schedule_info['device_group']
+                    all_cp_group_list.append(cp_gp_id)
+                    if dgp_schedule_pair_dict.has_key(dgp_id):
+                        dgp_schedule_pair_dict[dgp_id].append(schedule_info)
+                    else:
+                        dgp_schedule_pair_dict.update({dgp_id: [schedule_info]})
 
-            for pair in item_table_id_pair:
-                item_id = pair['item']
-                for table_id in pair['table']:
-                    buff_list.append({{'item': item_id, 'table': table_id}})
-            serializer =DataTableItemsSerializer(data=buff_list, many=True)
-            if serializer.is_valid(BaseException):
-                serializer.save()
+                all_cp_group_list = list(set(all_cp_group_list))
+                all_cp_group_info_dict = dict()
+                policy_list = []
+
+                query_set = PolicysGroups.objects.filter(policy_group__in=all_cp_group_list)
+
+                for arry in query_set:
+                    data = {
+                        'policy_group_id': arry.policy_group_id,
+                        'policys_groups_id': arry.policys_groups_id,
+                        'coll_policy_id': arry.policy.coll_policy_id,
+                        'item_type': arry.policy.policy_type,
+                        'snmp_oid': arry.policy.snmp_oid,
+                        'value_type': arry.policy.value_type,
+                        'policy_type': arry.policy.policy_type
+                    }
+                    policy_list.append(data)
+                    if all_cp_group_info_dict.has_key(data['policy_group_id']):
+                        all_cp_group_info_dict[data['policy_group_id']].append(data)
+                    else:
+                        all_cp_group_info_dict.update({data['policy_group_id']: [data]})
+
+                        # get all item info
+                        # {policy_id:[{item_info}]
+                all_item_info_dict = dict()
+                all_item_list = self.__get_items_context(schedule_id='', coll_policies=policy_list)
+                for item_info in all_item_list:
+                    policy_id = item_info['coll_policy']
+                    if all_item_info_dict.has_key(policy_id):
+                        all_item_info_dict[policy_id].append(item_info)
+                    else:
+                        all_item_info_dict.update({policy_id: [item_info]})
+
+                # clean data
+                all_insert_infos = []
+
+                for device_id, dpg_list in device_info_dict.items():
+                    for dgp_id in dpg_list:
+                        for schedule in dgp_schedule_pair_dict[dgp_id]:
+                            cp_gp_id = schedule['policy_group']
+                            cp_list = all_cp_group_info_dict[cp_gp_id]
+                            for cp in cp_list:
+                                cp_id = cp['coll_policy_id']
+                                # there is no tree node in the cp so there is no item
+                                item_data = all_item_info_dict[cp_id]
+                                for data in item_data:
+                                    data['device'] = device_id
+                                    data['groups'] = dgp_id
+                                    data['schedule'] = schedule['schedule_id']
+                                    all_insert_infos.append(data.copy())
+
+                item_serializer = ItemsSerializer(data=all_insert_infos, many=True)
+                new_item_list = []
+                item_table_id_pair = []
+                if item_serializer.is_valid(raise_exception=BaseException):
+                    item_serializer.save()
+                    new_item_list = item_serializer.data
+
+                q_list = []
+                pair_dict = dict()
+                for obj in new_item_list:
+                    # create the pair of item_id and table_id
+                    item_id = obj['item_id']
+                    coll_policy_id = obj['coll_policy']
+                    tree_id = obj['coll_policy_rule_tree_treeid']
+                    device_group_id = obj['groups']
+                    q_list.append(Q(coll_policy=coll_policy_id, groups=device_group_id, tree_id=tree_id))
+                    if tree_id is None:
+                        tree_id = 0
+                    id_key = '{}_{}_{}'.format(coll_policy_id, tree_id, device_group_id)
+                    if pair_dict.has_key(id_key):
+                        pair_dict[id_key].append(item_id)
+                    else:
+                        pair_dict.update({id_key: [item_id]})
+
+                data_table_list = DataTable.objects.filter(reduce(operator.or_, q_list)).values()
+                for obj in data_table_list:
+                    t_id = obj['tree_id']
+                    c_id = obj['coll_policy_id']
+                    d_id = obj['groups_id']
+                    if t_id is None:
+                        t_id = 0
+                    find_key = '{}_{}_{}'.format(c_id, t_id, d_id)
+                    if pair_dict.has_key(find_key):
+                        for iid in pair_dict[find_key]:
+                            item_table_id_pair.append({'item': iid, 'table': obj['table_id']})
+
+                serializer = DataTableItemsSerializer(data=item_table_id_pair, many=True)
+                if serializer.is_valid(BaseException):
+                    serializer.save()
         except Exception as e:
             print e
             raise e
 
 
-
 if __name__ == "__main__":
-    data = {"items": [{
-                     "device_id": 5,
-                     "del_device_group": [5],
-                     "add_device_group": []
-                     }]
-           }
-    opt =DataCollectionOptCls(**data)
-    opt.update_items()
+
+    try:
+        with transaction.atomic():
+            arry = []
+            device_list = DevicesGroups.objects.filter(group=10).values('device', 'group')
+            for item in device_list:
+                arry.append({'device_id': item['device'], 'add_device_group': [14, 13], 'del_device_group': []})
+
+            opt = DataCollectionOptCls(**{"items": arry})
+            opt.update_items()
+    except Exception as e:
+        transaction.rollback()
+        print e
