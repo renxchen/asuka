@@ -11,16 +11,17 @@ class SNMPWorker(WorkerBase):
     channels = ('snmp',)
     threads = 1
     max_batch_vars = 20
+    default_timeout = 5
+    default_retries = 2
 
     def handler(self, task_id, task,data, logger):
         device_info = task['device_info']
         ip = device_info['ip']
         community = device_info['community']
-        #operate = 'bulk_get'
-        snmp_model = device_info['snmp_model'] if "snmp_model" in device_info else 1
+        snmp_model = 0 if device_info.get("snmp_version","").upper() == "V1" else 1
         is_translate = False
-        device_log_info = "Device ID: %s,IP: %s,HostName: %s" % (device_info["device_id"],ip,device_info["hostname"])
-        #maxvars = 20
+        device_id = device_info.get("device_id","")
+        device_log_info = "Device ID:%s, IP:%s, HostName: %s" % (device_id, ip, device_info["hostname"])
       
         oids=[]
         oid_dict = {}
@@ -43,8 +44,8 @@ class SNMPWorker(WorkerBase):
                       community,
                       logger=logger,
                       port=device_info.get('port', 161),
-                      timeout=device_info.get("timeout",5),
-                      retries=device_info.get('retries', 2),
+                      timeout=device_info.get("timeout",self.default_timeout),
+                      retries=device_info.get('retries', self.default_retries),
                       device_log_info=device_log_info,
                       model_version=snmp_model,
                       is_translate=is_translate
@@ -80,7 +81,7 @@ class SNMPWorker(WorkerBase):
              status=status,
              message=message,
              result_type="task_result",
-             device_id=device_info['device_id']
+             device_id=device_id
             )
 
         return result

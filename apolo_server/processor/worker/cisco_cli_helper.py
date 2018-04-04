@@ -54,22 +54,18 @@ class CiscoCLI(object):
     def __init__(self, device_info, logger):
         self.device_info = device_info
         self.ip = device_info['ip']
-        self.device_id = device_info['device_id']
+        self.device_id = device_info.get("device_id","")
         self.timeout = device_info.get('timeout', 10)
-        #self.username = device_info.get('username')
-        #self.password = device_info.get('password')
-        #self.enable_password = device_info.get('enable_password')
         self.method = "Telnet"
         self.port = device_info.get('port',23)
-        self.expect = device_info.get('expect')
-        self.prompt = device_info.get('prompt')
-        #self.default_command = device_info.get('default_commands')
+        self.expect = device_info.get('expect',"")
+        self.prompt = device_info.get('prompt',"")
         self.fail_judges = device_info.get('fail_judges',"")
         
         self.start_default_command = device_info.get('start_default_commands',"")
         self.end_default_command = device_info.get('end_default_commands',"")
 
-        self.device_log_info = "Device ID: %s,IP: %s,HostName: %s" % (self.device_id,self.ip,device_info["hostname"])
+        self.device_log_info = "Device ID:%s, IP:%s, HostName:%s" % (self.device_id,self.ip,device_info["hostname"])
 
         self.logger = logger
         self.child = None
@@ -135,7 +131,7 @@ class CiscoCLI(object):
         port = self.port or 23
         cmd_str = self.TELNET_STR % (self.ip, self.port)
   
-        self.logger.info('%s Telnet Started' % self.device_log_info)
+        #self.logger.info('%s Telnet Started' % self.device_log_info)
         child = pexpect.spawn(cmd_str, maxread=8192, searchwindowsize=4096)
         flag = 1
         for line in re.split(",", self.expect):
@@ -220,7 +216,7 @@ class CiscoCLI(object):
             self.child.sendline('exit')
             self.child.expect([pexpect.EOF, pexpect.TIMEOUT])
             self.child.close()
-            self.logger.info('%s Telnet Finished' % self.device_log_info)
+            #self.logger.info('%s Telnet Finished' % self.device_log_info)
         except:
             pass
 

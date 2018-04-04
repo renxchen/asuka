@@ -141,16 +141,15 @@ def __merge_snmp(item, deviceinfo_dict):
         deviceinfo_dict['ip'] = item['device__ip']
         deviceinfo_dict['hostname'] = item['device__hostname']
         deviceinfo_dict['community'] = item['device__snmp_community']
+        deviceinfo_dict['snmp_version'] = item['device__snmp_version']
+        deviceinfo_dict['port'] = item['device__snmp_port']
+        deviceinfo_dict['timeout'] = item['device__ostype__snmp_timeout']
 
         """
         deviceinfo_dict['ip'] = "10.71.244.135"
         deviceinfo_dict['hostname'] = "crs1000_1"
         deviceinfo_dict['community'] = "cisco"
         """
-
-        
-        deviceinfo_dict['timeout'] = item['device__ostype__snmp_timeout']
-
     exec_interval=item['policys_groups__exec_interval']
     oid=item['coll_policy__snmp_oid'],
     
@@ -186,6 +185,7 @@ def __merge_cli(item, deviceinfo_dict,rule_dict):
         deviceinfo_dict['ip'] = item['device__ip']
         deviceinfo_dict['hostname'] = item['device__hostname']
         deviceinfo_dict['expect'] = item['device__login_expect']
+        deviceinfo_dict['port'] = item['device__snmp_port']
         
         """
         deviceinfo_dict['ip'] = "10.71.244.135"
