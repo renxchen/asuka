@@ -16,12 +16,12 @@
                     <label
                         for="name" 
                         class="col-sm-4 control-label"
-                        [ngClass]="{'text-warning': !nameFlg||!nameNotNull}"
+                        [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
                     >
                         <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                         OS Type名:
                     </label>
-                    <div class="col-sm-8" [ngClass]="{'has-warning': !nameFlg||!nameNotNull}">
+                    <div class="col-sm-8" [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}">
                         <input 
                             type="text" 
                             class="form-control" 
