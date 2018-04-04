@@ -1,8 +1,7 @@
 # __author__ = 'zhutong'
 
 import sys
-from worker_base import WorkerBase, main,SYS_PATH
-sys.path.append(SYS_PATH)
+from worker_base import WorkerBase, main
 from snmp_helper import SNMP,chunks
 import json
 import time
@@ -11,16 +10,17 @@ class SNMPWorker(WorkerBase):
     name = 'SNMP'
     channels = ('snmp',)
     threads = 1
+    max_batch_vars = 20
 
     def handler(self, task_id, task,data, logger):
         device_info = task['device_info']
         ip = device_info['ip']
         community = device_info['community']
-        operate = 'bulk_get'
+        #operate = 'bulk_get'
         snmp_model = device_info['snmp_model'] if "snmp_model" in device_info else 1
-        is_translate = True
+        is_translate = False
         device_log_info = "Device ID: %s,IP: %s,HostName: %s" % (device_info["device_id"],ip,device_info["hostname"])
-        maxvars = 20
+        #maxvars = 20
       
         oids=[]
         oid_dict = {}
@@ -50,23 +50,16 @@ class SNMPWorker(WorkerBase):
                       is_translate=is_translate
                       )
         try:
-            
-            if operate == 'bulk_get':
-                snmp_fun = worker.bulk_get
-            else:
-                return dict(task_id=task_id,
-                            status='error',
-                            message='Not support SNMP operate')
-            
-            if len(oids) > maxvars:
-                _oid_splits = chunks(oids, maxvars)
+                       
+            if len(oids) > self.max_batch_vars:
+                _oid_splits = chunks(oids, self.max_batch_vars)
             else:
                 _oid_splits = [oids]
 
             for _oids in _oid_splits:
                 timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
                 clock = time.time()
-                result = snmp_fun(_oids)
+                result = worker.bulk_get(_oids)
                 
                 for data in result["output"]:
                     data["item_ids"] = oid_dict[data["origin_oid"]]

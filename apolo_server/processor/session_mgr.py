@@ -19,7 +19,8 @@ class SessionManager(threading.Thread):
 
     polling_interval = 1
     absolute_timeout = 3600
-    after_read_timeout = 30
+    after_read_timeout = 60
+    mutux_after_read_timeout = 60*60
     def __init__(self,zmq_publish):
         threading.Thread.__init__(self)
         self.zmq_publish = zmq_publish
@@ -44,6 +45,10 @@ class SessionManager(threading.Thread):
                 "mutex":mutex
             }
             return mutex
+
+    def set_lock_timer(self,device_id):
+        if device_id in self.mutux_dict:
+            self.mutux_dict[device_id]["timer"] = time.time()
 
     def update(self, k, v):
         try:
@@ -122,8 +127,10 @@ class SessionManager(threading.Thread):
 
     def run(self):
         logger = get_logger('SessionMgr')
+        threading_lock_interval_counter = 0
         while True:
-            #time.sleep(self.polling_interval)
+
+            threading_lock_interval_counter += 1 
             time.sleep(self.polling_interval)
             for k in self.data_set.keys():
                 v = self.data_set[k]
@@ -145,6 +152,22 @@ class SessionManager(threading.Thread):
                     if k in self.parser_dict:
                         del self.parser_dict[k]
                     logger.info('Task %s timeout, cleared' % k)
+            
+            #check_threading_lock 
+            if threading_lock_interval_counter == 600:
+                threading_lock_interval_counter = 0
+                for k in self.mutux_dict:
+                    timer = self.mutux_dict[k]["timer"]
+                    if timer and time.time() - v['finish_timer'] > self.mutux_after_read_timeout:
+                        del self.mutux_dict[k]
+                        logger.info('Device:%s Mutex timeout, cleared' % k)
+
+
+
+            
+
+            
+
             
 
 

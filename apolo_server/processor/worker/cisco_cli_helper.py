@@ -74,18 +74,13 @@ class CiscoCLI(object):
         self.logger = logger
         self.child = None
 
-    def login(self):
-        #try:
-        return self.__login()
-        #except LoginException as e:
-            #if e.err_code == LoginException.CONNECTION_CLOSED:
-            #    if self.method == 'telnet':
-            #        self.method = 'ssh'
-            #    else:
-            #        self.method = 'telnet'
-            #    return self.__login()
-            #else:
-            #raise
+    def login(self,default_command=True):
+        
+        self.__login()
+
+        if default_command:
+            self.__execute_default_command(self.start_default_command)
+        
     
     def __is_valid_command(self,output):
         
@@ -175,7 +170,7 @@ class CiscoCLI(object):
                                #'\[confirm\]',
                                #'\]\?'
                                ]
-        self.__execute_default_command(self.start_default_command)
+        
 
     def execute(self, command):
 
