@@ -1,10 +1,3 @@
-/**
- * @author: Zizhuang Jiang
- * @contact: zizjiang@cisco.com
- * @file: deviceView.component.ts
- * @time: 2018/03/08
- * @desc: devices summary
- */
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Http } from '@angular/http';
@@ -23,6 +16,18 @@ declare var $: any;
     styleUrls: ['./device.component.less']
 })
 export class DeviceViewComponent implements OnInit, AfterViewInit {
+    /*
+    @brief 函数简要说明
+    @param 参数名 参数的意思和用户
+    @pre 代码使用前条件
+    @post 代码使用后条件
+    @note 备注
+    @return 返回值
+    @author Zizhuang Jiang
+    @date 03/08/2018
+     */
+    @ViewChild(ProgressbarComponent)
+    proBar: ProgressbarComponent;
     apiPrefix: any;
     devViewTable$: any;
     modalRef: BsModalRef;
@@ -47,12 +52,6 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
         this.drawdevViewTable();
     }
     public drawdevViewTable() {
-        /**
-        * @brief get data and display it in the grid
-        * @pre called after the Dom has been ready
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         let _t = this;
         _t.devViewTable$ = $('#devViewTable').jqGrid({
             url: '/v1/api_device/',
@@ -104,6 +103,12 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                 $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
             },
             loadComplete: function (res) {
+                // let code: any = _.get(_.get(res, 'new_token'), 'code');
+                // let msg: any = _.get(_.get(res, 'new_token'), 'message');
+                // if (code === 102 || code === 103) {
+                //     localStorage.setItem('sessionTimeOut', msg);
+                //     _t.router.navigate(['/login/']);
+                // }
                 let status = _.get(_.get(res, 'status'), 'status');
                 let code: any = _.get(_.get(res, 'status'), 'code');
                 let msg: any = _.get(_.get(res, 'status'), 'message');
@@ -114,6 +119,9 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                     }
                 }
             },
+            // loadError: function (xhr, status, error) {
+            //     console.log(xhr, error, status);
+            // },
             pager: '#devViewPager',
             rowNum: 10,
             rowList: [5, 10, 15],
@@ -133,14 +141,6 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
         $('#devViewTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
     }
     public noDataFormatter(cellvalue, options, rowObject) {
-        /**
-        * @brief format the data
-        * @param cellvalue: value of the cell;
-                  options:includes attributes such as RowId,colModel;
-                  rowObject:json data of the row
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         if (cellvalue === null || cellvalue === '') {
             return '-';
         } else {
@@ -148,11 +148,6 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
         }
     }
     public deviceCheck() {
-        /**
-        * @brief status check
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.apiPrefix = '/v1';
         let checkUrl = '/api_device/';
         let deviceSel: any = [];
@@ -169,19 +164,22 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
+                        // $('#devViewTable').jqGrid('clearGridData');
+                        // $('#devViewTable').trigger('reloadGrid');
                         $('.modal').hide();
                         this.devViewTable$.GridUnload();
                         this.drawdevViewTable();
                     } else {
+                        // this.processbar.hide();
                         $('.modal').hide();
-                        if (msg) {
-                            this.modalMsg = msg;
-                            this.closeMsg = '閉じる';
-                            this.showAlertModal(this.modalMsg, this.closeMsg);
-                        }
+                        // alert(msg);
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 });
         } else {
+            // alert('Please choose one device at least.');
             this.modalMsg = 'Please choose one device at least.';
             this.closeMsg = '閉じる';
             this.showAlertModal(this.modalMsg, this.closeMsg);
@@ -190,11 +188,6 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
     public CSVExport() {
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
-        /**
-        * @brief show modal dialog
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;

@@ -1,10 +1,3 @@
-/**
-* @author: Dan Lv
-* @contact: danlv@cisco.com
-* @file: cliCPEditPop.component.ts
-* @time: 2018/03/14
-* @desc: edit a cli collection policy
-*/
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
@@ -54,11 +47,6 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
         }, 0);
     }
     public getOsType() {
-        /**
-        * @brief get all of the ostype data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -70,20 +58,14 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        this.modalMsg = res['status']['message'];
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        alert(res['status']['message']);
                     }
                 }
             });
     }
     public getCPInfo(id: any) {
-        /**
-        * @brief get collection policy data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         this.apiPrefix = '/v1';
+        // backend provide
         let url = '/api_collection_policy_edit_page/?coll_policy_id=' + this.cPId;
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -106,21 +88,13 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                         this.cliCmdFlg = _.get(verify, 'cli_command');
                     }
                 } else {
-                    if (msg) {
-                        this.modalMsg = msg;
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                    if (res['status'] && res['status']['message']) {
+                        alert(res['status']['message']);
                     }
                 }
             });
     }
     public doCheck(): boolean {
-        /**
-        * @brief Verify the validity of the input information
-        * @return true or false
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
@@ -140,11 +114,6 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
         }
     }
     public cPEdit() {
-        /**
-        * @brief get and check the input infomation, then save
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         let cPInfo: any = {};
         this.apiPrefix = '/v1';
         // backend provide
@@ -169,11 +138,15 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                             this.modalRef.hide();
                             this.modalService.setDismissReason(this.cPName);
                         }
+                        // this.modalMsg = '保存しました。';
+                        // this.closeMsg = '一覧へ戻る';
+                        // this.showAlertModal(this.modalMsg, this.closeMsg);
                     } else {
                         // CP_NAME_DUPLICATE
                         if (msg && msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
+                            // alert(msg);
                             this.modalMsg = msg;
                             this.closeMsg = '閉じる';
                             this.showAlertModal(this.modalMsg, this.closeMsg);
@@ -183,11 +156,6 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
         }
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
-        /**
-        * @brief show modal dialog
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;

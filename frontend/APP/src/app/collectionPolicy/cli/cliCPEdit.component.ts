@@ -1,10 +1,3 @@
-/**
-* @author: Dan Lv
-* @contact: danlv@cisco.com
-* @file: cliCPEdit.component.ts
-* @time: 2018/03/14
-* @desc: edit cli collection policy and display tree
-*/
 import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CollectionPolicyService } from '.././collectionPolicy.service';
@@ -65,12 +58,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.nodeCustomizeAndRoot();
     }
     public getCPInfo(id: any) {
-        /**
-        * @brief get cli collection policy info
-        * @param id: collection policy id
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         this.apiPrefix = '/v1';
         let url = '/api_policy_tree/?coll_policy_id=' + id;
         this.httpClient.setUrl(this.apiPrefix);
@@ -93,11 +80,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
     public nodeCustomizeAndRoot() {
-        /**
-        * @brief customize tree plugin
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         'use strict';
         // node_customize
         if ($.jstree.plugins.node_customize) { return; }
@@ -122,6 +104,8 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                             $html.insertAfter(tmp);
                             $html.bind('click', { 'node': node }, cfg[i].click);
                         }
+
+
                     }
                 }
                 return el;
@@ -152,29 +136,23 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                             $html.insertAfter(tmp);
                             $html.bind('click', { 'node': node }, cfg[i].click);
                         }
+
+
                     }
                 }
                 return el;
             };
         };
     }
+    // root_node can not be moved
     public moveNodeRule(node) {
-        /**
-        * @brief root_node can not be moved
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         if (node[0]['data'] && node[0]['data']['is_root']) {
             return false;
         }
         return true;
     }
     public policyMoveRule(operation, node, node_parent, node_position, more) {
-        /**
-        * @brief moving limitation of policy tree
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
+        // console.log(node, node_parent);
         if (node_parent.parent === null) {
             return false;
         }
@@ -195,6 +173,12 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
             node_parent.state.opened = true;
         }
         // block_rule_4 can not have the type of 'block_rule' children except block_rule_4
+        // if (node['data']['rule_type']
+        //     && node['data']['rule_type'].indexOf('block_rule') !== -1
+        //     && node_parent['data']['rule_type']
+        //     && node_parent['data']['rule_type'] === 'block_rule_4') {
+        //     return false;
+        // }
         if (node['data']['rule_type']
             && node['data']['rule_type'].indexOf('block_rule') !== -1
             && node_parent['data']['rule_type']
@@ -206,49 +190,28 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         return true;
     }
+    // policy tree hightlight
     public getPlyTreeInfo() {
-        /**
-        * @brief get policy tree json data
-        * @return policy tree data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         let tree = $('#policyTree')
             .jstree(true)
             .get_json('#', {
                 flat: false,
                 no_state: true,
-                no_li_attr: true,
-                no_a_attr: true,
+                no_li_attr: true, no_a_attr: true,
                 no_data: false,
             });
         return tree[0];
     }
     public plyTreeFlat() {
-        /**
-        * @brief get flat policy tree json data
-        * @return policy tree data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         return $('#policyTree').jstree(true).get_json('#', {
-            flat: true,
-            no_state: false,
-            no_li_attr: false,
-            no_a_attr: false,
+            flat: true, no_state: false,
+            no_li_attr: false, no_a_attr: false,
             no_data: false,
         }
         );
     }
     // update policy name
     public findNode(ruleId: any) {
-        /**
-        * @brief search rule info from policy tree
-        * @parma ruleId: rule id
-        * @return collection policy data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         let plyNode: any = [];
         let tree = this.plyTreeFlat();
         for (let i = 0; i < tree.length; i++) {
@@ -260,27 +223,21 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         return plyNode;
     }
     // check before saving policy tree
-    // public checkPolicyTree() {
-    //     let tree = this.plyTreeFlat();
-    //     if (tree.length > 1) {
-    //         for (let i = 0; i < tree.length; i++) {
-    //             let data = tree[i]['data'];
-    //             if (data['rule_type'] && data['rule_type'].indexOf('data_rule') !== -1) {
-    //                 return true;
-    //             }
-    //         }
-    //     } else {
-    //         return true;
-    //     }
-    // }
+    public checkPolicyTree() {
+        let tree = this.plyTreeFlat();
+        if (tree.length > 1) {
+            for (let i = 0; i < tree.length; i++) {
+                let data = tree[i]['data'];
+                if (data['rule_type'] && data['rule_type'].indexOf('data_rule') !== -1) {
+                    return true;
+                }
+            }
+        } else {
+            return true;
+        }
+    }
     // highlight
     public hightLight(param: any) {
-        /**
-        * @brief highlight data
-        * @parma param: data required by highlight operation
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         this.apiPrefix = '/v1';
         let highLightUrl = '/api_policy_tree_highlight/';
         this.httpClient.setUrl(this.apiPrefix);
@@ -289,6 +246,7 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data']) {
                         let data = res['data'];
+                        // data
                         $('#highlight').html(data);
                     }
                 } else {
@@ -299,11 +257,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
             });
     }
     public savePlyTree() {
-        /**
-        * @brief save policy tree data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         let tree = this.getPlyTreeInfo();
         if (tree && this.cPId) {
             let param = {
@@ -314,29 +267,22 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
             this.apiPrefix = '/v1';
             let savePlytUrl = '/api_policy_tree/';
             this.httpClient.setUrl(this.apiPrefix);
-            this
-            .httpClient
-            .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
-                let status = _.get(res, 'status');
-                let msg = _.get(status, 'message');
-                if (status && status['status'].toString().toLowerCase() === 'true') {
-                    alert('保存しました');
-                    this.router.navigate(['/index/clicpdetail'], { queryParams: { 'id': this.cPId } });
-                } else {
-                    if (msg) {
-                        alert(msg);
+            this.httpClient
+                .toJson(this.httpClient.post(savePlytUrl, param)).subscribe(res => {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
+                        alert('保存しました');
+                        this.router.navigate(['/index/clicpdetail'], { queryParams: { 'id': this.cPId } });
+                    } else {
+                        if (msg) {
+                            alert(msg);
+                        }
                     }
-                }
-            });
+                });
         }
     }
     public blockTree(data: any) {
-        /**
-        * @brief get data and display it on the block_rule_tree
-        * @param data: block_rule_tree data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         let _t = this;
         $('#blockTree').jstree({
             'core': {
@@ -353,21 +299,21 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 'always_copy': true,
             },
             'root_node':
-                [{
-                    'html': `<button class="btn btn-xs btn-primary"
+            [{
+                'html': `<button class="btn btn-xs btn-primary"
                         style="margin-left:10px" type="button" >
                             <i class="fa fa-plus-square"></i>追加
                         </button>`,
-                    'click': function (event) {
-                        let addBlockParam: any = {};
-                        let node = event.data.node;
-                        let actionType = 'create';
-                        addBlockParam['ruleType'] = node['data']['rule_type'];
-                        addBlockParam['actionType'] = 'create';
-                        addBlockParam['cPId'] = _t.cPId;
-                        _t.blockRuleAction(addBlockParam);
-                    }
-                }],
+                'click': function (event) {
+                    let addBlockParam: any = {};
+                    let node = event.data.node;
+                    let actionType = 'create';
+                    addBlockParam['ruleType'] = node['data']['rule_type'];
+                    addBlockParam['actionType'] = 'create';
+                    addBlockParam['cPId'] = _t.cPId;
+                    _t.blockRuleAction(addBlockParam);
+                }
+            }],
             'node_customize': [{
                 'html': `<button class="btn btn-outline btn-info btn-xs"
                         sytle="margin-left:10px;margin-bottom:2px;
@@ -392,16 +338,11 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         });
         // .bind('move_node.jstree', function (e, data) {
         // }).bind('activate_node.jstree', function (e, node) {
+
         //     show_detail(node);
         // });
     }
     public dataTree(data: any) {
-        /**
-        * @brief get data and display it on data_rule_tree
-        * @param data: data_rule_tree data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         let _t = this;
         $('#dataTree').jstree({
             'core': {
@@ -418,20 +359,20 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 'always_copy': true,
             },
             'root_node':
-                [{
-                    'html': `<button class="btn btn-xs btn-primary"
+            [{
+                'html': `<button class="btn btn-xs btn-primary"
                         style="margin-left:10px" type="button" >
                             <i class="fa fa-plus-square"></i>追加
                         </button>`,
-                    'click': function (event) {
-                        let addDataParam: any = {};
-                        let node = event.data.node;
-                        addDataParam['ruleType'] = node['data']['rule_type'];
-                        addDataParam['actionType'] = 'create';
-                        addDataParam['cPId'] = _t.cPId;
-                        _t.dataRuleAction(addDataParam);
-                    }
-                }],
+                'click': function (event) {
+                    let addDataParam: any = {};
+                    let node = event.data.node;
+                    addDataParam['ruleType'] = node['data']['rule_type'];
+                    addDataParam['actionType'] = 'create';
+                    addDataParam['cPId'] = _t.cPId;
+                    _t.dataRuleAction(addDataParam);
+                }
+            }],
             'node_customize': [{
                 'html': `<button class="btn btn-outline btn-info btn-xs"
                         sytle="margin-left:10px;margin-bottom:2px;
@@ -461,12 +402,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         // });
     }
     public policyTree(data: any) {
-        /**
-        * @brief get data and display it on policy_rule_tree
-        * @param data: policy_rule_tree data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         let _t = this;
         $('#policyTree').jstree({
             'core': {
@@ -520,23 +455,18 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             ],
         })
-            .bind('move_node.jstree', function (e, data) { })
+            .bind('move_node.jstree', function (e, data) {})
             .on('copy_node.jstree', function (e, data) {
                 data.node.original = $.extend(true, data.node.original, data.original.original);
                 data.node.data = $.extend(true, data.node.data, data.original.data);
             })
-            .bind('activate_node.jstree', function (e, node) { })
-            .on('select_node.jstree', function (e, data) { })
+            .bind('activate_node.jstree', function (e, node) {})
+            .on('select_node.jstree', function (e, data) {})
             .on('rename_node.jstree', function (node, obj) {
                 $('#policyTree').jstree(true).redraw(true);
             });
     }
     public blockRuleAction(sendInfo: any) {
-        /**
-        * @brief show data_rule popup or rename block_rule name on policy tree
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         this.modalRef = this.modalService.show(CLIBlockComponent, this.modalConfig);
         this.modalRef.content.info = sendInfo;
         let blockTree$ = this.modalService.onHidden.subscribe(res => {
@@ -547,20 +477,22 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 let text = _.get(res, 'ruleName');
                 this.blockTree(tree);
                 if (nodes && nodes.length > 0 && text) {
+                    // _.each(nodes, function (node) {
+                    //     console.log('node', node);
                     $('#policyTree').jstree('rename_node', nodes[0], text);
+                    // this.policyTree($('#policyTree').jstree(true).get_json());
+                    // $('#policyTree').jstree(true).refresh();
+                    // });
                 }
             }
             this.unsubscribe(blockTree$);
         });
     }
     public dataRuleAction(sendInfo: any) {
-        /**
-        * @brief show data_rule popup or rename data_rule name on policy tree
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         this.modalRef = this.modalService.show(CLIDataComponent, this.modalConfig);
         this.modalRef.content.info = sendInfo;
+        // 获取policytree上的node
+        // 获取blockTree上的text
         let dataTree$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
                 $('#dataTree').jstree('destroy');
@@ -569,7 +501,9 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 let text = _.get(res, 'ruleName');
                 this.dataTree(tree);
                 if (nodes && nodes.length > 0 && text) {
+                    // _.each(nodes, function (node) {
                     $('#policyTree').jstree('rename_node', nodes[0], text);
+                    // });
                 }
             }
             this.unsubscribe(dataTree$);
@@ -577,11 +511,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     // cli collecton policy edit
     public cPEdit() {
-        /**
-        * @brief show cli collection policy edit popup
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         let cPId = this.cPId;
         this.modalRef = this.modalService.show(CLICPEditPopComponent, this.modalConfig);
         this.modalRef.content.cPId = cPId;

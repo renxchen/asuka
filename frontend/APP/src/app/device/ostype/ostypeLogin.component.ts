@@ -1,10 +1,3 @@
-/**
- * @author: Zizhuang Jiang
- * @contact: zizjiang@cisco.com
- * @file: ostypeLogin.component.ts
- * @time: 2018/03/08
- * @desc: create a ostype
- */
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
@@ -44,9 +37,7 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
     telTimeoutNotNull: Boolean = true;
     snmpTimeoutFlg: Boolean = true;
     snmpTimeoutNotNull: Boolean = true;
-    modalRef: BsModalRef;
-    modalMsg: any;
-    closeMsg: any;
+
     constructor(
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
@@ -180,12 +171,6 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
         }
     }
     public ostypeCheck() {
-        /**
-        * @brief Verify the validity of the input information
-        * @return true or false
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         let starts = _.cloneDeep(this.startCmds);
         let ends = _.cloneDeep(this.endCmds);
         let logs = _.cloneDeep(this.logs);
@@ -314,11 +299,6 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
         return uniqData;
     }
     public ostypeLogin() {
-        /**
-        * @brief get and check the input infomation, then save
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         if (this.ostypeCheck()) {
             this.apiPrefix = '/v1';
             let ostypeInfo: any = {
@@ -346,25 +326,11 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
                         if (msg && msg === 'NAME_IS_EXISTENCE') {
                             this.uniqueFlg = false;
                         } else {
-                            if (msg) {
-                                this.modalMsg = msg;
-                                this.closeMsg = '閉じる';
-                                this.showAlertModal(this.modalMsg, this.closeMsg);
-                            }
+                            alert(msg);
                         }
                     }
                 });
         }
 
-    }
-    public showAlertModal(modalMsg: any, closeMsg: any) {
-        /**
-        * @brief show modal dialog
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
-        this.modalRef = this.modalService.show(ModalComponent);
-        this.modalRef.content.modalMsg = modalMsg;
-        this.modalRef.content.closeMsg = closeMsg;
     }
 }

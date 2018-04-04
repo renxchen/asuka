@@ -1,10 +1,3 @@
-/**
-* @author: Dan Lv
-* @contact: danlv@cisco.com
-* @file: cliCPLogin.component.ts
-* @time: 2018/03/14
-* @desc: create a cli collection policy
-*/
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
@@ -51,17 +44,18 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
             this.router.navigate(['/index/']);
         }
         this.getOsType();
+        // this.labelParentAlert();
     }
     ngAfterViewInit() {
         this.getOsType();
     }
     public cPLogin() {
-        /**
-       * @brief get and check the input infomation, then save
-       * @post navigate to collection policy edit page
-       * @author Dan Lv
-       * @date 2018/03/14
-       */
+         /**
+        * @brief get and check the input infomation, then save
+        * @post navigate to collection policy edit page
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         let _t = this;
         let cPInfo: any = {};
         this.apiPrefix = '/v1';
@@ -88,30 +82,28 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                             _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                             $('#modalButton').on('click', function () {
                                 _t.router.navigate(['/index/clicpedit'],
-                                    { queryParams: { 'id': id } });
+                                { queryParams: { 'id': id } });
                             });
+                            //
+                            // let id = _.get(data['data'], 'coll_policy_id');
+                            // this.router.navigate(['/index/clicpedit'],
+                            //     { queryParams: { 'id': id } });
                         }
                     } else {
                         // CP_NAME_DUPLICATE
                         if (msg && msg === 'Collection policy name is exist in system.') {
                             _t.uniqueFlg = false;
                         } else {
-                            if (msg) {
-                                this.modalMsg = msg;
-                                this.closeMsg = '閉じる';
-                                this.showAlertModal(this.modalMsg, this.closeMsg);
-                            }
+                            // alert(msg);
+                            this.modalMsg = msg;
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
                         }
                     }
                 });
         }
     }
     public getOsType() {
-        /**
-        * @brief get all of the ostype data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -125,21 +117,19 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        this.modalMsg = res['status']['message'];
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        alert(res['status']['message']);
                     }
                 }
             });
     }
     public doCheck(): boolean {
-        /**
-       * @brief Verify the validity of the input information
-       * @return true or false
-       * @author Dan Lv
-       * @date 2018/03/14
-       */
-        this.uniqueFlg = true;
+         /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
+       this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
@@ -167,4 +157,13 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
     }
+    // public labelParentAlert() {
+    //     let _t = this;
+    //     $('a[id ="labelParent"]').click(function () {
+    //         let r = confirm('作業中の内容は破棄されます。よろしいですか？');
+    //         if (r) {
+    //             _t.router.navigate(['/index/cpview/']);
+    //         }
+    //     });
+    // }
 }

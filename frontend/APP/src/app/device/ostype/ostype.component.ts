@@ -1,10 +1,3 @@
-/**
- * @author: Zizhuang Jiang
- * @contact: zizjiang@cisco.com
- * @file: ostype.component.ts
- * @time: 2018/03/08
- * @desc: ostype summary
- */
 import { Component, OnInit, AfterViewInit, ComponentFactory } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Router } from '@angular/router';
@@ -41,17 +34,20 @@ export class OstypeComponent implements OnInit, AfterViewInit {
         private modalService: BsModalService) {
     }
     ngOnInit() {
+        // for reg test
+        // let input = '+';
+        // try {
+        //     let a = new RegExp('/+');
+        //     // let t = new RegExp(input);
+        //     console.log(a);
+        // } catch (e) {
+        //     console.log('无效正则');
+        // }
     }
     ngAfterViewInit() {
         this.drawOstypeTable();
     }
     public drawOstypeTable() {
-        /**
-        * @brief get data and display it in the grid
-        * @pre called after the Dom has been ready
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         let _t = this;
         _t.ostypeTable$ = $('#ostypeTable').jqGrid({
             url: '/v1/api_device_ostype/',
@@ -91,10 +87,16 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             gridComplete: function () {
                 _t.editBtn();
                 _t.deleteBtn();
-                $('.ui-jqgrid .ui-jqgrid-htable th div').css({ 'height': '30px' });
+                $('.ui-jqgrid .ui-jqgrid-htable th div').css({ 'height': '27px' });
                 $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
             },
             loadComplete: function (res) {
+                // let code: any = _.get(_.get(res, 'new_token'), 'code');
+                // let msg: any = _.get(_.get(res, 'new_token'), 'message');
+                // if (code === 102 || code === 103) {
+                //     localStorage.setItem('sessionTimeOut', msg);
+                //     _t.router.navigate(['/login/']);
+                // }
                 let status = _.get(_.get(res, 'status'), 'status');
                 let code: any = _.get(_.get(res, 'status'), 'code');
                 let msg: any = _.get(_.get(res, 'status'), 'message');
@@ -143,14 +145,6 @@ export class OstypeComponent implements OnInit, AfterViewInit {
     }
     // </br> formatter
     public brFormatter(cellvalue, options, rowObject) {
-        /**
-        * @brief format the data
-        * @param cellvalue: value of the cell;
-                  options:includes attributes such as RowId,colModel;
-                  rowObject:json data of the row
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         if (cellvalue !== null && cellvalue !== '') {
             return '<i class="fa fa-genderless"></i> ' + cellvalue.replace(/，/g, '<br /><i class="fa fa-genderless"></i> ');
             // return '<i class="fa fa-genderless"></i> ' + cellvalue.replace(/，/g, '\n<i class="fa fa-genderless"></i> ');
@@ -160,14 +154,6 @@ export class OstypeComponent implements OnInit, AfterViewInit {
     }
     // no data formatter
     public noDataFormatter(cellvalue, options, rowObject) {
-        /**
-        * @brief format the data
-        * @param cellvalue: value of the cell;
-                  options:includes attributes such as RowId,colModel;
-                  rowObject:json data of the row
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         if (cellvalue === null || cellvalue === '') {
             return '-';
         } else {
@@ -175,22 +161,21 @@ export class OstypeComponent implements OnInit, AfterViewInit {
         }
     }
     public editBtn() {
-        /**
-        * @brief get the ostype id and show edit popup
-        * @post refresh table if edit successfully
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         let _t = this;
         _t.apiPrefix = '/v1';
+        // let url = '/api_device_ostype/?id=';
         $('.edit').click(function (event) {
             let editId = $(event)[0].target.id;
             if (editId) {
+                // _t.router.navigate(['/index/ostypedit'],
+                //     { queryParams: { 'id': id } });
                 _t.modalRef = _t.modalService.show(OstypeEditComponent, _t.modalConfig);
                 _t.modalRef.content.id = editId;
                 _t.modalRef.content.actionType = 'edit';
                 let ostypeEdit$ = _t.modalService.onHidden.subscribe(o => {
                     if (o) {
+                        // _t.ostypeTable$.GridUnload();
+                        // _t.drawOstypeTable();
                         $('#ostypeTable').jqGrid('clearGridData');
                         $('#ostypeTable').trigger('reloadGrid');
                     }
@@ -200,12 +185,6 @@ export class OstypeComponent implements OnInit, AfterViewInit {
         });
     }
     public deleteBtn() {
-         /**
-        * @brief get the ostype id and delete this ostype
-        * @post reload cpgTable if delete sucessfully
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         let _t = this;
         _t.apiPrefix = '/v1';
         let url = '/api_device_ostype/?id=';
@@ -227,30 +206,44 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                             _t.closeMsg = '閉じる';
                             _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                             $('#modalButton').on('click', function () {
+                                // $('#ostypeTable').jqGrid().trigger('reloadGrid');
                                 $('#ostypeTable').jqGrid('clearGridData');
                                 $('#ostypeTable').trigger('reloadGrid');
                             });
                         } else {
+                            // check this ostype occupation, check with backend
                             if (msg) {
-                                _t.modalMsg = msg;
-                                _t.closeMsg = '閉じる';
-                                _t.showAlertModal(_t.modalMsg, _t.closeMsg);
+                                this.modalMsg = msg;
+                                this.closeMsg = '閉じる';
+                                _t.showAlertModal(this.modalMsg, this.closeMsg);
                             }
+                            // if (msg === 'EXIST_IN_DEVICES') {
+                            //     this.modalMsg = 'Can not been delete when ostype exits in devices';
+                            //     this.closeMsg = '閉じる';
+                            //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            // } else if (msg === 'OSTYPE_EXIST_IN_SCHEDULE') {
+                            //     this.modalMsg = 'Can not been delete when ostype exits in schedule';
+                            //     this.closeMsg = '閉じる';
+                            //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            // } else if (msg === 'EXIST_IN_COLL_POLICY') {
+                            //     this.modalMsg = 'Can not been delete when ostype exits in collection policy';
+                            //     this.closeMsg = '閉じる';
+                            //     _t.showAlertModal(this.modalMsg, this.closeMsg);
+                            // } else {
+                            //     alert(msg);
+                            // }
                         }
                     });
             }
         });
     }
     public ostypeLogin() {
-        /**
-        * @brief show create popup
-        * @post refresh table if create successfully
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.modalRef = this.modalService.show(OstypeLoginComponent, this.modalConfig);
+        this.modalRef.content.actionType = 'create';
         let ostypeLogin$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
+                // this.ostypeTable$.GridUnload();
+                // this.drawOstypeTable();
                 $('#ostypeTable').jqGrid('clearGridData');
                 $('#ostypeTable').trigger('reloadGrid');
             }
@@ -258,11 +251,6 @@ export class OstypeComponent implements OnInit, AfterViewInit {
         });
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
-        /**
-        * @brief show modal dialog
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;

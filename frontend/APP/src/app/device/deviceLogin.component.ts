@@ -1,10 +1,3 @@
-/**
- * @author: Zizhuang Jiang
- * @contact: zizjiang@cisco.com
- * @file: deviceLogin.component.ts
- * @time: 2018/03/08
- * @desc: import devices
- */
 import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Http } from '@angular/http';
@@ -62,18 +55,13 @@ export class DeviceLoginComponent implements OnInit {
         this.uploadFlg = 'null';
     }
     public changeFile(files: FileList) {
-        /**
-        * @brief select and add uploading file
-        * @param files: the selected file
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         if (files && files.length > 0) {
             let file: File = files.item(0);
             let fileType = file.type;
             this.filename = file.name;
             this.formData = new FormData();
             this.formData.append('file', file);
+            // if (fileType === 'application/vnd.ms-excel') {
             if (this.filename.indexOf('.csv') > -1) {
                 this.uploadFlg = 'csv';
                 this.loginFlg = false;
@@ -90,11 +78,6 @@ export class DeviceLoginComponent implements OnInit {
         }
     }
     public uploadFile() {
-        /**
-        * @brief upload the uploading file
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         if (this.devLoginTable$) {
             this.devLoginTable$.GridUnload();
             // $('#devLoginTable').jqGrid('clearGridData');
@@ -108,6 +91,7 @@ export class DeviceLoginComponent implements OnInit {
             .map(res => res.json())
             .catch(error => Observable.throw(error))
             .subscribe(res => {
+                // this.modalRef.hide();
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
                 let data: any = _.get(res, 'error_list');
@@ -124,23 +108,17 @@ export class DeviceLoginComponent implements OnInit {
                         this.modalRef.content.data = this.errorDevices;
                     }
                 } else {
+                    // this.processbar.hide();
                     $('.modal').hide();
                     this.actionFlg = true;
-                    if (msg) {
-                        this.modalMsg = msg;
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
-                    }
+                    // alert(msg);
+                    this.modalMsg = msg;
+                    this.closeMsg = '閉じる';
+                    this.showAlertModal(this.modalMsg, this.closeMsg);
                 }
             });
     }
     public drawDevLoginTable() {
-        /**
-       * @brief get data and display it in the grid
-       * @pre called after the Dom has been ready
-       * @author Zizhuang Jiang
-       * @date 2018/03/08
-       */
         let _t = this;
         _t.devLoginTable$ = $('#devLoginTable').jqGrid({
             url: '/v1/api_device_pre/?operation_id=' + this.optId,
@@ -182,6 +160,12 @@ export class DeviceLoginComponent implements OnInit {
                 { name: 'snmp_status', index: 'status_type', width: 50, align: 'center', search: true },
             ],
             loadComplete: function (res) {
+                // let code: any = _.get(_.get(res, 'new_token'), 'code');
+                // let msg: any = _.get(_.get(res, 'new_token'), 'message');
+                // if (code === 102 || code === 103) {
+                //     localStorage.setItem('sessionTimeOut', msg);
+                //     _t.router.navigate(['/login/']);
+                // }
                 let status = _.get(_.get(res, 'status'), 'status');
                 let code: any = _.get(_.get(res, 'status'), 'code');
                 let msg: any = _.get(_.get(res, 'status'), 'message');
@@ -205,6 +189,7 @@ export class DeviceLoginComponent implements OnInit {
             //         $('#devLoginTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
             //     }
             // },
+            // text-overflow: ellipsis;
             pager: '#devLoginPager',
             rowNum: 10,
             rowList: [5, 10, 15],
@@ -224,14 +209,6 @@ export class DeviceLoginComponent implements OnInit {
         $('#devLoginTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
     }
     public noDataFormatter(cellvalue, options, rowObject) {
-        /**
-        * @brief format the data
-        * @param cellvalue: value of the cell;
-                 options:includes attributes such as RowId,colModel;
-                 rowObject:json data of the row
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         if (cellvalue === null || cellvalue === '') {
             return '-';
         } else {
@@ -239,11 +216,6 @@ export class DeviceLoginComponent implements OnInit {
         }
     }
     public deviceCheck() {
-        /**
-        * @brief status check
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.apiPrefix = '/v1';
         let checkUrl = '/api_device_pre/';
         let deviceSel: any = [];
@@ -282,11 +254,6 @@ export class DeviceLoginComponent implements OnInit {
     }
     // save to database;
     public deviceLogin() {
-        /**
-        * @brief save data
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.processbar = this.modalService.show(ProgressbarComponent, this.modalConfig);
         this.processbar.content.message = 'Waiting...';
         this.apiPrefix = '/v1';
@@ -298,26 +265,20 @@ export class DeviceLoginComponent implements OnInit {
             .toJson(this.httpClient.post(databaseUrl, loginInfo))
             .subscribe(res => {
                 let status = _.get(res, 'status');
-                let msg = _.get(status, 'message');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
                     $('.modal').hide();
                     this.router.navigate(['index/deviceview/']);
                 } else {
                     $('.modal').hide();
-                    if (msg) {
-                        this.modalMsg = msg;
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
-                    }
+                    // this.processbar.hide();
+                    // alert('Save failed.');
+                    this.modalMsg = _.get(status, 'message');
+                    this.closeMsg = '閉じる';
+                    this.showAlertModal(this.modalMsg, this.closeMsg);
                 }
             });
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
-        /**
-        * @brief show modal dialog
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;

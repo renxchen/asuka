@@ -1,10 +1,3 @@
-/**
- * @author: Zizhuang Jiang
- * @contact: zizjiang@cisco.com
- * @file: groupEdit.component.ts
- * @time: 2018/03/08
- * @desc: edit device group
- */
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
@@ -32,9 +25,6 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
     uniqueFlg: Boolean = true;
     groupFlg: Boolean = true;
     osFlg: Boolean = true;
-    modalRef: BsModalRef;
-    modalMsg: any;
-    closeMsg: any;
     constructor(
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
@@ -52,11 +42,6 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
         }, 0);
     }
     public getOsType() {
-        /**
-        * @brief get all of the ostype data
-        * @author Zizhuang Jiang
-        * @date 2018/03/18
-        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -70,20 +55,12 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        this.modalMsg = res['status']['message'];
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        alert(res['status']['message']);
                     }
                 }
             });
     }
     public getGroupInfo(id: any) {
-        /**
-        * @brief get device group info
-        * param id: device group id
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -105,20 +82,12 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (msg) {
-                        this.modalMsg = msg;
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        alert(msg);
                     }
                 }
             });
     }
     public doCheck() {
-        /**
-        * @brief Verify the validity of the input information
-        * @return true or false
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
@@ -131,11 +100,6 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
         }
     }
     public editGroup() {
-        /**
-        * @brief get and check the input infomation, then save
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.apiPrefix = '/v1';
         let url = '/api_device_groups/';
         let group: any = {};
@@ -158,24 +122,10 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
                         if (msg && msg === 'GROUPNAME_ALREADY_EXISTS') {
                             this.uniqueFlg = false;
                         } else {
-                            if (msg) {
-                                this.modalMsg = msg;
-                                this.closeMsg = '閉じる';
-                                this.showAlertModal(this.modalMsg, this.closeMsg);
-                            }
+                            alert(msg);
                         }
                     }
                 });
         }
-    }
-    public showAlertModal(modalMsg: any, closeMsg: any) {
-        /**
-        * @brief show modal dialog
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
-        this.modalRef = this.modalService.show(ModalComponent);
-        this.modalRef.content.modalMsg = modalMsg;
-        this.modalRef.content.closeMsg = closeMsg;
     }
 }

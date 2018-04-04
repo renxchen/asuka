@@ -29,15 +29,10 @@ export class CPGDetailComponent implements OnInit {
     desc: any;
     cpNames: any;
     cpList: any = [];
-    modalRef: BsModalRef;
-    modalMsg: any;
-    closeMsg: any;
     constructor(
         private httpClient: HttpClientComponent,
         private activatedRoute: ActivatedRoute,
         private router: Router,
-        private bsModalRef: BsModalRef,
-        private modalService: BsModalService
     ) {
         let cPIdTmp = this.activatedRoute.snapshot.queryParams['id'];
         if (cPIdTmp) {
@@ -80,12 +75,6 @@ export class CPGDetailComponent implements OnInit {
                         this.cpList = groupsData;
                         this.moreInfoTable(this.cpList);
                     }
-                }else {
-                    if (res['status'] && res['status']['message']) {
-                        this.modalMsg = res['status']['message'];
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
-                    }
                 }
             });
     }
@@ -108,16 +97,14 @@ export class CPGDetailComponent implements OnInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        this.modalMsg = res['status']['message'];
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        alert(res['status']['message']);
                     }
                 }
             });
     }
     public getCPNames() {
         /**
-        * @brief get all of the collection policy data
+        * @brief get all of the collection policy  data
         * @author Dan Lv
         * @date 2018/03/13
         */
@@ -132,9 +119,7 @@ export class CPGDetailComponent implements OnInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        this.modalMsg = res['status']['message'];
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        alert(res['status']['message']);
                     }
                 }
             });
@@ -168,6 +153,15 @@ export class CPGDetailComponent implements OnInit {
                     formatter: function (cellvalue, options, rowObject) {
                         let policyId = rowObject.policy;
                         let cpType: any = rowObject.policy_policy_type;
+                        // if (cpType.toString() === '0') {
+                        //     return '<a href="/index/clicpdetail?id=' + policyId
+                        //         + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
+                        // } else if (cpType.toString() === '1') {
+                        //     return '<a href="/index/snmpcpdetail?id=' + policyId
+                        //         + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
+                        // } else {
+                        //     return;
+                        // }
                         if (cpType.toString() === '0') {
                             return '<a class="cp-span" id=' + 'cli_' + policyId +
                                 ' style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
@@ -205,11 +199,6 @@ export class CPGDetailComponent implements OnInit {
         $('#cpglogintable').jqGrid({ searchOnEnter: true, defaultSearch: 'cn' });
     }
     public execIntervalFormatter(id: any) {
-        /**
-        * @brief format the data
-        * @author Dan Lv
-        * @date 2018/03/14
-        */
         if (id.toString() === '60') {
             return '1分';
         } else if (id.toString() === '300') {
@@ -225,11 +214,6 @@ export class CPGDetailComponent implements OnInit {
         }
     }
     public toCPDetail() {
-        /**
-        * @brief get the collection policy id and jump to colleciton policy detail page
-        * @author Dan Lv
-        * @date 2018/03/13
-        */
         let _t = this;
         $('.cp-span').click(function (event) {
             let idTmp = $(event)[0].target.id.split('_');
@@ -252,15 +236,5 @@ export class CPGDetailComponent implements OnInit {
         */
         this.router.navigate(['/index/cpgedit'],
             { queryParams: { 'id': this.cPGId } });
-    }
-    public showAlertModal(modalMsg: any, closeMsg: any) {
-        /**
-        * @brief show modal dialog
-        * @author Dan Lv
-        * @date 2018/03/13
-        */
-        this.modalRef = this.modalService.show(ModalComponent);
-        this.modalRef.content.modalMsg = modalMsg;
-        this.modalRef.content.closeMsg = closeMsg;
     }
 }

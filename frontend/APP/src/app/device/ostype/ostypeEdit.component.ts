@@ -41,9 +41,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
     telTimeoutNotNull: Boolean = true;
     snmpTimeoutFlg: Boolean = true;
     snmpTimeoutNotNull: Boolean = true;
-    modalRef: BsModalRef;
-    modalMsg: any;
-    closeMsg: any;
+
     constructor(
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
@@ -92,12 +90,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         return firstLog;
     }
     public getOstype(id: any) {
-        /**
-        * @brief get ostype info
-        * param id: ostype id
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.apiPrefix = '/v1';
         let url = '/api_device_ostype/?id=' + this.id;
         this.httpClient.setUrl(this.apiPrefix);
@@ -138,11 +130,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                         this.ostypeMFlg = _.get(verify, 'name');
                     }
                 } else {
-                    if (msg) {
-                        this.modalMsg = msg;
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
-                    }
+                    alert(msg);
                 }
             });
     }
@@ -280,12 +268,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         }
     }
     public ostypeCheck() {
-        /**
-        * @brief Verify the validity of the input information
-        * @return true or false
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         let starts = _.cloneDeep(this.startCmds);
         let ends = _.cloneDeep(this.endCmds);
         let logs = _.cloneDeep(this.logs);
@@ -413,11 +395,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         return uniqData;
     }
     public ostypeLogin() {
-        /**
-        * @brief get and check the input infomation, then save
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         if (this.ostypeCheck()) {
             this.apiPrefix = '/v1';
             let ostypeInfo: any = {
@@ -446,26 +423,12 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                         if (msg && msg === 'NAME_IS_EXISTENCE') {
                             this.uniqueFlg = false;
                         } else {
-                            if (msg) {
-                                this.modalMsg = msg;
-                                this.closeMsg = '閉じる';
-                                this.showAlertModal(this.modalMsg, this.closeMsg);
-                            }
+                            alert(msg);
                         }
                     }
                 });
         }
 
-    }
-    public showAlertModal(modalMsg: any, closeMsg: any) {
-        /**
-        * @brief show modal dialog
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
-        this.modalRef = this.modalService.show(ModalComponent);
-        this.modalRef.content.modalMsg = modalMsg;
-        this.modalRef.content.closeMsg = closeMsg;
     }
 }
 
