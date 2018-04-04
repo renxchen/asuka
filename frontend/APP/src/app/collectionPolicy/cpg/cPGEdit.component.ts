@@ -34,6 +34,7 @@ export class CPGEditComponent implements OnInit {
     addFlg: Boolean = true;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
+    ostypeNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
     usingFlg: Boolean = false;
     cliFlg: Boolean = true;
@@ -469,7 +470,12 @@ export class CPGEditComponent implements OnInit {
             this.nameFlg = Validator.fullWithoutSpecial(this.name);
             // this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
-        if (this.nameNotNull && this.nameFlg && this.selectedOsType) {
+        if (this.selectedOsType) {
+            this.ostypeNotNull = true;
+        } else {
+            this.ostypeNotNull = false;
+        }
+        if (this.nameNotNull && this.nameFlg && this.ostypeNotNull) {
             return true;
         } else {
             return false;

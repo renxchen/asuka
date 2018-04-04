@@ -25,6 +25,7 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
     osType: any;
     desc: any;
     selectedOsType: any;
+    ostypeNotNull: Boolean = true;
     nameFlg: Boolean = true;
     cmdFlg: Boolean = true;
     descFlg: Boolean = false;
@@ -84,7 +85,12 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
         if (this.nameNotNull) {
             this.nameFlg = Validator.fullWithoutSpecial(this.name);
         }
-        if (this.nameNotNull && this.nameFlg && this.selectedOsType) {
+        if (this.selectedOsType) {
+            this.ostypeNotNull = true;
+        } else {
+            this.ostypeNotNull = false;
+        }
+        if (this.nameNotNull && this.nameFlg && this.ostypeNotNull) {
             return true;
         } else {
             return false;
