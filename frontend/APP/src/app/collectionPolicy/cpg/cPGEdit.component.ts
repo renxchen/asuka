@@ -193,7 +193,7 @@ export class CPGEditComponent implements OnInit {
         */
         let _t = this;
         $('.delete').click(function (event) {
-            if (this.exeFlg) {
+            if (_t.exeFlg.toString().toLowerCase() === 'true') {
                 let cpList: any = _t.cpList;
                 let id = $(event)[0].target.id;
                 for (let i = 0; i < cpList.length; i++) {
@@ -207,9 +207,9 @@ export class CPGEditComponent implements OnInit {
                 _t.cpList = cpList;
                 event.stopPropagation();
             } else {
-                this.modalMsg = 'Collection policy group is running in system.';
-                this.closeMsg = '閉じる';
-                this.showAlertModal(this.modalMsg, this.closeMsg);
+                _t.modalMsg = 'Collection policy group is running in system.';
+                _t.closeMsg = '閉じる';
+                _t.showAlertModal(_t.modalMsg, _t.closeMsg);
             }
         });
     }
