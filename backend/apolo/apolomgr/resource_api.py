@@ -35,7 +35,7 @@ if 'WINDOWS' not in platform.system().upper():
         return HttpResponse(run_request_method(resource_object))
 
 
-    @api_view(['POST', 'GET'])
+    @api_view(['POST'])
     def api_snmp_collection_test(request):
         resource_object = snmp_collection_test.SnmpCollectionTest(request=request)
         return HttpResponse(run_request_method(resource_object))

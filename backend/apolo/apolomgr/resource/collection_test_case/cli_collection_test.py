@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# coding=utf-8
+# -*- coding: utf-8 -*-
 """
 
 @author: kimli
@@ -15,7 +15,9 @@ from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import constants
 import traceback
 from apolo_server.processor.worker.cisco_cli_helper import CiscoCLI, LoginException
-import simplejson as json
+from backend.apolo.tools import views_helper
+import logging
+import time
 
 
 class CliCollectionTest(viewsets.ViewSet):
@@ -23,50 +25,40 @@ class CliCollectionTest(viewsets.ViewSet):
         super(CliCollectionTest, self).__init__(**kwargs)
         self.request = request
         # self.device_info = eval(views_helper.get_request_value(self.request, 'device_info', method))
-        try:
-            # self.device_info = eval(request.body).get('device_info')
-            self.device_info = eval(self.request.POST.get('device_info'))
-            self.device_info['start_default_commands'] = '，'.join(self.device_info['start_default_commands'])
-            self.device_info['end_default_commands'] = '，'.join(self.device_info['end_default_commands'])
-            self.device_info['fail_judges'] = '，'.join(self.device_info['fail_judges'])
-            self.device_info['device_id'] = 1000
-        except Exception as e:
-            print traceback.format_exc(e)
-            # self.start_default_commands = views_helper.get_request_value(self.request, 'start_default_commands', method)
-            # self.end_default_commands = views_helper.get_request_value(self.request, 'end_default_commands', method)
-            # self.promet = views_helper.get_request_value(self.request, 'prompt', method)
-            # self.fail_judges = views_helper.get_request_value(self.request, 'fail_judges', method)
-            # self.ip = views_helper.get_request_value(self.request, 'ip', method)
-            # self.hostname = views_helper.get_request_value(self.request, 'hostname', method)
-            # self.expect = views_helper.get_request_value(self.request, 'expect', method)
-            # self.device_id = views_helper.get_request_value(self.request, 'device_id', method)
-            # self.timeout = views_helper.get_request_value(self.request, 'timeout', method)
-            # self.device_info = {
-            #     "commands": self.commands,
-            #     "start_default_commands": '，'.join(self.start_default_commands),
-            #     "end_default_commands": '，'.join(self.end_default_commands),
-            #     "prompt": self.promet,
-            #     "fail_judges": '，'.join(self.fail_judges),
-            #     "ip": self.ip, "hostname": self.hostname,
-            #     "expect": self.expect,
-            #     "timeout": self.timeout,
-            #     'device_id': self.device_id
-            # }
+        # self.device_info = eval(request.body).get('device_info')
+        method = 'BODY'
+        if request.method.lower() == 'get' or request.method.lower() == 'delete':
+            method = 'GET'
+        if request.method.lower() == 'post' or request.method.lower() == 'put':
+            method = 'BODY'
+        self.device_info = {}
+        self.commands = views_helper.get_request_value(self.request, 'commands', method)
+        self.start_default_commands = views_helper.get_request_value(self.request, 'start_default_commands', method)
+        self.end_default_commands = views_helper.get_request_value(self.request, 'end_default_commands', method)
+        self.prompt = views_helper.get_request_value(self.request, 'prompt', method)
+        self.port = views_helper.get_request_value(self.request, 'port', method)
+        self.fail_judges = views_helper.get_request_value(self.request, 'fail_judges', method)
+        self.ip = views_helper.get_request_value(self.request, 'ip', method)
+        self.hostname = views_helper.get_request_value(self.request, 'hostname', method)
+        self.expect = views_helper.get_request_value(self.request, 'expect', method)
+        self.timeout = views_helper.get_request_value(self.request, 'timeout', method)
+        self.SPILT_CHAT = u"，"
+        self.integrate_data()
 
-    def test(self):
-        # import logging
-        # log_pattern = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        # formatter = logging.Formatter(log_pattern)
-        # ch = logging.StreamHandler()
-        # ch.setLevel(logging.DEBUG)
-        # ch.setFormatter(formatter)
-        # logger = logging.getLogger("CiscoCli.log")
-        # logger.setLevel(logging.DEBUG)
-        # logger.addHandler(ch)
+    def integrate_data(self):
+        self.device_info['commands'] = self.commands.split(',')
+        self.device_info['start_default_commands'] = self.SPILT_CHAT.join(self.start_default_commands.split(','))
+        self.device_info['end_default_commands'] = self.SPILT_CHAT.join(self.end_default_commands.split(','))
+        self.device_info['prompt'] = self.prompt
+        self.device_info['fail_judges'] = self.SPILT_CHAT.join(self.fail_judges.split(','))
+        self.device_info['ip'] = self.ip
+        self.device_info['hostname'] = self.hostname
+        self.device_info['expect'] = self.expect
+        self.device_info['timeout'] = self.timeout
+        self.device_info['port'] = self.port
+        self.device_info['device_id'] = 1000
 
-
-        import logging
-        import time
+    def cli_work(self):
         logger = logging.getLogger(__name__)
         logger.setLevel(level=logging.INFO)
         time_stamp = time.time()
@@ -78,7 +70,6 @@ class CliCollectionTest(viewsets.ViewSet):
         handler.setFormatter(formatter)
         logger.addHandler(handler)
         logger.propagate = False
-
         worker = CiscoCLI(self.device_info, logger=logger)
         output = []
         output_log = ''
@@ -111,15 +102,11 @@ class CliCollectionTest(viewsets.ViewSet):
 
     def post(self):
         try:
-            output, output_log = self.test()
+            output, output_log = self.cli_work()
             data = {
                 'data': {
                     'data': output,
                     'log': output_log,
-                },
-                constants.STATUS: {
-                    constants.STATUS: constants.TRUE,
-                    constants.MESSAGE: constants.SUCCESS
                 },
             }
             return api_return(data=data)
