@@ -3,7 +3,6 @@
 .bzrignore
 *migrations
 /backend/server/settings.py
-*logs
 /*.log
 .idea/*
 .vscode/
