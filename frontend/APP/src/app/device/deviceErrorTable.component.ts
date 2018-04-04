@@ -1,10 +1,3 @@
-/**
- * @author: Zizhuang Jiang
- * @contact: zizjiang@cisco.com
- * @file: deviceErrorTable.component.ts
- * @time: 2018/03/08
- * @desc: display device with error
- */
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';

@@ -1,10 +1,3 @@
-/**
-* @author: Dan Lv
-* @contact: danlv@cisco.com
-* @file: cliBlock.component.ts
-* @time: 2018/03/14
-* @desc: create and edit block rule;
-*/
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Validator } from '../../../components/validation/validation';

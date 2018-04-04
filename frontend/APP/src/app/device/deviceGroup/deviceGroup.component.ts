@@ -1,11 +1,4 @@
-
-/**
- * @author: Zizhuang Jiang
- * @contact: zizjiang@cisco.com
- * @file: deviceGroup.component.ts
- * @time: 2018/03/08
- * @desc: device group summary
- */import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -30,9 +23,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
     deviceTable$: any;
     apiPrefix: any;
     groups: any = [];
-    modalRef: BsModalRef;
-    modalMsg: any;
-    closeMsg: any;
+    modalRef: any;
     modalConfig = {
         animated: true,
         keyboard: false,
@@ -166,20 +157,12 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (msg) {
-                        this.modalMsg = msg;
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        alert(msg);
                     }
                 }
             });
     }
     public getPanelData(id: any) {
-        /**
-        * @brief get the current device group info and display them
-        * param id: device group id
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         if (id === '-1') {
             this.name = '無所属';
             this.osType = '無所属';
@@ -202,9 +185,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (msg) {
-                        this.modalMsg = msg;
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        alert(msg);
                     }
                 }
             });
@@ -212,12 +193,9 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
 
     // click事件
     public getGroupInfo(id: any) {
-        /**
-        * @brief get devices in the current group
-        * param id: device group id
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
+        // let id = event.target.id;
+        // event.preventDefault();
+        // this.deviceTable$.GridUnload();
         if (id) {
             this.groupId = id;
             this.getPanelData(id);
@@ -225,15 +203,12 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             $('#deviceTable')
             .jqGrid('setGridParam', { url : '/v1/api_device/?group_id=' + id })
             .trigger('reloadGrid');
+            // this.drawDeviceTable(id);
         }
     }
     public editGroup(id: any) {
-        /**
-        * @brief get the device group id and show edit popup
-        * @post refresh table if edit successfully
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
+        // event.preventDefault();
+        // let id = event.target.id;
         this.modalRef = this.modalService.show(GroupEditComponent, this.modalConfig);
         this.modalRef.content.id = id;
         let group$ = this.modalService.onHidden.subscribe(res => {
@@ -247,6 +222,8 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
         });
     }
     public deleteGroup(id: any) {
+        // event.preventDefault();
+        // let id = event.target.id;
         let name: any;
         for (let i = 0; i < this.groups.length; i++) {
             if (this.groups[i]['group_id'] === id) {
@@ -263,32 +240,23 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
-                        this.modalMsg = '削除しました。';
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        alert('Delete successfully');
                         this.getGroups();
                         if (id = this.groupId) {
+                            // this.deviceTable$.GridUnload();
                             $('#deviceTable').jqGrid('clearGridData');
                             this.drawDeviceTable('-1');
                             this.getPanelData('-1');
                         }
                     } else {
                         if (msg) {
-                            this.modalMsg = msg;
-                            this.closeMsg = '閉じる';
-                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                            alert(msg);
                         }
                     }
                 });
         }
     }
     public groupLogin(id: any) {
-        /**
-        * @brief show create popup
-        * @post refresh table if create successfully
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
         this.modalRef = this.modalService.show(GroupLoginComponent, this.modalConfig);
         let group$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
@@ -299,15 +267,5 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
     }
     public unsubscribe(res: any) {
         res.unsubscribe();
-    }
-    public showAlertModal(modalMsg: any, closeMsg: any) {
-        /**
-        * @brief show modal dialog
-        * @author Zizhuang Jiang
-        * @date 2018/03/08
-        */
-        this.modalRef = this.modalService.show(ModalComponent);
-        this.modalRef.content.modalMsg = modalMsg;
-        this.modalRef.content.closeMsg = closeMsg;
     }
 }
