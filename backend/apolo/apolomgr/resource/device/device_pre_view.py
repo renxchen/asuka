@@ -254,5 +254,6 @@ class DevicePreViewSet(APIView):
                 }
                 return api_return(data=data)
         except Exception, e:
+            transaction.rollback()
             print e
             raise e
