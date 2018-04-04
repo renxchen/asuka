@@ -66,11 +66,12 @@
                 <label 
                     for="osType" 
                     class="col-sm-4 control-label"
+                    [ngClass]="{'text-warning': !ostypeNotNull}"
                 >
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     OS Type：
                 </label>
-                <div class="col-sm-7">
+                <div class="col-sm-7" [ngClass]="{'has-warning': !ostypeNotNull}">
                     <select 
                         title=""
                         class="form-control" 
@@ -244,6 +245,9 @@
                 <div class="col-sm-12 text-warning" *ngIf="!sameCPFlg">
                     Can not add the same collection policy twice.
                 </div>
+                <div class="col-sm-12 text-warning" *ngIf='!ostypeNotNull'>
+                    Ostype cannot be empty.
+                </div> 
             </div> 
         </form>
     </div>
