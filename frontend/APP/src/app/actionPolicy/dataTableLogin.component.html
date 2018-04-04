@@ -30,24 +30,24 @@
           >step 4</button>
       </div>
       <div id="step1div" *ngIf="currentStep===1">
-        <div class="col-sm-12">基本設定を入力してください</div>
+        <div class="col-sm-12 annotation">基本設定を入力してください</div>
         <div class="form-group">
-
           <label class="col-sm-3 control-label">
-            <!--<span style="color:red">※</span>-->
+            <span class="necessary-icon">※</span>
             テーブル名:
           </label>
-          <div>
-            <input type="text" placeholder="" [(ngModel)]="tableName">
+          <div class="col-md-8">
+            <input type="text" placeholder="" [(ngModel)]="tableName"
+            class="form-control ng-untouched ng-pristine ng-valid" 
+            (keyup)="checkTableNameValidation()">
           </div>
         </div>
         <div class="form-group">
           <label class="col-sm-3 control-label">
-            <!--<span style="color:red">※</span>-->
             概要:
           </label>
-          <div>
-            <textarea style="height: 100px" [(ngModel)]="description"></textarea>
+          <div class="col-md-8">
+            <textarea class="form-control ng-untouched ng-pristine ng-valid" [(ngModel)]="description"></textarea>
           </div>
 
         </div>

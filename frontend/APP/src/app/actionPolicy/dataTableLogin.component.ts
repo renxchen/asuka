@@ -16,11 +16,15 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
 
   currentStep = 1;
   maxStep = 1;
-
+  timeOut: any;
+  sendData: any = {};
   btnFlgs = {
     btnPrev: false,
     btnNext: true,
     btnFinished: false
+  };
+  validFlgs = {
+    tableNameExsit: false
   };
 
   tableName: string;
@@ -77,7 +81,10 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       set bottom (prev next finished) btn status,disabled or not ,
       call : afterviewinit and next 、previous
     */
+    this.vaild();
     if (this.currentStep === 1) {
+      this.btnFlgs.btnNext = this.validFlgs.tableNameExsit;
+      console.log('this.btnFlgs.btnNext', this.btnFlgs.btnNext);
       this.btnFlgs.btnPrev = false;
     } else {
       this.btnFlgs.btnPrev = true;
@@ -85,9 +92,26 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     if (this.currentStep === 4) {
       this.btnFlgs.btnNext = false;
       this.btnFlgs.btnFinished = true;
-    } else {
-      this.btnFlgs.btnNext = true;
-      this.btnFlgs.btnFinished = false;
+    }
+
+  }
+
+  public checkTableNameValidation() {
+    /*
+      check this.tableName vilidaty(repeat,exit)
+    */
+    let _t = this;
+    if (this.tableName) {
+      this.validFlgs.tableNameExsit = true;
+      this.setBottomBtns();
+      clearTimeout(this.timeOut);
+      this.timeOut = setTimeout(function () {
+        let url = '/api_data_table_name_verify/?name=' + _t.tableName + '/';
+        _t.get(url).subscribe((res: any) => {
+          console.log('res', res);
+        });
+
+      }, 2000);
     }
 
   }
@@ -101,12 +125,32 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       call:afterViewInit}
 
       }
-
       */
-
+    if (this.tableName) {
+      this.validFlgs.tableNameExsit = true;
+    } else {
+      this.validFlgs.tableNameExsit = false;
+    }
   }
 
   public setSteps(step: number) {
     this.currentStep = step;
+  }
+
+  // common function of http
+
+  private get(url: string) {
+    return this.httpClient.toJson(this.httpClient.get(url));
+  }
+
+  private post(url: string, bodyData: any) {
+    return this.httpClient.toJson(this.httpClient.post(url, bodyData));
+  }
+  private put(url: string, bodyData: any) {
+    return this.httpClient.toJson(this.httpClient.put(url, bodyData));
+  }
+
+  private delete(url: string) {
+    return this.httpClient.toJson(this.httpClient.delete(url));
   }
 }
