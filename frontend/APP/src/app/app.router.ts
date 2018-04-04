@@ -43,6 +43,7 @@ import { DataCollectionViewComponent } from './dataCollection/dataCollectionView
 import { PoliciesPerDeviceComponent } from './dataCollection/policiesPerDevice.component';
 import { DevicesPerPolicyComponent } from './dataCollection/devicesPerPolicy.component';
 import { DataCollectionLoginComponent } from './dataCollection/dataCollectionLogin.component';
+import { EmergencyStopComponent } from './dataCollection/emergencyStop.component';
 
 // action policy
 import { ActionPolicyViewComponent } from './actionPolicy/actionPolicyView.component';
@@ -235,6 +236,14 @@ const routes: Routes = [
                 data: {
                     parentTitle: 'データ取得',
                     title: 'コレクションポリシー毎のデバイス一覧出力機能'
+                }
+            },
+            {
+                path: 'emergencystop',
+                component: EmergencyStopComponent,
+                data: {
+                    parentTitle: 'データ取得',
+                    title: '緊急停止一覧'
                 }
             },
             {

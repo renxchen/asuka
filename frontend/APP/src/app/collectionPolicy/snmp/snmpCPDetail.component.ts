@@ -59,7 +59,7 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
                 let msg = _.get(status, 'message');
                 let data = _.get(res, 'data');
                 let snmpData: any = _.get(data, 'data');
-                if (status && status['status'].toLowerCase() === 'true') {
+                if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (snmpData && snmpData.length > 0) {
                         this.name = _.get(snmpData[0], 'name');
                         this.desc = _.get(snmpData[0], 'desc');
@@ -85,7 +85,7 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
-                if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                     if (res['data']) {
                         this.osType = res['data'];
                         let osTypeTmp = _.clone(res['data']);

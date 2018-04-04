@@ -123,8 +123,8 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                         } else {
                             this.logs = this.logsToList(logsTmp);
                         }
-                        this.snmpTimeout = _.get(data[0], 'snmp_timeout');
-                        this.telTimeout = _.get(data[0], 'telnet_timeout');
+                        this.snmpTimeout = _.get(data[0], 'snmp_timeout').toString();
+                        this.telTimeout = _.get(data[0], 'telnet_timeout').toString();
                     }
                     if (verify) {
                         this.ostypeMFlg = _.get(verify, 'name');
@@ -277,7 +277,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.fullWithoutSpecial(this.name);
+            this.nameFlg = Validator.fullWithoutSpecial(this.name) && this.name.length < 31;
         }
         this.telPromptNotNull = Validator.notNullCheck(this.telPrompt);
         if (this.telPromptNotNull) {
@@ -311,7 +311,8 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             return value['name'] === '';
         });
         let uniqData: any = [];
-        uniqData = _.uniqBy(multiStartCmds, 'name');
+        // uniqData = _.uniqBy(multiStartCmds, 'name');
+        uniqData = _.cloneDeep(multiStartCmds);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
@@ -339,7 +340,8 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             return value['name'] === '';
         });
         let uniqData: any = [];
-        uniqData = _.uniqBy(multiendCmds, 'name');
+        // uniqData = _.uniqBy(multiendCmds, 'name');
+        uniqData = _.cloneDeep(multiendCmds);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
@@ -366,7 +368,8 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             return value['name'] === '';
         });
         let uniqData: any = [];
-        uniqData = _.uniqBy(multiLogs, 'name');
+        // uniqData = _.uniqBy(multiLogs, 'name');
+        uniqData = _.cloneDeep(multiLogs);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
@@ -406,7 +409,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                 'telnet_timeout': this.telTimeout,
                 'status': this.status
             };
-            console.log(ostypeInfo);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put('/api_device_ostype/', ostypeInfo))

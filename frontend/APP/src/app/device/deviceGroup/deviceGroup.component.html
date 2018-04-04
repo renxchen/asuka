@@ -11,19 +11,19 @@
                                         <i class="fa fa-plus-square"></i> 新規作成
                                     </button>
                                 </div>
-                                <div class="panel-body">
+                                <div class="panel-body" style="height:269px">
                                     <!-- practice -->
                                     <div class="wrap-table">
                                         <table class="table">
                                             <tbody>
                                                 <tr>
-                                                    <td style="width:100%" colspan="5" (click)="getGroupInfo('-1')" [ngClass]="{'active': (groupId)=='-1'}">
+                                                    <td style="width:100%" colspan="3" (click)="getGroupInfo('-1')" [ngClass]="{'active': (groupId)=='-1'}">
                                                         無所属
                                                     </td>
                                                 </tr>
                                                 <tr *ngFor="let group of groups">
                                                     <td 
-                                                        colspan="4"
+                                                        colspan="2"
                                                         (click)="getGroupInfo(group.group_id)" 
                                                         [ngClass]="{'active': (groupId)==group.group_id}"
                                                         title="{{group.name}}"
@@ -31,7 +31,6 @@
                                                         {{group.name}}
                                                     </td>
                                                     <td 
-                                                        width="22%" 
                                                         class="text-right" 
                                                         [ngClass]="{'active': (groupId)==group.group_id}"
                                                     >

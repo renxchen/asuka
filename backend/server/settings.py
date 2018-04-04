@@ -17,6 +17,7 @@ from django.utils.translation import gettext_lazy as _
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOG_DIR = os.path.dirname(BASE_DIR)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
@@ -250,36 +251,18 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
         },
-        'default': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
-            'maxBytes': 1024 * 1024 * 5,
-            'backupCount': 10,
-            'formatter': 'standard',
-        },
         'apolo_handler': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, "logs", 'apolo.log'),
+            'filename': os.path.join(LOG_DIR, "logs", 'apolo_backend.log'),
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 10,
             'formatter': 'standard',
         },
     },
     'loggers': {
-        'apolo.console': {
-            'handlers': ['console', 'default'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
-        'apolo.default': {
-            'handlers': ['default'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
         'apolo.log': {
-            'handlers': ["apolo_handler"],
+            'handlers': ['console',"apolo_handler"],
             'level': 'DEBUG',
             'propagate': False
         },

@@ -19,20 +19,20 @@ export class IndexComponent implements OnInit, AfterViewInit {
         private service: IndexService,
         private activatedRoute: ActivatedRoute,
         private translate: TranslateService) {
-        this. translate.setDefaultLang('ja');
+        this.translate.setDefaultLang('ja');
     }
     ngOnInit() {
         localStorage.setItem('requestFailed', '');
     }
     ngAfterViewInit() {
-        let _t  = this;
+        let _t = this;
         $('#side-menu').metisMenu();
         $('.close-canvas-menu').click(function () {
             $('body').toggleClass('mini-navbar');
             _t.SmoothlyMenu();
         });
-        let contnet = this. elementRef.nativeElement.querySelector('div.wrapper-content');
-        TweenLite.from(contnet, 1.5, { opacity: 0, top: -20 } );
+        let contnet = this.elementRef.nativeElement.querySelector('div.wrapper-content');
+        TweenLite.from(contnet, 1.5, { opacity: 0, top: -20 });
     }
     public toggleClass() {
         $('body').toggleClass('mini-navbar');
@@ -56,8 +56,11 @@ export class IndexComponent implements OnInit, AfterViewInit {
         }
     }
     public logout() {
-        this.service.logout().subscribe(res => {});
-        localStorage.removeItem('token');
-        localStorage.removeItem('sessionTimeOut');
-      }
+        this.service.logout().subscribe(res => {
+            if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
+                localStorage.removeItem('token');
+                localStorage.removeItem('sessionTimeOut');
+            }
+        });
+    }
 }

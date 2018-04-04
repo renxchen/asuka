@@ -180,7 +180,7 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.fullWithoutSpecial(this.name);
+            this.nameFlg = Validator.fullWithoutSpecial(this.name) && this.name.length < 31;
         }
         this.telPromptNotNull = Validator.notNullCheck(this.telPrompt);
         if (this.telPromptNotNull) {
@@ -213,7 +213,8 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             return value['name'] === '';
         });
         let uniqData: any = [];
-        uniqData = _.uniqBy(multiLogs, 'name');
+        // uniqData = _.uniqBy(multiLogs, 'name');
+        uniqData = _.cloneDeep(multiLogs);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
@@ -241,8 +242,8 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             return value['name'] === '';
         });
         let uniqData: any = [];
-        uniqData = _.uniqBy(multiStartCmds, 'name');
-        console.log('fina', uniqData);
+        // uniqData = _.uniqBy(multiStartCmds, 'name');
+        uniqData = _.cloneDeep(multiStartCmds);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {
@@ -258,7 +259,6 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             uniqData.push(this.startCmdsInit());
         }
         this.startCmds = _.cloneDeep(uniqData);
-        console.log('start1', this.startCmds);
         return regFlgTmp;
     }
     // endCommandReg Check
@@ -271,7 +271,8 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
             return value['name'] === '';
         });
         let uniqData: any = [];
-        uniqData = _.uniqBy(multiendCmds, 'name');
+        // uniqData = _.uniqBy(multiendCmds, 'name');
+        uniqData = _.cloneDeep(multiendCmds);
         let len = uniqData.length;
         if (len > 0) {
             for (let i = 0; i < uniqData.length; i++) {

@@ -216,24 +216,15 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     this.policyGroup = _.get(data, 'policy_group_id');
                     this.getOsTypes();
 
-                    this.isLock = _.get(res, 'isLock');
-                    this.setOsDgPg(this.isLock);
-                    // isLock = true;
-                    // if (this.isLock) {
-                    //     this.setOsDgPg(true);
-                    // } else {
-                    //     this.setOsDgPg(false);
-                    // }
-
                     this.isProcessing = _.get(res, 'isProcessing');
                     // console.log(this.isProcessing);
                     this.setSchedule(this.isProcessing);
-                    // isProcessing = true;
-                    // if (isProcessing) {
-                    //     this.setSchedule(true);
-                    // } else {
-                    //     this.setSchedule(false);
-                    // }
+                    if (this.isProcessing){
+                        this.isLock = true;
+                    } else {
+                        this.isLock = _.get(res, 'isLock');
+                    }
+                    this.setOsDgPg(this.isLock);
 
                     let start_period_time = _.get(data, 'start_period_time');
                     let end_period_time = _.get(data, 'end_period_time');

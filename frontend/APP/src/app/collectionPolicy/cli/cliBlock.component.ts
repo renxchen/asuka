@@ -110,7 +110,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
             this.processFlg = _.get(res, 'is_processing');
             this.lockFlg = _.get(res, 'is_locked');
             let isUsed = _.get(res, 'rule_is_used');
-            if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+            if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                 if (res['data']) {
                     let data = res['data'];
                     this.name = _.get(data, 'name');
@@ -322,7 +322,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
                     let errMsg = _.get(res, 'verify_error_msg');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         if (data) {
                             let blockInfo: any = {};
                             blockInfo['blockTree'] = _.get(data, 'block_rule_tree_json');
@@ -356,7 +356,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
                     let errMsg = _.get(res, 'verify_error_msg');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         if (data) {
                             let blockInfo: any = {};
                             blockInfo['blockTree'] = _.get(data, 'block_rule_tree_json');
@@ -400,7 +400,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         if (data) {
                             let blockTree: any = {};
                             blockTree['blockTree'] = _.get(data, 'block_rule_tree_json');

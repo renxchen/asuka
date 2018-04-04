@@ -194,19 +194,20 @@ class OsTypeViewSet(viewsets.ViewSet):
                     cli_error_context = ''
                     for i in self.log_fail_judges:
                         cli_error = i.get('name')
-                        try:
-                            re.compile(cli_error)
-                        except Exception, e:
-                            data = {
-                                'new_token': self.new_token,
-                                constants.STATUS: {
-                                    constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: constants.LOG_FAIL_JUDGES_ERROR
-                                }
-                            }
-                            return api_return(data=data)
-                        else:
-                            cli_error_context += cli_error + u'，'
+                        # try:
+                        #     re.compile(cli_error)
+                        # except Exception, e:
+                        #     data = {
+                        #         'new_token': self.new_token,
+                        #         constants.STATUS: {
+                        #             constants.STATUS: constants.FALSE,
+                        #             constants.MESSAGE: constants.LOG_FAIL_JUDGES_ERROR
+                        #         }
+                        #     }
+                        #     return api_return(data=data)
+                        # else:
+                        #     cli_error_context += cli_error + u'，'
+                        cli_error_context += cli_error + u'，'
                     cli_error_context = cli_error_context[:-1]
                 else:
                     cli_error_context = None
@@ -219,18 +220,18 @@ class OsTypeViewSet(viewsets.ViewSet):
                         }
                     }
                     return api_return(data=data)
-                else:
-                    try:
-                        re.compile(self.telnet_prompt)
-                    except Exception, e:
-                        data = {
-                            'new_token': self.new_token,
-                            constants.STATUS: {
-                                constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: constants.TELNET_PROMPT_FORMAT_ERROR
-                            }
-                        }
-                        return api_return(data=data)
+                # else:
+                #     try:
+                #         re.compile(self.telnet_prompt)
+                #     except Exception, e:
+                #         data = {
+                #             'new_token': self.new_token,
+                #             constants.STATUS: {
+                #                 constants.STATUS: constants.FALSE,
+                #                 constants.MESSAGE: constants.TELNET_PROMPT_FORMAT_ERROR
+                #             }
+                #         }
+                #         return api_return(data=data)
                 try:
                     telnet_timeout = int(self.telnet_timeout)
                 except Exception, e:
@@ -351,19 +352,20 @@ class OsTypeViewSet(viewsets.ViewSet):
                         cli_error_context = ''
                         for i in self.log_fail_judges:
                             cli_error = i.get('name')
-                            try:
-                                re.compile(cli_error)
-                            except Exception, e:
-                                data = {
-                                    'new_token': self.new_token,
-                                    constants.STATUS: {
-                                        constants.STATUS: constants.FALSE,
-                                        constants.MESSAGE: constants.LOG_FAIL_JUDGES_ERROR
-                                    }
-                                }
-                                return api_return(data=data)
-                            else:
-                                cli_error_context += cli_error + u'，'
+                            # try:
+                            #     re.compile(cli_error)
+                            # except Exception, e:
+                            #     data = {
+                            #         'new_token': self.new_token,
+                            #         constants.STATUS: {
+                            #             constants.STATUS: constants.FALSE,
+                            #             constants.MESSAGE: constants.LOG_FAIL_JUDGES_ERROR
+                            #         }
+                            #     }
+                            #     return api_return(data=data)
+                            # else:
+                            #     cli_error_context += cli_error + u'，'
+                            cli_error_context += cli_error + u'，'
                         cli_error_context = cli_error_context[:-1]
                     else:
                         cli_error_context = None
@@ -376,18 +378,18 @@ class OsTypeViewSet(viewsets.ViewSet):
                             }
                         }
                         return api_return(data=data)
-                    else:
-                        try:
-                            re.compile(self.telnet_prompt)
-                        except Exception, e:
-                            data = {
-                                'new_token': self.new_token,
-                                constants.STATUS: {
-                                    constants.STATUS: constants.FALSE,
-                                    constants.MESSAGE: constants.TELNET_PROMPT_FORMAT_ERROR
-                                }
-                            }
-                            return api_return(data=data)
+                    # else:
+                    #     try:
+                    #         re.compile(self.telnet_prompt)
+                    #     except Exception, e:
+                    #         data = {
+                    #             'new_token': self.new_token,
+                    #             constants.STATUS: {
+                    #                 constants.STATUS: constants.FALSE,
+                    #                 constants.MESSAGE: constants.TELNET_PROMPT_FORMAT_ERROR
+                    #             }
+                    #         }
+                    #         return api_return(data=data)
                     try:
                         telnet_timeout = int(self.telnet_timeout)
                     except Exception, e:

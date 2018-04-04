@@ -6,13 +6,15 @@ import { DataCollectionViewComponent } from './dataCollectionView.component';
 import { DataCollectionLoginComponent } from './dataCollectionLogin.component';
 import { PoliciesPerDeviceComponent } from './policiesPerDevice.component';
 import { DevicesPerPolicyComponent } from './devicesPerPolicy.component';
+import { EmergencyStopComponent } from './emergencyStop.component';
 
 @NgModule({
     declarations: [
         DataCollectionViewComponent,
         DataCollectionLoginComponent,
         PoliciesPerDeviceComponent,
-        DevicesPerPolicyComponent
+        DevicesPerPolicyComponent,
+        EmergencyStopComponent
     ],
     imports: [
         CommonModule,

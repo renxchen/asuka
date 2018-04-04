@@ -30,7 +30,10 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
     proBar: ProgressbarComponent;
     apiPrefix: any;
     devViewTable$: any;
+    modalRef: BsModalRef;
     processbar: BsModalRef;
+    closeMsg: any;
+    modalMsg: any;
     modalConfig = {
         animated: true,
         keyboard: false,
@@ -96,6 +99,9 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
             //         $('#devViewTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
             //     }
             // },
+            gridComplete: function () {
+                $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
+            },
             loadComplete: function (res) {
                 // let code: any = _.get(_.get(res, 'new_token'), 'code');
                 // let msg: any = _.get(_.get(res, 'new_token'), 'message');
@@ -120,7 +126,7 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
             rowNum: 10,
             rowList: [5, 10, 15],
             autowidth: true,
-            height: 330,
+            height: 350,
             viewrecords: false,
             multiselect: true,
             emptyrecords: 'There is no data to display',
@@ -150,28 +156,40 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
         checkInfo['id_list'] = deviceSel;
         if (deviceSel.length > 0) {
             this.processbar = this.modalService.show(ProgressbarComponent, this.modalConfig);
-            this.processbar.content.message = 'Check...';
+            this.processbar.content.message = 'Checking...';
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put(checkUrl, checkInfo))
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         // $('#devViewTable').jqGrid('clearGridData');
                         // $('#devViewTable').trigger('reloadGrid');
+                        $('.modal').hide();
                         this.devViewTable$.GridUnload();
                         this.drawdevViewTable();
-                        this.processbar.hide();
                     } else {
-                        this.processbar.hide();
-                        alert(msg);
+                        // this.processbar.hide();
+                        $('.modal').hide();
+                        // alert(msg);
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 });
         } else {
-            alert('Please choose one device at least.');
+            // alert('Please choose one device at least.');
+            this.modalMsg = 'Please choose one device at least.';
+            this.closeMsg = '閉じる';
+            this.showAlertModal(this.modalMsg, this.closeMsg);
         }
     }
     public CSVExport() {
+    }
+    public showAlertModal(modalMsg: any, closeMsg: any) {
+        this.modalRef = this.modalService.show(ModalComponent);
+        this.modalRef.content.modalMsg = modalMsg;
+        this.modalRef.content.closeMsg = closeMsg;
     }
 }

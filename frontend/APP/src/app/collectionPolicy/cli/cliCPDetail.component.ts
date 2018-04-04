@@ -164,7 +164,7 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
             let status = _.get(res, 'status');
             let data = _.get(res, 'data');
             let msg = _.get(status, 'message');
-            if (status && status['status'].toLowerCase() === 'true') {
+            if (status && status['status'].toString().toLowerCase() === 'true') {
                 if (data) {
                     this.name = _.get(data, 'name');
                     this.desc = _.get(data, 'desc');

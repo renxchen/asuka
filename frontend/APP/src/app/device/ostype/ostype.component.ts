@@ -87,6 +87,8 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             gridComplete: function () {
                 _t.editBtn();
                 _t.deleteBtn();
+                $('.ui-jqgrid .ui-jqgrid-htable th div').css({ 'height': '27px' });
+                $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
             },
             loadComplete: function (res) {
                 // let code: any = _.get(_.get(res, 'new_token'), 'code');
@@ -120,7 +122,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             rowNum: 10,
             rowList: [5, 10, 15],
             autowidth: true,
-            height: 380,
+            height: 350,
             viewrecords: true,
             emptyrecords: 'There is no data to display',
             jsonReader: {
@@ -133,7 +135,6 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             },
         });
         $('#ostypeTable').jqGrid('filterToolbar', { searchOnEnter: true, defaultSearch: 'cn' });
-        $('.ui-jqgrid .ui-jqgrid-htable th div').css({ 'height': '27px' });
     }
     // btn formatter
     public formatterBtn(cellvalue, options, rowObject) {
@@ -146,6 +147,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
     public brFormatter(cellvalue, options, rowObject) {
         if (cellvalue !== null && cellvalue !== '') {
             return '<i class="fa fa-genderless"></i> ' + cellvalue.replace(/，/g, '<br /><i class="fa fa-genderless"></i> ');
+            // return '<i class="fa fa-genderless"></i> ' + cellvalue.replace(/，/g, '\n<i class="fa fa-genderless"></i> ');
         } else {
             return '-';
         }
@@ -199,7 +201,7 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                         let status = _.get(res, 'status');
                         let msg = _.get(status, 'message');
                         let data = _.get(res, 'data');
-                        if (status && status['status'].toLowerCase() === 'true') {
+                        if (status && status['status'].toString().toLowerCase() === 'true') {
                             _t.modalMsg = '削除しました。';
                             _t.closeMsg = '閉じる';
                             _t.showAlertModal(_t.modalMsg, _t.closeMsg);

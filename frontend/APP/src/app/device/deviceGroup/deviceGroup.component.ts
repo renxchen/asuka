@@ -24,16 +24,12 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
     apiPrefix: any;
     groups: any = [];
     modalRef: any;
-    groupData = [{ 'group_id': 1, 'name': 'group1' },
-    { 'group_id': 2, 'name': 'group2' },
-    { 'group_id': 3, 'name': 'group3' },
-    { 'group_id': 4, 'name': 'group4' }];
     modalConfig = {
         animated: true,
         keyboard: false,
         backdrop: true,
         ignoreBackdropClick: true,
-        class: 'modal-md'
+        class: 'modal-lg'
     };
     constructor(
         public httpClient: HttpClientComponent,
@@ -99,15 +95,12 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             //         $('#deviceTable').jqGrid('setGridParam', { page: 1 }).trigger('reloadGrid');
             //     }
             // },
-            // text-overflow: ellipsis,
+            gridComplete: function () {
+                $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
+            },
             loadComplete: function (res) {
-                // let code: any = _.get(_.get(res, 'new_token'), 'code');
-                // let msg: any = _.get(_.get(res, 'new_token'), 'message');
-                // if (code === 102 || code === 103) {
-                //     localStorage.setItem('sessionTimeOut', msg);
-                //     _t.router.navigate(['/login/']);
-                // }
                 let status = _.get(_.get(res, 'status'), 'status');
+                $('.ui-jqgrid tr.jqgrow td').css({ 'white-space': 'nowrap', 'text-overflow': 'ellipsis' });
                 let code: any = _.get(_.get(res, 'status'), 'code');
                 let msg: any = _.get(_.get(res, 'status'), 'message');
                 if (status === 'False') {
@@ -121,7 +114,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             rowNum: 10,
             rowList: [5, 10, 15],
             autowidth: true,
-            height: 340,
+            height: 350,
             viewrecords: true,
             emptyrecords: 'マーチしたデータがない',
             jsonReader: {
@@ -129,7 +122,6 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                 page: 'current_page_num',
                 total: 'num_page',
                 records: 'total_num',
-                // userData: 'status',
                 repeatitems: false,
             },
         });
@@ -159,7 +151,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
                 let data = _.get(res, 'data');
-                if (status && status['status'].toLowerCase() === 'true') {
+                if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (data) {
                         this.groups = data;
                     }
@@ -185,7 +177,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
                 let data: any = _.get(res, 'data');
-                if (status && status['status'].toLowerCase() === 'true') {
+                if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (data && data.length > 0) {
                         this.name = _.get(data[0], 'name');
                         this.osType = _.get(_.get(data[0], 'ostype'), 'name');
@@ -247,7 +239,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    if (status && status['status'].toLowerCase() === 'true') {
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('Delete successfully');
                         this.getGroups();
                         if (id = this.groupId) {
