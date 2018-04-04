@@ -23,19 +23,19 @@ class User(models.Model):
 class Actions(models.Model):
     action_id = models.AutoField(primary_key=True)
     action_type = models.CharField(max_length=255, blank=True, null=True)
-    action_name = models.CharField(max_length=255, blank=True, null=True)
+    action_name = models.CharField(max_length=256, blank=True, null=True)
     snmp_version = models.CharField(max_length=255, blank=True, null=True)
     snmp_oid = models.CharField(max_length=255, blank=True, null=True)
     community = models.CharField(max_length=255, blank=True, null=True)
-    ip_address = models.CharField(max_length=255, blank=True, null=True)
-    username = models.CharField(max_length=255, blank=True, null=True)
-    password = models.CharField(max_length=255, blank=True, null=True)
-    command = models.CharField(max_length=255, blank=True, null=True)
+    ip_address = models.CharField(max_length=256, blank=True, null=True)
+    username = models.CharField(max_length=30, blank=True, null=True)
+    password = models.CharField(max_length=30, blank=True, null=True)
+    command = models.CharField(max_length=1000, blank=True, null=True)
     agent_address = models.CharField(max_length=255, blank=True, null=True)
     oid = models.CharField(max_length=255, blank=True, null=True)
     message = models.CharField(max_length=255, blank=True, null=True)
     param = models.CharField(max_length=255, blank=True, null=True)
-    script_path = models.CharField(max_length=255, blank=True, null=True)
+    script_path = models.CharField(max_length=256, blank=True, null=True)
     status = models.CharField(max_length=45, blank=True, null=True)
     trigger = models.ForeignKey('Triggers', models.DO_NOTHING)
 
@@ -70,8 +70,8 @@ class CollPolicyCliRule(models.Model):
     name = models.CharField(max_length=30, blank=True, null=True)
     key_str = models.CharField(max_length=30, blank=True, null=True)
     mark_string = models.CharField(max_length=256, blank=True, null=True)
-    split_char = models.CharField(max_length=256, blank=True, null=True)
-    extract_key = models.CharField(max_length=30, blank=True, null=True)
+    split_char = models.CharField(max_length=10, blank=True, null=True)
+    extract_key = models.CharField(max_length=50, blank=True, null=True)
     x_offset = models.IntegerField(blank=True, null=True)
     y_offset = models.IntegerField(blank=True, null=True)
     line_nums = models.IntegerField(blank=True, null=True)
@@ -122,8 +122,8 @@ class CollPolicyRuleTree(models.Model):
 
 class DataTable(models.Model):
     table_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=45, blank=True, null=True)
-    descr = models.CharField(max_length=2000, blank=True, null=True)
+    name = models.CharField(max_length=256, blank=True, null=True)
+    descr = models.CharField(max_length=1000, blank=True, null=True)
     coll_policy = models.ForeignKey(CollPolicy, models.DO_NOTHING, db_column="coll_policy")
     groups = models.ForeignKey('Groups', models.DO_NOTHING, db_column="groups")
     tree = models.ForeignKey(CollPolicyRuleTree, models.DO_NOTHING,
@@ -168,11 +168,11 @@ class DevicesTmp(models.Model):
     snmp_version = models.CharField(max_length=5, blank=True, null=True)
     login_expect = models.CharField(max_length=1000, blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
-    telnet_status = models.CharField(max_length=255, blank=True, null=True)
-    snmp_status = models.CharField(max_length=255, blank=True, null=True)
+    telnet_status = models.CharField(max_length=200, blank=True, null=True)
+    snmp_status = models.CharField(max_length=200, blank=True, null=True)
     device_type = models.CharField(max_length=30, blank=True, null=True)
     ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
-    group_name = models.CharField(max_length=2000, blank=True, null=True)
+    group_name = models.CharField(max_length=1284, blank=True, null=True)
 
     class Meta:
         # managed = False
@@ -189,8 +189,8 @@ class Devices(models.Model):
     snmp_version = models.CharField(max_length=5, blank=True, null=True)
     login_expect = models.CharField(max_length=1000, blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
-    telnet_status = models.CharField(max_length=255, blank=True, null=True)
-    snmp_status = models.CharField(max_length=255, blank=True, null=True)
+    telnet_status = models.CharField(max_length=200, blank=True, null=True)
+    snmp_status = models.CharField(max_length=200, blank=True, null=True)
     device_type = models.CharField(max_length=30, blank=True, null=True)
     ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
 
@@ -240,8 +240,8 @@ class Functions(models.Model):
 
 class Groups(models.Model):
     group_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, blank=True, null=True)
-    desc = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=256, blank=True, null=True)
+    desc = models.CharField(max_length=256, blank=True, null=True)
     ostype = models.ForeignKey('Ostype', models.DO_NOTHING)
 
     class Meta:
@@ -384,14 +384,14 @@ class Mapping(models.Model):
 class Ostype(models.Model):
     ostypeid = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30, blank=True, null=True)
-    log_fail_judges = models.CharField(max_length=2048, blank=True, null=True)
+    log_fail_judges = models.CharField(max_length=3000, blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
     snmp_timeout = models.IntegerField(blank=True, null=True)
     telnet_timeout = models.IntegerField(blank=True, null=True)
-    telnet_prompt = models.CharField(max_length=255, blank=True, null=True)
-    start_default_commands = models.CharField(max_length=2048, blank=True, null=True)
-    end_default_commands = models.CharField(max_length=2048, blank=True, null=True)
-    desc = models.CharField(max_length=2000, blank=True, null=True)
+    telnet_prompt = models.CharField(max_length=256, blank=True, null=True)
+    start_default_commands = models.CharField(max_length=3000, blank=True, null=True)
+    end_default_commands = models.CharField(max_length=3000, blank=True, null=True)
+    desc = models.CharField(max_length=1000, blank=True, null=True)
 
     class Meta:
         # managed = False
@@ -486,15 +486,15 @@ class TriggerDetail(models.Model):
 class Triggers(models.Model):
     trigger_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256, blank=True, null=True)
-    descr = models.CharField(max_length=2000, blank=True, null=True)
+    descr = models.CharField(max_length=1000, blank=True, null=True)
     status = models.IntegerField(blank=True, null=True)
-    value = models.CharField(max_length=255, blank=True, null=True)
+    value = models.CharField(max_length=256, blank=True, null=True)
     priority = models.IntegerField(blank=True, null=True)
     trigger_type = models.IntegerField(blank=True, null=True)
     trigger_limit_nums = models.IntegerField(blank=True, null=True)
     condition = models.IntegerField(blank=True, null=True)
 
-    expression = models.CharField(max_length=255, blank=True, null=True)
+    expression = models.CharField(max_length=256, blank=True, null=True)
     columnA = models.CharField(max_length=255, blank=True, null=True)
     columnB = models.CharField(max_length=255, blank=True, null=True)
 
