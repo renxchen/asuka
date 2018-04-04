@@ -422,17 +422,10 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
                             if (res['status']['message'] == "Success") {
                                 alert('データ取得更新しました。');
-                                // let id = res['data']['coll_policy_id'];
-                                // this.router.navigate(['/index/cliCPEdit'],
-                                //     { queryParams: { 'id': id } });
                             }
                         } else {
                             alert(res['status']['message']);
-                            // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
-                            //     this.uniqueFlg = false;
-                            // } else {
-                            //     alert(res['status']['message']);
-                            // }
+
                         }
                 });
                 this.bsModalRef.hide();
@@ -455,7 +448,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             message += "Please make sure correct group is selected.";
         }
         if (this.validPeriodType == 1) {
-            let reg = /^\d{4}-\d{2}-\d{2}$/;
+            // let reg = /^\d{4}-\d{2}-\d{2}$/;
+            let reg = /^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$/;
             if(startDate == "" || endDate == ""){
                 flag = false;
                 message += "Please set period date.";
@@ -499,9 +493,16 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             this.httpClient
                 .toJson(this.httpClient.delete(url))
                 .subscribe(res => {
-                    console.log('delete',res);
-                    alert(res['status']['status'].toString());
-                    $('#dcTable').trigger("reloadGrid");
+                    if (res['status']['status'].toString().toLowerCase() === 'true') {
+                        if (res['status']['message'] == "Success") {
+                            alert('削除しました。');
+                            $('#dcTable').trigger("reloadGrid");
+                        }
+                    } else {
+                        alert(res['status']['message']);
+
+                    }
+
                 });
 
             this.bsModalRef.hide();
