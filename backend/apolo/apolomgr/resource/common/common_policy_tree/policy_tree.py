@@ -2,8 +2,8 @@
 # -*- coding:utf-8 -*-
 
 """
-@author: kimli
-@contact: kimli@cisco.com
+@author: Gin Chen
+@contact: Gin Chen@cisco.com
 @file: policy_tree.py
 @time: 2017/12/20 9:41
 @desc:
@@ -42,6 +42,16 @@ class Policy_tree_node(object):
 
 class Rule_Tree(object):
     def __init__(self):
+        """!@brief
+        init parent node of rules
+        @param
+        @pre
+        @post
+        @note
+        @return
+        @author Gin Chen
+        @date 2017/12/20
+        """
         self.block_rule_type_one = {
             'icon': constants.RULE_NODE_ICON,
             'text': constants.BLOCK_RULE_TREE_KIND_ONE_NAME,
@@ -162,6 +172,16 @@ class Rule_Tree(object):
         }
 
     def toReturn(self):
+        """!@brief
+        return data rule tree and block rule tree
+        @param
+        @pre
+        @post
+        @note
+        @return data rule tree and block rule tree
+        @author Gin Chen
+        @date 2017/12/20
+        """
         block_rule_list = [self.block_rule_type_one, self.block_rule_type_two, self.block_rule_type_three,
                            self.block_rule_type_four]
         data_rule_list = [self.data_rule_type_one, self.data_rule_type_two,
@@ -175,12 +195,19 @@ class Policy_tree(DBOpt):
         self.all_nodes = OrderedDict()
         self.coll_policy_id = coll_policy_id
 
-    # creat policy tree
-    # input :all rule node list in the policy tree
-    # output :json data of tree
+
     def get_policy_tree(self):
+        """!@brief
+        create collection policy tree
+        @param
+        @pre
+        @post
+        @note input:all rule node list in the policy tree
+        @return json data of tree
+        @author Gin Chen
+        @date 2017/12/20
+        """
         root = {
-            # 'id': 'j1',
             'text': constants.COLLECTION_POLICY_TREE_NAME,
             'icon': constants.POLICY_TREE_ROOT_ICON,
             'data': {
@@ -193,12 +220,21 @@ class Policy_tree(DBOpt):
             },
             'children': []
         }
-        node_list = self.__get_node_list__()
-        return self.__get_nodes__(node_list, 0, root)
+        node_list = self.__get_node_list()
+        return self.__get_nodes(node_list, 0, root)
 
-    # get all the nodes in the coll_policy_tree
-    def __get_node_list__(self):
 
+    def __get_node_list(self):
+        """!@brief
+        get all the nodes in the coll_policy_tree
+        @param
+        @pre
+        @post
+        @note
+        @return all nodes of the tree
+        @author Gin Chen
+        @date 2017/12/20
+        """
         policy_tree_query_set = self.get_tree_detail_from_db(self.coll_policy_id)
         node_array = []
         for item in policy_tree_query_set:
@@ -220,7 +256,16 @@ class Policy_tree(DBOpt):
         return node_array
 
     def get_rules_tree(self):
-
+        """!@brief
+        create rule trees
+        @param
+        @pre
+        @post
+        @note
+        @return data rule tree and block rule tree
+        @author Gin Chen
+        @date 2017/12/20
+        """
         rule_list = self.get_many_rules_detail_from_db(self.coll_policy_id)
         rule_tree = Rule_Tree()
         err_having = False
@@ -278,15 +323,20 @@ class Policy_tree(DBOpt):
         else:
             return rule_tree.toReturn()
 
-    # build policy tree
-    # input:
-    # node_list : list of all rule nodes in the policy tree
-    # parent_node_tree_id : parent node tree id of the next node
-    # tree_dict : the contents of tree
-    # output : dict data of the tree
-
-    def __get_nodes__(self, node_list, parent_node_id, tree_dict, node_num=0):
-
+    def __get_nodes(self, node_list, parent_node_id, tree_dict, node_num=0):
+        """!@brief
+       get all nodes and build policy tree
+       @param node_list: list of all rule nodes in the policy tree
+       @param parent_node_id: parent node tree id of the next node
+       @param tree_dict: the contents of tree
+       @param node_num: node num
+       @pre
+       @post
+       @note
+       @return dict data of tree
+       @author Gin Chen
+       @date 2017/12/20
+       """
         for node in node_list:
 
             if node.parent_tree_id == parent_node_id:
@@ -307,22 +357,25 @@ class Policy_tree(DBOpt):
                     d['icon'] = constants.DATA_NODE_ICON
                 else:
                     d['icon'] = constants.BLOCK_NODE_ICON
-                    self.__get_nodes__(node_list, node.tree_id, d, node_num)
+                    self.__get_nodes(node_list, node.tree_id, d, node_num)
                 tree_dict['children'].append(d)
 
         return tree_dict
 
-    # get all information of nodes of tree
-    # input:
-    # tree_dict: dict data of the tree
-    # deep : tree deep
-    # parent_tree_id : parent tree id of the node
-    # rules : the node's rule path from root to the node
-    # output: self.all_nodes:
-    # save the policy tree node instance in all_nodes.
-    # save very node information in very policy tree node instance
-
     def get_all_nodes(self, tree_dict, deep=0, parent_tree_id=None, rules=None):
+        """!@brief
+        get all information of nodes of tree
+        @param tree_dict:dict data of the tree
+        @param deep: the deep of tree
+        @param parent_tree_id : parent tree id of the node
+        @param rules : the node's rule path from root to the node
+        @pre
+        @post
+        @note
+        @return all nodes
+        @author Gin Chen
+        @date 2017/12/20
+        """
         # no leaf node
         if tree_dict.has_key('children') and tree_dict['children']:
 
@@ -356,13 +409,18 @@ class Policy_tree(DBOpt):
             self.all_nodes.update({ptn.tree_id: ptn})
             return True
 
-    # find the node Whether exist in the tree
-    # input:  the tree json,policy_tree_id, rule_id
-    # output : if the node exist in tree ,return True.
-    #          else return False
-    # note : do not connect db,but need to traverse all the tree
     def find_node(self, tree_dict, rule_id):
-
+        """!@brief
+        judge the node that is exist in the tree or not
+        @param tree_dict: json data of tree
+        @param rule_id: rule id of the clicked node
+        @pre
+        @post
+        @note
+        @return  if the node exist in tree ,return True.else,return False
+        @author Gin Chen
+        @date 2017/12/20
+        """
         if tree_dict.has_key('rule_id'):
             if tree_dict['data']['rule_id'] == rule_id:
                 return True

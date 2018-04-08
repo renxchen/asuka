@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-@author: kimli
-@contact: kimli@cisco.com
+@author: Gin Chen
+@contact: Gin Chen@cisco.com
 @file: policytree_view.py
 @time: 2017/12/18 18:24
 @desc:
@@ -30,15 +30,14 @@ class PolicyTreeViewSet(viewsets.ViewSet):
         self.tree = ''
         self.coll_policy_id = ''
 
-    # init policy tree edit page
-    # input coll_policy_id
-    # init context include:
-    # 1 get cli_command_result from coll_policy table
-    # 2 get policy tree
-    # 3 get policy tree rules
-    # notice : get 2 and 3 step 's data by table(coll_policy_rule_tree and coll_policy_cli_rule) connection
     def get(self):
-        # v1/api_policy_tree/?coll_policy_id=xxx
+        """!@brief
+        init policy tree edit page
+        @note
+        @return policy tree info,data rule rule,block rule
+        @author Gin Chen
+        @date 2017/12/18
+        """
         try:
             self.coll_policy_id = views_helper.get_request_get(self.request, 'coll_policy_id')
             cp = CollPolicy.objects.get(coll_policy_id=self.coll_policy_id)
@@ -77,19 +76,18 @@ class PolicyTreeViewSet(viewsets.ViewSet):
                 }
             return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
-    # save policy tree/update policy tree(update coding)
-    # which things are saved into db
-    # -1 check the policy is exits.if exits,go to 0 ,else go to 4
-    # 0 judge whether the  policy is applied( if the coll_policy_id exits in item table,is applied)
-    # 1 if the policy is applied,can not update  the policy tree
-    # 3 else delete the old policy tree
-    # 4 save the new policy tree in the db
-    # input: tree and coll_policy_id and raw_data
-    # output : message and coll_policy_id
     def post(self):
+        """!@brief
+        save policy tree
+        @note
+        @return response
+        @author Gin Chen
+        @date 2017/12/18
+        """
         self.coll_policy_id = views_helper.get_request_value(self.request, 'coll_policy_id', 'BODY')
         self.tree = views_helper.get_request_value(self.request, 'tree', 'BODY')
         self.raw_data = views_helper.get_request_value(self.request, 'raw_data', 'BODY')
@@ -138,7 +136,8 @@ class PolicyTreeViewSet(viewsets.ViewSet):
                 return api_return(data=data)
 
         except Exception as e:
-            print e
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             data = {
                 'data': '',
                 'new_token': self.new_token,
@@ -150,7 +149,13 @@ class PolicyTreeViewSet(viewsets.ViewSet):
             return api_return(data=data)
 
     def __save_the_policy_tree(self, nodes_dict):
-
+        """!@brief
+        save policy tree
+        @note
+        @return policy tree
+        @author Gin Chen
+        @date 2017/12/18
+        """
         add_result = {}
         # insert  the tree node information into db
         for k, v in nodes_dict.items():
@@ -201,6 +206,13 @@ class PolicyTreeViewSet(viewsets.ViewSet):
         return data
 
     def __check_the_node_is_leaf(self, tree_dict):
+        """!@brief
+       check the leaf node is data rule or not
+       @note
+       @return if the leaf node is data rule ,return True ,else return False
+       @author Gin Chen
+       @date 2017/12/18
+       """
         rule_type = tree_dict['data']['rule_type'].split('_')[0]
         if tree_dict.has_key('children'):
             if len(tree_dict['children']) > 0:
@@ -217,6 +229,13 @@ class PolicyTreeViewSet(viewsets.ViewSet):
                     return True
 
     def __check_policy_tree_in_group(self):
+        """!@brief
+       check the policy that is in policy group or not
+       @note
+       @return if the policy in policy group,return False.else,return True
+       @author Gin Chen
+       @date 2017/12/18
+       """
         queryset = PolicysGroups.objects.filter(policy=self.coll_policy_id)
         if queryset.count() > 0:
             return False

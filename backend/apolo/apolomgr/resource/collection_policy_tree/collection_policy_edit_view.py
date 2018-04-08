@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-@author: kimli
-@contact: kimli@cisco.com
+@author: Gin Chen
+@contact: Gin Chen@cisco.com
 @file: collection_policy_edit_view.py
 @time: 2018/1/18 18:20
 @desc:
@@ -35,7 +35,7 @@ class CollectionPolicyEditViewSet(viewsets.ViewSet):
         @post
         @note
         @return rule information,verify result
-        @author kimli
+        @author Gin Chen
         @date 2018/1/18
         """
         try:
@@ -80,7 +80,7 @@ class CollectionPolicyEditViewSet(viewsets.ViewSet):
         @post
         @note
         @return the update information
-        @author kimli
+        @author Gin Chen
         @date 2018/1/18
         """
         coll_policy_id = views_helper.get_request_value(self.request, "coll_policy_id", "BODY")
