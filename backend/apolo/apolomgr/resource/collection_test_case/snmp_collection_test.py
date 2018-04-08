@@ -58,8 +58,8 @@ class SnmpCollectionTest(viewsets.ViewSet):
         worker = SNMP(self.ip,
                       self.community,
                       logger=logger,
-                      port=self.port,
-                      timeout=self.timeout,
+                      port=int(self.port),
+                      timeout=int(self.timeout),
                       retries=2,
                       device_log_info=device_log_info,
                       model_version=1,
@@ -82,7 +82,10 @@ class SnmpCollectionTest(viewsets.ViewSet):
                 result = snmp_fun(_oids)
                 result.update(dict(result_type="element_result", timestamp=timestamp, clock="%f" % clock))
                 fw.write(json.dumps(result, indent=2))
-                output.append(result)
+                snmp_out_key = result['output'][0]['value'].keys()[0]
+                snmp_out_value = '<br>'.join(result['output'][0]['value'].values()[0])
+                snmp_out = snmp_out_key + '<br>' + snmp_out_value
+                output.append(snmp_out)
             fw.close()
             return output
         except Exception as e:
@@ -101,6 +104,10 @@ class SnmpCollectionTest(viewsets.ViewSet):
                 'data': {
                     'data': output,
                 },
+                constants.STATUS: {
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.PUT_SUCCESSFUL
+                }
             }
             return api_return(data=data)
         except Exception, e:

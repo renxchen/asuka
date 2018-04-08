@@ -49,13 +49,13 @@ class CliCollectionTest(viewsets.ViewSet):
         self.device_info['commands'] = self.commands.split(',')
         self.device_info['start_default_commands'] = self.SPILT_CHAT.join(self.start_default_commands.split(','))
         self.device_info['end_default_commands'] = self.SPILT_CHAT.join(self.end_default_commands.split(','))
-        self.device_info['prompt'] = self.prompt
+        self.device_info['prompt'] = str(self.prompt)
         self.device_info['fail_judges'] = self.SPILT_CHAT.join(self.fail_judges.split(','))
-        self.device_info['ip'] = self.ip
-        self.device_info['hostname'] = self.hostname
-        self.device_info['expect'] = self.expect
-        self.device_info['timeout'] = self.timeout
-        self.device_info['port'] = self.port
+        self.device_info['ip'] = str(self.ip)
+        self.device_info['hostname'] = str(self.hostname)
+        self.device_info['expect'] = str(self.expect)
+        self.device_info['timeout'] = int(self.timeout)
+        self.device_info['port'] = int(self.port)
         self.device_info['device_id'] = 1000
 
     def cli_work(self):
@@ -97,7 +97,8 @@ class CliCollectionTest(viewsets.ViewSet):
             print traceback.format_exc(e)
         finally:
             worker.close()
-
+        for per in output:
+            per['output'] = str(per['output']).replace('\r\n', '<br>')
         return output, output_log
 
     def post(self):
@@ -108,6 +109,10 @@ class CliCollectionTest(viewsets.ViewSet):
                     'data': output,
                     'log': output_log,
                 },
+                constants.STATUS: {
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.PUT_SUCCESSFUL
+                }
             }
             return api_return(data=data)
         except Exception, e:
