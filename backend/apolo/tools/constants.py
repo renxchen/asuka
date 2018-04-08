@@ -72,6 +72,11 @@ USER_AND_PASSWD_INCORRECT = gettext("User or password is incorrect.")
 USER_DISABLED = gettext("User is inactive.")
 USER_LOGOUT_SUCCESSFUL = gettext("User logout successful.")
 #########################################
+# Data Table Related define
+#########################################
+DATA_TABLE_PROORITY_0 = '高'
+DATA_TABLE_PROORITY_1 = '标准'
+#########################################
 # Action Policy Related define
 #########################################
 EQUAL_SIGN = '='
