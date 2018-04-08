@@ -432,12 +432,12 @@ class DevicesViewSet(viewsets.ViewSet):
                                 group_dict["add_device_group"] = i.get("group_new")
                                 group_dict["del_device_group"] = []
                                 group_list.append(group_dict)
-                    # for yuanyang check
+                    # for Gin Chen check
                     data_check = {}
                     data_check["items"] = group_list
                     opt = DataCollectionOptCls(**data_check)
                     opt.update_items()
-                    # for kim check
+                    # for Necy Wang check
                     act = ActionPolicyViewSet(request=self.request)
                     act.regenerate_trigger_detail()
                 data = {
