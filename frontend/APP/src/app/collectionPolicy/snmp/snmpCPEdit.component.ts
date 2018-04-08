@@ -36,7 +36,6 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
     nameNotNull: Boolean = true;
     nameFlg: Boolean = true;
     nameMFlg: Boolean = true;
-    ostypeNotNull: Boolean = true;
     oidNotNull: Boolean = true;
     oidFlg: Boolean = true;
     uniqueFlg: Boolean = true;
@@ -142,14 +141,9 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
         if (this.oidNotNull) {
             this.oidFlg = Validator.oidRegCheck(this.snmpOid);
         }
-        if (this.selectedOsType) {
-            this.ostypeNotNull = true;
-        } else {
-            this.ostypeNotNull = false;
-        }
         if (this.nameNotNull && this.nameFlg
             && this.oidNotNull && this.oidFlg
-            && this.ostypeNotNull) {
+            && this.selectedOsType) {
             return true;
         } else {
             return false;

@@ -34,7 +34,6 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
     modalMsg: any;
     closeMsg: any;
     nameNotNull: Boolean = true;
-    ostypeNotNull: Boolean = true;
     nameFlg: Boolean = true;
     oidNotNull: Boolean = true;
     oidFlg: Boolean = true;
@@ -145,18 +144,13 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
-        if (this.selectedOsType) {
-            this.ostypeNotNull = true;
-        } else {
-            this.ostypeNotNull = false;
-        }
         this.oidNotNull = Validator.notNullCheck(this.snmpOid);
         if (this.oidNotNull) {
             this.oidFlg = Validator.oidRegCheck(this.snmpOid);
         }
         if (this.nameNotNull && this.nameFlg
             && this.oidNotNull && this.oidFlg
-            && this.ostypeNotNull) {
+            && this.selectedOsType) {
             return true;
         } else {
             return false;

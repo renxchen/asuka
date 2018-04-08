@@ -217,7 +217,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
-        if (this.keyStrNotNull) {
+        if (this.keyStrFlg) {
             this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull_A = Validator.notNullCheck(this.markString);

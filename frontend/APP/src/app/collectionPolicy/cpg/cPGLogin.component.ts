@@ -32,7 +32,6 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
     addFlg: Boolean = true;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
-    ostypeNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
     cliFlg: Boolean = true;
     selCPName: any;
@@ -420,12 +419,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         if (this.nameNotNull) {
             this.nameFlg = Validator.fullWithoutSpecial(this.name);
         }
-        if (this.selectedOsType) {
-            this.ostypeNotNull = true;
-        } else {
-            this.ostypeNotNull = false;
-        }
-        if (this.nameNotNull && this.nameFlg && this.ostypeNotNull) {
+        if (this.nameNotNull && this.nameFlg && this.selectedOsType) {
             return true;
         } else {
             return false;

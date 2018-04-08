@@ -200,11 +200,11 @@
                 <div class="col-xs-7" *ngIf="(ruleType)=='data_rule_2'">
                     <div 
                         class="form-group" 
-                        [ngClass]="{'has-warning': !mrkStrNotNull||!mrkStrFlg}"
+                        [ngClass]="{'has-warning': !mrkStrNotNull}"
                     >
                         <label 
                             for="markString" 
-                            [ngClass]="{'text-warning': !mrkStrNotNull||!mrkStrFlg}"
+                            [ngClass]="{'text-warning': !mrkStrNotNull}"
                         >
                             <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                             基準となる文字列：
@@ -276,6 +276,7 @@
                             />
                         </span>
                     </div>
+                    <!-- sdfghjkl -->
                     <div 
                         class="form-group" 
                         [ngClass]="{'has-warning': !xOffsetNotNullB||!xOffsetFlgB}"
@@ -323,11 +324,11 @@
                     </div>
                     <div 
                         class="form-group" 
-                        [ngClass]="{'has-warning': !extractKeyFlg}"
+                        [ngClass]="{'has-warning': !extKeyNotNull}"
                     >
                         <label 
                             for="extractKey" 
-                            [ngClass]="{'text-warning': !extractKeyFlg}"
+                            [ngClass]="{'text-warning': !extKeyNotNull}"
                         >
                             <!-- <i class="fa fa-asterisk text-danger" title="必須項目"></i> -->
                             抽出するデータ:

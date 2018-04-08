@@ -31,7 +31,6 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
     cmdFlg: Boolean = true;
     nameNotNull: Boolean = true;
     cmdNotNull: Boolean = true;
-    ostypeNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
     ostypeFlg: Boolean = true;
     cliCmdFlg: Boolean = true;
@@ -130,14 +129,9 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
         if (this.cmdNotNull) {
             this.cmdFlg = Validator.halfWidthReg(this.cliCommand);
         }
-        if (this.selectedOsType) {
-            this.ostypeNotNull = true;
-        } else {
-            this.ostypeNotNull = false;
-        }
         if (this.nameNotNull && this.nameFlg
             && this.cmdNotNull && this.cmdFlg
-            && this.ostypeNotNull) {
+            && this.selectedOsType) {
             return true;
         } else {
             return false;
