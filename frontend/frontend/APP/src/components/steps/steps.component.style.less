@@ -1,0 +1,91 @@
+@import '~lesshat/lesshat.less';
+.modal-shown {
+    display: block;
+}
+
+div[name="stepsContainer"] {
+    min-height: 225px;
+}
+
+div.stepsNav {
+    margin-bottom: 35px;
+    .display(flex);
+    > div {
+        .flex();
+        .flex-direction(row);
+        .flex-grow(1);
+        > div.stepLabel {
+            float: left;
+            position: relative;
+            margin: auto;
+            z-index: 500;
+            background-color: #fff;
+            vertical-align: middle;
+            > div.label {
+                position: relative;
+                float:left;
+                display: block;
+                font-size: 14px;
+                padding: 0px 5px;
+                color: #333;
+                margin: 1.0em 0em;
+            }
+
+            div.stepHero {
+                position: relative;
+                float:left;
+                margin: auto 4px;
+                i {
+                    color:#888;
+                    font-size:38px;
+                    font-weight: normal;
+                }
+                
+                img {
+                    width: 35px;
+                }
+            }
+
+        }
+        
+        div.desc {
+            clear: both;
+            margin-bottom: -45px;
+            label {
+                font-size: 14px;
+                font-weight: 400;
+                color: rgba(0, 0, 0, 0.45);
+            }
+        }
+        
+        > div.line {
+            .display(block);
+            position: relative;
+            border-bottom: 1px solid #1890ff;
+            top: 50%;
+        }
+    }
+
+    > div.active {
+        > div.stepLabel {
+            > div.stepHero > i, > div.label {
+                color: #1890ff;
+            }
+        }
+
+    }
+
+    > div:first-child {
+        > div.stepLabel 
+        > div.stepHero {
+            margin-left: 0px;
+        }
+    }
+
+    > div:last-child {
+        .flex(none);
+        > div.line {
+            display: none;
+        }
+    }
+}

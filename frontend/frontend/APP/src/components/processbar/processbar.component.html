@@ -1,0 +1,28 @@
+<div id="processBar" class="modal-header">
+    <h3>{{message}}...</h3>
+</div>
+<div class="modal-content">
+    <div class="modal-body" style="padding:30px">
+        <!-- <div class="progress" style="margin-bottom:0px;width:100%">
+            <div 
+                id="bar"
+                class="progress-bar progress-bar-success progress-bar-striped" 
+                role="progressbar" 
+                aria-valuenow="40" 
+                aria-valuemin="0" 
+                aria-valuemax="100" 
+                style="width:100%"
+            >
+            </div>
+        </div> -->
+        <div class="mb-2">
+            <progressbar 
+                max="100" 
+                [value]="100" 
+                type="success" 
+                [striped]="true" 
+                [animate]="true">
+            </progressbar>
+          </div>
+    </div>
+</div>
