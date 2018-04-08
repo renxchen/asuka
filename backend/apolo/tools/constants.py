@@ -125,7 +125,7 @@ SPLIT_RULE_SPACE = 'space'
 SPLIT_RULE_COMMA = 'comma'
 SPLIT_RULE_SLASH = 'slash'
 SPLIT_RULE_OTHER = 'other'
-INSTEAD = '@@'
+INSTEAD = '@@'  # '△△'
 NO_MATCH_EXTRACT_DATA_REGEXP = gettext('Can not match the provided regular Expression.')
 
 # collection policy functional related
@@ -239,8 +239,8 @@ LEAF_IS_BLOCK_RULE = 'LEAF_IS_BLOCK_RULE'
 POLICY_TREE_IS_GROUPED = 'policy tree is grouped'
 #################################################################
 # instead mark string
-REPLACE_START_MARK = '☆start☆'
-REPLACE_END_MARK = '☆end☆'
+REPLACE_START_MARK = '★★'  # '☆start☆'
+REPLACE_END_MARK = '☆☆'  # '☆end☆'
 LINE_NUM_MSG_REPLACE = '◇◎◎◇'  # '@##@'
 # css style of data rule
 BASIC_CHAR_STYLE = '<span style="color:#6066c9;text-shadow: 0 0 1px #9c9ff9;">'
