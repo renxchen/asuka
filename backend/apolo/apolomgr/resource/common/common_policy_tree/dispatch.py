@@ -2,8 +2,8 @@
 
 '''
 
-@author: kimli
-@contact: kimli@cisco.com
+@author:Gin Chen
+@contact: Gin Chen@cisco.com
 @file: dispatch.py
 @time: 2017/12/18
 @desc:
@@ -29,6 +29,11 @@ class Dispatch(object):
         self.set_work_follow()
 
     def __set_instance__(self):
+        """!@brief
+        init the policy by data of the first node
+        @author Gin Chen
+        @date 2017/12/18
+        """
         the_first_data = self.rules[self.path[0]]
         # set the init data
         the_first_data['data'] = self.raw_data
@@ -39,6 +44,12 @@ class Dispatch(object):
 
 
     def dispatch(self, work_follow_num=0):
+        """!@brief
+       execute every step in the work follow
+       @pre setting work follow
+       @author Gin Chen
+       @date 2017/12/18
+       """
         work_follow_num += 1
         if self.work_follow.has_key(work_follow_num):
             func_name = self.work_follow.get(work_follow_num)
@@ -73,6 +84,11 @@ class Dispatch(object):
             return
 
     def set_work_follow(self):
+        """!@brief
+        set work follow (Order of execution rules)
+        @author Gin Chen
+        @date 2017/12/18
+        """
         work_follow_num = 1
         for rule_id in self.path:
             if self.rules[rule_id]['rule_type'] ==1:
@@ -98,6 +114,11 @@ class Dispatch(object):
             work_follow_num +=1
 
     def get_result(self):
+        """!@brief
+        get result of the dispatch
+        @author Gin Chen
+        @date 2017/12/18
+        """
         return self.buffer_res
 
 

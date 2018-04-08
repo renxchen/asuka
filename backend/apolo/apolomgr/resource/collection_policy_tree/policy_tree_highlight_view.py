@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-@author: kimli
-@contact: kimli@cisco.com
+@author: Gin Chen
+@contact: Gin Chen@cisco.com
 @file: policy_tree_highlight_view.py
 @time: 2017/12/18 18:24
 @desc:
@@ -34,7 +34,7 @@ class PolicyTreeHighLightViewSet(viewsets.ViewSet):
         @pre
         @post
         @return the highlighted page
-        @author kimli
+        @author Gin Chen
         @date 2017/12/18
         """
         request_dict = {

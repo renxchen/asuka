@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-
+# -*- coding:utf-8 -*-
 '''
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: Gin Chen
+@contact: Gin Chen@cisco.com
 @file: rule.py
 @time: 2017/12/18
 @desc:
@@ -20,6 +20,14 @@ class Policy(object):
         self.data = extract_policy['data']
 
     def __set_input(self):
+        """!@brief
+        set input by rule from front info
+        @param
+        @note
+        @return rule info
+        @author Gin Chen
+        @date 2017/12/18
+        """
         self.start_line = self.extract_policy['start_line']
         self.end_line = self.extract_policy['end_line']
         self.x_offset = self.extract_policy['x_offset']
@@ -78,14 +86,28 @@ class Policy(object):
         }
 
     def __set_block_path(self, identifier):
-
+        """!@brief
+        set block path
+        @param identifier :data identifier
+        @note
+        @return data identifier
+        @author Gin Chen
+        @date 2017/12/18
+        """
         if self.block_path:
             return '{},{}'.format(self.block_path, identifier)
         else:
             return identifier
 
     def x_offset_extract(self):
-
+        """!@brief
+        data rule 1: 特定文字からの距離
+        @param
+        @note
+        @return rule info
+        @author Gin Chen
+        @date 2017/12/18
+        """
         self.__set_input()
         # the value of basic character
         basic_character = ''
@@ -117,8 +139,8 @@ class Policy(object):
                     basic_character = m.group()
                     # replace the split char in basic character to @@
                     # mark the basic character with $basic character$
-                    # only replace the first pattern in the line
-                    self.render_b_c = '${}$'.format(re.sub(self.split_characters, self.instead, basic_character, 1))
+                    self.render_b_c = '${}$'.format(re.sub(self.split_characters, self.instead, basic_character))
+                    # if there are many basic chars in the line,replace the first basic char
                     self.raw_data_list[i] = self.raw_data_list[i].replace(basic_character, self.render_b_c, 1)
                     # get the line num of basic character
                     basic_character_line_num = i
@@ -208,6 +230,14 @@ class Policy(object):
             return [self.res]
 
     def y_offset_extract(self):
+        """!@brief
+        data rule 2: 行数指定
+        @param
+        @note
+        @return rule info
+        @author Gin Chen
+        @date 2017/12/18
+        """
         self.__set_input()
         # the line number of the basic character belong
         basic_character_line_num = None
@@ -234,8 +264,9 @@ class Policy(object):
                     basic_character = m.group()
                     # find the line number for the basic character
                     basic_character_line_num = i
-                    self.render_b_c = '${}$'.format(re.sub(self.split_characters, self.instead, basic_character, 1))
+                    self.render_b_c = '${}$'.format(re.sub(self.split_characters, self.instead, basic_character))
                     # replace the space in basic character to @@
+                    # if there are many basic chars in the line,replace the first basic char
                     self.raw_data_list[i] = self.raw_data_list[i].replace(basic_character, self.render_b_c, 1)
                     # destination line num
                     target_line_num = basic_character_line_num + self.y_offset
@@ -330,6 +361,14 @@ class Policy(object):
             return [self.res]
 
     def regexp_extract(self):
+        """!@brief
+        data rule 3: 正規表現
+        @param
+        @note
+        @return rule info
+        @author Gin Chen
+        @date 2017/12/18
+        """
         self.__set_input()
         exp_result = []
         # value of extract data
@@ -362,6 +401,14 @@ class Policy(object):
             self.res['error_msg'] = e.message
 
     def expect_line_extract(self):
+        """!@brief
+        data rule 4: データ行数を取得
+        @param
+        @note
+        @return rule info
+        @author Gin Chen
+        @date 2017/12/18
+        """
         try:
             self.__set_input()
             if self.block_rule_D_line_num > 0:
@@ -387,9 +434,17 @@ class Policy(object):
             return [self.res]
 
     def all_extract(self):
+        """!@brief
+        data rule 5: 出力全抽出機能
+        @param
+        @note
+        @return rule info
+        @author Gin Chen
+        @date 2017/12/18
+        """
         try:
             self.__set_input()
-            if len(self.raw_data_list) >0:
+            if len(self.raw_data_list) > 0:
                 self.res['extract_data'] = '\n'.join(self.raw_data_list)
                 self.res['extract_data_result'] = [(0, self.res['extract_data'])]
                 self.res['extract_match_flag'] = True
@@ -407,6 +462,14 @@ class Policy(object):
 
     @staticmethod
     def __get_space_count(input_str):
+        """!@brief
+        get space count in block rule by indent
+        @param
+        @note
+        @return space count
+        @author Gin Chen
+        @date 2017/12/18
+        """
         space_count = 0
         for s in input_str:
             if s.isspace():
@@ -416,6 +479,14 @@ class Policy(object):
         return space_count
 
     def extract_block_by_indent(self):
+        """!@brief
+        block rule 1:インデントによって絞る
+        @param
+        @note
+        @return space count
+        @author Gin Chen
+        @date 2017/12/18
+        """
         self.__set_input()
         start_match_pattern = self.block_start_characters
         start_mark = False
@@ -490,6 +561,14 @@ class Policy(object):
         return result
 
     def extract_block_by_line_num(self):
+        """!@brief
+        block rule 2:行数によって絞る
+        @param
+        @note
+        @return space count
+        @author Gin Chen
+        @date 2017/12/18
+        """
         self.__set_input()
         start_match_pattern = self.block_start_characters
         block_start_line_num = 0
@@ -519,8 +598,8 @@ class Policy(object):
                 if self.is_serial:
                     identifier = '{}_{}'.format(start_string, serial_num)
                     serial_num += 1
-                # line_num += 1
-                # continue
+                    # line_num += 1
+                    # continue
 
             if start_mark:
                 # the block is end
@@ -542,6 +621,14 @@ class Policy(object):
         return result
 
     def extract_block_by_string_range(self):
+        """!@brief
+        block rule 3:指定文字列の間
+        @param
+        @note
+        @return space count
+        @author Gin Chen
+        @date 2017/12/18
+        """
         self.__set_input()
         start_match_pattern = self.block_start_characters
         end_match_pattern = self.block_end_characters
@@ -625,6 +712,14 @@ class Policy(object):
         return result
 
     def extract_block_by_regular(self):
+        """!@brief
+        block rule 4:正規表現による絞る
+        @param
+        @note
+        @return space count
+        @author Gin Chen
+        @date 2017/12/18
+        """
         self.__set_input()
         basic_pattern = self.basic_c
         block_start_line_num = 0
@@ -644,7 +739,6 @@ class Policy(object):
                 block_start_mark = True
                 block_end_line_num = line_num
             line_count += 1
-
 
         res_dict = {
             'start_line': block_start_line_num,

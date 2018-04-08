@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-@author: necwang
-@contact: necwang@cisco.com
+@author: 
+@contact: @cisco.com
 @file: tool.py
 @time: 2018/1/4 15:14
 @desc:
@@ -25,7 +25,7 @@ class Tool(object):
         @post
         @note all extract data rule type is 9
         @return rule type
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         if rule_type >= 5 and rule_type != 9:
@@ -43,7 +43,7 @@ class Tool(object):
         @post
         @note
         @return split char
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         if split_char_num == 0:
@@ -68,7 +68,7 @@ class Tool(object):
         @post
         @note
         @return rule info that value type is dict
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         input_data_dict = {'rule_type': obj.rule_type,
@@ -99,7 +99,7 @@ class Tool(object):
         @post
         @note
         @return return week,schedule_start_time,schedule_end_time
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         if data_schedule_time:
@@ -128,7 +128,7 @@ class Tool(object):
         @post
         @note
         @return priority value list corresponding to priority key
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         levels = [{constants.PRIORITY_HIGH_LEVEL_KEY: constants.PRIORITY_HIGH_LEVEL_VALUE},
@@ -149,7 +149,7 @@ class Tool(object):
         @post
         @note
         @return schedule typ value list corresponding to schedule type key
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         levels = [{constants.SCHEDULE_TYPE_OFTEN_KEY: constants.SCHEDULE_TYPE_OFTEN_VALUE},
@@ -171,7 +171,7 @@ class Tool(object):
         @post
         @note
         @return schedule status value list corresponding to schedule status key
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         levels = [{constants.SCHEDULE_STATUS_ON_KEY: constants.SCHEDULE_STATUS_ON_VALUE},
@@ -193,7 +193,7 @@ class Tool(object):
         @post
         @note
         @return priority key  corresponding to priority value
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         if priority_value == constants.PRIORITY_HIGH_LEVEL_VALUE:
@@ -214,7 +214,7 @@ class Tool(object):
         @post
         @note
         @return cp status key corresponding to cp status value
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         if cp_status_value == constants.CP_STATUS_OFF_VALUE:
@@ -233,7 +233,7 @@ class Tool(object):
         @post
         @note
         @return return json data of items that are running
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         test_instance = GetValidItem()
@@ -288,7 +288,7 @@ class Tool(object):
         @post
         @note
         @return return cp status. if cp is running,return True.if cp is not running,return False
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         test_instance = GetValidItemByPolicy()
@@ -309,7 +309,7 @@ class Tool(object):
         @post
         @note
         @return replaced char
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         fbsArr = ["\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|"]
@@ -329,7 +329,7 @@ class Tool(object):
         @post
         @note
         @return text to be replaced
-        @author kimli
+        @author Gin Chen
         @date 2018/1/4
         """
         if xmlString:
