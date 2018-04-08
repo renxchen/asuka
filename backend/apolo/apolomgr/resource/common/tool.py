@@ -323,7 +323,7 @@ class Tool(object):
     @staticmethod
     def replace_xml_mark(xmlString):
         """!@brief
-        replace '<' and '>' to '&lt;' and '&lt;'  when rend highlight html
+        replace '<' and '>' to '&lt;' and '&gt;'  when rend highlight html
         @param xmlString :  text that include xml mark
         @pre
         @post
@@ -335,7 +335,7 @@ class Tool(object):
         if xmlString:
             if '<' in xmlString and '>' in xmlString:
                 xmlString = xmlString.replace('<', '&lt;')
-                xmlString = xmlString.replace('>', '&lt;')
+                xmlString = xmlString.replace('>', '&gt;')
         return xmlString
 
 
