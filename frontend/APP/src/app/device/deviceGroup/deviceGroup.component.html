@@ -1,0 +1,84 @@
+<div id="wrapper wrapper-content">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">デバイスグループ一覧
+                                    <button class="btn btn-info btn-xs pull-right" (click)="groupLogin()">
+                                        <i class="fa fa-plus-square"></i> 新規作成
+                                    </button>
+                                </div>
+                                <div class="panel-body" style="height:269px">
+                                    <!-- practice -->
+                                    <div class="wrap-table">
+                                        <table class="table">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="width:100%" colspan="3" (click)="getGroupInfo('-1')" [ngClass]="{'active': (groupId)=='-1'}">
+                                                        無所属
+                                                    </td>
+                                                </tr>
+                                                <tr *ngFor="let group of groups">
+                                                    <td 
+                                                        colspan="2"
+                                                        (click)="getGroupInfo(group.group_id)" 
+                                                        [ngClass]="{'active': (groupId)==group.group_id}"
+                                                        title="{{group.name}}"
+                                                    >
+                                                        {{group.name}}
+                                                    </td>
+                                                    <td 
+                                                        class="text-right" 
+                                                        [ngClass]="{'active': (groupId)==group.group_id}"
+                                                    >
+                                                        <button id="{{group.group_id}}" class="btn btn-info btn-xs" (click)="editGroup(group.group_id)">
+                                                            <i class="fa fa-pencil-square"></i>
+                                                            編集
+                                                        </button>
+                                                        <button id="{{group.group_id}}" class="btn btn-warning btn-xs" (click)="deleteGroup(group.group_id)">
+                                                            <i class="fa fa-minus-square"></i>
+                                                            削除
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>
+                                <div class="grey-panel">
+                                    <div class="panel-heading">デバイスグループ名</div>
+                                    <div class="panel-body" title="{{name}}">{{name}}</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="grey-panel">
+                                    <div class="panel-heading">OS Type</div>
+                                    <div class="panel-body" title="{{osType}}">{{osType}}</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="grey-panel">
+                                    <div class="panel-heading">概要</div>
+                                    <div class="panel-body" title="{{desc}}">{{desc}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <table id="deviceTable"></table>
+                            <div id="devicePager"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
