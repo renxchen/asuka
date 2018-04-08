@@ -8,7 +8,6 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Validator } from '../../../components/validation/validation';
-import { CollectionPolicyService } from '.././collectionPolicy.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import * as _ from 'lodash';
@@ -62,7 +61,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         private httpClient: HttpClientComponent,
         private bsModalRef: BsModalRef,
         private modalService: BsModalService,
-        private service: CollectionPolicyService) {
+        ) {
     }
     ngOnInit() {
         this.startLnNum = 0;

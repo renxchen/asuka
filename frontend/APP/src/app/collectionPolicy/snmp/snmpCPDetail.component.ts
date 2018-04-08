@@ -9,7 +9,6 @@ import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import * as _ from 'lodash';
-import { TranslateService } from '@ngx-translate/core';
 @Component({
     selector: 'snmp-detail',
     templateUrl: './snmpCPDetail.component.html',
@@ -25,11 +24,10 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
     desc: any;
     selectedOsType: any;
     selectedRtnType: any;
-    constructor(private translate: TranslateService,
+    constructor(
         private router: Router,
         private activedRoute: ActivatedRoute,
         private httpClient: HttpClientComponent, ) {
-        // translate.setDefaultLang('en');
         let cPIdeTmp: any = this.activedRoute.snapshot.queryParams['id'];
         if (cPIdeTmp && typeof (cPIdeTmp) !== 'undefined') {
             this.cPId = cPIdeTmp;

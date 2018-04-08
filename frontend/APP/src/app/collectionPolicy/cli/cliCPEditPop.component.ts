@@ -8,7 +8,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
-import { CollectionPolicyService } from '.././collectionPolicy.service';
 import { Validator } from '../../../components/validation/validation';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -41,8 +40,7 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
     constructor(
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
-        private modalRef: BsModalRef,
-        private service: CollectionPolicyService
+        private modalRef: BsModalRef
     ) { }
     ngOnInit() {
         this.getOsType();
