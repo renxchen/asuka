@@ -1,5 +1,5 @@
 ﻿# Host: 127.0.0.1  (Version 5.6.21-log)
-# Date: 2018-04-04 10:40:31
+# Date: 2018-04-08 16:15:24
 # Generator: MySQL-Front 5.4  (Build 3.48)
 # Internet: http://www.mysqlfront.de/
 
@@ -94,8 +94,8 @@ CREATE TABLE `devices_tmp` (
   `device_id` int(11) NOT NULL AUTO_INCREMENT,
   `hostname` varchar(256) DEFAULT NULL,
   `ip` varchar(30) NOT NULL,
-  `telnet_port` int(11) DEFAULT NULL,
-  `snmp_port` int(11) DEFAULT NULL,
+  `telnet_port` bigint(20) DEFAULT NULL,
+  `snmp_port` bigint(20) DEFAULT NULL,
   `snmp_community` varchar(30) DEFAULT NULL,
   `snmp_version` varchar(5) DEFAULT NULL,
   `login_expect` varchar(1000) DEFAULT NULL,
@@ -104,9 +104,9 @@ CREATE TABLE `devices_tmp` (
   `snmp_status` varchar(200) DEFAULT NULL,
   `device_type` varchar(255) DEFAULT NULL,
   `ostype_id` int(11) NOT NULL,
-  `group_name` varchar(2000) DEFAULT NULL,
+  `group_name` varchar(1284) DEFAULT NULL,
   PRIMARY KEY (`device_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1331 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "devices_tmp"
@@ -273,14 +273,14 @@ CREATE TABLE `ostype` (
   `name` varchar(30) DEFAULT NULL,
   `log_fail_judges` varchar(3000) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
-  `snmp_timeout` int(11) DEFAULT NULL,
-  `telnet_timeout` int(11) DEFAULT NULL,
+  `snmp_timeout` bigint(20) DEFAULT NULL,
+  `telnet_timeout` bigint(20) DEFAULT NULL,
   `telnet_prompt` varchar(255) DEFAULT NULL,
   `start_default_commands` varchar(3000) DEFAULT NULL,
   `end_default_commands` varchar(3000) DEFAULT NULL,
   `desc` varchar(1000) DEFAULT NULL,
   PRIMARY KEY (`ostypeid`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "ostype"
@@ -299,7 +299,7 @@ CREATE TABLE `groups` (
   PRIMARY KEY (`group_id`),
   KEY `groups_ostype_id_f166de12_fk_ostype_ostypeid` (`ostype_id`),
   CONSTRAINT `groups_ostype_id_f166de12_fk_ostype_ostypeid` FOREIGN KEY (`ostype_id`) REFERENCES `ostype` (`ostypeid`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "groups"
@@ -314,8 +314,8 @@ CREATE TABLE `devices` (
   `device_id` int(11) NOT NULL AUTO_INCREMENT,
   `hostname` varchar(256) DEFAULT NULL,
   `ip` varchar(30) NOT NULL,
-  `telnet_port` int(11) DEFAULT NULL,
-  `snmp_port` int(11) DEFAULT NULL,
+  `telnet_port` bigint(20) DEFAULT NULL,
+  `snmp_port` bigint(20) DEFAULT NULL,
   `snmp_community` varchar(30) DEFAULT NULL,
   `snmp_version` varchar(5) DEFAULT NULL,
   `login_expect` varchar(1000) DEFAULT NULL,
@@ -327,7 +327,7 @@ CREATE TABLE `devices` (
   PRIMARY KEY (`device_id`),
   KEY `devices_ostype_id_5574a276_fk_ostype_ostypeid` (`ostype_id`),
   CONSTRAINT `devices_ostype_id_5574a276_fk_ostype_ostypeid` FOREIGN KEY (`ostype_id`) REFERENCES `ostype` (`ostypeid`)
-) ENGINE=InnoDB AUTO_INCREMENT=2043 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "devices"
@@ -347,7 +347,7 @@ CREATE TABLE `devices_groups` (
   KEY `devices_groups_group_id_0cfe7d5f_fk_groups_group_id` (`group_id`),
   CONSTRAINT `devices_groups_device_id_329c7a71_fk_devices_device_id` FOREIGN KEY (`device_id`) REFERENCES `devices` (`device_id`),
   CONSTRAINT `devices_groups_group_id_0cfe7d5f_fk_groups_group_id` FOREIGN KEY (`group_id`) REFERENCES `groups` (`group_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2164 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "devices_groups"
@@ -366,7 +366,7 @@ CREATE TABLE `coll_policy_groups` (
   PRIMARY KEY (`policy_group_id`),
   KEY `coll_policy_groups_ostypeid_7bf9be7a_fk_ostype_ostypeid` (`ostypeid`),
   CONSTRAINT `coll_policy_groups_ostypeid_7bf9be7a_fk_ostype_ostypeid` FOREIGN KEY (`ostypeid`) REFERENCES `ostype` (`ostypeid`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "coll_policy_groups"
@@ -391,7 +391,7 @@ CREATE TABLE `coll_policy` (
   PRIMARY KEY (`coll_policy_id`),
   KEY `coll_policy_ostype_id_009344fd_fk_ostype_ostypeid` (`ostype_id`),
   CONSTRAINT `coll_policy_ostype_id_009344fd_fk_ostype_ostypeid` FOREIGN KEY (`ostype_id`) REFERENCES `ostype` (`ostypeid`)
-) ENGINE=InnoDB AUTO_INCREMENT=109 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "coll_policy"
@@ -425,7 +425,7 @@ CREATE TABLE `coll_policy_cli_rule` (
   PRIMARY KEY (`ruleid`),
   KEY `coll_policy_cli_rule_coll_policy_id_52122139_fk_coll_poli` (`coll_policy_id`),
   CONSTRAINT `coll_policy_cli_rule_coll_policy_id_52122139_fk_coll_poli` FOREIGN KEY (`coll_policy_id`) REFERENCES `coll_policy` (`coll_policy_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=278 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "coll_policy_cli_rule"
@@ -449,7 +449,7 @@ CREATE TABLE `coll_policy_rule_tree` (
   KEY `coll_policy_rule_tre_rule_id_83e32d8d_fk_coll_poli` (`rule_id`),
   CONSTRAINT `coll_policy_rule_tre_coll_policy_id_44a8a286_fk_coll_poli` FOREIGN KEY (`coll_policy_id`) REFERENCES `coll_policy` (`coll_policy_id`),
   CONSTRAINT `coll_policy_rule_tre_rule_id_83e32d8d_fk_coll_poli` FOREIGN KEY (`rule_id`) REFERENCES `coll_policy_cli_rule` (`ruleid`)
-) ENGINE=InnoDB AUTO_INCREMENT=327 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "coll_policy_rule_tree"
@@ -477,7 +477,7 @@ CREATE TABLE `data_table` (
   CONSTRAINT `fk_data_table_coll_policy_rule_tree` FOREIGN KEY (`tree_id`) REFERENCES `coll_policy_rule_tree` (`treeid`),
   CONSTRAINT `fk_data_table_groups` FOREIGN KEY (`groups`) REFERENCES `groups` (`group_id`),
   CONSTRAINT `fk_data_table_policy_group_id` FOREIGN KEY (`policy_group_id`) REFERENCES `coll_policy_groups` (`policy_group_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "data_table"
@@ -500,7 +500,7 @@ CREATE TABLE `policys_groups` (
   KEY `policys_groups_policy_group_id_f8b91a54_fk_coll_poli` (`policy_group_id`),
   CONSTRAINT `policys_groups_policy_group_id_f8b91a54_fk_coll_poli` FOREIGN KEY (`policy_group_id`) REFERENCES `coll_policy_groups` (`policy_group_id`),
   CONSTRAINT `policys_groups_policy_id_ae62e30f_fk_coll_policy_coll_policy_id` FOREIGN KEY (`policy_id`) REFERENCES `coll_policy` (`coll_policy_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "policys_groups"
@@ -530,7 +530,7 @@ CREATE TABLE `schedules` (
   CONSTRAINT `schedules_device_group_id_55611fe5_fk_groups_group_id` FOREIGN KEY (`device_group_id`) REFERENCES `groups` (`group_id`),
   CONSTRAINT `schedules_ostype_id_c6f25217_fk_ostype_ostypeid` FOREIGN KEY (`ostype_id`) REFERENCES `ostype` (`ostypeid`),
   CONSTRAINT `schedules_policy_group_id_106f5a98_fk_coll_poli` FOREIGN KEY (`policy_group_id`) REFERENCES `coll_policy_groups` (`policy_group_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "schedules"
@@ -563,7 +563,7 @@ CREATE TABLE `items` (
   CONSTRAINT `items_coll_policy_id_5d9e2d3c_fk_coll_policy_coll_policy_id` FOREIGN KEY (`coll_policy_id`) REFERENCES `coll_policy` (`coll_policy_id`),
   CONSTRAINT `items_device_id_b165d358_fk_devices_device_id` FOREIGN KEY (`device_id`) REFERENCES `devices` (`device_id`),
   CONSTRAINT `items_schedule_id_2402dbb2_fk_schedules_schedule_id` FOREIGN KEY (`schedule_id`) REFERENCES `schedules` (`schedule_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
 # Data for table "items"
@@ -811,6 +811,8 @@ CREATE TABLE `trigger_detail` (
   `expression_view` varchar(255) DEFAULT NULL,
   `trigger_id` int(11) NOT NULL,
   `device_id` int(11) DEFAULT NULL,
+  `itemA` int(11) DEFAULT NULL,
+  `itemB` int(11) DEFAULT NULL,
   PRIMARY KEY (`trigger_detail_id`),
   KEY `trigger_detail_trigger_id_7916ab0c_fk_triggers_trigger_id` (`trigger_id`),
   CONSTRAINT `trigger_detail_trigger_id_7916ab0c_fk_triggers_trigger_id` FOREIGN KEY (`trigger_id`) REFERENCES `triggers` (`trigger_id`)
