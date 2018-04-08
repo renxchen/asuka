@@ -8,7 +8,6 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
-import { TranslateService } from '@ngx-translate/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../../components/modal/modal.component';
@@ -44,12 +43,10 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
     osFlg: Boolean = true;
     snmpFlg: Boolean = true;
     constructor(
-        private translate: TranslateService,
         private router: Router,
         private activedRoute: ActivatedRoute,
         private httpClient: HttpClientComponent,
         private modalService: BsModalService) {
-        // translate.setDefaultLang('en');
         let cPIdeTmp: any = this.activedRoute.snapshot.queryParams['id'];
         if (cPIdeTmp && typeof (cPIdeTmp) !== 'undefined') {
             this.cPId = cPIdeTmp;
