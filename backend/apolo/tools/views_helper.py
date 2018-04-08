@@ -3,8 +3,8 @@
 
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: views_helper.py
 @time: 2017/12/15 13:37
 @desc:

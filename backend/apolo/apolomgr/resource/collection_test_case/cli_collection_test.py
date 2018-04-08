@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: cli_collection_test.py
 @time: 2018/3/29 14:21
 @desc:

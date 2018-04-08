@@ -2,8 +2,8 @@
 # coding=utf-8
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: table_views.py
 @time: 2018/1/3 17:25
 @desc:

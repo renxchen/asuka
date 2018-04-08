@@ -3,8 +3,8 @@
 
 '''
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: collection_policy_views.py
 @time: 2017/12/14 14:39
 @desc:
