@@ -27,18 +27,16 @@
     <br/>
 </div>
 
-
 <div class="col-lg-12 space-5">&nbsp;</div>
-<div class="panel panel-success col-lg-12" style="padding: 0px">
-    <div class="panel-heading" style="text-align:center">CLI DATA</div>
-    <div class="panel-body" id="result1">
-
+<div class="panel panel-success col-lg-12" style="padding: 0px" *ngFor="let item of resultList">
+    <div class="panel-heading" style="text-align:center">Output: {{item.command}}</div>
+    <div class="panel-body" id="result1" [innerHTML]="item.output">
     </div>
 </div>
-<div class="panel panel-success col-lg-12" style="padding: 0px">
+<div class="panel panel-success col-lg-12" style="padding: 0px" *ngIf="log">
     <div class="panel-heading" style="text-align:center">CLI LOG</div>
     <div class="panel-body" id="result2">
-
+        {{log}}
     </div>
 </div>
 
