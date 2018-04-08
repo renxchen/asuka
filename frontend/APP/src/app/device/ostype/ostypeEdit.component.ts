@@ -1,4 +1,11 @@
 
+/**
+ * @author: Zizhuang Jiang
+ * @contact: zizjiang@cisco.com
+ * @file: ostypeEdit.component.ts
+ * @time: 2018/03/08
+ * @desc: edit a ostype
+ */
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';

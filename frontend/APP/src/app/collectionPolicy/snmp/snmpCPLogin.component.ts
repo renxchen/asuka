@@ -55,7 +55,6 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         }
         this.selectedRtnType = '1';
         this.getOsType();
-        // this.labelParentAlert();
     }
     ngAfterViewInit() {
     }
@@ -81,7 +80,6 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
             this.httpClient
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
                 .subscribe(res => {
-                    //
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
@@ -99,9 +97,11 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                         if (msg && msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            this.modalMsg = msg;
-                            this.closeMsg = '閉じる';
-                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                            if (msg) {
+                                this.modalMsg = msg;
+                                this.closeMsg = '閉じる';
+                                this.showAlertModal(this.modalMsg, this.closeMsg);
+                            }
                         }
                     }
                 });
@@ -140,7 +140,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         * @author Dan Lv
         * @date 2018/01/25
         */
-       this.uniqueFlg = true;
+        this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);

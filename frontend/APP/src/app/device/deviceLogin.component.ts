@@ -264,9 +264,11 @@ export class DeviceLoginComponent implements OnInit {
                         this.drawDevLoginTable();
                     } else {
                         $('.modal').hide();
-                        this.modalMsg = _.get(status, 'message');
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        if (_.get(status, 'message')) {
+                            this.modalMsg = _.get(status, 'message');
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                        }
                     }
                 });
         } else {

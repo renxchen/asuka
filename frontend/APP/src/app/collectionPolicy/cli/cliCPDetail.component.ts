@@ -111,8 +111,10 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
                         }
                     }
                 } else {
-                    if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+                    if (msg) {
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
@@ -214,7 +216,11 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
                     this.extractKey = _.get(data, 'extract_key');
                     this.selSplitChar = this.splitCharFomatter(_.get(data, 'split_char'));
                 } else {
-                    alert(msg);
+                    if (msg) {
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                    }
                 }
             }
         });
