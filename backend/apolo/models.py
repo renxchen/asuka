@@ -477,6 +477,9 @@ class TriggerDetail(models.Model):
     status = models.IntegerField(blank=True, null=True)
     trigger = models.ForeignKey('Triggers', models.DO_NOTHING)
     expression_view = models.CharField(max_length=255, blank=True, null=True)
+    device_id = models.IntegerField(blank=True, null=True)
+    itemA = models.IntegerField(blank=True, null=True)
+    itemB = models.IntegerField(blank=True, null=True)
 
     class Meta:
         # managed = False
