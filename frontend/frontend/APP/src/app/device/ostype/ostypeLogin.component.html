@@ -1,0 +1,296 @@
+<div class="modal-content">
+    <div class="modal-header popup-title" style="font-size:21px">
+        <span>新規 OS Type</span>
+        <button 
+            type="button" 
+            class="close pull-right" 
+            aria-label="Close" 
+            (click)="bsModalRef.hide()"
+        >
+            <i class="fa fa-times"></i>
+        </button>
+    </div>
+    <div class="modal-body" style="height:500px;overflow-y:auto">
+        <form class="form-horizontal" id="form" novalidate="novalidate">
+            <div class="form-group">
+                <label
+                    for="name" 
+                    class="col-sm-4 control-label"
+                    [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
+                >
+                    <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                    OS Type名:
+                </label>
+                <div class="col-sm-8" [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}">
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="id_{{name}}" 
+                        name="os_{{name}}"
+                        placeholder="日本語、英数字、記号可"
+                        [(ngModel)]="name"
+                     >
+                </div>
+            </div>
+            <div class="form-group">
+                <label
+                    for="desc"
+                    class="col-sm-4 control-label"
+                >
+                    概要：
+                </label>
+                <div class="col-sm-8">
+                    <textarea
+                        class="form-control textarea-height" 
+                        title="{{desc}}"
+                        id="desc"
+                        name="desc"
+                        maxlength="1000"
+                        placeholder="日本語、英数字、記号可"
+                        [(ngModel)]="desc"
+                    >
+                    </textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label 
+                    for="startCmd" 
+                    class="col-sm-4 control-label"
+                    [ngClass]="{'text-warning': !startRegFlg}"
+                >
+                    CLI情報取得前デフォルト実行コマンド:
+                </label>
+                <div class="col-sm-8">
+                    <div *ngFor="let startCmd of startCmds" style="width:100%">
+                        <div class="multi-input" [ngClass]="{'has-warning': !startCmd.startRegFlg}">
+                            <input type="text" 
+                                class="form-control" 
+                                id="start_id_{{startCmd.id}}"
+                                name="start_name_{{startCmd.id}}" 
+                                maxlength="256"
+                                placeholder="英数字、記号のみ"
+                                [(ngModel)]="startCmd.name"
+                            >
+                        </div>
+                        <div class="multi-i">
+                            <span [hidden]="startTrashBinFlg">
+                                <i class="fa fa-lg fa-trash-o"
+                                    style="color:#f8ac59;"
+                                    (click)="delStartCmd(startCmd)"
+                                >
+                                </i>
+                            </span> 
+                            <span [hidden]="startCmd.startCmdFlg">
+                                &nbsp;&nbsp;
+                                <i class="fa fa-lg fa-plus"
+                                    style="color:#1ab394;"
+                                    (click)="addStartCmd()"
+                                 >
+                                </i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label
+                    for="endCmd" 
+                    class="col-sm-4 control-label"
+                    [ngClass]="{'text-warning': !endRegFlg}"
+                >
+                    CLI情報取得完了後デフォルト実行コマンド:
+                </label>
+                <div class="col-sm-8">
+                    <div *ngFor="let endCmd of endCmds" style="width:100%">
+                        <div class="multi-input" [ngClass]="{'has-warning': !endCmd.endRegFlg}">
+                            <input type="text" 
+                                class="form-control" 
+                                id="end_id_{{endCmd.id}}"
+                                name="end_name_{{endCmd.id}}" 
+                                maxlength="256"
+                                placeholder="英数字、記号のみ"
+                                [(ngModel)]="endCmd.name"
+                            >
+                        </div>
+                        <div class="multi-i">
+                            <span [hidden]="endTrashBinFlg">
+                                <i class="fa fa-lg fa-trash-o"
+                                    style="color:#f8ac59;"
+                                    (click)="delEndCmd(endCmd)"
+                                >
+                                </i>
+                            </span>
+                            <span [hidden]="endCmd.endCmdFlg">
+                                    &nbsp;&nbsp;
+                                    <i class="fa fa-lg fa-plus"
+                                    style="color:#1ab394;"
+                                    (click)="addEndCmd()"
+                                 >
+                                </i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label
+                    for="log"
+                    class="col-sm-4 control-label"
+                    [ngClass]="{'text-warning': !logRegFlg}"
+                >
+                    CLIエラー文字列:
+                </label>
+                <div class="col-sm-8">
+                    <div *ngFor="let log of logs" style="width:100%" >
+                        <div class="multi-input" [ngClass]="{'has-warning': !log.logRegFlg}">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="log_id_{{log.id}}"
+                                name="log_name_{{log.id}}"
+                                maxlength="256"
+                                placeholder="正規表現形式" 
+                                [(ngModel)]="log.name"
+                            >
+                        </div>
+                        <div class="multi-i">
+                            <span [hidden]="logTrashBinFlg">
+                                <i 
+                                    class="fa fa-lg fa-trash-o"
+                                    style="color:#f8ac59;"
+                                    (click)="delLogCmd(log)"
+                                >
+                                </i>
+                            </span>
+                            <span [hidden]="log.logFlg">
+                                &nbsp;&nbsp;
+                                <i 
+                                    class="fa fa-lg fa-plus"
+                                    style="color:#1ab394;"
+                                    (click)="addLogCmd()"
+                                >
+                                </i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label 
+                    for="telPrompt"
+                    class="col-sm-4 control-label"
+                    [ngClass]="{'text-warning': !telPromptNotNull||!telPromptFlg}"
+                >
+                    <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                    CLIデフォルトプロンプト文字列:
+                </label>
+                <div class="col-sm-8" [ngClass]="{'has-warning': !telPromptNotNull||!telPromptFlg}">
+                    <input 
+                        type="text" 
+                        class="form-control"
+                        id="telPrompt"
+                        name="telPrompt" 
+                        maxlength="256"
+                        placeholder="正規表現形式"
+                        [(ngModel)]="telPrompt"
+                    >
+                </div>
+            </div>
+            <div class="form-group">
+                <label
+                    for="telTimeout"
+                    class="col-sm-4 control-label"
+                    [ngClass]="{'text-warning': !telTimeoutFlg||!telTimeoutNotNull}"
+                >
+                    <i 
+                        class="fa fa-asterisk text-danger"
+                        title="必須項目"
+                    >
+                    </i>
+                    CLI(Telnet) タイムアウト値:
+                </label>
+                <div class="col-sm-8" [ngClass]="{'has-warning': !telTimeoutFlg||!telTimeoutNotNull}">
+                    <input
+                        type="text" 
+                        class="form-control" 
+                        id="telTimeout" 
+                        name="telTimeout" 
+                        maxlength="11"
+                        [(ngModel)]="telTimeout" 
+                        autocomplete="off"
+                        placeholder="数値のみ"
+                    >
+                </div>
+            </div>
+            <div class="form-group">
+                <label 
+                    for="snmpTimeout" 
+                    class="col-sm-4 control-label" 
+                    [ngClass]="{'text-warning': !snmpTimeoutFlg||!snmpTimeoutNotNull}"
+                >
+                    <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                    SNMP タイムアウト値:
+                </label>
+                <div class="col-sm-8" [ngClass]="{'has-warning': !snmpTimeoutFlg||!snmpTimeoutNotNull}">
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="snmpTimeout"
+                        name="snmpTimeout"
+                        maxlength="11"
+                        placeholder="数値のみ" 
+                        [(ngModel)]="snmpTimeout"
+                        autocomplete="off"
+                    >
+                </div>
+            </div>
+            <!-- alert Message --> 
+            <div class="col-sm-12 text-warning" *ngIf='!nameNotNull'>
+                OS Type名は必須入力です。
+            </div>            
+            <div class="col-sm-12 text-warning" *ngIf='nameNotNull&&!nameFlg'>
+                <!-- OS Type名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください。 -->
+                OS Type名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください，かつOS Type名の長さを30まで入力してください。
+            </div>            
+            <div class="col-sm-12 text-warning" *ngIf='!uniqueFlg'>
+                OS Type名は既存データと重複しています。
+            </div>
+            <div class="col-sm-12 text-warning" *ngIf='!startRegFlg'>
+                CLI情報取得前デフォルト実行コマンドは半角英数字と記号のみで入力してください。
+            </div> 
+            <div class="col-sm-12 text-warning" *ngIf='!endRegFlg'>
+                CLI情報取得完了後デフォルト実行コマンドは半角英数字と記号のみで入力してください。
+            </div> 
+            <div class="col-sm-12 text-warning" *ngIf='!logRegFlg'>
+                CLIエラー文字列は半角英数字と記号のみで入力してください。
+            </div> 
+            <div class="col-sm-12 text-warning" *ngIf='!telPromptNotNull'>
+                CLIデフォルトプロンプト文字列は必須入力です。
+            </div> 
+            <div class="col-sm-12 text-warning" *ngIf='telPromptNotNull&&!telPromptFlg'>
+                CLIデフォルトプロンプト文字列は半角英数字と記号のみで入力してください。
+            </div> 
+            <div class="col-sm-12 text-warning" *ngIf='!telTimeoutNotNull'>
+                CLI(Telnet) タイムアウト値は必須入力です。
+            </div> 
+            <div class="col-sm-12 text-warning" *ngIf='telTimeoutNotNull&&!telTimeoutFlg'>
+                CLI(Telnet) タイムアウト値は数値のみ。
+            </div> 
+            <div class="col-sm-12 text-warning" *ngIf='!snmpTimeoutNotNull'>
+                SNMP タイムアウト値は必須入力です。
+            </div> 
+            <div class="col-sm-12 text-warning" *ngIf="snmpTimeoutNotNull&&!snmpTimeoutFlg">
+                SNMP タイムアウト値は数値のみ。
+            </div> 
+        </form>
+    </div>
+    <div class="modal-footer">
+        <!-- <button class="btn btn-warning" id="delete" (click)="bsModalRef.hide()">
+                <i class="fa fa-minus-square"></i>
+                キャンセル
+        </button> -->
+        <button class="btn btn-primary pull-right m-t-n-xs" (click)="ostypeLogin()">
+            <i class="fa fa-check-square-o"></i>
+            保存
+        </button>
+    </div>
