@@ -2,8 +2,8 @@
 
 '''
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: Gin Chen
+@contact: Gin Chen@cisco.com
 @file: data_collection.py
 @time: 2018/2/28 12:49
 @desc:

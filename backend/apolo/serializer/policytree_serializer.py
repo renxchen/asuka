@@ -2,8 +2,8 @@
 
 '''
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: Gin Chen
+@contact: Gin Chen@cisco.com
 @file: policytree_serializer.py
 @time: 2017/12/20 16:02
 @desc:
