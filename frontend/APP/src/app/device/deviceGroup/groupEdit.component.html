@@ -1,0 +1,126 @@
+<div class="modal-content">
+    <div class="modal-header popup-title" style="font-size:21px">
+        <i class="fa fa-pencil"></i>
+        <span>デバイスグループ編集</span>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+            <i class="fa fa-times"></i>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="form">
+            <div class="form-group">
+                <label 
+                    for="name" 
+                    class="col-sm-3 control-label" 
+                    [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
+                >
+                    <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                    デバイスグループ名：
+                </label>
+                <div 
+                    class="col-sm-9" 
+                    [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
+                >
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="name" 
+                        name="name"
+                        [(ngModel)]="name" 
+                        placeholder="日本語、英数字、記号可" 
+                        maxlength="256" 
+                        required=""
+                        autocomplete="off" 
+                        [disabled]="!groupFlg"
+                    >
+                </div>
+            </div>
+            <div class="form-group">
+                <label 
+                    for="osType" 
+                    class="col-sm-3 
+                    control-label"
+                    [ngClass]="{'text-warning': !ostypeNotNull}"
+                >
+                    <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                    OS Type：
+                </label>
+                <div 
+                    class="col-sm-9"
+                    [ngClass]="{'has-warning': !ostypeNotNull}"
+                >
+                    <select 
+                        class="form-control" 
+                        [(ngModel)]="selectedOsType" 
+                        id="osType" name="selectedOsType" 
+                        [disabled]="!osFlg"
+                    >
+                        <option 
+                            *ngFor="let item of osType" 
+                            value="{{item.ostypeid}}"
+                        >
+                            {{item.name}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label 
+                    for="desc" 
+                    class="col-sm-3 
+                    control-label" 
+                    [ngClass]="{'text-warning': descFlg}"
+                >
+                    概要：
+                </label>
+                <div class="col-sm-9">
+                    <textarea 
+                        class="form-control textarea-height" 
+                        title="{{desc}}"
+                        id="desc" name="desc" 
+                        [ngClass]="{'has-warning': descFlg}"
+                        [(ngModel)]="desc" 
+                        maxlength="2000"
+                    >
+                    </textarea>
+                </div>
+            </div>
+            <div 
+                class="col-sm-12 text-warning" 
+                *ngIf='!nameNotNull'
+            >
+                デバイスグループ名は必須入力です。
+            </div>            
+            <div 
+                class="col-sm-12 text-warning" 
+                *ngIf='nameNotNull&&!nameFlg'
+            >
+                デバイスグループ名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください。
+            </div>            
+            <div 
+                class="col-sm-12 text-warning" 
+                *ngIf='!uniqueFlg'
+            >
+                デバイスグループ名は既存データと重複しています。
+            </div>
+            <div 
+                class="col-sm-12 text-warning" 
+                *ngIf='!ostypeNotNull'
+            >
+                Ostype cannot be empty.
+            </div>            
+        </form>
+    </div>
+    <div class="modal-footer">
+        <div col-sm-3></div>
+        <div col-sm-9>
+            <button 
+                class="btn btn-sm btn-primary pull-right m-t-n-xs" 
+                (click)="editGroup()"
+            >
+                <i class="fa fa-check-square-o"></i>
+                保存
+            </button>
+        </div>
+    </div>
+</div>
