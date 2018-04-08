@@ -81,7 +81,6 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                 {
                     name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true
                 },
-                // { name: 'group', index: 'group', width: 50, align: 'center', search: true },
                 {
                     name: 'group_list', index: 'group_list', width: 50, align: 'center', search: true,
                     formatter: _t.noDataFormatter
