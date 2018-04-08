@@ -68,6 +68,55 @@ export class HttpClientComponent {
         });
         return params;
     }
+
+    //   public toJson(resObs: Observable<any>, obj?: any): Observable<any> {
+    //       console.log('resObs---1',resObs,'obj---1',obj);
+    //     if (resObs) {
+    //       return resObs.flatMap((res: any) => {
+    //         let content = res['_body'];
+    //         let ret: any = {};
+    //         ret = !obj ? JSON.parse(content) : _.extend(JSON.parse(content), obj);
+    //         console.log('ret',ret);
+    //         if (ret.status||ret.data.status) {
+    //           localStorage.setItem('sessionTimeOut', '');
+    //           return Observable.of(ret);
+    //         } else if (ret.new_toke || ret.token) {
+    //           let token = ret.new_toke || ret.token;
+    //           localStorage.setItem('sessionTimeOut', '');
+    //           if (token) {
+    //             if (token.code === 102) {
+    //               localStorage.setItem('sessionTimeOut', token.message);
+    //               this.router.navigate(['/login'], { queryParams: this.getSearchParams()});
+    //             }
+    //           } else if (token.code === 103) {
+    //             localStorage.setItem('sessionTimeOut', token.message);
+    //             this.router.navigate(['/login'], { queryParams: this.getSearchParams()});
+    //           }
+    //           localStorage.setItem('requestFailed', '');
+    //           return Observable.of(ret);
+    //         }
+    //       })
+    //         .map(v => v)
+    //         .catch((res: any) => {
+    //           if (localStorage.getItem('requestFailed') !== 'failed') {
+    //             alert('Request failed! Please contact the administrator.');
+    //           }
+    //           localStorage.setItem('requestFailed', 'failed');
+    //           return Observable.of({
+    //             'meta': {
+    //               'status': true,
+    //               'message': '网络状况异常。'
+    //             },
+    //             'data': null
+    //           });
+    //         });
+    //     } else {
+    //       let ret: any = { 'meta': { 'status': true } };
+    //       localStorage.setItem('sessionTimeOut', '无权访问或用户过期，请重新登录.');
+    //       this.router.navigate(['/login'], { queryParams: this.getSearchParams() });
+    //       return Observable.of(ret);
+    //     }
+    //   }
     public toJson(resObs: Observable<any>, obj?: any): Observable<any> {
         if (resObs) {
             return resObs.flatMap((res: any) => {
