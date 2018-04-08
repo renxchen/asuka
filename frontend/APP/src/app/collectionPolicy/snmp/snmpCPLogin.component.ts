@@ -99,7 +99,6 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                         if (msg && msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            // alert(msg);
                             this.modalMsg = msg;
                             this.closeMsg = '閉じる';
                             this.showAlertModal(this.modalMsg, this.closeMsg);
@@ -127,7 +126,9 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+                        this.modalMsg = res['status']['message'];
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
