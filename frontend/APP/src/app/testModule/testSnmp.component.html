@@ -1,0 +1,46 @@
+<div class="col-lg-12">
+    <h2>SNMP</h2>
+    <!--<h4>commands <i class="fa fa-info-circle" style="cursor: pointer" (click)="tips()"></i></h4>-->
+    <h4>IP</h4>
+    <input type="text" style="width: 100%;" [(ngModel)]="snmpParameter1">
+    <h4>Hostname</h4>
+    <input type="text" style="width: 100%;" [(ngModel)]="snmpParameter2">
+    <h4>SNMP タイムアウト値</h4>
+    <input type="text" style="width: 100%;" [(ngModel)]="snmpParameter3">
+    <h4>SNMP Port</h4>
+    <input type="text" style="width: 100%;" [(ngModel)]="snmpParameter4">
+    <h4>Community</h4>
+    <input type="text" style="width: 100%;" [(ngModel)]="snmpParameter5">
+    <h4>Version</h4>
+    <input type="text" style="width: 100%;" [(ngModel)]="snmpParameter6">
+    <h4>OID</h4>
+    <input type="text" style="width: 100%;" [(ngModel)]="snmpParameter7">
+
+</div>
+<div class="col-lg-12">
+    <br/>
+    <button (click)="submitSnmp()" class="btn btn-success">submit snmp</button>
+    <br/>
+</div>
+
+
+<div class="col-lg-12 space-5">&nbsp;</div>
+
+<!--<div class="panel panel-success col-lg-12" style="padding: 0px">-->
+    <!--<div class="panel-heading" style="text-align:center">SNMP DATA</div>-->
+    <!--<div class="panel-body" id="result3">-->
+
+    <!--</div>-->
+<!--</div>-->
+<!--<div class="panel panel-success col-lg-12" style="padding: 0px">-->
+    <!--<div class="panel-heading" style="text-align:center">SNMP LOG</div>-->
+    <!--<div class="panel-body" id="result4">-->
+
+    <!--</div>-->
+<!--</div>-->
+
+<div class="panel panel-success col-lg-12" style="padding: 0px"  *ngIf="value">
+    <div class="panel-heading" style="text-align:center">SNMP OUTPUT VALUE</div>
+    <div class="panel-body" id="result1" [innerHtml]="value">
+    </div>
+</div>
