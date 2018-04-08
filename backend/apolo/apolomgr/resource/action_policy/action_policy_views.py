@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: action_policy_views.py
 @time: 2018/1/3 17:34
 @desc:
@@ -465,29 +465,30 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                             critical_detail_list.append(critical_detail)
                             major_detail_list.append(major_detail)
                             minor_detail_list.append(minor_detail)
-                            expression_detail_result['critical'] = critical_detail_list
-                            expression_detail_result['major'] = major_detail_list
-                            expression_detail_result['minor'] = minor_detail_list
+                expression_detail_result['critical'] = critical_detail_list
+                expression_detail_result['major'] = major_detail_list
+                expression_detail_result['minor'] = minor_detail_list
             elif column_a is not None:
                 for per_column_a in column_a_result:
                     item_id_a = per_column_a['item_id']
+                    device_id_a = per_column_a['item__device__device_id']
                     # self.column_a = item_id_a
                     expression_detail = self.create_expression(self.trigger_type, item_id_a)
                     critical_detail = expression_detail['expression_critical']
                     major_detail = expression_detail['expression_major']
                     minor_detail = expression_detail['expression_minor']
-                    if self.trigger_type == constants.NUMBER_ONE or self.trigger_type == constants.NUMBER_TWO or self.trigger_type == constants.NUMBER_THREE:
-                        critical_detail_list.append(critical_detail)
-                        major_detail_list.append(major_detail)
-                        minor_detail_list.append(minor_detail)
-                    else:
-                        critical_detail_list.append(critical_detail)
-                        major_detail_list.append(major_detail)
-                        minor_detail_list.append(minor_detail)
+                    # if self.trigger_type == constants.NUMBER_ONE or self.trigger_type == constants.NUMBER_TWO or self.trigger_type == constants.NUMBER_THREE:
+                    #     critical_detail_list.append(critical_detail)
+                    #     major_detail_list.append(major_detail)
+                    #     minor_detail_list.append(minor_detail)
+                    # else:
+                    critical_detail_list.append(critical_detail)
+                    major_detail_list.append(major_detail)
+                    minor_detail_list.append(minor_detail)
 
-                    expression_detail_result['critical'] = critical_detail_list
-                    expression_detail_result['major'] = major_detail_list
-                    expression_detail_result['minor'] = minor_detail_list
+                expression_detail_result['critical'] = critical_detail_list
+                expression_detail_result['major'] = major_detail_list
+                expression_detail_result['minor'] = minor_detail_list
         else:
             return False
         return expression_detail_result

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: common_views.py
 @time: 2017/12/19 14:19
 @desc:
