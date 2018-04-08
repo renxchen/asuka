@@ -210,9 +210,11 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                         if (msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            this.modalMsg = msg;
-                            this.closeMsg = '閉じる';
-                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                            if (msg) {
+                                this.modalMsg = msg;
+                                this.closeMsg = '閉じる';
+                                this.showAlertModal(this.modalMsg, this.closeMsg);
+                            }
                         }
                     }
                 });

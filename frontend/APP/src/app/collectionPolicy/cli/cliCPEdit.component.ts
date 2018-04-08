@@ -375,7 +375,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 'click': function (event) {
                     let node = event.data.node;
                     let editBlockParam: any = {};
-                    // let tree = _t.getPlyTreeInfo();
                     let id = node['data']['rule_id'];
                     let plyNode = _t.findNode(id);
                     editBlockParam['ruleType'] = node['data']['rule_type'];
@@ -388,10 +387,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             }]
         });
-        // .bind('move_node.jstree', function (e, data) {
-        // }).bind('activate_node.jstree', function (e, node) {
-        //     show_detail(node);
-        // });
     }
     public dataTree(data: any) {
         /**
@@ -452,11 +447,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             }]
         });
-        // .bind('move_node.jstree', function (e, data) {
-        //     console.log('move_node.jstree', e, data);
-        // }).bind('activate_node.jstree', function (e, node) {
-        //     console.log('regreshsh', e, data);
-        // });
     }
     public policyTree(data: any) {
         /**
