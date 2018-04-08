@@ -258,29 +258,29 @@ SPAN_END = '</span>'
 #########################################
 # device, group and ostype information define
 #########################################
-CSV_TITLE_ERROR = 'The title in csv_flie is wrong, please check'
-CSV_FORMAT_ERROR = 'The type of file is wrong, please check'
-CSV_HOSTNAME_EMPTY = 'Empty Hostname'
-CSV_HOSTNAME_DUPLICATE = 'Duplicate Hostname'
-GROUP_NOT_EXIST = 'There is no result for current query.'
-GROUP_NAME_FORMAT_ERROR = "GROUP NAME FORMAT ERROR"
-EXISTS_IN_DEVICESGROUPS = 'ALREADY_EXISTS_IN_DEVICESGROUPS'
-EXISTS_IN_SCHEDULES = 'ALREADY_EXISTS_IN_SCHEDULES'
-GROUP_ALREADY_EXISTS = 'GROUPNAME_ALREADY_EXISTS'
-END_DEFAULT_COMMANDS_ERROR = "END_DEFAULT_COMMANDS_ERROR"
-START_DEFAULT_COMMANDS_ERROR = "START_DEFAULT_COMMANDS_ERROR"
-LOG_FAIL_JUDGES_ERROR = "LOG_FAIL_JUDGES_ERROR"
-TELNET_PROMPT_EMPTY_ERROR = "TELNET_PROMPT_EMPTY_ERROR"
-TELNET_PROMPT_FORMAT_ERROR = "TELNET_PROMPT_FORMAT_ERROR"
-TELNET_TIMEOUT_FORMAT_ERROR = "TELNET_TIMEOUT_FORMAT_ERROR"
-SNMP_TIMEOUT_FORMAT_ERROR = "SNMP_TIMEOUT_FORMAT_ERROR"
-OSTYPE_NAME_EXISTS = "NAME_IS_EXISTENCE"
-OSTYPE_NAME_EMPTY = "Ostype name can not be empty"
-OSTYPE_EXIST_IN_DEVICES = "There is device(s) in current ostype!"
-OSTYPE_EXIST_IN_SCHEDULE2 = "There is schedule(s) in current ostype!"
-OSTYPE_EXISTS_IN_COLL_POLICY = "There is collection policy in current ostype!"
-OSTYPE_EXIST_IN_DEVICEGROUPS = "There is device group(s) in current ostype!"
-OSTYPE_EXIST_IN_COLL_POLICY_GROUPS = "There is collection policy group(s) in current ostype!"
+CSV_TITLE_ERROR = gettext('The title in csv_flie is wrong, please check')
+CSV_FORMAT_ERROR = gettext('The type of file is wrong, please check')
+CSV_HOSTNAME_EMPTY = gettext('Empty Hostname')
+CSV_HOSTNAME_DUPLICATE = gettext('Duplicate Hostname')
+GROUP_NOT_EXIST = gettext('There is no result for current query.')
+GROUP_NAME_FORMAT_ERROR = gettext("GROUP NAME FORMAT ERROR")
+EXISTS_IN_DEVICESGROUPS = gettext('ALREADY_EXISTS_IN_DEVICESGROUPS')
+EXISTS_IN_SCHEDULES = gettext('ALREADY_EXISTS_IN_SCHEDULES')
+GROUP_ALREADY_EXISTS = gettext('GROUPNAME_ALREADY_EXISTS')
+END_DEFAULT_COMMANDS_ERROR = gettext("END_DEFAULT_COMMANDS_ERROR")
+START_DEFAULT_COMMANDS_ERROR = gettext("START_DEFAULT_COMMANDS_ERROR")
+LOG_FAIL_JUDGES_ERROR = gettext("LOG_FAIL_JUDGES_ERROR")
+TELNET_PROMPT_EMPTY_ERROR = gettext("TELNET_PROMPT_EMPTY_ERROR")
+TELNET_PROMPT_FORMAT_ERROR = gettext("TELNET_PROMPT_FORMAT_ERROR")
+TELNET_TIMEOUT_FORMAT_ERROR = gettext("TELNET_TIMEOUT_FORMAT_ERROR")
+SNMP_TIMEOUT_FORMAT_ERROR = gettext("SNMP_TIMEOUT_FORMAT_ERROR")
+OSTYPE_NAME_EXISTS = gettext("NAME_IS_EXISTENCE")
+OSTYPE_NAME_EMPTY = gettext("Ostype name can not be empty")
+OSTYPE_EXIST_IN_DEVICES = gettext("There is device(s) in current ostype!")
+OSTYPE_EXIST_IN_SCHEDULE2 = gettext("There is schedule(s) in current ostype!")
+OSTYPE_EXISTS_IN_COLL_POLICY = gettext("There is collection policy in current ostype!")
+OSTYPE_EXIST_IN_DEVICEGROUPS = gettext("There is device group(s) in current ostype!")
+OSTYPE_EXIST_IN_COLL_POLICY_GROUPS = gettext("There is collection policy group(s) in current ostype!")
 #########################################
 # Other API information define
 #########################################
