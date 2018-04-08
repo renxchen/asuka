@@ -92,7 +92,9 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (msg) {
-                        alert(msg);
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
@@ -116,12 +118,11 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                         this.osType = data;
                     }
                 } else {
-                    // if (res['status'] && res['status']['message']) {
-                    //     alert(res['status']['message']);
-                    // }
-                    this.modalMsg = msg;
-                    this.closeMsg = '閉じる';
-                    this.showAlertModal(this.modalMsg, this.closeMsg);
+                    if (msg) {
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                    }
                 }
             });
     }
@@ -198,11 +199,6 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
-                        // if (res['data']) {
-                        //     let id = res['data']['coll_policy_id'];
-                        //     this.router.navigate(['/index/snmpcpedit'],
-                        //     { queryParams: {'id' : id }});
-                        // }
                         this.modalMsg = '保存しました。';
                         this.closeMsg = '一覧へ戻る';
                         this.showAlertModal(this.modalMsg, this.closeMsg);
@@ -214,7 +210,6 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                         if (msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            // alert(msg);
                             this.modalMsg = msg;
                             this.closeMsg = '閉じる';
                             this.showAlertModal(this.modalMsg, this.closeMsg);

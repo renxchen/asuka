@@ -7,7 +7,6 @@
  */
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Http } from '@angular/http';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -39,7 +38,6 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
     constructor(
         public httpClient: HttpClientComponent,
         private modalService: BsModalService,
-        private http: Http,
         private router: Router) { }
 
     ngOnInit() { }
