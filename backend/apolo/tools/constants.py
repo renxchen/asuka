@@ -161,13 +161,13 @@ RULE_NODE_ICON = 'fa fa-folder-o'
 #########################################
 # Policy Tree Message
 #########################################
-NODE_IS_EXISTENCE = 'The node is exist in the tree'  # ツリー内に定義されているため、編集できません。
+NODE_IS_EXISTENCE = gettext('The node is exist in the tree')  # ツリー内に定義されているため、編集できません。
 RULE_NAME_IS_EXISTENCE = 'RULE_NAME_IS_EXISTENCE'  # 既に同じ表示名のルールが登録されています。
-POLICY_IS_APPLIED = 'The policy is be setting in schedule function.'  # このコレクションポリシーがスケジュールに利用されています。
-POLICY_DATA_VALID_ERROR = 'data valid error when insert policy tree rules'  # コレクションポリシーツリーに追加されたデータが適切ではないです。
-RULE_DATA_VALID_ERROR = 'data valid error in saving the rule'  # ルールを追加する時に、データが適切ではないです
-LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定義されていないです
-DB_EXCEPTION = 'there is an db exception'
+POLICY_IS_APPLIED = gettext('The policy is be setting in schedule function.')  # このコレクションポリシーがスケジュールに利用されています。
+POLICY_DATA_VALID_ERROR = gettext('Data valid error when insert policy tree rules')  # コレクションポリシーツリーに追加されたデータが適切ではないです。
+RULE_DATA_VALID_ERROR = gettext('Data valid error in saving the rule')  # ルールを追加する時に、データが適切ではないです
+LOAD_RULE_TYPE_ERROR = gettext('Rule type is not defined')  # ルールのタイプが定義されていないです
+DB_EXCEPTION = gettext('There is an db exception')
 RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
 CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 #########################################
@@ -221,22 +221,22 @@ CP_STATUS_ON_VAULE = 1
 # data collection Error Message
 #########################################
 
-POLICY_DEVICE_COMBINATION = 'There is the same configure in the schedule'  # 同一のコレクションポリシー、ディバイスと優先度が設定されています
-CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
-CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
-NO_DEVICE_IN_DEVICE_GROUP = 'There is no device in device group,please check the group'
-NO_CP_IN_CP_GROUP = 'There is no policy in policy group,please check the group'
-NULL_TREE_IN_CP = 'This is a null tree in the cp'
+POLICY_DEVICE_COMBINATION = gettext('There is the same configure in the schedule')  # 同一のコレクションポリシー、ディバイスと優先度が設定されています
+CAN_NOT_DELETE_SCHEDULE_MESSAGE = gettext('Can not delete schedule data')
+CAN_NOT_UPDATE_SCHEDULE_MESSAGE = gettext('Can not update schedule data')
+NO_DEVICE_IN_DEVICE_GROUP = gettext('There is no device in device group,please check the group')
+NO_CP_IN_CP_GROUP = gettext('There is no policy in policy group,please check the group')
+NULL_TREE_IN_CP = gettext('There is a null tree in the collection policy')
 #########################################
 # render
 #########################################
-X_OFFSET_ERROR = 'XOffset is too long'
-Y_OFFSET_ERROR = 'YOffset is too long'
-NOT_MATCH_BASIC_CHAR = 'can not find the basic char'
-NO_EXTRACT_LINE_NUM = 'no lines'
-NO_EXTRACT_DATA = 'no extract data'
-LEAF_IS_BLOCK_RULE = 'LEAF_IS_BLOCK_RULE'
-POLICY_TREE_IS_GROUPED = 'policy tree is grouped'
+X_OFFSET_ERROR = gettext('XOffset is too long')
+Y_OFFSET_ERROR = gettext('YOffset is too long')
+NOT_MATCH_BASIC_CHAR = gettext('Can not find the basic char ')
+NO_EXTRACT_LINE_NUM = gettext('No lines')
+NO_EXTRACT_DATA = gettext('There are no extract data')
+LEAF_IS_BLOCK_RULE = gettext('Because leaf node is block rule,the policy can not be saved!')
+POLICY_TREE_IS_GROUPED = gettext('The policy has been set to a policy group')
 #################################################################
 # instead mark string
 REPLACE_START_MARK = '★★'  # '☆start☆'

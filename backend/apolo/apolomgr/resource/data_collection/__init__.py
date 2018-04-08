@@ -2,8 +2,8 @@
 
 '''
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: Gin Chen
+@contact: Gin Chen@cisco.com
 @file: __init__.py.py
 @time: 2017/12/29 16:40
 @desc:
