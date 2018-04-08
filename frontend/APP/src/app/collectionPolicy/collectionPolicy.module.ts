@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { SharedModule } from '../sharedModule/shared.module';
-import { CollectionPolicyService } from './collectionPolicy.service';
 import { CPViewComponent } from './cPView.component';
 import { CLICPLoginComponent } from './cli/cliCPLogin.component';
 import { CLICPEditComponent } from './cli/cliCPEdit.component';
@@ -27,8 +25,8 @@ import { CPGEditComponent } from './cpg/cPGEdit.component';
         CPGViewComponent, CPGLoginComponent,
         CPGDetailComponent, CPGEditComponent
     ],
-    imports: [FormsModule, CommonModule, SharedModule],
+    imports: [FormsModule, CommonModule],
     exports: [],
-    providers: [CollectionPolicyService],
+    providers: [],
 })
 export class CPViewComponentModule { }

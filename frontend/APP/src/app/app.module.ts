@@ -4,9 +4,6 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpModule, Http } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { appRouting, entryComponentList } from './app.router';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { SharedModule } from './sharedModule/shared.module';
 import { ModalModule, BsDatepickerModule, TimepickerModule } from 'ngx-bootstrap';
 import { AppComponent } from './app.component';
 import { HClientModule } from '../components/utils/httpClient.module';
@@ -23,9 +20,6 @@ import { DataCollectionComponentModule } from './dataCollection/dataCollection.m
 import { ActionPolicyComponentModule } from './actionPolicy/actionPolicy.module';
 import { TestComponentModule } from './testModule/test.module';
 
-export function HttpLoaderFactory(http: HttpClient) {
-    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
 @NgModule({
     declarations: [
         AppComponent
@@ -36,18 +30,10 @@ export function HttpLoaderFactory(http: HttpClient) {
         ModalModule.forRoot(),
         BsDatepickerModule.forRoot(),
         TimepickerModule.forRoot(),
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: (HttpLoaderFactory),
-                deps: [HttpClient]
-            }
-        }),
         HttpModule,
         FormsModule,
         ReactiveFormsModule,
         appRouting,
-        SharedModule,
         HClientModule,
         StepsModule,
         BreadCrumbModule,

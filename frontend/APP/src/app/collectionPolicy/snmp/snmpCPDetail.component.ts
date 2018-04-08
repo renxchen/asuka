@@ -8,8 +8,10 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
+import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { ModalComponent } from '../../../components/modal/modal.component';
 import * as _ from 'lodash';
-import { TranslateService } from '@ngx-translate/core';
 @Component({
     selector: 'snmp-detail',
     templateUrl: './snmpCPDetail.component.html',
@@ -25,11 +27,14 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
     desc: any;
     selectedOsType: any;
     selectedRtnType: any;
-    constructor(private translate: TranslateService,
+    modalRef: BsModalRef;
+    modalMsg: any;
+    closeMsg: any;
+    constructor(
         private router: Router,
         private activedRoute: ActivatedRoute,
-        private httpClient: HttpClientComponent, ) {
-        // translate.setDefaultLang('en');
+        private httpClient: HttpClientComponent,
+        private modalService: BsModalService ) {
         let cPIdeTmp: any = this.activedRoute.snapshot.queryParams['id'];
         if (cPIdeTmp && typeof (cPIdeTmp) !== 'undefined') {
             this.cPId = cPIdeTmp;
@@ -69,7 +74,9 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (msg) {
-                        alert(msg);
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
@@ -92,7 +99,9 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+                        this.modalMsg = res['status']['message'];
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
@@ -104,5 +113,15 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
         * @date 2018/01/25
         */
         this.router.navigate(['/index/snmpcpedit'], { queryParams: { 'id': this.cPId } });
+    }
+    public showAlertModal(modalMsg: any, closeMsg: any) {
+        /**
+        * @brief show modal dialog
+        * @author Dan Lv
+        * @date 2018/01/25
+        */
+        this.modalRef = this.modalService.show(ModalComponent);
+        this.modalRef.content.modalMsg = modalMsg;
+        this.modalRef.content.closeMsg = closeMsg;
     }
 }
