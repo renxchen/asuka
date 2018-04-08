@@ -19,6 +19,7 @@ export class TestSnmpComponent implements OnInit, AfterViewInit {
     snmpParameter5: string;
     snmpParameter6: string;
     snmpParameter7: string;
+    value: string;
 
     constructor(
         public httpClient: HttpClientComponent,
@@ -35,6 +36,7 @@ export class TestSnmpComponent implements OnInit, AfterViewInit {
     }
 
     submitSnmp(){
+        let _this = this;
         let url_snmp = "/api_snmp_collection_test/";
         let data: any = {};
         data["oids"] = this.snmpParameter7;
@@ -48,34 +50,11 @@ export class TestSnmpComponent implements OnInit, AfterViewInit {
             .toJson(this.httpClient.post(url_snmp, data))
             .subscribe(res => {
                 if (res['status']['status'].toString().toLowerCase() === 'true') {
-                    if (res['status']['message'] == "Success") {
-                       console.log("done");
-                       console.log(res);
-                       $('#result1').html(res["data"]["data"][0]["output"][0]["value"]);
-                    }
+                   console.log(res);
+                    _this.value = res["data"]["data"];
                 } else {
                     alert(res['status']['message']);
                 }
         });
-        // $.ajax({
-        //     url: url_snmp,
-        //     type: 'post',
-        //     dataType: 'json',
-        //     data: {
-        //         "oids": this.snmpParameter7,
-        //         "port": this.snmpParameter4,
-        //         "snmp_version": this.snmpParameter6,
-        //         "ip": this.snmpParameter1,
-        //         "hostname": this.snmpParameter2,
-        //         "community": this.snmpParameter5,
-        //         "timeout": this.snmpParameter3
-        //
-        //     }
-        //   }).done(function (res) {
-        //       console.log(res);
-        //       $('#result1').html(res["data"]["data"][0]["output"][0]["value"]);
-        //   });
     }
-
-
 }

@@ -39,9 +39,8 @@
     <!--</div>-->
 <!--</div>-->
 
-<div class="panel panel-success col-lg-12" style="padding: 0px" >
+<div class="panel panel-success col-lg-12" style="padding: 0px"  *ngIf="value">
     <div class="panel-heading" style="text-align:center">SNMP OUTPUT VALUE</div>
-    <div class="panel-body" id="result1">
-
+    <div class="panel-body" id="result1" [innerHtml]="value">
     </div>
 </div>
