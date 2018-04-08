@@ -1,3 +1,10 @@
+/**
+ * @author: Dan Lv
+ * @contact: danlv@cisco.com
+ * @file: index.component.ts
+ * @time: 2018/01/23
+ * @desc:none
+ */
 import { Component, OnInit, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BreadCrumbComponent } from '../../components/breadCrumb/bread-crumb';
@@ -11,7 +18,6 @@ declare var $: any;
 })
 
 export class IndexComponent implements OnInit, AfterViewInit {
-    private minWidthFlg: boolean;
     @ViewChild(BreadCrumbComponent) breadCrumb: BreadCrumbComponent;
     apiPrefix: string;
     constructor(
@@ -54,6 +60,11 @@ export class IndexComponent implements OnInit, AfterViewInit {
         }
     }
     public logout() {
+        /**
+        * @brief log out
+        * @author Dan Lv
+        * @date 2018/01/23
+        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient.toJson(this.httpClient.delete('/logout/'))
