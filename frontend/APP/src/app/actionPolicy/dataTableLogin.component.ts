@@ -15,7 +15,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   title: string;
   tableName: string;
   description: string;
-
+  highLightId: string;
   currentStep = 1;
   maxStep = 1;
 
@@ -23,6 +23,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
 
   sendData: any = {};
   deviceGroup: any = {};
+  selectedRowObj: any ;
 
   btnFlgs = {
     btnPrev: false,
@@ -57,6 +58,9 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     }
     if (this.currentStep === 2) {
       contuineFlg = this.checkDeviceGroupList();
+    }
+    if (this.currentStep === 3) {
+      contuineFlg = this.checkColumeSelected();
     }
     if (contuineFlg) {
       this.maxStep === this.currentStep ? this.maxStep++ : this.maxStep = this.maxStep;
@@ -129,11 +133,10 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     /*
       get device group list
       call: checkTableNameValidation taleName right.
-
     */
     let url = '/api_device_group/';
     this.get(url).subscribe((res: any) => {
-      if (res && res.status && res.status.status.toLowerCase() === 'true') {
+      if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'true') {
         if (res.data && res.data.length > 0) {
           this.deviceGroupList = res.data;
           this.deviceGroup.group_id = res.data[0]['group_id'];
@@ -174,6 +177,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   }
 
   public drawStepTable() {
+    let _t = this;
 
     this.getDeviceGroupName();
     if (this.deviceGroup && this.deviceGroup['group_id'] && this.deviceGroup['name']) {
@@ -196,7 +200,13 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
         {
           label: 'No', hidden: false, name: 'policyNo', index: 'policyNo', align: 'center',
           formatter: this.formatterColumnsBtn
-        }
+        },
+        { label: 'device_group_id', name: 'groupNo', hidden: true },
+        { label: 'coll_id', name: 'policyNo', hidden: true },
+        { label: 'schedule_id', name: 'schedule_id', hidden: true },
+        { label: 'policy_group_id', name: 'cpGroup_id', hidden: true },
+        { label: 'oid', name: 'oid', hidden: true },
+
       ];
 
       $('#stepTable').jqGrid({
@@ -206,12 +216,14 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
         mtype: 'get',
         colModel: stepTableModel,
         // data: testData,
-        loadComplete: function () {
+        loadComplete: function () { },
+        gridComplete: function () {
+          _t.selectData();
         },
         autowidth: false,
         beforeSelectRow: function (rowid, e) { return false; },
         width: 560,
-        height: '190',
+        height: '175',
         jsonReader: {
           root: 'data.data',
           total: 'num_page',
@@ -235,21 +247,48 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     return result;
   }
 
-  // protected formatterColumnsBtn(cellvalue, options, rowObject) {
-  //   console.log('cellvalue', cellvalue);
-  //   console.log('options', options);
-  //   console.log('rowObject', rowObject);
 
-  // }
   protected formatterColumnsBtn(value, grid, rows, state) {
+
+    let rowId = grid['rowId'];
+    return '<button  class="btn btn-xs btn-primary" name="selectBtn" id="row_id_' + rowId + '">カラム選択</button>';
+  }
+
+  public selectData() {
     let _t = this;
-    return '<button style="color:#f60" onclick="modify.bind(' + this + ')">Edit</button>';
+    let allEles = $("button[name='selectBtn']");
+    allEles.click(function (event) {
+      let selectedBtnId = $(event)[0].target.id;
+      let selectedRowId = $(event)[0].target.id.split('_')[2];
+      let rowData = $("#stepTable").jqGrid('getRowData', selectedRowId);
+      _t.setBtnHighLight(selectedBtnId, allEles);
+      _t.selectedRowObj = rowData;
+
+    });
   }
 
-  public modify(id) {
-    console.log('aaaaaaaaaaaaaaa');
+  public setBtnHighLight(selectedEleId, allEles) {
+    if (allEles && allEles.length > 0) {
+      allEles.each(function () {
+        let eleId = $(this)[0].id;
+        if (selectedEleId === eleId) {
+          $(this).addClass('highlight');
+        } else {
+          $(this).removeClass('highlight');
+        }
+      });
+    }
   }
 
+  private checkColumeSelected() {
+
+    let flg = this.selectedRowObj ? true : false;
+    console.log('this.selectedRowObj', this.selectedRowObj)
+    if (!flg) {
+      alert('カラムを選択してください!');
+    }
+    return flg;
+  }
   // common function of http
 
   private get(url: string) {
