@@ -83,7 +83,7 @@ class DevicesViewSet(viewsets.ViewSet):
             "channel": "status_cli"
         }
         print payload
-        r = requests.post("http://10.71.244.134:7777/api/v1/devicestatus", data=json.dumps(payload))
+        r = requests.post("http://127.0.0.1:7777/api/v1/devicestatus", data=json.dumps(payload))
         response = json.loads(r.text)
         if response.get('status') == 'success':
             status = "Success"
@@ -113,7 +113,7 @@ class DevicesViewSet(viewsets.ViewSet):
             "channel": "status_snmp"
         }
         print payload
-        r = requests.post("http://10.71.244.134:7777/api/v1/devicestatus", data=json.dumps(payload))
+        r = requests.post("http://127.0.0.1:7777/api/v1/devicestatus", data=json.dumps(payload))
         response = json.loads(r.text)
         if response.get('status') == 'success':
             status = "Success"
