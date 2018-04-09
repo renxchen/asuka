@@ -284,30 +284,38 @@ export class DeviceLoginComponent implements OnInit {
         * @author Zizhuang Jiang
         * @date 2018/03/08
         */
-        this.processbar = this.modalService.show(ProgressbarComponent, this.modalConfig);
-        this.processbar.content.message = 'Waiting...';
-        this.apiPrefix = '/v1';
-        let databaseUrl = '/api_device/';
-        let loginInfo: any = {};
-        loginInfo['operation_id'] = this.optId;
-        this.httpClient.setUrl(this.apiPrefix);
-        this.httpClient
-            .toJson(this.httpClient.post(databaseUrl, loginInfo))
-            .subscribe(res => {
-                let status = _.get(res, 'status');
-                let msg = _.get(status, 'message');
-                if (status && status['status'].toString().toLowerCase() === 'true') {
-                    $('.modal').hide();
-                    this.router.navigate(['index/deviceview/']);
-                } else {
-                    $('.modal').hide();
-                    if (msg) {
-                        this.modalMsg = msg;
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+        let ids: any = [];
+        ids = $('#devLoginTable').jqGrid('getDataIDs');
+        if (ids.length > 0) {
+            this.processbar = this.modalService.show(ProgressbarComponent, this.modalConfig);
+            this.processbar.content.message = 'Waiting...';
+            this.apiPrefix = '/v1';
+            let databaseUrl = '/api_device/';
+            let loginInfo: any = {};
+            loginInfo['operation_id'] = this.optId;
+            this.httpClient.setUrl(this.apiPrefix);
+            this.httpClient
+                .toJson(this.httpClient.post(databaseUrl, loginInfo))
+                .subscribe(res => {
+                    let status = _.get(res, 'status');
+                    let msg = _.get(status, 'message');
+                    if (status && status['status'].toString().toLowerCase() === 'true') {
+                        $('.modal').hide();
+                        this.router.navigate(['index/deviceview/']);
+                    } else {
+                        $('.modal').hide();
+                        if (msg) {
+                            this.modalMsg = msg;
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                        }
                     }
-                }
-            });
+                });
+        } else {
+            this.modalMsg = 'There is no devcie to be saved.Please upload the correct devices';
+            this.closeMsg = '閉じる';
+            this.showAlertModal(this.modalMsg, this.closeMsg);
+        }
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
         /**
