@@ -29,7 +29,7 @@
          (click)="setSteps(4)"
           >step 4</button>
       </div>
-      <div id="step1div" *ngIf="currentStep===1">
+      <div id="step1div" [hidden]="currentStep!==1">
         <div class="col-sm-12 annotation">基本設定を入力してください</div>
         <div class="form-group">
           <label class="col-sm-3 control-label">
@@ -39,7 +39,8 @@
           <div class="col-md-8">
             <input type="text" placeholder="" [(ngModel)]="tableName"
             class="form-control ng-untouched ng-pristine ng-valid" 
-            (keyup)="checkTableNameValidation()">
+            placeholder="日本語、英数字、記号可"
+            >
           </div>
         </div>
         <div class="form-group">
@@ -49,27 +50,31 @@
           <div class="col-md-8">
             <textarea class="form-control ng-untouched ng-pristine ng-valid" [(ngModel)]="description"></textarea>
           </div>
-
         </div>
       </div>
-      <div id="step2div" *ngIf="currentStep===2">
-        <div class="col-sm-12">デバイスグループを選択してください</div>
+      <div id="step2div" [hidden]="currentStep!==2">
+        <div class="col-sm-12 annotation">デバイスグループを選択してください</div>
         <div class="form-group">
-
-          <select class="form-control" [(ngModel)]="selectedDeviceGroup" id="deviceGroup" name="selectedDeviceGroup">
-            <option *ngFor="let item of deviceGroup" value="{{item.deviceGroupId}}">
-              {{item.deviceGroupName}}
-            </option>
-          </select>
+          <label class="col-sm-3 control-label">
+            <span class="necessary-icon">※</span>
+            テーブル名:
+          </label>
+          <div class="col-md-8">
+            <select class="form-control" [(ngModel)]="deviceGroup.group_id" id="deviceGroup" >
+              <option *ngFor="let deviceGroup of deviceGroupList" value="{{deviceGroup['group_id']}}">
+                {{deviceGroup['name']}}
+              </option>
+            </select>
+          </div>
         </div>
       </div>
-      <div id="step3div" *ngIf="currentStep===3">
-        <div class="col-sm-12">カラムを選択してください</div>
-        <div class="form-group">
-          <table id="columnTable"></table>
+      <div id="step3div" [hidden]="currentStep!==3">
+        <div class="col-sm-12 annotation">カラムを選択してください</div>
+        <div class="col-sm-12">
+            <table id='stepTable'></table>
         </div>
       </div>
-      <div id="step4div" *ngIf="currentStep===4">
+      <div id="step4div" [hidden]="currentStep!==4">
         <div class="col-sm-12">leafを選択してください</div>
         <div class="form-group">
           tree
@@ -77,7 +82,7 @@
       </div>
     </div>
     <div class="col-sm-12 form-group">
-      <button class="btn btn-xs btn-warning" (click)="bsModalRef.hide()">
+      <button class="btn btn-xs btn-warning  pull-left" (click)="bsModalRef.hide()">
         cancel
       </button>
       <button *ngIf="btnFlgs.btnFinished"
@@ -95,7 +100,5 @@
         (click)="previous()">
         << </button>
     </div>
-    <!--<button (click)="click()">click!!!!</button>-->
-
   </div>
 </div>
