@@ -72,11 +72,6 @@ USER_AND_PASSWD_INCORRECT = gettext("User or password is incorrect.")
 USER_DISABLED = gettext("User is inactive.")
 USER_LOGOUT_SUCCESSFUL = gettext("User logout successful.")
 #########################################
-# Data Table Related define
-#########################################
-DATA_TABLE_PROORITY_0 = '高'
-DATA_TABLE_PROORITY_1 = '标准'
-#########################################
 # Action Policy Related define
 #########################################
 EQUAL_SIGN = '='
@@ -116,7 +111,10 @@ OSTYPE_EXIST_IN_SCHEDULE = gettext('Ostype is in use.')
 DEVICE_GROUP_NOT_EXIST = gettext('Current device group is not exist in current system.')
 DEVICE_GROUP_NOT_EXIST_IN_SCHEDULE = gettext('Current device group is not exist in Schedule Table.')
 DATA_TABLE_NOT_EXIST_IN_SYSTEM = gettext('Current data table is not exist in system.')
+DATA_TABLE_EXIST_IN_TRIGGER = gettext('Current data table is running in action policy.')
 CSV_PATH_NOT_EXIST = gettext('CSV path is not exist.')
+DATA_TABLE_PROORITY_0 = '高'
+DATA_TABLE_PROORITY_1 = '标准'
 #########################################
 # Collection Policy Related define
 #########################################
