@@ -210,7 +210,6 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             });
     }
 
-    // click事件
     public getGroupInfo(id: any) {
         /**
         * @brief get devices in the current group

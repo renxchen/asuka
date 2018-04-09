@@ -44,7 +44,6 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
         private httpClient: HttpClientComponent,
         private modalService: BsModalService) { }
     ngOnInit() {
-        // this.selectedOsType = 'null';
         let cPTypeTmp: any = this.activedRoute.snapshot.queryParams['cPType'];
         if (cPTypeTmp && typeof (cPTypeTmp) !== 'undefined') {
             this.cPType = cPTypeTmp;

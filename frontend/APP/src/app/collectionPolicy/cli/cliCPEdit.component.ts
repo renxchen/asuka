@@ -7,7 +7,6 @@
 */
 import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CollectionPolicyService } from '.././collectionPolicy.service';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { CLICPEditPopComponent } from './cliCPEditPop.component';
 import { CLIBlockComponent } from './cliBlock.component';
@@ -23,7 +22,7 @@ declare var $: any;
     selector: 'cli-edit',
     templateUrl: './cliCPEdit.component.html',
     styleUrls: ['.././collectionPolicy.component.less'],
-    providers: [CollectionPolicyService]
+    providers: []
 })
 
 export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -49,7 +48,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
         private activedRoute: ActivatedRoute,
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
-        public service: CollectionPolicyService,
     ) {
         let cPIdeTmp: any = this.activedRoute.snapshot.queryParams['id'];
         if (cPIdeTmp && typeof (cPIdeTmp) !== 'undefined') {
@@ -377,7 +375,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 'click': function (event) {
                     let node = event.data.node;
                     let editBlockParam: any = {};
-                    // let tree = _t.getPlyTreeInfo();
                     let id = node['data']['rule_id'];
                     let plyNode = _t.findNode(id);
                     editBlockParam['ruleType'] = node['data']['rule_type'];
@@ -390,10 +387,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             }]
         });
-        // .bind('move_node.jstree', function (e, data) {
-        // }).bind('activate_node.jstree', function (e, node) {
-        //     show_detail(node);
-        // });
     }
     public dataTree(data: any) {
         /**
@@ -454,11 +447,6 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             }]
         });
-        // .bind('move_node.jstree', function (e, data) {
-        //     console.log('move_node.jstree', e, data);
-        // }).bind('activate_node.jstree', function (e, node) {
-        //     console.log('regreshsh', e, data);
-        // });
     }
     public policyTree(data: any) {
         /**

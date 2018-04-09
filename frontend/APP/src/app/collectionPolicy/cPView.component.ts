@@ -96,19 +96,11 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             $('#cpTable').jqGrid('setLabel', 'snmp_oid', 'show コマンド');
             $('#cpTable').setColProp('snmp_oid', { index: 'cli_command', name: 'cli_command', label: 'OID', });
             $('#cpTable').jqGrid('setGridParam', { postData: { 'policy_type': this.cPType } }).trigger('reloadGrid');
-            // this.cPTable.GridUnload();
-            // setColProp('dxts',{index, 'dxts',width: 100,formatter: dxtsFormatter});
-            //     $('#cpTable').trigger('reloadGrid');
-            // this.drawCPTable('show コマンド', 'cli_command', this.cPType);
         } else {
             $('#cpTable').jqGrid('clearGridData');
             $('#cpTable').jqGrid('setLabel', 'cli_command', 'OID');
             $('#cpTable').setColProp('cli_command', { index: 'snmp_oid', name: 'snmp_oid', label: 'show コマンド', });
             $('#cpTable').jqGrid('setGridParam', { postData: { 'policy_type': this.cPType } }).trigger('reloadGrid');
-            // this.cPTable.GridUnload();
-            // $('#cpTable') .jqGrid('setGridParam', { postData: { 'policy_type': this.cPType }});
-            // $('#cpTable') .trigger('reloadGrid');
-            // this.drawCPTable('OID', 'snmp_oid', this.cPType);
         }
     }
     public drawCPTable(thirdCol?: any, thirdName?: any, cPType?: any) {
@@ -147,12 +139,6 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.deleteBtn();
             },
             loadComplete: function (res) {
-                // let code: any = _.get(_.get(res, 'new_token'), 'code');
-                // let msg: any = _.get(_.get(res, 'new_token'), 'message');
-                // if (code === 102 || code === 103) {
-                //     localStorage.setItem('sessionTimeOut', msg);
-                //     _t.router.navigate(['/login/']);
-                // }
                 let status = _.get(_.get(res, 'status'), 'status');
                 let code: any = _.get(_.get(res, 'status'), 'code');
                 let msg: any = _.get(_.get(res, 'status'), 'message');
