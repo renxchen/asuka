@@ -122,8 +122,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': "apolo",
         'HOST': '127.0.0.1',
-        "USER": "root",
-        "PASSWORD": "123456"
+        "USER": "apolo",
+        "PASSWORD": "apolo"
     }
 }
 
