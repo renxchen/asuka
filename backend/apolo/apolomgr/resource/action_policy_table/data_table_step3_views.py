@@ -27,7 +27,7 @@ class DataTableCoulumnViewsSet(viewsets.ViewSet):
         self.request = request
         self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         # device group id
-        self.id = views_helper.get_request_value(self.request, 'id', 'GET')
+        self.device_group_id = views_helper.get_request_value(self.request, 'id', 'GET')
         self.device_group_name = views_helper.get_request_value(self.request, 'device_group_name', 'GET')
 
     @staticmethod
@@ -64,28 +64,29 @@ class DataTableCoulumnViewsSet(viewsets.ViewSet):
         """
         try:
             data = []
-            if self.id is not '':
+            if self.device_group_id is not '':
                 # get policy group ids base on device group id
-                schedule_infos = Schedules.objects.filter(**{'device_group_id': self.id}).values(
+                schedule_infos = Schedules.objects.filter(**{'device_group_id': self.device_group_id}).values(
                     'policy_group_id', 'schedule_id', 'priority')
                 dic = self.migrate_dic(schedule_infos)
                 if len(schedule_infos) > 0:
                     # device group rowspan
                     device_group_rowspan = 0
-                    for per_policy_group_id in schedule_infos:
-                        policy_infos = PolicysGroups.objects.filter(
-                            **{'policy_group_id': per_policy_group_id['policy_group_id']}).values('policy',
-                                                                                                  'policy_group__name')
-                        device_group_rowspan += len(policy_infos)
-                    for per_policy_group_id in schedule_infos:
+                    for per_schedule_info in schedule_infos:
+                        policys_groups_infos = PolicysGroups.objects.filter(
+                            **{'policy_group_id': per_schedule_info['policy_group_id']}).values('policy',
+                                                                                                'policy_group__name')
+                        device_group_rowspan += len(policys_groups_infos)
+                    for per_schedule_info in schedule_infos:
                         count = 0
-                        policy_infos = PolicysGroups.objects.filter(
-                            **{'policy_group_id': per_policy_group_id['policy_group_id']}).values('policy',
-                                                                                                  'policy__name',
-                                                                                                  'policy__policy_type',
-                                                                                                  'policy_group__name',
-                                                                                                  'policy_group_id')
-                        for policy_info in policy_infos:
+                        policys_groups_infos = PolicysGroups.objects.filter(
+                            **{'policy_group_id': per_schedule_info['policy_group_id']}).values('policy',
+                                                                                                'policy__name',
+                                                                                                'policy__policy_type',
+                                                                                                'policy_group__name',
+                                                                                                'policy_group_id',
+                                                                                                'policy__snmp_oid')
+                        for policy_info in policys_groups_infos:
                             result_dict = {
                                 'policyNo': '',
                                 'groupNo': '',
@@ -110,21 +111,23 @@ class DataTableCoulumnViewsSet(viewsets.ViewSet):
                             # collection policy group rowspan
                             cp_group_rowspan = 'None'
                             if count == 1:
-                                cp_group_rowspan = len(policy_infos)
+                                cp_group_rowspan = len(policys_groups_infos)
                             # policy id
                             result_dict['policyNo'] = policy_info['policy']
                             # group id
-                            result_dict['groupNo'] = self.id
+                            result_dict['groupNo'] = self.device_group_id
                             # collection policy group name
                             result_dict['cpGroup'] = policy_info['policy_group__name']
                             # collection policy group id
-                            result_dict['cpGroup_id'] = per_policy_group_id['policy_group_id']
+                            result_dict['cpGroup_id'] = per_schedule_info['policy_group_id']
                             # collection policy name
                             result_dict['policy'] = policy_info['policy__name']
-                            result_dict['priority'] = dic[str(per_policy_group_id['schedule_id'])]
+                            result_dict['priority'] = dic[str(per_schedule_info['schedule_id'])]
+                            result_dict['schedule_id'] = per_schedule_info['schedule_id']
                             policy_type = 'CLI'
-                            if int(policy_info['policy__policy_type']) == 0:
+                            if int(policy_info['policy__policy_type']) == 1:
                                 policy_type = 'SNMP'
+                                result_dict['oid'] = policy_info['policy__snmp_oid']
                             result_dict['method'] = policy_type
                             if cp_group_rowspan is 'None':
                                 device_group_rowspan = 'None'
