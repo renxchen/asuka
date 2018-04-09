@@ -146,7 +146,7 @@ export class DeviceLoginComponent implements OnInit {
             datatype: 'JSON',
             mtype: 'get',
             colNames: ['DeviceId', 'Hostname', 'IP Address', 'Telnet Port', 'SNMP Port', 'SNMP Community',
-                'SNMP Version', 'Login Expect', 'Device Type', 'Ostype', 'Group', 'Telnet Status', 'SNMP Status'
+                'SNMP Version', 'Login Expect', 'Device Type', 'Os Type', 'Group', 'Telnet Status', 'SNMP Status'
             ],
             colModel: [
                 { hidden: true, name: 'device_id', index: 'device_id', search: false, key: true },
