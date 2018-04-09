@@ -83,7 +83,8 @@ class DevicePreViewSet(APIView):
             "timeout": time_out,
             "channel": "status_cli"
         }
-        r = requests.post("http://10.71.244.134:7777/api/v1/devicestatus", data=json.dumps(payload))
+        r = requests.post("http://127.0.0.1:7777/api/v1/devicestatus", data=json.dumps(payload))
+
         response = json.loads(r.text)
         if response.get('status') == 'success':
             status = "Success"
@@ -112,7 +113,7 @@ class DevicePreViewSet(APIView):
             "snmp_version": device.snmp_version,
             "channel": "status_snmp"
         }
-        r = requests.post("http://10.71.244.134:7777/api/v1/devicestatus", data=json.dumps(payload))
+        r = requests.post("http://127.0.0.1:7777/api/v1/devicestatus", data=json.dumps(payload))
         response = json.loads(r.text)
         if response.get('status') == 'success':
             status = "Success"
