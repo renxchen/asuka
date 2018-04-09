@@ -1,28 +1,25 @@
-import { Component, OnInit, ComponentFactoryResolver, AfterViewInit, ElementRef } from '@angular/core';
-/**
- * @author: Necy Wang
- * @contact: necwang@cisco.com
- * @file: dataCollectionView.component.ts
- * @time: 2018/01/04
- * @desc: data collection view page
- */
+/*!@brief data collection view page
 
+* @author Necy Wang
+* @date 2018/01/04
+*/
+import { Component, OnInit, AfterViewInit} from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Router } from '@angular/router';
 import { DataCollectionLoginComponent } from './dataCollectionLogin.component';
-// import * as _ from 'lodash';
+import * as _ from 'lodash';
 declare var $: any;
-// import { DataCollectionService } from './dataCollection.service';
+
 @Component({
     selector: 'dc-view',
     templateUrl: 'dataCollectionView.component.html',
     styleUrls: ['dataCollection.component.less']
 })
+
 export class DataCollectionViewComponent implements OnInit, AfterViewInit {
 
-    model: any;
     testData: any = [
         {dcNo: 10, priority: '標準', ostype: 'Cisco_IOSXR',
         deviceGroup: 'Cisco AER', cpGroup: 'Cisco AER 基本監視',
@@ -81,6 +78,11 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
     }
 
     fomatterBtn(cellvalue, options, rowObject) {
+        /*!@brief
+        * @param
+        * @pre
+        * @return
+        */
         return '<button class="btn btn-xs btn-success edit" id='+ rowObject["schedule_id"] + '><i class="fa fa-pencil-square"></i> 編集</button>'
     }
 
@@ -144,11 +146,15 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
     }
 
     renderLink(){
+        /*
+        @brief Render jump lick for device group and policy group
+        @pre After loading table data
+         */
         let _this = this;
         let _deviceGroup = $('.deviceGroup');
         for (let i=0;i<_deviceGroup.length;i++){
             let _target = $(_deviceGroup[i]);
-            let _content = '<div style="color:blue; text-decoration: underline;">';
+            let _content = '<div style="color:blue; text-decoration: underline;cursor: pointer">';
             _content += _target.html() + '</div>';
             _target.html(_content);
             let deviceGroupNo = _target.prev().html();
@@ -165,7 +171,7 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
             let _target = $(_policyGroup[i]);
             let _content = '';
             if (_target.html() != '全機能OFF'){
-                _content += '<div style="color:blue; text-decoration: underline;">';
+                _content += '<div style="color:blue; text-decoration: underline;cursor: pointer">';
                 _content += _target.html() + '</div>';
                 let policyGroupNo = _target.prev().html();
                 _target.click( function (event) {
@@ -213,7 +219,16 @@ export class DataCollectionViewComponent implements OnInit, AfterViewInit {
             // postData: { '': '' },
             // data: this.testData,
             // viewrecords: true,
-            loadComplete: function() {
+            loadComplete: function(res) {
+                let status = _.get(_.get(res, 'status'), 'status');
+                let code: any = _.get(_.get(res, 'status'), 'code');
+                let msg: any = _.get(_.get(res, 'status'), 'message');
+                if (status === 'False') {
+                    if (code === 102 || code === 103) {
+                        localStorage.setItem('sessionTimeOut', msg);
+                        _this.router.navigate(['/login/']);
+                    }
+                }
                 _this.editDC();
                 _this.renderLink();
                 // _this.renderColor();
