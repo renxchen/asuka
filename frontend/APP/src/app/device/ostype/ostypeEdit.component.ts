@@ -1,11 +1,4 @@
 
-/**
- * @author: Zizhuang Jiang
- * @contact: zizjiang@cisco.com
- * @file: ostypeEdit.component.ts
- * @time: 2018/03/08
- * @desc: edit a ostype
- */
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
@@ -48,9 +41,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
     telTimeoutNotNull: Boolean = true;
     snmpTimeoutFlg: Boolean = true;
     snmpTimeoutNotNull: Boolean = true;
-    startTrashBinFlg: Boolean = true;
-    endTrashBinFlg: Boolean = true;
-    logTrashBinFlg: Boolean = true;
     modalRef: BsModalRef;
     modalMsg: any;
     closeMsg: any;
@@ -69,7 +59,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         }, 0);
     }
     public startCmdsInit() {
-        this.startTrashBinFlg = true;
         this.countStart = 1;
         let firstStartCmd = {
             'id': this.countStart,
@@ -81,7 +70,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         return firstStartCmd;
     }
     public endCmdsInit() {
-        this.endTrashBinFlg = true;
         this.countEnd = 1;
         let firstEndCmd = {
             'id': this.countEnd,
@@ -93,7 +81,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         return firstEndCmd;
     }
     public logsInit() {
-        this.logTrashBinFlg = true;
         this.countLog = 1;
         let firstLog = {
             'id': this.countLog,
@@ -174,11 +161,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             };
             startCmds.push(startCmdInfo);
         }
-        if (startCmds.length === 1) {
-            this.startTrashBinFlg = true;
-        } else {
-            this.startTrashBinFlg = false;
-        }
         return startCmds;
     }
     public endCmdsToList(data: any) {
@@ -194,11 +176,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                 'endCmdFlg': (i + 1) === len ? false : true
             };
             endCmds.push(endCmdInfo);
-        }
-        if (endCmds.length === 1) {
-            this.endTrashBinFlg = true;
-        } else {
-            this.endTrashBinFlg = false;
         }
         return endCmds;
     }
@@ -216,132 +193,91 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             };
             logs.push(logInfo);
         }
-        if (logs.length === 1) {
-            this.logTrashBinFlg = true;
-        } else {
-            this.logTrashBinFlg = false;
-        }
         return logs;
     }
     public addStartCmd() {
-        this.startTrashBinFlg = false;
-        let addStartTmp: any = [];
-        addStartTmp = _.cloneDeep(this.startCmds);
         let startCmdInfo = {
-            'id': addStartTmp.length + 1,
+            'id': this.startCmds.length + 1,
             'name': '',
-            'startCmdFlg': false,
             'startRegFlg': true,
+            'startCmdFlg': false
         };
         let id: any = startCmdInfo['id'];
         let penult = id - 1;
-        if (addStartTmp[penult - 1]['id'] === penult) {
-            addStartTmp[penult - 1]['startCmdFlg'] = true;
+        if (this.startCmds[penult - 1]['id'] === penult) {
+            this.startCmds[penult - 1]['startCmdFlg'] = true;
         }
-        addStartTmp.push(startCmdInfo);
-        this.startCmds = addStartTmp;
+        this.startCmds.push(_.cloneDeep(startCmdInfo));
     }
     public delStartCmd(startCmd: any) {
-        let delStartTmp: any = [];
-        delStartTmp = _.cloneDeep(this.startCmds);
-        for (let i = 0; i < delStartTmp.length; i++) {
-            if (delStartTmp.length > 1 && delStartTmp[i]['id'] === startCmd['id']) {
-                delStartTmp.splice(i, 1);
+        for (let i = 0; i < this.startCmds.length; i++) {
+            if (this.startCmds.length > 1 && this.startCmds[i]['id'] === startCmd['id']) {
+                this.startCmds.splice(i, 1);
             }
         }
-        for (let i = 0; i < delStartTmp.length; i++) {
+        for (let i = 0; i < this.startCmds.length; i++) {
             let num: number = i + 1;
-            delStartTmp[i]['id'] = num;
-            if (i === delStartTmp.length - 1) {
-                delStartTmp[i]['startCmdFlg'] = false;
-                if (delStartTmp.length === 1) {
-                    this.startTrashBinFlg = true;
-                } else {
-                    this.startTrashBinFlg = false;
-                }
+            this.startCmds[i]['id'] = num;
+            if (i === this.startCmds.length - 1) {
+                this.startCmds[i]['startCmdFlg'] = false;
             }
         }
-        this.startCmds = delStartTmp;
     }
     public addEndCmd() {
-        this.endTrashBinFlg = false;
-        let addEndTmp: any = [];
-        addEndTmp = _.cloneDeep(this.endCmds);
         let endCmdInfo = {
-            'id': addEndTmp.length + 1,
+            'id': this.endCmds.length + 1,
             'name': '',
-            'endCmdFlg': false,
             'endRegFlg': true,
+            'endCmdFlg': false
         };
         let id: any = endCmdInfo['id'];
         let penult = id - 1;
-        if (addEndTmp[penult - 1]['id'] === penult) {
-            addEndTmp[penult - 1]['endCmdFlg'] = true;
+        if (this.endCmds[penult - 1]['id'] === penult) {
+            this.endCmds[penult - 1]['endCmdFlg'] = true;
         }
-        addEndTmp.push(endCmdInfo);
-        this.endCmds = addEndTmp;
+        this.endCmds.push(_.cloneDeep(endCmdInfo));
     }
     public delEndCmd(endCmd: any) {
-        let delEndTmp: any = [];
-        delEndTmp = _.cloneDeep(this.endCmds);
-        for (let i = 0; i < delEndTmp.length; i++) {
-            if (delEndTmp.length > 1 && delEndTmp[i]['id'] === endCmd['id']) {
-                delEndTmp.splice(i, 1);
+        for (let i = 0; i < this.endCmds.length; i++) {
+            if (this.endCmds.length > 1 && this.endCmds[i]['id'] === endCmd['id']) {
+                this.endCmds.splice(i, 1);
             }
         }
-        for (let i = 0; i < delEndTmp.length; i++) {
+        for (let i = 0; i < this.endCmds.length; i++) {
             let num: number = i + 1;
-            delEndTmp[i]['id'] = num;
-            if (i === delEndTmp.length - 1) {
-                delEndTmp[i]['endCmdFlg'] = false;
-                if (delEndTmp.length === 1) {
-                    this.endTrashBinFlg = true;
-                } else {
-                    this.endTrashBinFlg = false;
-                }
+            this.endCmds[i]['id'] = num;
+            if (i === this.endCmds.length - 1) {
+                this.endCmds[i]['endCmdFlg'] = false;
             }
         }
-        this.endCmds = delEndTmp;
     }
     public addLogCmd() {
-        this.logTrashBinFlg = false;
-        let addlogTmp: any = [];
-        addlogTmp = _.cloneDeep(this.logs);
         let logInfo = {
-            'id': addlogTmp.length + 1,
+            'id': this.logs.length + 1,
             'name': '',
             'logFlg': false,
             'logRegFlg': true
         };
         let id: any = logInfo['id'];
         let penult = id - 1;
-        if (addlogTmp[penult - 1]['id'] === penult) {
-            addlogTmp[penult - 1]['logFlg'] = true;
+        if (this.logs[penult - 1]['id'] === penult) {
+            this.logs[penult - 1]['logFlg'] = true;
         }
-        addlogTmp.push(logInfo);
-        this.logs = addlogTmp;
+        this.logs.push(_.cloneDeep(logInfo));
     }
     public delLogCmd(log: any) {
-        let dellogTmp: any = [];
-        dellogTmp = _.cloneDeep(this.logs);
-        for (let i = 0; i < dellogTmp.length; i++) {
-            if (dellogTmp.length > 1 && dellogTmp[i]['id'] === log['id']) {
-                dellogTmp.splice(i, 1);
+        for (let i = 0; i < this.logs.length; i++) {
+            if (this.logs.length > 1 && this.logs[i]['id'] === log['id']) {
+                this.logs.splice(i, 1);
             }
         }
-        for (let i = 0; i < dellogTmp.length; i++) {
+        for (let i = 0; i < this.logs.length; i++) {
             let num: number = i + 1;
-            dellogTmp[i]['id'] = num;
-            if (i === dellogTmp.length - 1) {
-                dellogTmp[i]['logFlg'] = false;
-                if (dellogTmp.length === 1) {
-                    this.logTrashBinFlg = true;
-                } else {
-                    this.logTrashBinFlg = false;
-                }
+            this.logs[i]['id'] = num;
+            if (i === this.logs.length - 1) {
+                this.logs[i]['logFlg'] = false;
             }
         }
-        this.logs = dellogTmp;
     }
     public ostypeCheck() {
         /**
@@ -409,11 +345,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         } else {
             uniqData.push(this.startCmdsInit());
         }
-        if (uniqData.length === 1) {
-            this.startTrashBinFlg = true;
-        } else {
-            this.startTrashBinFlg = false;
-        }
         this.startCmds = _.cloneDeep(uniqData);
         return regFlgTmp;
     }
@@ -443,11 +374,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         } else {
             uniqData.push(this.endCmdsInit());
         }
-        if (uniqData.length === 1) {
-            this.endTrashBinFlg = true;
-        } else {
-            this.endTrashBinFlg = false;
-        }
         this.endCmds = _.cloneDeep(uniqData);
         return regFlgTmp;
     }
@@ -475,11 +401,6 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
             uniqData[len - 1]['logFlg'] = false;
         } else {
             uniqData.push(this.logsInit());
-        }
-        if (uniqData.length === 1) {
-            this.logTrashBinFlg = true;
-        } else {
-            this.logTrashBinFlg = false;
         }
         this.logs = _.cloneDeep(uniqData);
         return regFlgTmp;

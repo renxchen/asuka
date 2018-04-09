@@ -207,6 +207,7 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
                                 $('#modalButton').on('click', function () {
                                     $('#cpgTable').jqGrid('clearGridData');
                                     $('#cpgTable').trigger('reloadGrid');
+                                    // $('#cpgTable').jqGrid().trigger('reloadGrid');
                                 });
                             } else {
                                 if (msg) {
@@ -231,6 +232,8 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(CPGLoginComponent, this.modalConfig);
         let cpgLogin$ = this.modalService.onHidden.subscribe(res => {
             if (res) {
+                // this.cpgTable$.GridUnload();
+                // this.drawCPGTable();
                 $('#cpgTable').jqGrid('clearGridData');
                 $('#cpgTable').trigger('reloadGrid');
             }

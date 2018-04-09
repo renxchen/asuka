@@ -8,6 +8,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Validator } from '../../../components/validation/validation';
+import { CollectionPolicyService } from '.././collectionPolicy.service';
 import { Subject } from 'rxjs/Subject';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -60,7 +61,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         private httpClient: HttpClientComponent,
         private bsModalRef: BsModalRef,
         private modalService: BsModalService,
-        ) {
+        public service: CollectionPolicyService) {
     }
     ngOnInit() {
         this.selSplitChar = '4';

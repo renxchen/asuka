@@ -8,6 +8,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
+import { CollectionPolicyService } from '.././collectionPolicy.service';
 import { Validator } from '../../../components/validation/validation';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -40,7 +41,8 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
     constructor(
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
-        private modalRef: BsModalRef
+        private modalRef: BsModalRef,
+        private service: CollectionPolicyService
     ) { }
     ngOnInit() {
         this.getOsType();
@@ -178,11 +180,9 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                         if (msg && msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            if (msg) {
-                                this.modalMsg = msg;
-                                this.closeMsg = '閉じる';
-                                this.showAlertModal(this.modalMsg, this.closeMsg);
-                            }
+                            this.modalMsg = msg;
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
                         }
                     }
                 });

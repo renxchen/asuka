@@ -468,6 +468,7 @@ export class CPGEditComponent implements OnInit {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.fullWithoutSpecial(this.name);
+            // this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         if (this.selectedOsType) {
             this.ostypeNotNull = true;
