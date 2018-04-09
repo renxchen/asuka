@@ -443,20 +443,20 @@ module.exports = {
       ],
       "minChunks": null
     }),
-    new CommonsChunkPlugin({
-      "name": [
-        "vendor"
-      ],
-      "minChunks": (module) => {
-                return module.resource
-                    && (module.resource.startsWith(nodeModules)
-                        || module.resource.startsWith(genDirNodeModules)
-                        || module.resource.startsWith(realNodeModules));
-            },
-      "chunks": [
-        "main"
-      ]
-    }),
+    // new CommonsChunkPlugin({
+    //   "name": [
+    //     "vendor"
+    //   ],
+    //   "minChunks": (module) => {
+    //             return module.resource
+    //                 && (module.resource.startsWith(nodeModules)
+    //                     || module.resource.startsWith(genDirNodeModules)
+    //                     || module.resource.startsWith(realNodeModules));
+    //         },
+    //   "chunks": [
+    //     "main"
+    //   ]
+    // }),
     new SourceMapDevToolPlugin({
       "filename": "[file].map[query]",
       "moduleFilenameTemplate": "[resource-path]",

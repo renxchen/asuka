@@ -1,9 +1,15 @@
+/**
+ * @author: Dan Lv
+ * @contact: danlv@cisco.com
+ * @file: index.component.ts
+ * @time: 2018/01/23
+ * @desc:none
+ */
 import { Component, OnInit, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IndexService } from './index.service';
 import { BreadCrumbComponent } from '../../components/breadCrumb/bread-crumb';
 import { TweenLite } from 'gsap';
-import { TranslateService } from '@ngx-translate/core';
+import { HttpClientComponent } from '../../components/utils/httpClient';
 declare var $: any;
 @Component({
     selector: 'index',
@@ -12,14 +18,12 @@ declare var $: any;
 })
 
 export class IndexComponent implements OnInit, AfterViewInit {
-    private minWidthFlg: boolean;
     @ViewChild(BreadCrumbComponent) breadCrumb: BreadCrumbComponent;
+    apiPrefix: string;
     constructor(
         private elementRef: ElementRef,
-        private service: IndexService,
         private activatedRoute: ActivatedRoute,
-        private translate: TranslateService) {
-        this.translate.setDefaultLang('ja');
+        public httpClient: HttpClientComponent) {
     }
     ngOnInit() {
         localStorage.setItem('requestFailed', '');
@@ -56,7 +60,15 @@ export class IndexComponent implements OnInit, AfterViewInit {
         }
     }
     public logout() {
-        this.service.logout().subscribe(res => {
+        /**
+        * @brief log out
+        * @author Dan Lv
+        * @date 2018/01/23
+        */
+        this.apiPrefix = '/v1';
+        this.httpClient.setUrl(this.apiPrefix);
+        this.httpClient.toJson(this.httpClient.delete('/logout/'))
+       .subscribe(res => {
             if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
                 localStorage.removeItem('token');
                 localStorage.removeItem('sessionTimeOut');

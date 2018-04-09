@@ -7,7 +7,6 @@
  */
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Http } from '@angular/http';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -39,7 +38,6 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
     constructor(
         public httpClient: HttpClientComponent,
         private modalService: BsModalService,
-        private http: Http,
         private router: Router) { }
 
     ngOnInit() { }
@@ -83,7 +81,6 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                 {
                     name: 'ostype_name', index: 'ostype_name', width: 50, align: 'center', search: true
                 },
-                // { name: 'group', index: 'group', width: 50, align: 'center', search: true },
                 {
                     name: 'group_list', index: 'group_list', width: 50, align: 'center', search: true,
                     formatter: _t.noDataFormatter

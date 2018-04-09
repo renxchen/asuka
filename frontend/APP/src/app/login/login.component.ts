@@ -1,3 +1,10 @@
+/**
+ * @author: Dan Lv
+ * @contact: danlv@cisco.com
+ * @file: login.component.ts
+ * @time: 2018/01/25
+ * @desc: login system
+ */
 import { Component, OnInit, Input, AfterViewInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Rx';
@@ -5,12 +12,11 @@ import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../components/modal/modal.component';
-import { TranslateService } from '@ngx-translate/core';
 import * as _ from 'lodash';
 @Component({
     selector: 'login',
-    templateUrl: 'login.component.html',
-    styleUrls: ['login.component.less'],
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.less'],
 })
 export class LoginComponent implements OnInit, AfterViewInit {
     username: string;
@@ -22,10 +28,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
     constructor(
         public httpClient: HttpClientComponent,
         public router: Router,
-        private translate: TranslateService,
         private modalService: BsModalService
     ) {
-        translate.setDefaultLang('ja');
     }
     ngOnInit() {
         localStorage.setItem('requestFailed', '');
@@ -45,7 +49,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     public login() {
         /**
         * @brief collect data from page and login stystem
-        * @post jump to page "/index/deviceView" if login successly
+        * @post jump to page "/index/" if login successly
         * @author Dan Lv
         * @date 2018/01/25
         */
@@ -63,7 +67,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let data = _.get(res, 'data');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
-                        // change token to new_token
                         if (localStorage.getItem('sessionTimeOut')) {
                             localStorage.removeItem('sessionTimeOut');
                         }
@@ -72,7 +75,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
                         }
                         this.router.navigate(['/index/']);
                     } else {
-                        // alert(_.get(status, 'message'));
                         this.modalMsg = _.get(status, 'message');
                         this.closeMsg = '閉じる';
                         this.showAlertModal(this.modalMsg, this.closeMsg);

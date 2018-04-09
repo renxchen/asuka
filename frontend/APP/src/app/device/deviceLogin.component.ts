@@ -113,7 +113,6 @@ export class DeviceLoginComponent implements OnInit {
                 let data: any = _.get(res, 'error_list');
                 this.optId = _.get(res, 'operation_id');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
-                    // $('#devLoginTable').trigger('reloadGrid');
                     $('.modal').hide();
                     this.drawDevLoginTable();
                     this.actionFlg = false;
@@ -263,18 +262,16 @@ export class DeviceLoginComponent implements OnInit {
                         this.devLoginTable$.GridUnload();
                         $('.modal').hide();
                         this.drawDevLoginTable();
-                        // $('#devLoginTable').jqGrid('clearGridData');
-                        // $('#devLoginTable').trigger('reloadGrid');
                     } else {
                         $('.modal').hide();
-                        // this.processbar.hide();
-                        this.modalMsg = _.get(status, 'message');
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        if (_.get(status, 'message')) {
+                            this.modalMsg = _.get(status, 'message');
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                        }
                     }
                 });
         } else {
-            // alert('Please choose one device at least.');
             this.modalMsg = 'Please choose one device at least.';
             this.closeMsg = '閉じる';
             this.showAlertModal(this.modalMsg, this.closeMsg);
