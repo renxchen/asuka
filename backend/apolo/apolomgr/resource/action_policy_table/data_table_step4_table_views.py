@@ -41,6 +41,7 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         self.devices = self.get_device_ids(**{'group': int(self.device_group_id)})
         # self.devices = views_helper.get_request_value(self.request, 'devices', 'GET')
         self.rule_name = views_helper.get_request_value(self.request, 'rule_name', 'GET')
+        self.oid = views_helper.get_request_value(self.request, 'oid', 'GET')
 
     @staticmethod
     def get_history(item_id, value_type, policy_type):
@@ -198,6 +199,9 @@ class DataTableTableViewsSet(viewsets.ViewSet):
                         result['value'] = serializer.data[0]['value']
                         result['item_id'] = serializer.data[0]['item']
                         result['rule_name'] = self.rule_name
+                        if len(policy_type):
+                            if int(policy_type[0]['policy_type']) == 1:
+                                result['oid'] = self.oid
                         data.append(result)
             data = {
                 'data': {
