@@ -11,105 +11,120 @@
         </button>
     </div>
     <div class="modal-body">
-        <form novalidate="novalidate">
-            <div class="row">
-                <div class="form-group">
-                    <label 
-                        for="name" 
-                        class="col-sm-4 control-label text-right"
-                        [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
-                    >
-                        <i class="fa fa-asterisk text-danger" title="必須項目"></i>
-                        &nbsp;
-                        デバイスグループ名：
-                    </label>
-                    <div 
-                    class="col-sm-8" 
-                    [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}">
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="name" 
-                            name="name" 
-                            maxlength="256"
-                            [(ngModel)]="name" 
-                            placeholder="日本語、英数字、記号可" 
-                        >
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label 
-                        for="osType" 
-                        class="col-sm-4 control-label text-right"
-                    >
-                        <i class="fa fa-asterisk text-danger" title="必須項目"></i>
-                        &nbsp;
-                        OS Type：
-                    </label>
-                    <div class="col-sm-8" style="margin-top:15px;margin-bottom:15px">
-                        <select 
-                            class="form-control" 
-                            [(ngModel)]="selectedOsType" 
-                            id="osType" 
-                            name="selectedOsType"
-                        >
-                            <option 
-                                *ngFor="let item of osType" 
-                                value="{{item.ostypeid}}"
-                            >
-                                {{item.name}}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label 
-                        for="desc" 
-                        class="col-sm-4 control-label text-right" 
-                        [ngClass]="{'text-warning': descFlg}"
-                    >
-                        概要：
-                    </label>
-                    <div class="col-sm-8">
-                        <textarea 
-                            class="form-control textarea-height" 
-                            title="{{desc}}"
-                            id="desc" 
-                            name="desc" 
-                            [ngClass]="{'has-warning': descFlg}"
-                            [(ngModel)]="desc"
-                            maxlength="2000"
-                         >
-                        </textarea>
-                    </div>
-                </div>
-                <div 
-                    class="col-sm-12 text-warning" 
-                    *ngIf='!nameNotNull'
+        <form class="form-horizontal" id="form">
+            <div class="form-group">
+                <label 
+                    for="name" 
+                    class="col-sm-3 control-label" 
+                    [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
                 >
-                    デバイスグループ名は必須入力です。</div>            
+                    <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                    デバイスグループ名：
+                </label>
                 <div 
-                    class="col-sm-12 text-warning" 
-                    *ngIf='nameNotNull&&!nameFlg'
+                    class="col-sm-9" 
+                    [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
                 >
-                    デバイスグループ名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください。
-                </div>            
-                <div 
-                    class="col-sm-12 text-warning" 
-                    *ngIf='!uniqueFlg'
-                >
-                    デバイスグループ名は既存データと重複しています。
-                </div>            
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="name" 
+                        name="name"
+                        [(ngModel)]="name" 
+                        placeholder="日本語、英数字、記号可" 
+                        maxlength="256" 
+                        required=""
+                        autocomplete="off" 
+                    >
+                </div>
             </div>
+            <div class="form-group">
+                <label 
+                    for="osType" 
+                    class="col-sm-3 
+                    control-label"
+                    [ngClass]="{'text-warning': !ostypeNotNull}"
+                >
+                    <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                    OS Type：
+                </label>
+                <div 
+                    class="col-sm-9"
+                    [ngClass]="{'has-warning': !ostypeNotNull}"
+                >
+                    <select 
+                        class="form-control" 
+                        [(ngModel)]="selectedOsType" 
+                        id="osType" 
+                        name="selectedOsType" 
+                    >
+                        <option 
+                            *ngFor="let item of osType" 
+                            value="{{item.ostypeid}}"
+                        >
+                            {{item.name}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label 
+                    for="desc" 
+                    class="col-sm-3 
+                    control-label" 
+                    [ngClass]="{'text-warning': descFlg}"
+                >
+                    概要：
+                </label>
+                <div class="col-sm-9">
+                    <textarea 
+                        class="form-control textarea-height" 
+                        title="{{desc}}"
+                        id="desc" 
+                        name="desc" 
+                        [ngClass]="{'has-warning': descFlg}"
+                        [(ngModel)]="desc" 
+                        maxlength="2000"
+                    >
+                    </textarea>
+                </div>
+            </div>
+            <div 
+                class="col-sm-12 text-warning" 
+                *ngIf='!nameNotNull'
+            >
+                デバイスグループ名は必須入力です。
+            </div>            
+            <div 
+                class="col-sm-12 text-warning" 
+                *ngIf='nameNotNull&&!nameFlg'
+            >
+                デバイスグループ名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください。
+            </div>            
+            <div 
+                class="col-sm-12 text-warning" 
+                *ngIf='!uniqueFlg'
+            >
+                デバイスグループ名は既存データと重複しています。
+            </div>
+            <div 
+                class="col-sm-12 text-warning" 
+                *ngIf='!ostypeNotNull'
+            >
+                Ostype cannot be empty.
+            </div>            
         </form>
     </div>
     <div class="modal-footer">
-        <button 
-            class="btn btn-sm btn-primary pull-right m-t-n-xs" 
-            (click)="loginGroup()"
-        >
-            <i class="fa fa-check-square-o"></i>
-            保存
-        </button>
+        <div col-sm-3></div>
+        <div col-sm-9>
+            <button 
+                class="btn btn-sm btn-primary pull-right m-t-n-xs" 
+                (click)="loginGroup()"
+            >
+                <i class="fa fa-check-square-o"></i>
+                保存
+            </button>
+        </div>
     </div>
 </div>

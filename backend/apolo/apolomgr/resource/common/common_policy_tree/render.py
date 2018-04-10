@@ -4,8 +4,8 @@
 
 '''
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: Gin Chen
+@contact: Gin Cheni@cisco.com
 @file: render.py
 @time: 2017/12/18
 @desc:
@@ -33,34 +33,64 @@ class Render(Tool, DBOpt):
         self.dispatch_result = {}
 
     def render(self):
+        """!@brief
+        main process of highlight function
+        @param
+        @pre :Post function of PolicyTreeHighLightViewSet
+        @post
+        @note
+        @return rule info
+        @author Gin Chen
+        @date 2017/12/18
+        """
         # get leaf path
         self.get_path_of_leaf(self.tree)
+        # do work follow
         self.execute_dispatch()
+        # render by result of dispatch
         if self.dispatch_result:
             html_text = self.generate_html()
         else:
             html_text = None
         return html_text
 
-    # get the path that is from root to the clicked node
-    # save format :[rule_id1,rule_id2...rule_idn]
-    def get_path_of_leaf(self, buffer_dict):
+    def get_path_of_leaf(self, tree_dict):
+        """!@brief
+        get the path that is from root to the clicked node
+        @param tree_dict: tree data from request
+        @pre :Post function of PolicyTreeHighLightViewSet
+        @post
+        @note  save format :[rule_id1,rule_id2...rule_idn]
+        @return path of leaf
+        @author Gin Chen
+        @date 2017/12/18
+        """
 
-        if buffer_dict['id'] == self.tree_id:
+        if tree_dict['id'] == self.tree_id:
             # save the leaf node
-            self.leaf_path.append(buffer_dict['data']['rule_id'])
+            self.leaf_path.append(tree_dict['data']['rule_id'])
             return True
 
-        if buffer_dict["children"]:
-            for d in buffer_dict["children"]:
+        if tree_dict["children"]:
+            for d in tree_dict["children"]:
                 if self.get_path_of_leaf(d):
                     # save the parent node of the leaf
-                    if buffer_dict['data']['rule_id']:
-                        self.leaf_path.append(buffer_dict['data']['rule_id'])
+                    if tree_dict['data']['rule_id']:
+                        self.leaf_path.append(tree_dict['data']['rule_id'])
                     return True
 
-    # get the dispatch executed result
+
     def execute_dispatch(self):
+        """!@brief
+       # get the dispatch executed result
+       @param
+       @pre :render.py.render
+       @post
+       @note  self.dispatch_result format: {deep:[{startline, endline..},{}]}
+       @return self.dispatch_result
+       @author Gin Chen
+       @date 2017/12/18
+       """
         for rule_id in self.leaf_path:
             rule_context = self.__get_rule_from_db(rule_id)
             # save the data as input of rules
@@ -71,7 +101,7 @@ class Render(Tool, DBOpt):
         p = Dispatch(arry, self.rule_context, self.data)
         p.dispatch()
         arry = p.get_result()
-        # save format as like {deep:[{startline, endline..},{}]}
+
         for parent_item in arry:
             for child_item in parent_item:
                 deep = child_item['deep']
@@ -80,7 +110,18 @@ class Render(Tool, DBOpt):
                 else:
                     self.dispatch_result[deep] = [child_item]
 
+
     def generate_html(self):
+        """!@brief
+        generate highlight data html page
+        @param
+        @pre : get highlight info by rule. function:render.py.render
+        @post
+        @note
+        @return highlight html
+        @author Gin Chen
+        @date 2017/12/18
+        """
         # render
         deep = len(self.leaf_path) - 1
         # chance xml mark
@@ -193,14 +234,25 @@ class Render(Tool, DBOpt):
                                         if constants.INSTEAD in basic_character_new:
                                             basic_character_new = basic_character_new.replace(constants.INSTEAD,
                                                                                               split_char)
-                                        basic_character_new = basic_character_new.replace(
-                                            constants.REPLACE_START_MARK,
-                                            constants.BASIC_CHAR_STYLE
-                                        )
-                                        basic_character_new = basic_character_new.replace(
-                                            constants.REPLACE_END_MARK,
-                                            constants.SPAN_END
-                                        )
+                                        # the basic char is same with extracted data
+                                        if basic_character_index == extract_data_index:
+                                            basic_character_new = basic_character_new.replace(
+                                                constants.REPLACE_START_MARK,
+                                                constants.EXTRACT_DATA_STYLE
+                                            )
+                                            basic_character_new = basic_character_new.replace(
+                                                constants.REPLACE_END_MARK,
+                                                constants.SPAN_END
+                                            )
+                                        else:
+                                            basic_character_new = basic_character_new.replace(
+                                                constants.REPLACE_START_MARK,
+                                                constants.BASIC_CHAR_STYLE
+                                            )
+                                            basic_character_new = basic_character_new.replace(
+                                                constants.REPLACE_END_MARK,
+                                                constants.SPAN_END
+                                            )
                                         line_arry[j] = basic_character_new
                                         is_chanced += 1
                                     elif element_index == extract_data_index:
@@ -330,10 +382,30 @@ class Render(Tool, DBOpt):
         return html_data
 
     def __get_rule_from_db(self, rule_id):
+        """!@brief
+        get rule info from db
+        @param rule_id:rule id
+        @pre : function:render.py.execute_dispatch
+        @post
+        @note
+        @return rule info
+        @author Gin Chen
+        @date 2017/12/18
+        """
         obj = self.get_rule_detail_from_db(rule_id)
         return self.get_rule_value(obj)
 
     def __get_split_char(self, split_char_reg):
+        """!@brief
+        get split char by split char regex
+        @param split_char_reg: regex of split char
+        @pre
+        @post
+        @note
+        @return split char
+        @author Gin Chen
+        @date 2017/12/18
+        """
         if split_char_reg:
             m = re.search(split_char_reg, self.data)
             if m is not None:

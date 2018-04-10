@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: mem_cache_trigger_and_trigger_detial.py
 @time: 2018/3/27 17:34
 @desc:

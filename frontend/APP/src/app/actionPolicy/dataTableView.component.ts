@@ -117,3 +117,4 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
     });
   }
 }
+

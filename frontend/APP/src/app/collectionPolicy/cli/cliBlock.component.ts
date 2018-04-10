@@ -1,7 +1,13 @@
+/**
+* @author: Dan Lv
+* @contact: danlv@cisco.com
+* @file: cliBlock.component.ts
+* @time: 2018/03/14
+* @desc: create and edit block rule;
+*/
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Validator } from '../../../components/validation/validation';
-import { CollectionPolicyService } from '.././collectionPolicy.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import * as _ from 'lodash';
@@ -55,7 +61,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
         private httpClient: HttpClientComponent,
         private bsModalRef: BsModalRef,
         private modalService: BsModalService,
-        private service: CollectionPolicyService) {
+        ) {
     }
     ngOnInit() {
         this.startLnNum = 0;
@@ -211,7 +217,7 @@ export class CLIBlockComponent implements OnInit, AfterViewInit {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.keyStrNotNull = Validator.notNullCheck(this.keyStr);
-        if (this.keyStrFlg) {
+        if (this.keyStrNotNull) {
             this.keyStrFlg = Validator.halfWithoutSpecial(this.keyStr);
         }
         this.mrkStrNotNull_A = Validator.notNullCheck(this.markString);

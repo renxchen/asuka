@@ -443,20 +443,20 @@ module.exports = {
       ],
       "minChunks": null
     }),
-    new CommonsChunkPlugin({
-      "name": [
-        "vendor"
-      ],
-      "minChunks": (module) => {
-                return module.resource
-                    && (module.resource.startsWith(nodeModules)
-                        || module.resource.startsWith(genDirNodeModules)
-                        || module.resource.startsWith(realNodeModules));
-            },
-      "chunks": [
-        "main"
-      ]
-    }),
+    // new CommonsChunkPlugin({
+    //   "name": [
+    //     "vendor"
+    //   ],
+    //   "minChunks": (module) => {
+    //             return module.resource
+    //                 && (module.resource.startsWith(nodeModules)
+    //                     || module.resource.startsWith(genDirNodeModules)
+    //                     || module.resource.startsWith(realNodeModules));
+    //         },
+    //   "chunks": [
+    //     "main"
+    //   ]
+    // }),
     new SourceMapDevToolPlugin({
       "filename": "[file].map[query]",
       "moduleFilenameTemplate": "[resource-path]",
@@ -499,8 +499,8 @@ module.exports = {
     "proxy": {
         '/v1/**': {
             // modify backend service
-            "target": "http://10.79.101.151:1111",
-            // "target": "http://10.71.244.134:1111",
+            "target": "http://10.79.103.207:1111",
+            // "target": "http://127.0.0.1:1111",
             "secure": false,
             "changeOrigin": true
         }

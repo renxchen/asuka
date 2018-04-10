@@ -257,9 +257,10 @@ class DevicePreViewSet(APIView):
                         flag_err += 1
                     # Group
                     group = f.get('Group')
+                    group_res = ''
                     if group != '':
                         group = group.split(',')
-                        if len(group) > 5 :
+                        if len(group) > 5:
                             dict_check['group'] = False
                             flag_err += 1
                         else:
@@ -277,8 +278,12 @@ class DevicePreViewSet(APIView):
                                 flag_err += 1
                             else:
                                 dict_check['group'] = True
+                                for g in group:
+                                    group_res = group_res + g + ','
                     else:
                         dict_check['group'] = True
+                    if group_res != '':
+                        group_res = group_res[:-1]
                     if flag_err > 0:
                         error_list.append(dict_check)
                     else:
@@ -296,11 +301,11 @@ class DevicePreViewSet(APIView):
                             'telnet_status': 'No Data',
                             'snmp_status': 'No Data',
                             'device_type': f.get('Device Type'),
-                            'group_name': f.get('Group'),
+                            'group_name': group_res,
                             'ostype': ostype.__dict__
                         }
                         serializer = DevicesTmpSerializer(data=valid_device)
-                        if serializer.is_valid():
+                        if serializer.is_valid(Exception):
                             serializer.save(ostype_id=ostype.ostypeid)
                 data = {
                     'operation_id': operation_id,

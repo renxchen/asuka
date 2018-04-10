@@ -1,3 +1,10 @@
+/**
+ * @author: Zizhuang Jiang
+ * @contact: zizjiang@cisco.com
+ * @file: groupLogin.component.ts
+ * @time: 2018/03/08
+ * @desc: create device group
+ */
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
@@ -18,11 +25,13 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
     osType: any;
     desc: any;
     selectedOsType: any;
+    ostypeNotNull: Boolean = true;
     nameFlg: Boolean = true;
     cmdFlg: Boolean = true;
     descFlg: Boolean = false;
     nameNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
+    modalRef: BsModalRef;
     modalMsg: any;
     closeMsg: any;
     constructor(
@@ -36,12 +45,14 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
     }
     ngAfterViewInit() {
         setTimeout(() => {
-            // if (this.id) {
-            //     this.getCPInfo(this.cPId);
-            // }
         }, 0);
     }
     public getOsType() {
+        /**
+        * @brief get all of the ostype data
+        * @author Zizhuang Jiang
+        * @date 2018/03/18
+        */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
         this.httpClient
@@ -55,25 +66,42 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+                        this.modalMsg = res['status']['message'];
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
     }
     public doCheck() {
+        /**
+        * @brief Verify the validity of the input information
+        * @return true or false
+        * @author Zizhuang Jiang
+        * @date 2018/03/08
+        */
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            // japanese is ok, need to check;
             this.nameFlg = Validator.fullWithoutSpecial(this.name);
         }
-        if (this.nameNotNull && this.nameFlg && this.selectedOsType) {
+        if (this.selectedOsType) {
+            this.ostypeNotNull = true;
+        } else {
+            this.ostypeNotNull = false;
+        }
+        if (this.nameNotNull && this.nameFlg && this.ostypeNotNull) {
             return true;
         } else {
             return false;
         }
     }
     public loginGroup() {
+        /**
+        * @brief get and check the input infomation, then save
+        * @author Zizhuang Jiang
+        * @date 2018/03/08
+        */
         this.apiPrefix = '/v1';
         let url = '/api_device_groups/';
         let group: any = {};
@@ -95,11 +123,25 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
                         if (msg && msg === 'GROUPNAME_ALREADY_EXISTS') {
                             this.uniqueFlg = false;
                         } else {
-                            alert(msg);
+                            if (msg) {
+                                this.modalMsg = msg;
+                                this.closeMsg = '閉じる';
+                                this.showAlertModal(this.modalMsg, this.closeMsg);
+                            }
                         }
                     }
                 });
         }
+    }
+    public showAlertModal(modalMsg: any, closeMsg: any) {
+        /**
+        * @brief show modal dialog
+        * @author Zizhuang Jiang
+        * @date 2018/03/08
+        */
+        this.modalRef = this.modalService.show(ModalComponent);
+        this.modalRef.content.modalMsg = modalMsg;
+        this.modalRef.content.closeMsg = closeMsg;
     }
 }
 

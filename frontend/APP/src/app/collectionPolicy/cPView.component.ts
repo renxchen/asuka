@@ -96,19 +96,11 @@ export class CPViewComponent implements OnInit, AfterViewInit {
             $('#cpTable').jqGrid('setLabel', 'snmp_oid', 'show コマンド');
             $('#cpTable').setColProp('snmp_oid', { index: 'cli_command', name: 'cli_command', label: 'OID', });
             $('#cpTable').jqGrid('setGridParam', { postData: { 'policy_type': this.cPType } }).trigger('reloadGrid');
-            // this.cPTable.GridUnload();
-            // setColProp('dxts',{index, 'dxts',width: 100,formatter: dxtsFormatter});
-            //     $('#cpTable').trigger('reloadGrid');
-            // this.drawCPTable('show コマンド', 'cli_command', this.cPType);
         } else {
             $('#cpTable').jqGrid('clearGridData');
             $('#cpTable').jqGrid('setLabel', 'cli_command', 'OID');
             $('#cpTable').setColProp('cli_command', { index: 'snmp_oid', name: 'snmp_oid', label: 'show コマンド', });
             $('#cpTable').jqGrid('setGridParam', { postData: { 'policy_type': this.cPType } }).trigger('reloadGrid');
-            // this.cPTable.GridUnload();
-            // $('#cpTable') .jqGrid('setGridParam', { postData: { 'policy_type': this.cPType }});
-            // $('#cpTable') .trigger('reloadGrid');
-            // this.drawCPTable('OID', 'snmp_oid', this.cPType);
         }
     }
     public drawCPTable(thirdCol?: any, thirdName?: any, cPType?: any) {
@@ -147,12 +139,6 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                 _t.deleteBtn();
             },
             loadComplete: function (res) {
-                // let code: any = _.get(_.get(res, 'new_token'), 'code');
-                // let msg: any = _.get(_.get(res, 'new_token'), 'message');
-                // if (code === 102 || code === 103) {
-                //     localStorage.setItem('sessionTimeOut', msg);
-                //     _t.router.navigate(['/login/']);
-                // }
                 let status = _.get(_.get(res, 'status'), 'status');
                 let code: any = _.get(_.get(res, 'status'), 'code');
                 let msg: any = _.get(_.get(res, 'status'), 'message');
@@ -260,9 +246,9 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                             let msg: any = _.get(status, 'message');
                             let data = _.get(res, 'data');
                             if (status && status['status'].toString().toLowerCase() === 'true') {
-                                this.modalMsg = '削除しました。';
-                                this.closeMsg = '閉じる';
-                                _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                _t.modalMsg = '削除しました。';
+                                _t.closeMsg = '閉じる';
+                                _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                                 $('#modalButton').on('click', function () {
                                     // $('#cpTable').jqGrid().trigger('reloadGrid');
                                     $('#cpTable').jqGrid('clearGridData');
@@ -270,19 +256,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
                                 });
                             } else {
                                 if (msg) {
-                                    this.modalMsg = msg;
-                                    this.closeMsg = '閉じる';
-                                    _t.showAlertModal(this.modalMsg, this.closeMsg);
+                                    _t.modalMsg = msg;
+                                    _t.closeMsg = '閉じる';
+                                    _t.showAlertModal(_t.modalMsg, _t.closeMsg);
                                 }
-                                // if (msg && msg === 'COLL_POLICY_EXIST_IN_POLICYS_GROUPS') {
-                                //     this.modalMsg = 'Can not be deteted when collection policy exits in policy group';
-                                //     this.closeMsg = '閉じる';
-                                //     _t.showAlertModal(this.modalMsg, this.closeMsg);
-                                // } else {
-                                //     if (msg) {
-                                //         alert(msg);
-                                //     }
-                                // }
                             }
                         });
                 }

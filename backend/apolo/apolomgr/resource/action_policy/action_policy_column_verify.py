@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: action_policy_column_verify.py
 @time: 2018/2/12 12:34
 @desc:

@@ -34,6 +34,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
     modalMsg: any;
     closeMsg: any;
     nameNotNull: Boolean = true;
+    ostypeNotNull: Boolean = true;
     nameFlg: Boolean = true;
     oidNotNull: Boolean = true;
     oidFlg: Boolean = true;
@@ -54,7 +55,6 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         }
         this.selectedRtnType = '1';
         this.getOsType();
-        // this.labelParentAlert();
     }
     ngAfterViewInit() {
     }
@@ -80,7 +80,6 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
             this.httpClient
                 .toJson(this.httpClient.post(cPLoginUrl, cPInfo))
                 .subscribe(res => {
-                    //
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     let data = _.get(res, 'data');
@@ -98,10 +97,11 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                         if (msg && msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            // alert(msg);
-                            this.modalMsg = msg;
-                            this.closeMsg = '閉じる';
-                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                            if (msg) {
+                                this.modalMsg = msg;
+                                this.closeMsg = '閉じる';
+                                this.showAlertModal(this.modalMsg, this.closeMsg);
+                            }
                         }
                     }
                 });
@@ -126,7 +126,9 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+                        this.modalMsg = res['status']['message'];
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
@@ -138,10 +140,15 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         * @author Dan Lv
         * @date 2018/01/25
         */
-       this.uniqueFlg = true;
+        this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.halfWithoutSpecial(this.name);
+        }
+        if (this.selectedOsType) {
+            this.ostypeNotNull = true;
+        } else {
+            this.ostypeNotNull = false;
         }
         this.oidNotNull = Validator.notNullCheck(this.snmpOid);
         if (this.oidNotNull) {
@@ -149,7 +156,7 @@ export class SNMPCPLoginComponent implements OnInit, AfterViewInit {
         }
         if (this.nameNotNull && this.nameFlg
             && this.oidNotNull && this.oidFlg
-            && this.selectedOsType) {
+            && this.ostypeNotNull) {
             return true;
         } else {
             return false;

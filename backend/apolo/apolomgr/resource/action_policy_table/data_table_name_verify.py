@@ -2,8 +2,8 @@
 # coding=utf-8
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: data_table_name_verify.py
 @time: 2018/1/21 20:25
 @desc:

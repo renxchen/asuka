@@ -72,6 +72,9 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
         this.getTreeData();
       }
     }
+    if (this.currentStep === 4) {
+      this.getTreeData();
+    }
     if (contuineFlg) {
       this.maxStep === this.currentStep ? this.maxStep++ : this.maxStep = this.maxStep;
       this.currentStep++;
@@ -181,13 +184,11 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
 
   private getDeviceGroupName() {
     let _t = this;
-    console.log('_t.deviceGroup.group_id', _t.deviceGroup.group_id, _t.deviceGroup);
     let selectDeviceGroup: any;
     if (this.deviceGroupList && this.deviceGroupList.length > 0) {
       selectDeviceGroup = _.find(this.deviceGroupList, function (groupData) {
         return groupData['group_id'] == _t.selectedDeviceGroupId;
       });
-      console.log('selectDeviceGroup', selectDeviceGroup);
       if (selectDeviceGroup) {
         this.deviceGroup = selectDeviceGroup;
       }
@@ -198,7 +199,6 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     let _t = this;
     this.getDeviceGroupName();
     if (this.deviceGroup && this.deviceGroup['group_id'] && this.deviceGroup['name']) {
-      console.log('ininin');
       let url = 'v1/api_data_table_step3_table/?id=' + this.deviceGroup['group_id'] + '&device_group_name=' + this.deviceGroup['name'];
       let stepTableModel: any = [
         {
@@ -251,10 +251,9 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       });
       if (this.changeFlgs.deviceGroupChaneged) {
         $("#stepTable").jqGrid().setGridParam({ datatype: 'json', url: url }).trigger('reloadGrid');
+        this.changeFlgs.deviceGroupChaneged = false;
       }
 
-    } else {
-      console.log('else');
     }
   }
 
@@ -303,7 +302,6 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
 
   private checkColumeSelected() {
     let flg = this.selectedRowObj ? true : false;
-    console.log('this.selectedRowObj', this.selectedRowObj)
     if (!flg) {
       alert('カラムを選択してください!');
     }
@@ -316,9 +314,67 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       cli : get tree data
       snmp: make tree data
     */
-
+    let treeData: any = {};
+    let treeType = '';
+    if (this.selectedRowObj) {
+      console.log('this.selectedRowObj', this.selectedRowObj);
+      treeType = this.selectedRowObj['method'].toLowerCase();
+      if (treeType === 'snmp') {
+        console.log('snmp');
+        treeData = {
+          'text': 'OID',
+          'state': {
+            'opened': true
+          },
+          'data': {
+            'rule_type': 'value',
+            'is_root': true,
+            'rule_id': 0
+          }
+        };
+        this.drawTree(treeData);
+      } else {
+        console.log('cli');
+        let collection_policy_id = this.selectedRowObj['policyNo'];
+        let url = '/api_data_table_step4_tree/?id=' + collection_policy_id;
+        this.get(url).subscribe((res: any) => {
+          if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'true') {
+            treeData = res.data.data;
+            console.log('treeData', treeData);
+            this.drawTree(treeData);
+          } else {
+            alert('No Data !');
+          }
+        });
+      }
+    }
   }
 
+  protected drawTree(treeData) {
+
+    let treeJson: any = {
+      'core': {
+        'data': treeData,
+        'themes': {
+          'theme': 'classic',
+          'dots': true,
+          'responsive': false,
+          'icons': true
+        },
+        'multiple': false,
+        'check_callback': false,
+      },
+      'plugins': [
+        'types',
+        'themes'
+      ],
+      'types': {
+        '#': { 'max_depth': 4 }
+      },
+    };
+    $('#tree').jstree(treeJson).bind('activate_node.jstree', function (obj, e) {
+    });
+  }
 
   // common function of http
 

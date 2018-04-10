@@ -2,8 +2,8 @@
 # coding=utf-8
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: table_views.py
 @time: 2018/1/3 17:25
 @desc:
@@ -12,21 +12,20 @@
 import traceback
 import importlib
 from rest_framework import viewsets
-from django.utils.translation import gettext
 from django.core.paginator import Paginator
 from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import constants
 from backend.apolo.tools import views_helper
-from backend.apolo.models import DataTable, DataTableItems, DataTableHistoryItems
+from backend.apolo.models import DataTable, DataTableItems, DataTableHistoryItems, Triggers
 from django.db import transaction
 from backend.apolo.serializer.action_policy_serializer import ActionPolicyDataTableSerializer, \
     ActionPolicyDataTableItemSerializer
 from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
 import time
-import simplejson as json
 from backend.apolo.apolomgr.resource.common import csv_export
 import os
+from django.db.models import Q
 
 
 class TableViewsSet(viewsets.ViewSet):
@@ -78,6 +77,23 @@ class TableViewsSet(viewsets.ViewSet):
         try:
             dt = DataTable.objects.filter(**kwargs)
             return dt
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
+
+    @staticmethod
+    def get_trigger(id):
+        """!@brief
+        Get the data of Triggers table
+        @param id: table id
+        @pre call when need data of Triggers table
+        @post return Triggers data
+        @return result: data of Triggers table
+        """
+        try:
+            t = Triggers.objects.filter(Q(columnA=id) | Q(columnB=id))
+            return t
         except Exception, e:
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)
@@ -445,12 +461,22 @@ class TableViewsSet(viewsets.ViewSet):
             with transaction.atomic():
                 kwargs = {'table_id': self.id}
                 data_in_dp = self.get_data_table(**kwargs)
+                data_in_trigger = self.get_trigger(self.id)
                 if len(data_in_dp) <= 0:
                     data = {
                         'new_token': self.new_token,
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
                             constants.MESSAGE: constants.DATA_TABLE_NOT_EXIST_IN_SYSTEM
+                        }
+                    }
+                    return api_return(data=data)
+                if len(data_in_trigger) > 0:
+                    data = {
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.DATA_TABLE_EXIST_IN_TRIGGER
                         }
                     }
                     return api_return(data=data)

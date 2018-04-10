@@ -1,7 +1,6 @@
 import os
 
-tmp_path = os.path.split(os.path.dirname(__file__))[0]
-SYS_PATH = os.path.split(tmp_path)[0]
+SYS_PATH = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 class DevicesConstants(object):

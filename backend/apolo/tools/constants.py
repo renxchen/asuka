@@ -36,7 +36,7 @@ FAILED = 'Failed'
 TRUE = 'True'
 FALSE = 'False'
 VERIFY_WHETHER_EXECUTING_SERVER_URL = "http://%s:%s/api/v1/valid"
-VERIFY_WHETHER_EXECUTING_SERVER_IP = '10.71.244.134'
+VERIFY_WHETHER_EXECUTING_SERVER_IP = '127.0.0.1'
 VERIFY_WHETHER_EXECUTING_SERVER_PORT = '7777'
 SYSTEM_ERROR = gettext('System access failed, please connect the administrator.')
 POST_SUCCESSFUL = gettext('Data create successfully.')
@@ -111,7 +111,10 @@ OSTYPE_EXIST_IN_SCHEDULE = gettext('Ostype is in use.')
 DEVICE_GROUP_NOT_EXIST = gettext('Current device group is not exist in current system.')
 DEVICE_GROUP_NOT_EXIST_IN_SCHEDULE = gettext('Current device group is not exist in Schedule Table.')
 DATA_TABLE_NOT_EXIST_IN_SYSTEM = gettext('Current data table is not exist in system.')
+DATA_TABLE_EXIST_IN_TRIGGER = gettext('Current data table is running in action policy.')
 CSV_PATH_NOT_EXIST = gettext('CSV path is not exist.')
+DATA_TABLE_PROORITY_0 = '高'
+DATA_TABLE_PROORITY_1 = '标准'
 #########################################
 # Collection Policy Related define
 #########################################
@@ -120,7 +123,7 @@ SPLIT_RULE_SPACE = 'space'
 SPLIT_RULE_COMMA = 'comma'
 SPLIT_RULE_SLASH = 'slash'
 SPLIT_RULE_OTHER = 'other'
-INSTEAD = '@@'
+INSTEAD = '@@'  # '△△'
 NO_MATCH_EXTRACT_DATA_REGEXP = gettext('Can not match the provided regular Expression.')
 
 # collection policy functional related
@@ -156,13 +159,13 @@ RULE_NODE_ICON = 'fa fa-folder-o'
 #########################################
 # Policy Tree Message
 #########################################
-NODE_IS_EXISTENCE = 'The node is exist in the tree'  # ツリー内に定義されているため、編集できません。
+NODE_IS_EXISTENCE = gettext('The node is exist in the tree')  # ツリー内に定義されているため、編集できません。
 RULE_NAME_IS_EXISTENCE = 'RULE_NAME_IS_EXISTENCE'  # 既に同じ表示名のルールが登録されています。
-POLICY_IS_APPLIED = 'The policy is be setting in schedule function.'  # このコレクションポリシーがスケジュールに利用されています。
-POLICY_DATA_VALID_ERROR = 'data valid error when insert policy tree rules'  # コレクションポリシーツリーに追加されたデータが適切ではないです。
-RULE_DATA_VALID_ERROR = 'data valid error in saving the rule'  # ルールを追加する時に、データが適切ではないです
-LOAD_RULE_TYPE_ERROR = 'rule type is not defined'  # ルールのタイプが定義されていないです
-DB_EXCEPTION = 'there is an db exception'
+POLICY_IS_APPLIED = gettext('The policy is be setting in schedule function.')  # このコレクションポリシーがスケジュールに利用されています。
+POLICY_DATA_VALID_ERROR = gettext('Data valid error when insert policy tree rules')  # コレクションポリシーツリーに追加されたデータが適切ではないです。
+RULE_DATA_VALID_ERROR = gettext('Data valid error in saving the rule')  # ルールを追加する時に、データが適切ではないです
+LOAD_RULE_TYPE_ERROR = gettext('Rule type is not defined')  # ルールのタイプが定義されていないです
+DB_EXCEPTION = gettext('There is an db exception')
 RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
 CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
 #########################################
@@ -216,26 +219,26 @@ CP_STATUS_ON_VAULE = 1
 # data collection Error Message
 #########################################
 
-POLICY_DEVICE_COMBINATION = 'There is the same configure in the schedule'  # 同一のコレクションポリシー、ディバイスと優先度が設定されています
-CAN_NOT_DELETE_SCHEDULE_MESSAGE = 'can not delete schedule data'
-CAN_NOT_UPDATE_SCHEDULE_MESSAGE = 'can not update schedule data'
-NO_DEVICE_IN_DEVICE_GROUP = 'There is no device in device group,please check the group'
-NO_CP_IN_CP_GROUP = 'There is no policy in policy group,please check the group'
-NULL_TREE_IN_CP = 'This is a null tree in the cp'
+POLICY_DEVICE_COMBINATION = gettext('There is the same configure in the schedule')  # 同一のコレクションポリシー、ディバイスと優先度が設定されています
+CAN_NOT_DELETE_SCHEDULE_MESSAGE = gettext('Can not delete schedule data')
+CAN_NOT_UPDATE_SCHEDULE_MESSAGE = gettext('Can not update schedule data')
+NO_DEVICE_IN_DEVICE_GROUP = gettext('There is no device in device group,please check the group')
+NO_CP_IN_CP_GROUP = gettext('There is no policy in policy group,please check the group')
+NULL_TREE_IN_CP = gettext('There is a null tree in the collection policy')
 #########################################
 # render
 #########################################
-X_OFFSET_ERROR = 'XOffset is too long'
-Y_OFFSET_ERROR = 'YOffset is too long'
-NOT_MATCH_BASIC_CHAR = 'can not find the basic char'
-NO_EXTRACT_LINE_NUM = 'no lines'
-NO_EXTRACT_DATA = 'no extract data'
-LEAF_IS_BLOCK_RULE = 'LEAF_IS_BLOCK_RULE'
-POLICY_TREE_IS_GROUPED = 'policy tree is grouped'
+X_OFFSET_ERROR = gettext('XOffset is too long')
+Y_OFFSET_ERROR = gettext('YOffset is too long')
+NOT_MATCH_BASIC_CHAR = gettext('Can not find the basic char ')
+NO_EXTRACT_LINE_NUM = gettext('No lines')
+NO_EXTRACT_DATA = gettext('There are no extract data')
+LEAF_IS_BLOCK_RULE = gettext('Because leaf node is block rule,the policy can not be saved!')
+POLICY_TREE_IS_GROUPED = gettext('The policy has been set to a policy group')
 #################################################################
 # instead mark string
-REPLACE_START_MARK = '☆start☆'
-REPLACE_END_MARK = '☆end☆'
+REPLACE_START_MARK = '★★'  # '☆start☆'
+REPLACE_END_MARK = '☆☆'  # '☆end☆'
 LINE_NUM_MSG_REPLACE = '◇◎◎◇'  # '@##@'
 # css style of data rule
 BASIC_CHAR_STYLE = '<span style="color:#6066c9;text-shadow: 0 0 1px #9c9ff9;">'
@@ -253,29 +256,29 @@ SPAN_END = '</span>'
 #########################################
 # device, group and ostype information define
 #########################################
-CSV_TITLE_ERROR = 'The title in csv_flie is wrong, please check'
-CSV_FORMAT_ERROR = 'The type of file is wrong, please check'
-CSV_HOSTNAME_EMPTY = 'Empty Hostname'
-CSV_HOSTNAME_DUPLICATE = 'Duplicate Hostname'
-GROUP_NOT_EXIST = 'There is no result for current query.'
-GROUP_NAME_FORMAT_ERROR = "GROUP NAME FORMAT ERROR"
-EXISTS_IN_DEVICESGROUPS = 'ALREADY_EXISTS_IN_DEVICESGROUPS'
-EXISTS_IN_SCHEDULES = 'ALREADY_EXISTS_IN_SCHEDULES'
-GROUP_ALREADY_EXISTS = 'GROUPNAME_ALREADY_EXISTS'
-END_DEFAULT_COMMANDS_ERROR = "END_DEFAULT_COMMANDS_ERROR"
-START_DEFAULT_COMMANDS_ERROR = "START_DEFAULT_COMMANDS_ERROR"
-LOG_FAIL_JUDGES_ERROR = "LOG_FAIL_JUDGES_ERROR"
-TELNET_PROMPT_EMPTY_ERROR = "TELNET_PROMPT_EMPTY_ERROR"
-TELNET_PROMPT_FORMAT_ERROR = "TELNET_PROMPT_FORMAT_ERROR"
-TELNET_TIMEOUT_FORMAT_ERROR = "TELNET_TIMEOUT_FORMAT_ERROR"
-SNMP_TIMEOUT_FORMAT_ERROR = "SNMP_TIMEOUT_FORMAT_ERROR"
-OSTYPE_NAME_EXISTS = "NAME_IS_EXISTENCE"
-OSTYPE_NAME_EMPTY = "Ostype name can not be empty"
-OSTYPE_EXIST_IN_DEVICES = "There is device(s) in current ostype!"
-OSTYPE_EXIST_IN_SCHEDULE2 = "There is schedule(s) in current ostype!"
-OSTYPE_EXISTS_IN_COLL_POLICY = "There is collection policy in current ostype!"
-OSTYPE_EXIST_IN_DEVICEGROUPS = "There is device group(s) in current ostype!"
-OSTYPE_EXIST_IN_COLL_POLICY_GROUPS = "There is collection policy group(s) in current ostype!"
+CSV_TITLE_ERROR = gettext('The title in csv_flie is wrong, please check')
+CSV_FORMAT_ERROR = gettext('The type of file is wrong, please check')
+CSV_HOSTNAME_EMPTY = gettext('Empty Hostname')
+CSV_HOSTNAME_DUPLICATE = gettext('Duplicate Hostname')
+GROUP_NOT_EXIST = gettext('There is no result for current query.')
+GROUP_NAME_FORMAT_ERROR = gettext("GROUP NAME FORMAT ERROR")
+EXISTS_IN_DEVICESGROUPS = gettext('ALREADY_EXISTS_IN_DEVICESGROUPS')
+EXISTS_IN_SCHEDULES = gettext('ALREADY_EXISTS_IN_SCHEDULES')
+GROUP_ALREADY_EXISTS = gettext('GROUPNAME_ALREADY_EXISTS')
+END_DEFAULT_COMMANDS_ERROR = gettext("END_DEFAULT_COMMANDS_ERROR")
+START_DEFAULT_COMMANDS_ERROR = gettext("START_DEFAULT_COMMANDS_ERROR")
+LOG_FAIL_JUDGES_ERROR = gettext("LOG_FAIL_JUDGES_ERROR")
+TELNET_PROMPT_EMPTY_ERROR = gettext("TELNET_PROMPT_EMPTY_ERROR")
+TELNET_PROMPT_FORMAT_ERROR = gettext("TELNET_PROMPT_FORMAT_ERROR")
+TELNET_TIMEOUT_FORMAT_ERROR = gettext("TELNET_TIMEOUT_FORMAT_ERROR")
+SNMP_TIMEOUT_FORMAT_ERROR = gettext("SNMP_TIMEOUT_FORMAT_ERROR")
+OSTYPE_NAME_EXISTS = gettext("NAME_IS_EXISTENCE")
+OSTYPE_NAME_EMPTY = gettext("Ostype name can not be empty")
+OSTYPE_EXIST_IN_DEVICES = gettext("There is device(s) in current ostype!")
+OSTYPE_EXIST_IN_SCHEDULE2 = gettext("There is schedule(s) in current ostype!")
+OSTYPE_EXISTS_IN_COLL_POLICY = gettext("There is collection policy in current ostype!")
+OSTYPE_EXIST_IN_DEVICEGROUPS = gettext("There is device group(s) in current ostype!")
+OSTYPE_EXIST_IN_COLL_POLICY_GROUPS = gettext("There is collection policy group(s) in current ostype!")
 #########################################
 # Other API information define
 #########################################

@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-@author: kimli
-@contact: kimli@cisco.com
+@author: Gin Chen
+@contact: Gin Chen@cisco.com
 @file: policy_tree_rule_view.py
 @time: 2017/12/25 17:37
 @desc:
@@ -36,7 +36,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         @pre
         @post
         @return rule information,verify result(rule_is_used,is_processing,is_locked)
-        @author kimli
+        @author Gin Chen
         @date 2017/12/25
         """
         try:
@@ -96,7 +96,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         @post
         @note
         @return data rule tree and block rule tree and verify error message
-        @author kimli
+        @author Gin Chen
         @date 2017/12/25
         """
         try:
@@ -176,7 +176,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         @post
         @note
         @return data rule tree and block rule tree and verify error message
-        @author kimli
+        @author Gin Chen
         @date 2017/12/25
         """
         try:
@@ -257,7 +257,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
        @post
        @note
        @return data rule tree and block rule tree
-       @author kimli
+       @author Gin Chen
        @date 2017/12/25
        """
         try:
@@ -292,7 +292,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         @post
         @note
         @return the sorted out rule information
-        @author kimli
+        @author Gin Chen
         @date 2017/12/25
         """
         rule_data_dict = {'name': front_data['name']}
@@ -402,7 +402,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         @post
         @note
         @return the sorted out rule information
-        @author kimli
+        @author Gin Chen
         @date 2017/12/25
         """
         int_reg = ['\d+', '\d', '\d+$', '\d$', '-\d+', '-\d', '-\d+$', '-\d$']
@@ -430,7 +430,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         @post
         @note
         @return the sorted out rule information
-        @author kimli
+        @author Gin Chen
         @date 2017/12/25
         """
         query_result = CollPolicyCliRule.objects.filter(Q(key_str=identifier_name) &
@@ -450,7 +450,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         @post call the function : Tool.get_policy_status(policy_id)
         @note
         @return if the policy is running, return True. if the policy is not running, return False
-        @author kimli
+        @author Gin Chen
         @date 2017/12/25
         """
         return Tool.get_policy_status(coll_policy_id)
@@ -466,7 +466,7 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
        @post
        @note
        @return if the rule status is lock ,return True.if the status is not lock,return False
-       @author kimli
+       @author Gin Chen
        @date 2017/12/25
        """
         # tree_id = CollPolicyRuleTree.objects.filter(rule=rule_id, coll_policy=coll_policy_id).values('treeid')

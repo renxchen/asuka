@@ -8,7 +8,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Validator } from '../../../components/validation/validation';
-import { CollectionPolicyService } from '.././collectionPolicy.service';
 import { Subject } from 'rxjs/Subject';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
@@ -61,7 +60,7 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
         private httpClient: HttpClientComponent,
         private bsModalRef: BsModalRef,
         private modalService: BsModalService,
-        public service: CollectionPolicyService) {
+        ) {
     }
     ngOnInit() {
         this.selSplitChar = '4';
@@ -146,13 +145,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.xOffsetFlg = Validator.xOffsetCheck(this.xOffset.toString());
         }
         if (this.selSplitChar === '3') {
-            // if (this.otherChar) {
-            //     this.otherCharFlg = true;
-            //     this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
-            // } else {
-            //     this.otherCharFlg = false;
-            //     this.otherCharRegFlg = true;
-            // }
             this.otherCharFlg = Validator.notNullCheck(this.otherChar);
             if (this.otherCharFlg) {
                 this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
@@ -204,13 +196,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             this.yOffsetFlg = Validator.offsetCheck(this.yOffset);
         }
         if (this.selSplitChar === '3') {
-            // if (this.otherChar) {
-            //     this.otherCharFlg = true;
-            //     this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
-            // } else {
-            //     this.otherCharFlg = false;
-            //     this.otherCharRegFlg = true;
-            // }
             this.otherCharFlg = Validator.notNullCheck(this.otherChar);
             if (this.otherCharFlg) {
                 this.otherCharRegFlg = Validator.halfWidthReg(this.otherChar);
@@ -262,7 +247,6 @@ export class CLIDataComponent implements OnInit, AfterViewInit {
             return false;
         }
     }
-    // backend feedback:data valid error in saving the rule
     public dataRuleDCheck() {
         /**
         * @brief Verify the validity of the input information

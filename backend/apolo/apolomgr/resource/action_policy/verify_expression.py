@@ -1,8 +1,8 @@
 # encoding=utf-8
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: verify_expression.py
 @time: 2018/1/3 17:34
 @desc:

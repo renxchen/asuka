@@ -105,14 +105,14 @@
                             <label 
                                 for="osType" 
                                 class="col-sm-4 control-label"
-                                [ngClass]="{'text-warning': osTypeFlg=== false}"
+                                [ngClass]="{'text-warning': !ostypeNotNull}"
                             >
                                 <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                                 OS Type:
                             </label>
                             <div 
                                 class="col-sm-6" 
-                                [ngClass]="{'has-warning': osTypeFlg=== false}"
+                                [ngClass]="{'has-warning': !ostypeNotNull}"
                             >
                                 <select 
                                     class="form-control" 
@@ -144,8 +144,12 @@
                                 OID値は必須入力です。
                             </div>
                             <div class="col-sm-12 text-warning" *ngIf="oidNotNull&&!oidFlg">
-                                OID値は半角数字とドットのみで入力してください。
-                            </div>                    
+                                <!-- OID値は半角数字とドットのみで入力してください。 -->
+                                OID can only include numbers and dot and start with 1.
+                            </div>
+                            <div class="col-sm-12 text-warning" *ngIf='!ostypeNotNull'>
+                                Ostype cannot be empty.
+                            </div>                     
                         </div>
                         <div class="form-group" style="margin-top:20px">
                             <div class="col-sm-10 text-right">

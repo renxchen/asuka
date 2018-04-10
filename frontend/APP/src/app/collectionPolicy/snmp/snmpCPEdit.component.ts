@@ -8,7 +8,6 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
-import { TranslateService } from '@ngx-translate/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalComponent } from '../../../components/modal/modal.component';
@@ -37,18 +36,17 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
     nameNotNull: Boolean = true;
     nameFlg: Boolean = true;
     nameMFlg: Boolean = true;
+    ostypeNotNull: Boolean = true;
     oidNotNull: Boolean = true;
     oidFlg: Boolean = true;
     uniqueFlg: Boolean = true;
     osFlg: Boolean = true;
     snmpFlg: Boolean = true;
     constructor(
-        private translate: TranslateService,
         private router: Router,
         private activedRoute: ActivatedRoute,
         private httpClient: HttpClientComponent,
         private modalService: BsModalService) {
-        // translate.setDefaultLang('en');
         let cPIdeTmp: any = this.activedRoute.snapshot.queryParams['id'];
         if (cPIdeTmp && typeof (cPIdeTmp) !== 'undefined') {
             this.cPId = cPIdeTmp;
@@ -94,7 +92,9 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (msg) {
-                        alert(msg);
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
@@ -118,12 +118,11 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                         this.osType = data;
                     }
                 } else {
-                    // if (res['status'] && res['status']['message']) {
-                    //     alert(res['status']['message']);
-                    // }
-                    this.modalMsg = msg;
-                    this.closeMsg = '閉じる';
-                    this.showAlertModal(this.modalMsg, this.closeMsg);
+                    if (msg) {
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                    }
                 }
             });
     }
@@ -143,9 +142,14 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
         if (this.oidNotNull) {
             this.oidFlg = Validator.oidRegCheck(this.snmpOid);
         }
+        if (this.selectedOsType) {
+            this.ostypeNotNull = true;
+        } else {
+            this.ostypeNotNull = false;
+        }
         if (this.nameNotNull && this.nameFlg
             && this.oidNotNull && this.oidFlg
-            && this.selectedOsType) {
+            && this.ostypeNotNull) {
             return true;
         } else {
             return false;
@@ -195,11 +199,6 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
-                        // if (res['data']) {
-                        //     let id = res['data']['coll_policy_id'];
-                        //     this.router.navigate(['/index/snmpcpedit'],
-                        //     { queryParams: {'id' : id }});
-                        // }
                         this.modalMsg = '保存しました。';
                         this.closeMsg = '一覧へ戻る';
                         this.showAlertModal(this.modalMsg, this.closeMsg);
@@ -211,10 +210,11 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                         if (msg === 'Collection policy name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            // alert(msg);
-                            this.modalMsg = msg;
-                            this.closeMsg = '閉じる';
-                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                            if (msg) {
+                                this.modalMsg = msg;
+                                this.closeMsg = '閉じる';
+                                this.showAlertModal(this.modalMsg, this.closeMsg);
+                            }
                         }
                     }
                 });

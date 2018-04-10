@@ -29,10 +29,10 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
     osType: any;
     selectedOsType: any;
     desc: any;
-    // moreFlg: Boolean = true;
     addFlg: Boolean = true;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
+    ostypeNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
     cliFlg: Boolean = true;
     selCPName: any;
@@ -49,7 +49,6 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
     modalRef: BsModalRef;
     modalMsg: any;
     closeMsg: any;
-    // bsModalRef: any;
     constructor(
         private httpClient: HttpClientComponent,
         private activatedRoute: ActivatedRoute,
@@ -63,7 +62,6 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.selExecInterval = 'null';
         this.getOsType();
         // this.selExpiDurantion = '1';
-        // this.getCPNames();
     }
     ngAfterViewInit() {
         setTimeout(() => {
@@ -82,7 +80,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
                 let status = _.get(res, 'status');
-                let msg = _.get(status, 'status');
+                let msg = _.get(status, 'message');
                 let data: any = _.get(res, 'data');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (data && data.length > 0) {
@@ -93,13 +91,21 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     this.getCPNames();
-                    if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+                    if (msg) {
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
     }
     public getCPNames(id?: any) {
+        /**
+        * @brief get collection_policy_name data
+        * @param id: the selected ostype id
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.cpNames = [];
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
@@ -115,16 +121,34 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+                        this.modalMsg = res['status']['message'];
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
     }
     public formatterBtn(cellvalue, options, rowObject) {
+        /**
+         * @brief format the action buttons
+         * @param cellvalue: value of the cell;
+                  options:includes attributes such as RowId,colModel;
+                  rowObject:json data of the row
+         * @pre called during calling the function of drawCPTable
+         * @return renturn action buttons with rowId
+         * @author Dan Lv
+         * @date 2018/03/13
+         */
         return '<button class="btn btn-xs btn-warning delete"  id='
             + rowObject['policy'] + '><i class="fa fa-minus-square"></i> 削除</button>';
     }
     public deleteBtn() {
+        /**
+        * @brief get the collection policy id and delete this collection policy
+        * @post reload moreInfoTable if delete sucessfully
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
         $('.delete').click(function (event) {
             let cpList: any = _t.cpList;
@@ -142,6 +166,12 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         });
     }
     public execIntervalChange(selExecInterval: any) {
+        /**
+        * @brief change 'execInterval' and filter relative collection policy data
+        * @param selExecInterval: current 'execInterval' id
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         // if (selExecInterval === '60') {
         //     let snmpNameTmp: any = [];
         //     _.each(this.cpNames, function (cpName) {
@@ -155,6 +185,12 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         // }
     }
     public ostypeChange(selOstype: any) {
+        /**
+        * @brief change 'ostype' and calling function 'getCPNames()';
+        * @param selOstype: current 'ostype' id
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.selCPName = 'null';
         this.selExecInterval = 'null';
         this.cpList = [];
@@ -162,6 +198,12 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.getCPNames(selOstype);
     }
     public cpNamecChange(selCPName: any) {
+        /**
+        * @brief change 'collection policy name' and filter relative 'execInterval'
+        * @param selCPName: current 'collection policy name' id
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         // let _t = this;
         // _t.cliFlg = true;
         // _.each(this.cpNames, function (cpName) {
@@ -176,6 +218,13 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.addFlg = !this.addFlg;
     }
     public cpNameFomatter(id: any) {
+        /**
+        * @brief filter name and policy type of the selected 'collection policy name and return'
+        * @param id: current 'collection policy name' id
+        * @return cpName
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let cpNames = this.cpNames;
         let cpName: any = {};
         for (let i = 0; i < cpNames.length; i++) {
@@ -187,6 +236,11 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         }
     }
     public toCPDetail() {
+        /**
+        * @brief get the collection policy id and jump to colleciton policy detail page
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
         $('.cp-span').click(function (event) {
             let idTmp = $(event)[0].target.id.split('_');
@@ -204,6 +258,11 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         });
     }
     public addMoreInfo() {
+        /**
+        * @brief add the selected data to table
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let cpInfo: any = {};
         let cpList = this.cpList;
         for (let i = 0; i < cpList.length; i++) {
@@ -225,10 +284,8 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             cpInfo['status'] = '1';
             cpInfo['policy_group'] = this.cPGId;
             cpInfo['policy_policy_type'] = cpName.type;
-            // console.log('cpInfo', cpInfo);
             this.cpList.push(cpInfo);
             this.cpgActionGrid$.GridUnload();
-            // $('#moreInfoTable').jqGrid('clearGridData');
             this.moreInfoTable(this.cpList);
         } else {
             if (this.selCPName === 'null') {
@@ -281,15 +338,6 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                     formatter: function (cellvalue, options, rowObject) {
                         let policyId = rowObject.policy;
                         let cpType: any = rowObject.policy_policy_type;
-                        // if (cpType.toString() === '0') {
-                        //     return '<a href="/index/clicpdetail?id=' + policyId
-                        //         + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
-                        // } else if (cpType.toString() === '1') {
-                        //     return '<a href="/index/snmpcpdetail?id=' + policyId
-                        //         + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
-                        // } else {
-                        //     return;
-                        // }
                         if (cpType.toString() === '0') {
                             return '<a class="cp-span" id=' + 'cli_' + policyId +
                                 ' style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
@@ -371,9 +419,13 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.fullWithoutSpecial(this.name);
-            // this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
-        if (this.nameNotNull && this.nameFlg && this.selectedOsType) {
+        if (this.selectedOsType) {
+            this.ostypeNotNull = true;
+        } else {
+            this.ostypeNotNull = false;
+        }
+        if (this.nameNotNull && this.nameFlg && this.ostypeNotNull) {
             return true;
         } else {
             return false;
@@ -408,10 +460,11 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                         if (msg && msg === 'Collection policy group name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            // alert(msg);
-                            this.modalMsg = msg;
-                            this.closeMsg = '閉じる';
-                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                            if (msg) {
+                                this.modalMsg = msg;
+                                this.closeMsg = '閉じる';
+                                this.showAlertModal(this.modalMsg, this.closeMsg);
+                            }
                         }
                     }
                 });

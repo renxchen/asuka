@@ -2,8 +2,8 @@
 # coding=utf-8
 """
 
-@author: kimli
-@contact: kimli@cisco.com
+@author: necwang
+@contact: necwang@cisco.com
 @file: data_table_step4_tree_views.py
 @time: 2018/1/15 16:34
 @desc:
@@ -25,6 +25,7 @@ class DataTableTreeViewsSet(viewsets.ViewSet):
     def __init__(self, request, **kwargs):
         super(DataTableTreeViewsSet, self).__init__(**kwargs)
         self.request = request
+        self.new_token = views_helper.get_request_value(self.request, "NEW_TOKEN", 'META')
         # collection policy id
         self.id = views_helper.get_request_value(self.request, 'id', 'GET')
 
@@ -39,7 +40,17 @@ class DataTableTreeViewsSet(viewsets.ViewSet):
                 policy_tree = Policy_tree(self.id)
                 # get policy tree
                 policy_tree_dict = policy_tree.get_policy_tree()
-                return api_return(data=policy_tree_dict)
+                data = {
+                    'data': {
+                        'data': policy_tree_dict,
+                    },
+                    'new_token': self.new_token,
+                    constants.STATUS: {
+                        constants.STATUS: constants.TRUE,
+                        constants.MESSAGE: constants.SUCCESS,
+                    },
+                }
+                return api_return(data=data)
         except Exception, e:
             if constants.DEBUG_FLAG:
                 print traceback.format_exc(e)

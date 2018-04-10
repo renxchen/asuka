@@ -5,10 +5,10 @@ export class Validator {
     static halfWithoutSpecialReg: RegExp = /[^\x00-\xff]|[\x22|\x20|\x27\x2c]/;
     // only half-width
     static halfReg: RegExp = /[^\x00-\xff]/;
-    // static oidReg: RegExp = /^[1-9]+(\.[1-9]*|\.[1-9][0-9]|\.[1-9][0-9][0-9])*$/;
     // static oidReg: RegExp = /^[1-9](\.(?!0+)\d+)*$/;
     // static oidReg: RegExp = /^1(\.(?!0)\d+)*$/;
-    static oidReg: RegExp = /^1(\.(?!0+)\d+)*$/;
+    // static oidReg: RegExp = /^1(\.(?!0+)\d+)*$/;
+    static oidReg: RegExp = /^1(\.\d+)*$/;
     // static numReg: RegExp = /^\+?[1-9]\d*$/;
     static numReg: RegExp = /^(0|[1-9]+\d*)$/;
     static xOffsetReg: RegExp = /^-?[1-9]\d*$/;

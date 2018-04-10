@@ -1,3 +1,10 @@
+/**
+* @author: Dan Lv
+* @contact: danlv@cisco.com
+* @file: cliCPDetail.component.ts
+* @time: 2018/03/14
+* @desc: display a cli collection policy
+*/
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
@@ -76,6 +83,11 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         // this.drawPlyTree(this.treeData);
     }
     public getCPDetailInfo(id: any) {
+        /**
+        * @brief get cli collection policy info
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.apiPrefix = '/v1';
         let url = '/api_collection_policy/?id=' + id;
         this.httpClient.setUrl(this.apiPrefix);
@@ -99,13 +111,22 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
                         }
                     }
                 } else {
-                    if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+                    if (msg) {
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
     }
     public drawPlyTree(data: any) {
+        /**
+        * @brief get data and display it on policy tree
+        * @param data: policy tree info
+        * @pre called after calling function "getCPDetailInfo"
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         let _t = this;
         $('#policyTree').jstree({
             core: {
@@ -127,6 +148,11 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         });
     }
     public ruleNameFormatter(name: any) {
+        /**
+        * @brief format rule name
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         if (name.indexOf('block_rule') !== -1) {
             this.iconFlg = true;
         } else {
@@ -160,6 +186,14 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         return this.httpClient.toJson(this.httpClient.get(url));
     }
     public getDataRule(ruleId: any) {
+        /**
+        * @brief get rule data
+        * @param ruleId: rule id;
+        * @pre called when clicking rule from page
+        * @post display rule info in detail
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.commInfo(ruleId).subscribe(res => {
             let status = _.get(res, 'status');
             let data = _.get(res, 'data');
@@ -182,12 +216,22 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
                     this.extractKey = _.get(data, 'extract_key');
                     this.selSplitChar = this.splitCharFomatter(_.get(data, 'split_char'));
                 } else {
-                    alert(msg);
+                    if (msg) {
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                    }
                 }
             }
         });
     }
     public splitCharFomatter(char: any) {
+        /**
+        * @brief format data
+        * @parem char: split type;
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         if (char && char.toString() === '4') {
             return 'スペース';
         } else if (char && char.toString() === '1') {
@@ -199,9 +243,19 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         }
     }
     public naviCPEdit() {
+        /**
+        * @brief get the cli collection policy id and jump to edit page
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.router.navigate(['/index/clicpedit'], { queryParams: { 'id': this.cPId } });
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
+        /**
+        * @brief show modal dialog
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;

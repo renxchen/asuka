@@ -34,6 +34,7 @@ export class CPGEditComponent implements OnInit {
     addFlg: Boolean = true;
     nameFlg: Boolean = true;
     nameNotNull: Boolean = true;
+    ostypeNotNull: Boolean = true;
     uniqueFlg: Boolean = true;
     usingFlg: Boolean = false;
     cliFlg: Boolean = true;
@@ -60,7 +61,6 @@ export class CPGEditComponent implements OnInit {
         private httpClient: HttpClientComponent,
         private activatedRoute: ActivatedRoute,
         private router: Router,
-        // private bsModalRef: BsModalRef,
         private modalService: BsModalService
     ) {
         let cPIdTmp = this.activatedRoute.snapshot.queryParams['id'];
@@ -76,13 +76,12 @@ export class CPGEditComponent implements OnInit {
         this.selCPName = 'null';
         this.selExecInterval = 'null';
         this.getOsType();
-        // this.getCPNames();
     }
 
     public getCPGInfo(id: any) {
         /**
         * @brief get the specified collection policy group data and assignment variable
-        * @param id:collection policy id
+        * @param id:collection policy group id
         * @author Dan Lv
         * @date 2018/03/13
         */
@@ -125,7 +124,7 @@ export class CPGEditComponent implements OnInit {
             .toJson(this.httpClient.get('/api_ostype/'))
             .subscribe(res => {
                 let status = _.get(res, 'status');
-                let msg = _.get(status, 'status');
+                let msg = _.get(status, 'message');
                 let data: any = _.get(res, 'data');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
                     if (data && data.length > 0) {
@@ -136,16 +135,17 @@ export class CPGEditComponent implements OnInit {
                     }
                 } else {
                     this.getCPNames();
-                    if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+                    if (msg) {
+                        this.modalMsg = msg;
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
     }
-    // modify
     public getCPNames(id?: any) {
         /**
-        * @brief get all of the collection policy  data
+        * @brief get collection_policy_name data
         * @author Dan Lv
         * @date 2018/03/13
         */
@@ -164,37 +164,63 @@ export class CPGEditComponent implements OnInit {
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
-                        alert(res['status']['message']);
+                        this.modalMsg = res['status']['message'];
+                        this.closeMsg = '閉じる';
+                        this.showAlertModal(this.modalMsg, this.closeMsg);
                     }
                 }
             });
     }
     public formatterBtn(cellvalue, options, rowObject) {
+        /**
+         * @brief format the action buttons
+         * @param cellvalue: value of the cell;
+                  options:includes attributes such as RowId,colModel;
+                  rowObject:json data of the row
+         * @pre called during calling the function of drawCPTable
+         * @return renturn action buttons with rowId
+         * @author Dan Lv
+         * @date 2018/03/13
+         */
         return '<button class="btn btn-xs btn-warning delete"  id='
             + rowObject['policy'] + '><i class="fa fa-minus-square"></i> 削除</button>';
     }
     public deleteBtn() {
+        /**
+        * @brief get the collection policy id and delete this collection policy
+        * @post reload moreInfoTable if delete sucessfully
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
-            $('.delete').click(function (event) {
-                if (this.exeFlg) {
-                    let cpList: any = _t.cpList;
-                    let id = $(event)[0].target.id;
-                    for (let i = 0; i < cpList.length; i++) {
-                        if (cpList[i].policy.toString() === id) {
-                            cpList.splice(i, 1);
-                            _t.cpgActionGrid$.GridUnload();
-                            // $('#moreInfoTable').jqGrid('clearGridData');
-                            _t.moreInfoTable(cpList);
-                        }
+        $('.delete').click(function (event) {
+            if (_t.exeFlg.toString().toLowerCase() === 'true') {
+                let cpList: any = _t.cpList;
+                let id = $(event)[0].target.id;
+                for (let i = 0; i < cpList.length; i++) {
+                    if (cpList[i].policy.toString() === id) {
+                        cpList.splice(i, 1);
+                        _t.cpgActionGrid$.GridUnload();
+                        // $('#moreInfoTable').jqGrid('clearGridData');
+                        _t.moreInfoTable(cpList);
                     }
-                    _t.cpList = cpList;
-                    event.stopPropagation();
+                }
+                _t.cpList = cpList;
+                event.stopPropagation();
             } else {
-                alert('Collection policy group is running in system.');
+                _t.modalMsg = 'Collection policy group is running in system.';
+                _t.closeMsg = '閉じる';
+                _t.showAlertModal(_t.modalMsg, _t.closeMsg);
             }
         });
     }
     public execIntervalChange(selExecInterval: any) {
+        /**
+        * @brief change 'execInterval' and filter relative collection policy data
+        * @param selExecInterval: current 'execInterval' id
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         // if (selExecInterval === '60') {
         //     let snmpNameTmp: any = [];
         //     _.each(this.cpNames, function (cpName) {
@@ -208,6 +234,12 @@ export class CPGEditComponent implements OnInit {
         // }
     }
     public ostypeChange(selOstype: any) {
+        /**
+        * @brief change 'ostype' and calling function 'getCPNames()';
+        * @param selOstype: current 'ostype' id
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         this.selCPName = 'null';
         this.selExecInterval = 'null';
         this.cpList = [];
@@ -215,6 +247,12 @@ export class CPGEditComponent implements OnInit {
         this.getCPNames(selOstype);
     }
     public cpNamecChange(selCPName: any) {
+        /**
+        * @brief change 'collection policy name' and filter relative 'execInterval'
+        * @param selCPName: current 'collection policy name' id
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         // let _t = this;
         // _t.cliFlg = true;
         // _.each(this.cpNames, function (cpName) {
@@ -229,6 +267,13 @@ export class CPGEditComponent implements OnInit {
         this.addFlg = !this.addFlg;
     }
     public cpNameFomatter(id: any) {
+        /**
+        * @brief filter name and policy type of the selected 'collection policy name and return'
+        * @param id: current 'collection policy name' id
+        * @return cpName
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let cpNames = this.cpNames;
         let cpName: any = {};
         for (let i = 0; i < cpNames.length; i++) {
@@ -240,6 +285,11 @@ export class CPGEditComponent implements OnInit {
         }
     }
     public toCPDetail() {
+        /**
+        * @brief get the collection policy id and jump to colleciton policy detail page
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let _t = this;
         $('.cp-span').click(function (event) {
             let idTmp = $(event)[0].target.id.split('_');
@@ -255,6 +305,11 @@ export class CPGEditComponent implements OnInit {
         });
     }
     public addMoreInfo() {
+        /**
+        * @brief add the selected data to table
+        * @author Dan Lv
+        * @date 2018/03/13
+        */
         let cpInfo: any = {};
         let cpList = this.cpList;
         for (let i = 0; i < cpList.length; i++) {
@@ -332,15 +387,6 @@ export class CPGEditComponent implements OnInit {
                     formatter: function (cellvalue, options, rowObject) {
                         let policyId = rowObject.policy;
                         let cpType: any = rowObject.policy_policy_type;
-                        // if (cpType.toString() === '0') {
-                        //     return '<a href="/index/clicpdetail?id=' + policyId
-                        //         + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
-                        // } else if (cpType.toString() === '1') {
-                        //     return '<a href="/index/snmpcpdetail?id=' + policyId
-                        //         + '"style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
-                        // } else {
-                        //     return;
-                        // }
                         if (cpType.toString() === '0') {
                             return '<a class="cp-span" id=' + 'cli_' + policyId +
                                 ' style="text-decoration:underline;color:#066ac5">' + cellvalue + '</a>';
@@ -392,6 +438,11 @@ export class CPGEditComponent implements OnInit {
         $('#moreInfoTable').jqGrid({ searchOnEnter: true, defaultSearch: 'cn' });
     }
     public execIntervalFomatter(id: any) {
+        /**
+        * @brief format the data
+        * @author Dan Lv
+        * @date 2018/03/14
+        */
         if (id.toString() === '60') {
             return '1分';
         } else if (id.toString() === '300') {
@@ -413,13 +464,17 @@ export class CPGEditComponent implements OnInit {
         * @author Dan Lv
         * @date 2018/03/13
         */
-       this.uniqueFlg = true;
+        this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
             this.nameFlg = Validator.fullWithoutSpecial(this.name);
-            // this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
-        if (this.nameNotNull && this.nameFlg && this.selectedOsType) {
+        if (this.selectedOsType) {
+            this.ostypeNotNull = true;
+        } else {
+            this.ostypeNotNull = false;
+        }
+        if (this.nameNotNull && this.nameFlg && this.ostypeNotNull) {
             return true;
         } else {
             return false;
@@ -439,9 +494,7 @@ export class CPGEditComponent implements OnInit {
             groups['name'] = this.name;
             groups['ostype_name'] = this.selectedOsType;
             groups['desc'] = this.desc;
-            // console.log(this.cpList, groups);
             let url = '/api_collection_policy_group/';
-            // console.log(url + '---' + groups);
             this.httpClient.setUrl(this.apiPrefix);
             this.httpClient
                 .toJson(this.httpClient.put(url, groups))
@@ -455,10 +508,11 @@ export class CPGEditComponent implements OnInit {
                         if (msg && msg === 'Collection policy group name is exist in system.') {
                             this.uniqueFlg = false;
                         } else {
-                            // alert(msg);
-                            this.modalMsg = msg;
-                            this.closeMsg = '閉じる';
-                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                            if (msg) {
+                                this.modalMsg = msg;
+                                this.closeMsg = '閉じる';
+                                this.showAlertModal(this.modalMsg, this.closeMsg);
+                            }
                         }
                     }
                 });

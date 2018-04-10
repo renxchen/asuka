@@ -11,10 +11,15 @@ declare var $: any;
 })
 export class TestSnmpComponent implements OnInit, AfterViewInit {
 
+    apiPrefix: any = '/v1';
     snmpParameter1: string;
     snmpParameter2: string;
     snmpParameter3: string;
-
+    snmpParameter4: string;
+    snmpParameter5: string;
+    snmpParameter6: string;
+    snmpParameter7: string;
+    value: string;
 
     constructor(
         public httpClient: HttpClientComponent,
@@ -23,30 +28,33 @@ export class TestSnmpComponent implements OnInit, AfterViewInit {
     ) {}
 
     ngOnInit(){
+        this.httpClient.setUrl(this.apiPrefix);
     }
 
     ngAfterViewInit() {
 
     }
 
-    // http://10.79.148.107:1111/v1/api_snmp_collection_test/
-    // ?ip=10.71.244.135&community=cisco
-    // &oids=['1.3.6.1.2.1.1.1.0', '1.3.6.1.2.1.1.2.0','1.3.6.1.2.1.10.30.5']
-
     submitSnmp(){
-        let url_snmp = "http://10.71.244.134:1111/v1/api_snmp_collection_test/?ip="+this.snmpParameter1+"&community="
-            +this.snmpParameter2+"&oids=['"+this.snmpParameter3+"']";
-        console.log(url_snmp);
-        $.ajax({
-            url: url_snmp,
-            type: 'get',
-            // dataType: 'json',
-            // data: {'device_info': eval("("+this.snmpParameter1+")")}
-          }).done(function (res) {
-              console.log(res);
-              $('#result1').html(res["data"]["data"][0]["output"][0]["value"]);
-          });
+        let _this = this;
+        let url_snmp = "/api_snmp_collection_test/";
+        let data: any = {};
+        data["oids"] = this.snmpParameter7;
+        data["port"] = this.snmpParameter4;
+        data["snmp_version"] = this.snmpParameter6;
+        data["ip"] = this.snmpParameter1;
+        data["hostname"] = this.snmpParameter2;
+        data["community"] = this.snmpParameter5;
+        data["timeout"] = this.snmpParameter3;
+        this.httpClient
+            .toJson(this.httpClient.post(url_snmp, data))
+            .subscribe(res => {
+                if (res['status']['status'].toString().toLowerCase() === 'true') {
+                   console.log(res);
+                    _this.value = res["data"]["data"];
+                } else {
+                    alert(res['status']['message']);
+                }
+        });
     }
-
-
 }

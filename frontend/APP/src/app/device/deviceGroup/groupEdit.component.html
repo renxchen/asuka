@@ -11,14 +11,14 @@
             <div class="form-group">
                 <label 
                     for="name" 
-                    class="col-sm-4 control-label" 
+                    class="col-sm-3 control-label" 
                     [ngClass]="{'text-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
                 >
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     デバイスグループ名：
                 </label>
                 <div 
-                    class="col-sm-8" 
+                    class="col-sm-9" 
                     [ngClass]="{'has-warning': !nameFlg||!nameNotNull||!uniqueFlg}"
                 >
                     <input 
@@ -38,13 +38,17 @@
             <div class="form-group">
                 <label 
                     for="osType" 
-                    class="col-sm-4 
+                    class="col-sm-3 
                     control-label"
+                    [ngClass]="{'text-warning': !ostypeNotNull}"
                 >
                     <i class="fa fa-asterisk text-danger" title="必須項目"></i>
                     OS Type：
                 </label>
-                <div class="col-sm-8">
+                <div 
+                    class="col-sm-9"
+                    [ngClass]="{'has-warning': !ostypeNotNull}"
+                >
                     <select 
                         class="form-control" 
                         [(ngModel)]="selectedOsType" 
@@ -63,13 +67,13 @@
             <div class="form-group">
                 <label 
                     for="desc" 
-                    class="col-sm-4 
+                    class="col-sm-3 
                     control-label" 
                     [ngClass]="{'text-warning': descFlg}"
                 >
                     概要：
                 </label>
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <textarea 
                         class="form-control textarea-height" 
                         title="{{desc}}"
@@ -97,14 +101,26 @@
                 class="col-sm-12 text-warning" 
                 *ngIf='!uniqueFlg'
             >
-                デバイスグループ名は既存データと重複しています。。
+                デバイスグループ名は既存データと重複しています。
+            </div>
+            <div 
+                class="col-sm-12 text-warning" 
+                *ngIf='!ostypeNotNull'
+            >
+                Ostype cannot be empty.
             </div>            
         </form>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-sm btn-primary pull-right m-t-n-xs" (click)="editGroup()">
-            <i class="fa fa-check-square-o"></i>
-            保存
-        </button>
+        <div col-sm-3></div>
+        <div col-sm-9>
+            <button 
+                class="btn btn-sm btn-primary pull-right m-t-n-xs" 
+                (click)="editGroup()"
+            >
+                <i class="fa fa-check-square-o"></i>
+                保存
+            </button>
+        </div>
     </div>
 </div>
