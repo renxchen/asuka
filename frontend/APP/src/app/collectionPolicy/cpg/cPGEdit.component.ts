@@ -14,7 +14,6 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import * as _ from 'lodash';
-import { validateConfig } from '@angular/router/src/config';
 declare var $: any;
 
 @Component({
@@ -201,7 +200,6 @@ export class CPGEditComponent implements OnInit {
                     if (cpList[i].policy.toString() === id) {
                         cpList.splice(i, 1);
                         _t.cpgActionGrid$.GridUnload();
-                        // $('#moreInfoTable').jqGrid('clearGridData');
                         _t.moreInfoTable(cpList);
                     }
                 }
@@ -331,10 +329,8 @@ export class CPGEditComponent implements OnInit {
             cpInfo['status'] = '1';
             cpInfo['policy_group'] = this.cPGId;
             cpInfo['policy_policy_type'] = cpName.type;
-            // console.log('cpInfo', cpInfo);
             this.cpList.push(cpInfo);
             this.cpgActionGrid$.GridUnload();
-            // $('#moreInfoTable').jqGrid('clearGridData');
             this.moreInfoTable(this.cpList);
         } else {
             if (this.selCPName === 'null') {
