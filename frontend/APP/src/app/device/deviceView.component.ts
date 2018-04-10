@@ -167,10 +167,16 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         $('.modal').hide();
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        $('body').css('padding-right', '0px');
                         this.devViewTable$.GridUnload();
                         this.drawdevViewTable();
                     } else {
                         $('.modal').hide();
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        $('body').css('padding-right', '0px');
                         if (msg) {
                             this.modalMsg = msg;
                             this.closeMsg = '閉じる';
