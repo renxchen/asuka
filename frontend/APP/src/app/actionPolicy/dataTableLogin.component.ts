@@ -4,6 +4,7 @@ import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 declare var $: any;
 import * as _ from 'lodash';
+import { CommentStmt } from '@angular/compiler';
 
 @Component({
   selector: 'data-table-login',
@@ -267,7 +268,6 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     return result;
   }
 
-
   protected formatterColumnsBtn(value, grid, rows, state) {
 
     let rowId = grid['rowId'];
@@ -282,6 +282,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       let selectedRowId = $(event)[0].target.id.split('_')[2];
       let rowData = $("#stepTable").jqGrid('getRowData', selectedRowId);
       _t.setBtnHighLight(selectedBtnId, allEles);
+      _t.setColumeChangedFlg(rowData);
       _t.selectedRowObj = rowData;
 
     });
@@ -308,19 +309,25 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     return flg;
   }
 
+  public setColumeChangedFlg(newRowData) {
+    let isEqual: boolean = _.isEqual(this.selectedRowObj, newRowData);
+    this.changeFlgs.columeSelectedChangeed = isEqual ? false : true;
+  }
+
+  // step 4
+
   protected getTreeData() {
-    /*
-      call :step3 next
-      cli : get tree data
-      snmp: make tree data
-    */
+    /**
+   * @brief get treedata for cli type and make data for snmp
+   * @author Dan Lv
+   * @date 2018/04/10
+   */
+
     let treeData: any = {};
     let treeType = '';
     if (this.selectedRowObj) {
-      console.log('this.selectedRowObj', this.selectedRowObj);
       treeType = this.selectedRowObj['method'].toLowerCase();
       if (treeType === 'snmp') {
-        console.log('snmp');
         treeData = {
           'text': 'OID',
           'state': {
@@ -332,15 +339,20 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
             'rule_id': 0
           }
         };
+        if (this.changeFlgs.columeSelectedChangeed) {
+          this.destroyTree();
+        }
         this.drawTree(treeData);
       } else {
-        console.log('cli');
         let collection_policy_id = this.selectedRowObj['policyNo'];
         let url = '/api_data_table_step4_tree/?id=' + collection_policy_id;
         this.get(url).subscribe((res: any) => {
           if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'true') {
             treeData = res.data.data;
-            console.log('treeData', treeData);
+            this.setTreeDisabled(treeData);
+            if (this.changeFlgs.columeSelectedChangeed) {
+              this.destroyTree();
+            }
             this.drawTree(treeData);
           } else {
             alert('No Data !');
@@ -350,8 +362,41 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     }
   }
 
-  protected drawTree(treeData) {
+  private setTreeDisabled(sourceTreeData) {
+    /**
+      * @brief set disabled for no-leaf nodes
+      * @param sourceTreeData: tree data
+      * @author Dan Lv
+      * @date 2018/04/10
+      */
+    if (sourceTreeData && sourceTreeData['children'] && sourceTreeData['children'].length > 0) {
+      sourceTreeData['state']['disabled'] = true;
+      for (let child of sourceTreeData['children']) {
+        this.setTreeDisabled(child);
+      }
+    } else {
+      sourceTreeData['state']['disabled'] = true;
+      return false;
+    }
+  }
 
+  private destroyTree() {
+    /**
+  * @brief reload tree
+  * @author Dan Lv
+  * @date 2018/04/10
+  */
+    $('#tree').jstree('destroy');
+    this.changeFlgs.columeSelectedChangeed = false;
+  }
+
+  protected drawTree(treeData) {
+    /**
+    * @brief draw tree
+    * @author Dan Lv
+    * @date 2018/04/10
+    */
+    let _t = this;
     let treeJson: any = {
       'core': {
         'data': treeData,
@@ -362,18 +407,20 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
           'icons': true
         },
         'multiple': false,
-        'check_callback': false,
+        'check_callback': true,
       },
       'plugins': [
         'types',
         'themes'
-      ],
-      'types': {
-        '#': { 'max_depth': 4 }
-      },
+      ]
     };
     $('#tree').jstree(treeJson).bind('activate_node.jstree', function (obj, e) {
+      _t.drawTreeTable();
     });
+  }
+
+  protected drawTreeTable() {
+    console.log('drawTreeTable');
   }
 
   // common function of http
