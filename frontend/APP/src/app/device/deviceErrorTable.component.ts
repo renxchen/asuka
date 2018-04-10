@@ -8,6 +8,7 @@
 import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
+declare var $: any;
 @Component({
     selector: 'device-error-table',
     templateUrl: 'deviceErrorTable.component.html',
@@ -27,5 +28,6 @@ export class DeviceErrorTableComponent implements OnInit, AfterViewInit {
     }
     public closeAlertModal() {
         this.bsModalRef.hide();
+        $('body').removeClass('modal-open');
     }
 }
