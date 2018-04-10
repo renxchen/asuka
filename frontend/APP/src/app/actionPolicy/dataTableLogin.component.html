@@ -60,7 +60,7 @@
             テーブル名:
           </label>
           <div class="col-md-8">
-            <select class="form-control" [(ngModel)]="deviceGroup.group_id" id="deviceGroup" >
+            <select class="form-control" [(ngModel)]="selectedDeviceGroupId" id="deviceGroup" (ngModelChange)="setChangeFlgs('deviceGroup')" >
               <option *ngFor="let deviceGroup of deviceGroupList" value="{{deviceGroup['group_id']}}">
                 {{deviceGroup['name']}}
               </option>
@@ -75,8 +75,8 @@
         </div>
       </div>
       <div id="step4div" [hidden]="currentStep!==4">
-        <div class="col-sm-12">leafを選択してください</div>
-        <div class="form-group">
+        <div class="col-sm-12 annotation">lリーフを選択してください</div>
+        <div class="col-sm-12">
           tree
         </div>
       </div>

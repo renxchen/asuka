@@ -23,7 +23,9 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
 
   sendData: any = {};
   deviceGroup: any = {};
-  selectedRowObj: any ;
+  selectedRowObj: any;
+  selectedDeviceGroupId: any;
+
 
   btnFlgs = {
     btnPrev: false,
@@ -31,6 +33,10 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     btnFinished: false
   };
 
+  changeFlgs = {
+    deviceGroupChaneged: false,
+    columeSelectedChangeed: false
+  };
 
   constructor(
     public httpClient: HttpClientComponent,
@@ -38,6 +44,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
+    this.deviceGroup['id'] = '';
     this.httpClient.setUrl(this.apiPrefix);
     this.getDeviceGroupList();
   }
@@ -61,6 +68,9 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     }
     if (this.currentStep === 3) {
       contuineFlg = this.checkColumeSelected();
+      if (contuineFlg) {
+        this.getTreeData();
+      }
     }
     if (contuineFlg) {
       this.maxStep === this.currentStep ? this.maxStep++ : this.maxStep = this.maxStep;
@@ -104,6 +114,12 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     this.currentStep = step;
   }
 
+  public setChangeFlgs(type) {
+    if (type === 'deviceGroup') {
+      this.changeFlgs.deviceGroupChaneged = true;
+    }
+  }
+
   // step 1
 
   public checkTableNameValidation() {
@@ -139,7 +155,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'true') {
         if (res.data && res.data.length > 0) {
           this.deviceGroupList = res.data;
-          this.deviceGroup.group_id = res.data[0]['group_id'];
+          this.selectedDeviceGroupId = res.data[0]['group_id'];
         }
       } else {
         let msg = res.status.message;
@@ -165,11 +181,13 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
 
   private getDeviceGroupName() {
     let _t = this;
+    console.log('_t.deviceGroup.group_id', _t.deviceGroup.group_id, _t.deviceGroup);
     let selectDeviceGroup: any;
     if (this.deviceGroupList && this.deviceGroupList.length > 0) {
       selectDeviceGroup = _.find(this.deviceGroupList, function (groupData) {
-        return groupData['group_id'] === _t.deviceGroup.group_id;
+        return groupData['group_id'] == _t.selectedDeviceGroupId;
       });
+      console.log('selectDeviceGroup', selectDeviceGroup);
       if (selectDeviceGroup) {
         this.deviceGroup = selectDeviceGroup;
       }
@@ -178,9 +196,9 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
 
   public drawStepTable() {
     let _t = this;
-
     this.getDeviceGroupName();
     if (this.deviceGroup && this.deviceGroup['group_id'] && this.deviceGroup['name']) {
+      console.log('ininin');
       let url = 'v1/api_data_table_step3_table/?id=' + this.deviceGroup['group_id'] + '&device_group_name=' + this.deviceGroup['name'];
       let stepTableModel: any = [
         {
@@ -208,7 +226,6 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
         { label: 'oid', name: 'oid', hidden: true },
 
       ];
-
       $('#stepTable').jqGrid({
         url: url,
         datatype: 'JSON',
@@ -232,8 +249,12 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
           repeatitems: false,
         },
       });
+      if (this.changeFlgs.deviceGroupChaneged) {
+        $("#stepTable").jqGrid().setGridParam({ datatype: 'json', url: url }).trigger('reloadGrid');
+      }
 
-      // $('#stepTable').jqGrid('filterToolbar', { defaultSearch: 'cn' });
+    } else {
+      console.log('else');
     }
   }
 
@@ -281,7 +302,6 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   }
 
   private checkColumeSelected() {
-
     let flg = this.selectedRowObj ? true : false;
     console.log('this.selectedRowObj', this.selectedRowObj)
     if (!flg) {
@@ -289,6 +309,17 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     }
     return flg;
   }
+
+  protected getTreeData() {
+    /*
+      call :step3 next
+      cli : get tree data
+      snmp: make tree data
+    */
+
+  }
+
+
   // common function of http
 
   private get(url: string) {
