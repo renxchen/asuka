@@ -82,10 +82,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
                 });
         } else {
-            let _t = this;
-            _t.modalMsg = 'ユーザー名とパスワードを入力してください。';
-            _t.closeMsg = '閉じる';
-            _t.showAlertModal(_t.modalMsg, this.closeMsg);
+            this.modalMsg = 'ユーザー名とパスワードを入力してください。';
+            this.closeMsg = '閉じる';
+            this.showAlertModal(this.modalMsg, this.closeMsg);
         }
     }
     public showAlertModal(modalMsg: any, closeMsg: any) {
