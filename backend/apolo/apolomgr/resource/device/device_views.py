@@ -307,6 +307,17 @@ class DevicesViewSet(viewsets.ViewSet):
         """
         try:
             with transaction.atomic():
+                devices_tmp = DevicesTmp.objects.filter(operation_id=self.operation_id)
+                if not devices_tmp.exists():
+                    data = {
+                        'data': [],
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.DEVICE_NOT_EXIST
+                        },
+                    }
+                    return api_return(data=data)
                 devices = Devices.objects.filter(status=1)
                 # device_group_change
                 device_group_before = []
@@ -323,7 +334,6 @@ class DevicesViewSet(viewsets.ViewSet):
                 # delete devicegroups
                 DevicesGroups.objects.all().delete()
                 # update
-                devices_tmp = DevicesTmp.objects.filter(operation_id=self.operation_id)
                 devicegroup_list = []
                 insert_list = []
                 group_list = []
