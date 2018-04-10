@@ -38,6 +38,7 @@ FALSE = 'False'
 VERIFY_WHETHER_EXECUTING_SERVER_URL = "http://%s:%s/api/v1/valid"
 VERIFY_WHETHER_EXECUTING_SERVER_IP = '127.0.0.1'
 VERIFY_WHETHER_EXECUTING_SERVER_PORT = '7777'
+VERIFY_WHETHER_CAN_CONNECT_URL = "http://%s:%s/api/v1/devicestatus"
 SYSTEM_ERROR = gettext('System access failed, please connect the administrator.')
 POST_SUCCESSFUL = gettext('Data create successfully.')
 PUT_SUCCESSFUL = gettext('Data update successfully.')
@@ -258,12 +259,12 @@ SPAN_END = '</span>'
 #########################################
 CSV_TITLE_ERROR = gettext('The title in csv_flie is wrong, please check')
 CSV_FORMAT_ERROR = gettext('The type of file is wrong, please check')
-CSV_HOSTNAME_EMPTY = gettext('Empty Hostname')
-CSV_HOSTNAME_DUPLICATE = gettext('Duplicate Hostname')
+CSV_HOSTNAME_EMPTY = gettext('The hostname in csv is empty')
+CSV_HOSTNAME_DUPLICATE = gettext('The hostname in csv is repeated')
 GROUP_NOT_EXIST = gettext('There is no result for current query.')
-GROUP_NAME_FORMAT_ERROR = gettext("GROUP NAME FORMAT ERROR")
-EXISTS_IN_DEVICESGROUPS = gettext('ALREADY_EXISTS_IN_DEVICESGROUPS')
-EXISTS_IN_SCHEDULES = gettext('ALREADY_EXISTS_IN_SCHEDULES')
+GROUP_NAME_FORMAT_ERROR = gettext('The format of group name is incorrect')
+EXISTS_IN_DEVICESGROUPS = gettext('There are devices under the current group')
+EXISTS_IN_SCHEDULES = gettext('The group is already in schedules')
 GROUP_ALREADY_EXISTS = gettext('GROUPNAME_ALREADY_EXISTS')
 END_DEFAULT_COMMANDS_ERROR = gettext("END_DEFAULT_COMMANDS_ERROR")
 START_DEFAULT_COMMANDS_ERROR = gettext("START_DEFAULT_COMMANDS_ERROR")
@@ -279,6 +280,7 @@ OSTYPE_EXIST_IN_SCHEDULE2 = gettext("There is schedule(s) in current ostype!")
 OSTYPE_EXISTS_IN_COLL_POLICY = gettext("There is collection policy in current ostype!")
 OSTYPE_EXIST_IN_DEVICEGROUPS = gettext("There is device group(s) in current ostype!")
 OSTYPE_EXIST_IN_COLL_POLICY_GROUPS = gettext("There is collection policy group(s) in current ostype!")
+DEVICE_NOT_EXIST = gettext("There is no device(s) to log in")
 #########################################
 # Other API information define
 #########################################
