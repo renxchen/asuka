@@ -40,7 +40,8 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
     constructor(
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
-        private modalRef: BsModalRef
+        private modalRef: BsModalRef,
+        private modalRefEdit: BsModalRef
     ) { }
     ngOnInit() {
         this.getOsType();
@@ -165,35 +166,35 @@ export class CLICPEditPopComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    // let type = _.get(status, 'type');
+                    let type = _.get(status, 'type');
                     let data = _.get(res, 'data');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         if (data) {
                             this.cPName = _.get(data, 'name');
                             alert('保存しました。');
-                            this.modalRef.hide();
+                            this.modalRefEdit.hide();
                             this.modalService.setDismissReason(this.cPName);
                         }
                     } else {
-                        // if (type && type === 'NAME_DUPLICATE') {
-                        //     this.uniqueFlg = false;
-                        // }else {
-                        //     if (msg) {
-                        //         this.modalMsg = msg;
-                        //         this.closeMsg = '閉じる';
-                        //         this.showAlertModal(this.modalMsg, this.closeMsg);
-                        //     }
-                        // }
-                        // CP_NAME_DUPLICATE
-                        if (msg && msg === 'Collection policy name is exist in system.') {
+                        if (type && type === 'NAME_DUPLICATE') {
                             this.uniqueFlg = false;
-                        } else {
+                        }else {
                             if (msg) {
                                 this.modalMsg = msg;
                                 this.closeMsg = '閉じる';
                                 this.showAlertModal(this.modalMsg, this.closeMsg);
                             }
                         }
+                        // CP_NAME_DUPLICATE
+                        // if (msg && msg === 'Collection policy name is exist in system.') {
+                        //     this.uniqueFlg = false;
+                        // } else {
+                        //     if (msg) {
+                        //         this.modalMsg = msg;
+                        //         this.closeMsg = '閉じる';
+                        //         this.showAlertModal(this.modalMsg, this.closeMsg);
+                        //     }
+                        // }
                     }
                 });
         }
