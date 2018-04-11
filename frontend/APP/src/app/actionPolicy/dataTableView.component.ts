@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy AfterViewInit } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -13,7 +13,7 @@ import * as _ from 'lodash';
     templateUrl: 'dataTableView.component.html',
     styleUrls: ['actionPolicy.component.less']
 })
-export class DataTableViewComponent implements OnInit, AfterViewInit {
+export class DataTableViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
     tableModel: any = [
         {label: 'No', hidden: true, name: 'table_id', index: 'table_id'},
@@ -30,7 +30,7 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
     ];
 
     modalRef: BsModalRef;
-    modalConfig = {
+    modalConfig: any = {
         animated: true,
         keyboard: true,
         backdrop: true,
@@ -52,6 +52,10 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
     ngAfterViewInit() {
         this.drawDataTableTable();
 
+    }
+
+    ngOnDestroy(){
+        this.modalRef.hide();
     }
 
     formatterButtons(cellvalue, options, rowObject) {
