@@ -168,6 +168,7 @@ LOAD_RULE_TYPE_ERROR = gettext('Rule type is not defined')  # ルールのタイ
 DB_EXCEPTION = gettext('There is an db exception')
 RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
 CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
+#MSG_TYPE = 'type'
 #########################################
 # value_type of policy tree rule
 #########################################
@@ -225,6 +226,8 @@ CAN_NOT_UPDATE_SCHEDULE_MESSAGE = gettext('Can not update schedule data')
 NO_DEVICE_IN_DEVICE_GROUP = gettext('There is no device in device group,please check the group')
 NO_CP_IN_CP_GROUP = gettext('There is no policy in policy group,please check the group')
 NULL_TREE_IN_CP = gettext('There is a null tree in the collection policy')
+DEVICE_GROUP_NOT_IN_SCHEDULE = gettext('The device group is not exist in schedule')
+DEVICE_GROUP_IS_ALL_FUNCTION_ALL = gettext('The device group has been all function off status')
 #########################################
 # render
 #########################################
