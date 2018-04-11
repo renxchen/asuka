@@ -54,7 +54,6 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         private activatedRoute: ActivatedRoute,
         private router: Router,
         private bsModalRef: BsModalRef,
-        private bsModalRefLogin: BsModalRef,
         private modalService: BsModalService,
     ) { }
 
@@ -247,11 +246,11 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             let idTmp = $(event)[0].target.id.split('_');
             let type: any = _.indexOf(idTmp, 0);
             if (_.indexOf(idTmp, 'cli', 0) !== -1) {
-                _t.bsModalRefLogin.hide();
+                _t.bsModalRef.hide();
                 _t.router.navigate(['/index/clicpdetail'],
                     { queryParams: { 'id': idTmp[1] } });
             } else if (_.indexOf(idTmp, 'snmp', 0) !== -1) {
-                _t.bsModalRefLogin.hide();
+                _t.bsModalRef.hide();
                 _t.router.navigate(['/index/snmpcpdetail'],
                     { queryParams: { 'id': idTmp[1] } });
             }
@@ -456,7 +455,7 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                     // let type = _.get(status, 'type');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('保存しました。');
-                        this.bsModalRefLogin.hide();
+                        this.bsModalRef.hide();
                         this.modalService.setDismissReason('true');
                     } else {
                         // if (type && type === 'NAME_DUPLICATE') {

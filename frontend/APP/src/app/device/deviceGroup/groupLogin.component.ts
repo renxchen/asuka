@@ -37,8 +37,7 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
     constructor(
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
-        private bsModalRef: BsModalRef,
-        private bsModalRefLogin: BsModalRef
+        private bsModalRef: BsModalRef
     ) { }
 
     ngOnInit() {
@@ -119,7 +118,7 @@ export class GroupLoginComponent implements OnInit, AfterViewInit {
                     // let type = _.get(status, 'type');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('保存しました。');
-                        this.bsModalRefLogin.hide();
+                        this.bsModalRef.hide();
                         this.modalService.setDismissReason('true');
                     } else {
                         // if (type && type === 'NAME_DUPLICATE') {
