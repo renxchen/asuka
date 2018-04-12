@@ -362,7 +362,6 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
         this.get(url).subscribe((res: any) => {
           if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'true') {
             treeData = res.data.data;
-            console.log('iiiii');
             // treeData = testData;
             this.setTreeDisabled(treeData);
             if (this.changeFlgs.columeSelectedChangeed) {
@@ -539,7 +538,6 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     if (this.tree_id) {
       this.sendData['tree_id'] = this.tree_id;
     }
-    console.log('sendD', this.sendData);
   }
   public saveTableData() {
     if (this.item_id_str) {
