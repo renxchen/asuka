@@ -76,6 +76,7 @@ class TriggerSerializer(serializers.ModelSerializer):
         instance.expression = validated_data.get('expression', instance.expression)
         instance.columnA = validated_data.get('columnA', instance.columnA)
         instance.columnB = validated_data.get('columnB', instance.columnB)
+        instance.identifier = validated_data.get('identifier', instance.identifier)
         instance.save()
         return instance
 
