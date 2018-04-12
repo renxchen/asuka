@@ -52,7 +52,6 @@ export class CPGEditComponent implements OnInit {
     addExecFlg: Boolean = true;
     exeFlg: Boolean = true;
     sameCPFlg: Boolean = true;
-    bsModalRef: any;
     modalRef: BsModalRef;
     modalMsg: any;
     closeMsg: any;
@@ -298,6 +297,9 @@ export class CPGEditComponent implements OnInit {
             } else if (_.indexOf(idTmp, 'snmp', 0) !== -1) {
                 _t.router.navigate(['/index/snmpcpdetail'],
                     { queryParams: { 'id': idTmp[1] } });
+            }else {
+                event.stopPropagation();
+                return;
             }
             event.stopPropagation();
         });
