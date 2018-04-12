@@ -80,7 +80,6 @@ class DevicePreViewSet(APIView):
                     }
                     return api_return(data=data)
                 error_list = []
-                hostname_list = []
                 file_x = []
                 operation_id = int(time.time())
                 file_dir = os.path.abspath(os.path.join(os.getcwd(), "upload"))
@@ -89,6 +88,8 @@ class DevicePreViewSet(APIView):
                 else:
                     os.mkdir(file_dir)
                 path_csv = os.path.abspath(os.path.join(file_dir, str(operation_id) + "_" + filename.name))
+                hostname_dict = {}
+                hostname_repetition = []
                 for f in reader:
                     if len(f) != 10:
                         data = {
@@ -103,7 +104,10 @@ class DevicePreViewSet(APIView):
                     file_x.append(f)
                     # hostname check
                     if f.get(hostname).strip() != '':
-                        hostname_list.append(f.get(hostname))
+                        if hostname_dict.get(f.get(hostname)) is None:
+                            hostname_dict[f.get(hostname)] = 0
+                        else:
+                            hostname_repetition.append(f.get(hostname))
                     else:
                         data = {
                             'data': [],
@@ -115,9 +119,9 @@ class DevicePreViewSet(APIView):
                             },
                         }
                         return api_return(data=data)
-                if len(hostname_list) != len(set(hostname_list)):
+                if len(hostname_repetition) != 0:
                     data = {
-                        'data': [],
+                        'data_duplicate': list(set(hostname_repetition)),
                         'error_list': error_list,
                         'new_token': self.new_token,
                         constants.STATUS: {
@@ -276,8 +280,8 @@ class DevicePreViewSet(APIView):
                                                 {"ostypeid": ostype_id}).name:
                                             flag_group += 1
                             if not flag_group == len(group):
-                                dict_check['ostype'] = False
                                 dict_check['group'] = False
+                                dict_check['ostype'] = False
                                 flag_err += 1
                             else:
                                 dict_check['group'] = True
