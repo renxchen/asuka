@@ -23,9 +23,6 @@ import csv, codecs, re
 import string
 import time
 import chardet
-from django.http import HttpResponse
-import json
-
 
 class DevicePreViewSet(APIView):
     parser_classes = (FileUploadParser,)
@@ -114,7 +111,7 @@ class DevicePreViewSet(APIView):
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: constants.NAME_EMPTY
+                                constants.MESSAGE: constants.CSV_HOSTNAME_EMPTY
                             },
                         }
                         return api_return(data=data)
