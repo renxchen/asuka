@@ -59,9 +59,9 @@ export class OstypeComponent implements OnInit, AfterViewInit {
             mtype: 'get',
             colModel: [
                 { label: 'No', hidden: true, name: 'ostypeid', index: 'ostypeid', search: false, key: true },
-                { label: 'OS Type名', name: 'name', index: 'name', width: 140, align: 'center', search: true },
+                { label: 'OS Type名', name: 'name', index: 'name', align: 'center', search: true },
                 {
-                    label: '概要', name: 'desc', index: 'desc', width: 140, align: 'center', search: true,
+                    label: '概要', name: 'desc', index: 'desc', align: 'center', search: true,
                     formatter: _t.noDataFormatter
                 },
                 {
@@ -70,21 +70,21 @@ export class OstypeComponent implements OnInit, AfterViewInit {
                 },
                 {
                     label: 'CLI情報取得完了後<br/>デフォルト実行コマンド', name: 'end_default_commands',
-                    index: 'end_default_commands', width: 140, align: 'left', search: true,
+                    index: 'end_default_commands', align: 'left', search: true,
                     formatter: _t.brFormatter
                 },
                 {
                     label: 'CLIエラー文字列', name: 'log_fail_judges', index: 'log_fail_judges',
-                    width: 140, align: 'left', search: true, formatter: _t.brFormatter
+                    align: 'left', search: true, formatter: _t.brFormatter
                 },
                 {
                     label: 'CLIデフォルト<br/>プロンプト文字列', name: 'telnet_prompt', index: 'telnet_prompt',
-                    width: 140, align: 'center', search: true
+                    align: 'center', search: true
                 },
-                { label: 'CLI タイムアウト値', name: 'telnet_timeout', index: 'telnet_timeout', width: 140, align: 'center', search: true },
-                { label: 'SNMP タイムアウト値', name: 'snmp_timeout', index: 'snmp_timeout', width: 140, align: 'center', search: true },
+                { label: 'CLIタイム<br/>アウト値', name: 'telnet_timeout', index: 'telnet_timeout', align: 'center', search: true },
+                { label: 'SNMPタイム<br/>アウト値', name: 'snmp_timeout', index: 'snmp_timeout', align: 'center', search: true },
                 {
-                    label: 'アクション', name: 'action', width: 120, align: 'center', search: false, sortable: false,
+                    label: 'アクション', name: 'action', width: 180, align: 'center', search: false, sortable: false,
                     formatter: _t.formatterBtn
                 }
             ],
