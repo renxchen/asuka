@@ -257,7 +257,7 @@ SPAN_END = '</span>'
 #########################################
 # device, group and ostype information define
 #########################################
-CSV_TITLE_ERROR = gettext('The title in csv_flie is wrong, please check')
+CSV_TITLE_ERROR = gettext('想定されないフォーマットのCSVが選択されています。登録できません。')
 CSV_FORMAT_ERROR = gettext('The type of file is wrong, please check')
 CSV_HOSTNAME_EMPTY = gettext('The hostname in csv is empty')
 CSV_HOSTNAME_DUPLICATE = gettext('The hostname in csv is repeated')
