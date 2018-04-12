@@ -148,8 +148,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         * @date 2018/03/13
         */
         let _t = this;
-        _t.apiPrefix = '/v1';
-        let url = '/api_collection_policy_group/?id=';
         $('.detail').click(function (event) {
             let detaiId = $(event)[0].target.id;
             if (detaiId) {
@@ -166,8 +164,6 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
         * @date 2018/03/13
         */
         let _t = this;
-        _t.apiPrefix = '/v1';
-        let url = '/api_collection_policy_group/?id=';
         $('.edit').click(function (event) {
             let editId = $(event)[0].target.id;
             if (editId) {

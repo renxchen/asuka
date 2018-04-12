@@ -57,7 +57,7 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
             datatype: 'JSON',
             mtype: 'get',
             colNames: ['DeviceId', 'Hostname', 'IP Address', 'Telnet Port', 'SNMP Port', 'SNMP Community',
-                'SNMP Version', 'Login Expect', 'Device Type', 'Ostype', 'Group', 'Telnet Status', 'SNMP Status'
+                'SNMP Version', 'Login Expect', 'Device Type', 'Os Type', 'Group', 'Telnet Status', 'SNMP Status'
             ],
             colModel: [
                 { hidden: true, name: 'devices_id', index: 'devices_id', search: false, key: true },
@@ -167,10 +167,16 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         $('.modal').hide();
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        $('body').css('padding-right', '0px');
                         this.devViewTable$.GridUnload();
                         this.drawdevViewTable();
                     } else {
                         $('.modal').hide();
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        $('body').css('padding-right', '0px');
                         if (msg) {
                             this.modalMsg = msg;
                             this.closeMsg = '閉じる';

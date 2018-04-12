@@ -82,8 +82,9 @@ class DevicesViewSet(viewsets.ViewSet):
             "timeout": time_out,
             "channel": "status_cli"
         }
-        print payload
-        r = requests.post("http://127.0.0.1:7777/api/v1/devicestatus", data=json.dumps(payload))
+        r = requests.post((constants.VERIFY_WHETHER_CAN_CONNECT_URL % (
+        constants.VERIFY_WHETHER_EXECUTING_SERVER_IP, constants.VERIFY_WHETHER_EXECUTING_SERVER_PORT)),
+                          data=json.dumps(payload))
         response = json.loads(r.text)
         if response.get('status') == 'success':
             status = "Success"
@@ -112,8 +113,9 @@ class DevicesViewSet(viewsets.ViewSet):
             "snmp_version": device.snmp_version,
             "channel": "status_snmp"
         }
-        print payload
-        r = requests.post("http://127.0.0.1:7777/api/v1/devicestatus", data=json.dumps(payload))
+        r = requests.post((constants.VERIFY_WHETHER_CAN_CONNECT_URL % (
+        constants.VERIFY_WHETHER_EXECUTING_SERVER_IP, constants.VERIFY_WHETHER_EXECUTING_SERVER_PORT)),
+                          data=json.dumps(payload))
         response = json.loads(r.text)
         if response.get('status') == 'success':
             status = "Success"
@@ -305,6 +307,17 @@ class DevicesViewSet(viewsets.ViewSet):
         """
         try:
             with transaction.atomic():
+                devices_tmp = DevicesTmp.objects.filter(operation_id=self.operation_id)
+                if not devices_tmp.exists():
+                    data = {
+                        'data': [],
+                        'new_token': self.new_token,
+                        constants.STATUS: {
+                            constants.STATUS: constants.FALSE,
+                            constants.MESSAGE: constants.DEVICE_NOT_EXIST
+                        },
+                    }
+                    return api_return(data=data)
                 devices = Devices.objects.filter(status=1)
                 # device_group_change
                 device_group_before = []
@@ -321,7 +334,6 @@ class DevicesViewSet(viewsets.ViewSet):
                 # delete devicegroups
                 DevicesGroups.objects.all().delete()
                 # update
-                devices_tmp = DevicesTmp.objects.filter(operation_id=self.operation_id)
                 devicegroup_list = []
                 insert_list = []
                 group_list = []
@@ -505,4 +517,3 @@ class DevicesViewSet(viewsets.ViewSet):
             transaction.rollback()
             print e
             raise e
-
