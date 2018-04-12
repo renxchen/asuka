@@ -111,6 +111,7 @@ export class DeviceLoginComponent implements OnInit {
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
                 let data: any = _.get(res, 'error_list');
+                let dataDuplicate: any = _.get(res, 'data_duplicate');
                 this.optId = _.get(res, 'operation_id');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
                     $('.modal').hide();
@@ -131,10 +132,16 @@ export class DeviceLoginComponent implements OnInit {
                     $('body').removeClass('modal-open');
                     $('body').css('padding-right', '0px');
                     this.actionFlg = true;
-                    if (msg) {
-                        this.modalMsg = msg;
+                    if (dataDuplicate && dataDuplicate.length > 0) {
+                        this.modalMsg = '以下のhostnameが重複している。';
                         this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        this.showAlertModal(this.modalMsg, this.closeMsg, dataDuplicate);
+                    } else {
+                        if (msg) {
+                            this.modalMsg = msg;
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                        }
                     }
                 }
             });
@@ -335,7 +342,7 @@ export class DeviceLoginComponent implements OnInit {
             this.showAlertModal(this.modalMsg, this.closeMsg);
         }
     }
-    public showAlertModal(modalMsg: any, closeMsg: any) {
+    public showAlertModal(modalMsg: any, closeMsg: any, data?: any) {
         /**
         * @brief show modal dialog
         * @author Zizhuang Jiang
@@ -344,5 +351,6 @@ export class DeviceLoginComponent implements OnInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+        this.modalRef.content.data = data;
     }
 }
