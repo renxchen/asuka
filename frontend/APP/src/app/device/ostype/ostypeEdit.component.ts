@@ -58,6 +58,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
         private bsModalRef: BsModalRef,
+        private bsModalRefEdit: BsModalRef
     ) { }
     ngOnInit() {
     }
@@ -520,7 +521,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                     // let type = _.get(status, 'type');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('保存しました。');
-                        this.bsModalRef.hide();
+                        this.bsModalRefEdit.hide();
                         this.modalService.setDismissReason('true');
                     } else {
                         // if (type && type === 'NAME_DUPLICATE') {

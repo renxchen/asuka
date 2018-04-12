@@ -22,7 +22,7 @@ from rest_framework.parsers import FileUploadParser
 import csv, codecs, re
 import string
 import time
-
+import chardet
 
 class DevicePreViewSet(APIView):
     parser_classes = (FileUploadParser,)
@@ -47,22 +47,24 @@ class DevicePreViewSet(APIView):
                 headers_expect2 = ["Hostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
                                    "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
                 filename = self.request.FILES['file']
-                try:
-                    dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8", errors="ignore").read(1024))
-                    filename.open()
-                    reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8", errors="ignore"), delimiter=',',
-                                            dialect=dialect)
-                    headers = reader.fieldnames
-                except Exception, e:
-                    data = {
-                        'data': [],
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.CSV_FORMAT_ERROR
-                        },
-                    }
-                    return api_return(data=data)
+
+                for line in filename:
+                    if chardet.detect(line).get('encoding') not in ['ISO-8859-1', 'ascii', 'UTF-8-SIG', 'utf-8']:
+                        data = {
+                            'data': [],
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.CSV_FORMAT_ERROR
+                            },
+                        }
+                        return api_return(data=data)
+                filename.open()
+                dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8", errors="ignore").read(1024))
+                filename.open()
+                reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8", errors="ignore"), delimiter=',',
+                                        dialect=dialect)
+                headers = reader.fieldnames
                 if headers == headers_expect1:
                     hostname = "\xef\xbb\xbfHostname"
                 elif headers == headers_expect2:
@@ -145,6 +147,7 @@ class DevicePreViewSet(APIView):
                                                               and str(letter) != r",")):
                                 dict_check['hostname_check'] = False
                                 flag_err += 1
+                                break
                             else:
                                 dict_check['hostname_check'] = True
                     dict_check['hostname'] = hostname_csv
@@ -192,6 +195,7 @@ class DevicePreViewSet(APIView):
                             if not (str(letter).isalnum() or str(letter) in string.punctuation or str(letter) == ' '):
                                 dict_check['snmp_community'] = False
                                 flag_err += 1
+                                break
                             else:
                                 dict_check['snmp_community'] = True
                     # snmp version
@@ -213,12 +217,10 @@ class DevicePreViewSet(APIView):
                         flag_err += 1
                     else:
                         flag_expect = 0
-                        for symbol in login_expect:
-                            for letter in symbol:
-                                if not (str(letter).isalnum() or str(letter) in string.punctuation or str(
-                                        letter) == ' '):
-                                    dict_check['login_expect'] = False
-                                    flag_expect += 1
+                        for letter in login_expect:
+                            if not (str(letter).isalnum() or str(letter) in string.punctuation or str(
+                                    letter) == ' '):
+                                flag_expect += 1
                         if flag_expect > 0:
                             dict_check['login_expect'] = False
                             flag_err += 1
@@ -274,6 +276,7 @@ class DevicePreViewSet(APIView):
                                                 {"ostypeid": ostype_id}).name:
                                             flag_group += 1
                             if not flag_group == len(group):
+                                dict_check['ostype'] = False
                                 dict_check['group'] = False
                                 flag_err += 1
                             else:
@@ -320,4 +323,3 @@ class DevicePreViewSet(APIView):
         except Exception, e:
             print e
             raise e
-

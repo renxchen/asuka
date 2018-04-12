@@ -22,5 +22,6 @@ export class ModalComponent implements OnInit, AfterViewInit {
     public closeAlertModal() {
         this.bsModalRef.hide();
         $('body').removeClass('modal-open');
+        $('body').css('padding-right', '0px');
     }
 }

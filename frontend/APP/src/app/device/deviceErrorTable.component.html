@@ -1,4 +1,4 @@
-<div class="modal-content">
+<div class="modal-content" style="width:960">
     <div class="modal-header popup-title" style="font-size:21px">
         <i class="fa fa-cubes"></i>
         Error Devices Table
@@ -11,82 +11,79 @@
             <i class="fa fa-times"></i>
         </button>
     </div>
-    <div class="modal-body" style="margin-bottom:10px">
-        <div style="overflow:auto">
-            <!-- <h2><strong>Error Devices Table</strong></h2> -->    
-            <table  class="table">
-                <thead>
-                    <tr>
-                        <th>Hostname</th>
-                        <th>Hostname Format</th>
-                        <th>IP Address</th>
-                        <th>Telnet Port</th>
-                        <th>SNMP Port</th>
-                        <th>SNMP Community</th>
-                        <th>SNMP Version</th>
-                        <th>Login Expect</th>
-                        <th>Device Type</th>
-                        <th>Os Type</th>
-                        <th>Group</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let item of data">
-                        <td>{{item.hostname}}</td>
-                        <td>
-                            <span *ngIf="!item.hostname_check">
-                                <i class="fa fa-times-circle" style="color:red"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <span *ngIf="!item.ip">
-                                <i class="fa fa-times-circle" style="color:red"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <span *ngIf="!item.telnet_port">
-                                <i class="fa fa-times-circle" style="color:red"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <span *ngIf="!item.snmp_port">
-                                <i class="fa fa-times-circle" style="color:red"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <span *ngIf="!item.snmp_community">
-                                <i class="fa fa-times-circle" style="color:red"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <span *ngIf="!item.snmp_version">
-                                <i class="fa fa-times-circle" style="color:red"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <span *ngIf="!item.login_expect">
-                                <i class="fa fa-times-circle" style="color:red"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <span *ngIf="!item.device_type">
-                                <i class="fa fa-times-circle" style="color:red"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <span *ngIf="!item.ostype">
-                                <i class="fa fa-times-circle" style="color:red"></i>
-                            </span>
-                        </td>
-                        <td>
-                            <span *ngIf="!item.group">
-                                <i class="fa fa-times-circle" style="color:red"></i>
-                            </span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="modal-body" style="max-height:500px;overflow:auto;">
+        <table class="table" style="table-layout:fixed">
+            <thead>
+                <tr>
+                    <th width=20%>Hostname</th>
+                    <th width=10%>Hostname Format</th>
+                    <th width=8%>IP Address</th>
+                    <th width=8%>Telnet Port</th>
+                    <th width=7%>SNMP Port</th>
+                    <th width=10%>SNMP Community</th>
+                    <th width=8%>SNMP Version</th>
+                    <th width=8%>Login Expect</th>
+                    <th width=8%>Device Type</th>
+                    <th width=6% >Os Type</th>
+                    <th width=7%>Group</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of data">
+                    <td title="{{item.hostname}}" style="word-break:break-all">{{item.hostname}}</td>
+                    <td>
+                        <span *ngIf="!item.hostname_check">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngIf="!item.ip">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngIf="!item.telnet_port">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngIf="!item.snmp_port">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngIf="!item.snmp_community">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngIf="!item.snmp_version">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngIf="!item.login_expect">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngIf="!item.device_type">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngIf="!item.ostype">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
+                    <td>
+                        <span *ngIf="!item.group">
+                            <i class="fa fa-times-circle" style="color:red"></i>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <div class="modal-footer">
         <div class="col-md-6 text-left">
