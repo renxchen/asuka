@@ -1,6 +1,6 @@
 <div class="ibox-content text-center p-md">
     <div class="row">
-        <div class="col-lg-12 text-left">
+        <div class="col-lg-6 text-left">
             <div>
                 <label 
                     title="Import CSV file" 
@@ -11,6 +11,7 @@
                         type="file"
                         name="uploadInfo"
                         (change)="changeFile($event.target.files)"
+                        #uploadInfo
                         id="uploadInfo"
                         class="hide"
                         accept=".csv"
@@ -26,6 +27,15 @@
                     デバイス登録
                 </button>
             </div>
+        </div>
+        <div class="col-lg-6 text-right">
+            <button 
+                class="btn btn-primary"
+                (click)="cancelUpload()"
+            >
+                <i class="fa fa-check"></i>
+                キャンセル
+            </button>
         </div>
     </div>
     <div class="row" id="import-msg">

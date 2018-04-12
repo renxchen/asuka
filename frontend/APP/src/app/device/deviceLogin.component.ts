@@ -5,7 +5,7 @@
  * @time: 2018/03/08
  * @desc: import devices
  */
-import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Http } from '@angular/http';
 import { Router } from '@angular/router';
@@ -24,6 +24,7 @@ declare var $: any;
     styleUrls: ['./device.component.less']
 })
 export class DeviceLoginComponent implements OnInit {
+    @ViewChild('uploadInfo') inputFile: any;
     filename: any;
     devLoginTable$: any;
     apiPrefix: any;
@@ -32,7 +33,7 @@ export class DeviceLoginComponent implements OnInit {
     optId: any;
     loginFlg: Boolean = true;
     actionFlg: Boolean = true;
-    formData: FormData;
+    formData: FormData = new FormData();
     modalRef: BsModalRef;
     processbar: BsModalRef;
     closeMsg: any;
@@ -72,9 +73,8 @@ export class DeviceLoginComponent implements OnInit {
             let file: File = files.item(0);
             let fileType = file.type;
             this.filename = file.name;
-            this.formData = new FormData();
-            this.formData.append('file', file);
             if (this.filename.indexOf('.csv') > -1) {
+                this.formData.append('file', file);
                 this.uploadFlg = 'csv';
                 this.loginFlg = false;
             } else {
@@ -341,6 +341,18 @@ export class DeviceLoginComponent implements OnInit {
             this.closeMsg = '閉じる';
             this.showAlertModal(this.modalMsg, this.closeMsg);
         }
+    }
+    public cancelUpload() {
+        this.uploadFlg = 'null';
+        if (this.devLoginTable$) {
+            this.devLoginTable$.GridUnload();
+        }
+        this.inputFile.nativeElement.value = '';
+        if (this.filename) {
+            this.filename = null;
+        }
+        this.loginFlg = true;
+        this.actionFlg = true;
     }
     public showAlertModal(modalMsg: any, closeMsg: any, data?: any) {
         /**
