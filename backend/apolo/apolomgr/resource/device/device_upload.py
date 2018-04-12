@@ -276,6 +276,7 @@ class DevicePreViewSet(APIView):
                                                 {"ostypeid": ostype_id}).name:
                                             flag_group += 1
                             if not flag_group == len(group):
+                                dict_check['ostype'] = False
                                 dict_check['group'] = False
                                 flag_err += 1
                             else:
