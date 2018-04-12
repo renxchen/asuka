@@ -75,7 +75,9 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
             kwargs = {}
             if trigger_id is not None:
                 kwargs = {'trigger_id': trigger_id}
-            result = TriggerDetail.objects.filter(**kwargs).values('expression', 'itemA', 'itemB')
+            result = TriggerDetail.objects.filter(**kwargs).values('expression', 'itemA', 'itemB',
+                                                                   'trigger__trigger_type', 'trigger__identifier',
+                                                                   'trigger__trigger_limit_nums')
             return result
         except Exception as e:
             if constants.DEBUG_FLAG:
@@ -103,10 +105,36 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
             '''
             step 2：
             # 根据step 1返回的trigger_dic中的trigger_id， 查询trigger_detail表中对应的expression.
-            # 返回字典{triggerid_columnA: [{'trigger_id':triggerid, 'exception':expression, 'itemA':itemA, 'itemB':itemB}]}
+            # 返回字典
+            {
+                triggerid_columnA: [
+                    {
+                        'trigger_id':triggerid,
+                        'exception':expression,
+                        'itemA':itemA,
+                        'itemB':itemB,
+                        'trigger_type': trigger__trigger_type,
+                        'identifier': trigger__identifier,
+                        'trigger_limit_nums': trigger__trigger_limit_nums,
+                    }
+                ]
+            }
             1. select trigger_detail according the trigger_id from the return value trigger_dic of step 1,
                get the corresponding expression.
-            2. return dic {triggerid_columnA: [{'trigger_id':triggerid, 'exception':expression, 'itemA':itemA, 'itemB':itemB}]}
+            2. return dic
+            {
+                triggerid_columnA: [
+                    {
+                        'trigger_id':triggerid,
+                        'exception':expression,
+                        'itemA':itemA,
+                        'itemB':itemB,
+                        'trigger_type': trigger__trigger_type,
+                        'identifier': trigger__identifier,
+                        'trigger_limit_nums': trigger__trigger_limit_nums,
+                    }
+                ]
+            }
             '''
             for key, value in trigger_dic.items():
                 temp_trigger_exp_lst = []
@@ -115,11 +143,16 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
                 trigger_detail = self.get_trigger_detail(trigger_id)
                 for per_trigger_detail in trigger_detail:
                     temp_trigger_exp_lst.append(
-                        [{
-                            'trigger_id': trigger_id,
-                            'exception': per_trigger_detail['expression'],
-                            'itemA': per_trigger_detail['itemA'],
-                            'itemB': per_trigger_detail['itemB']}
+                        [
+                            {
+                                'trigger_id': trigger_id,
+                                'expression': per_trigger_detail['expression'],
+                                'itemA': per_trigger_detail['itemA'],
+                                'itemB': per_trigger_detail['itemB'],
+                                'trigger_type': per_trigger_detail['trigger__trigger_type'],
+                                'identifier': per_trigger_detail['trigger__identifier'],
+                                'trigger_limit_nums': per_trigger_detail['trigger__trigger_limit_nums'],
+                            }
                         ])
                 trigger_column_expression_dic[trigger_column_key] = temp_trigger_exp_lst
 
@@ -127,10 +160,40 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
             step 3：
             # 根据step 2返回的trigger_column_expression_dic中的columnA， 查询data_table_item表中对应的device.
             # 返回所有columnA对应的device，
-            # 格式{deviceid: [{trigger_id: triggerid, expression:expression, itemA:itemA, itemB:itemB}]}.
+            # 格式
+            {
+                deviceid: [
+                    [
+                        {
+                            'trigger_id':triggerid,
+                            'exception':expression,
+                            'itemA':itemA,
+                            'itemB':itemB,
+                            'trigger_type': trigger__trigger_type,
+                            'identifier': trigger__identifier,
+                            'trigger_limit_nums': trigger__trigger_limit_nums,
+                        }
+                    ]
+                ]
+            }
             1. select data_table_item according the columnA from the return value rigger_column_expression_dic of step 2,
                get the corresponding device.
-            2. return dic {deviceid: [{trigger_id: triggerid, expression:expression, itemA:itemA, itemB:itemB}]}.
+            2. return dic
+            {
+                deviceid: [
+                    [
+                        {
+                            'trigger_id':triggerid,
+                            'exception':expression,
+                            'itemA':itemA,
+                            'itemB':itemB,
+                            'trigger_type': trigger__trigger_type,
+                            'identifier': trigger__identifier,
+                            'trigger_limit_nums': trigger__trigger_limit_nums,
+                        }
+                    ]
+                ]
+            }.
             '''
             for key, value in trigger_column_expression_dic.items():
                 device_trigger_exp_dic = {}
@@ -143,29 +206,39 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
                 initial_data.append(device_trigger_exp_dic)
             '''
             step 4：
-            # 根据step 3返回的initial_data, 生成所有device与expression的对应关系.
+            # 根据step 3返回的initial_data整合最终数据, 生成所有device与expression的对应关系.
             # 返回结果
             {
-                deviceid1: [
-                            [{trigger_id: triggerid, expression:expression, itemA:itemA, itemB:itemB}],
-                            [{trigger_id: triggerid, expression:expression, itemA:itemA, itemB:itemB}]
-                           ]
-                deviceid2: [
-                            [{trigger_id: triggerid, expression:expression, itemA:itemA, itemB:itemB}],
-                            [{trigger_id: triggerid, expression:expression, itemA:itemA, itemB:itemB}]
-                           ]
+                deviceid: [
+                    [
+                        {
+                            'trigger_id':triggerid,
+                            'exception':expression,
+                            'itemA':itemA,
+                            'itemB':itemB,
+                            'trigger_type': trigger__trigger_type,
+                            'identifier': trigger__identifier,
+                            'trigger_limit_nums': trigger__trigger_limit_nums,
+                        }
+                    ]
+                ]
             }
             1. integrate the relationship of every device and [trigger,expression].
             2. return dic
             {
-                deviceid1: [
-                            [{trigger_id: triggerid, expression:expression, itemA:itemA, itemB:itemB}],
-                            [{trigger_id: triggerid, expression:expression, itemA:itemA, itemB:itemB}]
-                           ]
-                deviceid2: [
-                            [{trigger_id: triggerid, expression:expression, itemA:itemA, itemB:itemB}],
-                            [{trigger_id: triggerid, expression:expression, itemA:itemA, itemB:itemB}]
-                           ]
+                deviceid: [
+                    [
+                        {
+                            'trigger_id':triggerid,
+                            'exception':expression,
+                            'itemA':itemA,
+                            'itemB':itemB,
+                            'trigger_type': trigger__trigger_type,
+                            'identifier': trigger__identifier,
+                            'trigger_limit_nums': trigger__trigger_limit_nums,
+                        }
+                    ]
+                ]
             }
             '''
             integrated_device_trigger_exp_dic = {}
