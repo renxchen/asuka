@@ -1,4 +1,4 @@
-<div class="modal-content">
+<div class="modal-content" style="width:660px;" id="login-modal">
   <div class="modal-header" style="padding-bottom: 30px;">
     <h3 class="modal-title pull-left">{{title}}</h3>
     <button type="button" class="close pull-right" (click)="bsModalRef.hide()">
@@ -78,21 +78,27 @@
         <div class="col-sm-12 annotation">リーフを選択してください</div>
         <div class="col-sm-12">
           <div class="row">
-            <div class="col-sm-4" id="tree">
+            <div class="col-sm-4 tree-div" id="tree">
               
             </div>
-            <div class="col-sm-8" id="treeTable"></div>
+            <div class="col-sm-8" id="tree_div">
+              <table id="treeTable"></table>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <div class="col-sm-12 form-group">
       <button class="btn btn-xs btn-warning  pull-left" (click)="bsModalRef.hide()">
-        cancel
+        <i class="fa fa-window-close"></i>
+        キャンセル
       </button>
       <button *ngIf="btnFlgs.btnFinished"
-       class="btn btn-primary btn-xs pull-right"
-      [disabled]="!btnFlgs.btnFinished">Finish</button>
+       class="btn btn-primary btn-xs pull-right "
+      [disabled]="!btnFlgs.btnFinished"
+      (click)="saveTableData()">
+      <i class="fa fa-plus-square"></i>
+      保存</button>
       <button class="btn btn-xs pull-right"
        [ngClass]="{'btn-primary': btnFlgs.btnNext, 'btn-default': !btnFlgs.btnNext}"
         [disabled]="!btnFlgs.btnNext"

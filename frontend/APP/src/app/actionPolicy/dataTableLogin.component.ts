@@ -2,9 +2,11 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 // import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
+import { CommentStmt } from '@angular/compiler';
+
 declare var $: any;
 import * as _ from 'lodash';
-import { CommentStmt } from '@angular/compiler';
+import * as moment from 'moment';
 
 @Component({
   selector: 'data-table-login',
@@ -19,8 +21,10 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   highLightId: string;
   currentStep = 1;
   maxStep = 1;
+  tree_id: String = '';
 
   deviceGroupList: any = [];
+  item_id_str: any = '';
 
   sendData: any = {};
   deviceGroup: any = {};
@@ -51,6 +55,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    $('#login-modal').parents('div.modal-content').css('width', '600px');
     this.setBottomBtns();
   }
 
@@ -66,6 +71,9 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     }
     if (this.currentStep === 2) {
       contuineFlg = this.checkDeviceGroupList();
+      if (contuineFlg) {
+        this.drawStepTable();
+      }
     }
     if (this.currentStep === 3) {
       contuineFlg = this.checkColumeSelected();
@@ -103,7 +111,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       this.btnFlgs.btnPrev = true;
     }
     if (this.currentStep === 3) {
-      this.drawStepTable();
+      // this.drawStepTable();
     }
     if (this.currentStep === 4) {
       this.btnFlgs.btnNext = false;
@@ -211,7 +219,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
           cellattr: this.arrtSetting
         },
         {
-          label: 'Priority', name: 'priority', align: 'center',
+          label: '優先度', name: 'priority', align: 'center',
           cellattr: this.arrtSetting
         },
         { label: 'コレクションポリシー', name: 'policy', align: 'center' },
@@ -240,7 +248,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
         },
         autowidth: false,
         beforeSelectRow: function (rowid, e) { return false; },
-        width: 560,
+        width: 620,
         height: '175',
         jsonReader: {
           root: 'data.data',
@@ -280,7 +288,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     allEles.click(function (event) {
       let selectedBtnId = $(event)[0].target.id;
       let selectedRowId = $(event)[0].target.id.split('_')[2];
-      let rowData = $("#stepTable").jqGrid('getRowData', selectedRowId);
+      let rowData = $('#stepTable').jqGrid('getRowData', selectedRowId);
       _t.setBtnHighLight(selectedBtnId, allEles);
       _t.setColumeChangedFlg(rowData);
       _t.selectedRowObj = rowData;
@@ -319,7 +327,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   protected getTreeData() {
     /**
    * @brief get treedata for cli type and make data for snmp
-   * @author Dan Lv
+   * @author Necy
    * @date 2018/04/10
    */
 
@@ -341,19 +349,23 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
         };
         if (this.changeFlgs.columeSelectedChangeed) {
           this.destroyTree();
+          this.destroyTreeTable();
         }
-        this.drawTree(treeData);
+        this.drawTree(treeData, treeType);
       } else {
         let collection_policy_id = this.selectedRowObj['policyNo'];
         let url = '/api_data_table_step4_tree/?id=' + collection_policy_id;
         this.get(url).subscribe((res: any) => {
           if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'true') {
             treeData = res.data.data;
+            console.log('iiiii');
+            // treeData = testData;
             this.setTreeDisabled(treeData);
             if (this.changeFlgs.columeSelectedChangeed) {
               this.destroyTree();
+              this.destroyTreeTable();
             }
-            this.drawTree(treeData);
+            this.drawTree(treeData, treeType);
           } else {
             alert('No Data !');
           }
@@ -366,7 +378,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     /**
       * @brief set disabled for no-leaf nodes
       * @param sourceTreeData: tree data
-      * @author Dan Lv
+      * @author Necy
       * @date 2018/04/10
       */
     if (sourceTreeData && sourceTreeData['children'] && sourceTreeData['children'].length > 0) {
@@ -375,7 +387,6 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
         this.setTreeDisabled(child);
       }
     } else {
-      sourceTreeData['state']['disabled'] = true;
       return false;
     }
   }
@@ -383,17 +394,18 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   private destroyTree() {
     /**
   * @brief reload tree
-  * @author Dan Lv
+  * @author Necy
   * @date 2018/04/10
   */
     $('#tree').jstree('destroy');
     this.changeFlgs.columeSelectedChangeed = false;
+    this.tree_id = '';
   }
 
-  protected drawTree(treeData) {
+  protected drawTree(treeData, treeType) {
     /**
     * @brief draw tree
-    * @author Dan Lv
+    * @author Necy
     * @date 2018/04/10
     */
     let _t = this;
@@ -407,20 +419,138 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
           'icons': true
         },
         'multiple': false,
-        'check_callback': true,
+        'check_callback': false,
       },
-      'plugins': [
-        'types',
-        'themes'
-      ]
+      'plugins': ['types', 'themes']
     };
     $('#tree').jstree(treeJson).bind('activate_node.jstree', function (obj, e) {
-      _t.drawTreeTable();
+      _t.destroyTreeTable();
+      _t.drawTreeTable(e, treeType);
     });
   }
 
-  protected drawTreeTable() {
-    console.log('drawTreeTable');
+  protected drawTreeTable(node: any, treeType) {
+
+    let rule_name = node['node']['text'];
+    let snmpTableModel: any = [
+      { label: 'デバイス名', name: 'device_name', align: 'center', sortable: false },
+      { label: 'Time Stamp', name: 'time_stamp', align: 'center', sortable: false, },
+      { label: 'OID', name: 'oid', align: 'center' },
+      { label: '值', name: 'value', align: 'center' }
+    ];
+    let cliTableModel: any = [
+      { label: 'デバイス名', name: 'device_name', align: 'center', sortable: false },
+      { label: 'Time Stamp', name: 'time_stamp', align: 'center', sortable: false, },
+      { label: 'Path', name: 'path', align: 'center' },
+      { label: rule_name, name: 'value', align: 'center' }
+    ];
+    this.tree_id = node['node']['data']['tree_id'];
+    let tableData: any;
+    let url = '';
+    let tableJson: any = {
+      url: '',
+      datatype: 'local',
+      mtype: 'get',
+      colModel: '',
+      data: '',
+      loadComplete: function () { },
+      gridComplete: function () { },
+      autowidth: true,
+      beforeSelectRow: function (rowid, e) { return false; },
+      height: 'auto',
+      jsonReader: {
+        root: 'data.data',
+        total: 'num_page',
+        records: 'total_num',
+        userData: 'status',
+        repeatitems: false,
+      },
+    };
+    if (treeType === 'snmp') {
+      url = '/api_data_table_step4_table/?coll_id=' + this.selectedRowObj['policyNo'] +
+        '&device_group_id=' + this.selectedRowObj['groupNo'] + '&policy_group_id=' + this.selectedRowObj['cpGroup_id'] +
+        '&rule_name=' + rule_name + '&schedule_id=' + this.selectedRowObj['schedule_id'] + '&oid=' + this.selectedRowObj['oid'];
+      // url = '/api_data_table_step4_table/?coll_id=1&device_group_id=1&policy_group_id=2&rule_name=OID&schedule_id=10&oid=1.1.1.1';
+      tableJson['colModel'] = snmpTableModel;
+    } else if (treeType === 'cli') {
+      url = '/api_data_table_step4_table/?tree_id=' + this.tree_id + '&coll_id=' + this.selectedRowObj['policyNo'] +
+        '&device_group_id=' + this.selectedRowObj['groupNo'] + '&policy_group_id=' + this.selectedRowObj['cpGroup_id'] +
+        '&rule_name=' + rule_name + '&schedule_id=' + this.selectedRowObj['schedule_id'];
+      // url = '/api_data_table_step4_table/?coll_id=1&device_group_id=1&policy_group_id=2&rule_name=OID&schedule_id=10&oid=1.1.1.1';
+      tableJson['colModel'] = cliTableModel;
+    }
+    this.get(url).subscribe((res: any) => {
+      if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'true') {
+        if (res.data.data) {
+          this.getItemList(res.data.data);
+          tableJson['data'] = this.tableDataFormat(res.data.data);
+          $('#treeTable').jqGrid(tableJson);
+          $('#treeTable').parents('div.ui-jqgrid-bdiv').css('max-height', '190px');
+        }
+
+      } else {
+        let msg = res.status.message;
+        alert(msg);
+      }
+    });
+  }
+
+  public destroyTreeTable() {
+    this.item_id_str = '';
+    this.tree_id = '';
+    let treeTableGrid = $('#tree_div div.ui-jqgrid-bdiv table');
+    if (treeTableGrid.length >= 1) {
+      $('#treeTable').jqGrid('GridUnload');
+    }
+  }
+
+  protected tableDataFormat(data: any) {
+    for (let obj of data) {
+      if (obj['time_stamp']) {
+        obj['time_stamp'] = moment(obj['time_stamp'] * 1000).format('YYYY-MM-DD HH:mm:ss');
+      }
+    }
+    return data;
+  }
+
+  private getItemList(data) {
+    this.item_id_str = '';
+    for (let obj of data) {
+      if (obj['item_id']) {
+        this.item_id_str = this.item_id_str + obj['item_id'] + ',';
+      }
+    }
+    this.item_id_str = this.item_id_str.substring(0, this.item_id_str.length - 1);
+  }
+
+  public collectSaveData() {
+    this.sendData = {
+      'name': this.tableName,
+      'desc': this.description,
+      'coll_policy_id': this.selectedRowObj['policyNo'],
+      'coll_policy_group_id': this.selectedRowObj['cpGroup_id'],
+      'item_id': this.item_id_str,
+      'group_id': this.selectedRowObj['groupNo']
+    };
+    if (this.tree_id) {
+      this.sendData['tree_id'] = this.tree_id;
+    }
+    console.log('sendD', this.sendData);
+  }
+  public saveTableData() {
+    if (this.item_id_str) {
+      let url = '/api_data_table_step1/';
+      this.collectSaveData();
+      this.post(url, this.sendData).subscribe((res: any) => {
+        if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'false') {
+          let msg = res.status.status;
+          alert(msg);
+        }
+      });
+    } else {
+      alert('リーフを選択してください!');
+    }
+
   }
 
   // common function of http
