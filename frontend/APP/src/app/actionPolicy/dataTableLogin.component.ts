@@ -129,12 +129,13 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   public setChangeFlgs(type) {
     if (type === 'deviceGroup') {
       this.changeFlgs.deviceGroupChaneged = true;
+      this.selectedRowObj = undefined;
     }
   }
 
   protected setModalSize() {
     $('#login-modal').parents('div.modal-content').css('width', '660px');
-   }
+  }
 
   // step 1
 
@@ -362,7 +363,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
         this.get(url).subscribe((res: any) => {
           if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'true') {
             treeData = res.data.data;
-            // treeData = testData;
+            // treeData = data;
             this.setTreeDisabled(treeData);
             if (this.changeFlgs.columeSelectedChangeed) {
               this.destroyTree();
@@ -384,7 +385,8 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       * @author Necy
       * @date 2018/04/10
       */
-    if (sourceTreeData && sourceTreeData['children'] && sourceTreeData['children'].length > 0) {
+    if (sourceTreeData && sourceTreeData['children'] && sourceTreeData['children'].length > 0
+      || sourceTreeData && sourceTreeData['data'] && sourceTreeData['data']['is_root']) {
       sourceTreeData['state']['disabled'] = true;
       for (let child of sourceTreeData['children']) {
         this.setTreeDisabled(child);
@@ -433,6 +435,13 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   }
 
   protected drawTreeTable(node: any, treeType) {
+
+    /**
+        * @brief draw  table which is shown by click tree node
+        * @param node : the tree node clicked; treeType : cli or snmp
+        * @author Necy
+        * @date 2018/04/11
+    */
 
     let rule_name = node['node']['text'];
     let snmpTableModel: any = [
