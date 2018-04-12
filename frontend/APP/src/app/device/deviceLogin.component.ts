@@ -114,6 +114,9 @@ export class DeviceLoginComponent implements OnInit {
                 this.optId = _.get(res, 'operation_id');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
                     $('.modal').hide();
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                    $('body').css('padding-right', '0px');
                     this.drawDevLoginTable();
                     this.actionFlg = false;
                     if (data && data.length > 0) {
@@ -124,6 +127,9 @@ export class DeviceLoginComponent implements OnInit {
                     }
                 } else {
                     $('.modal').hide();
+                    $('.modal-backdrop').remove();
+                    $('body').removeClass('modal-open');
+                    $('body').css('padding-right', '0px');
                     this.actionFlg = true;
                     if (msg) {
                         this.modalMsg = msg;
@@ -146,7 +152,7 @@ export class DeviceLoginComponent implements OnInit {
             datatype: 'JSON',
             mtype: 'get',
             colNames: ['DeviceId', 'Hostname', 'IP Address', 'Telnet Port', 'SNMP Port', 'SNMP Community',
-                'SNMP Version', 'Login Expect', 'Device Type', 'Ostype', 'Group', 'Telnet Status', 'SNMP Status'
+                'SNMP Version', 'Login Expect', 'Device Type', 'Os Type', 'Group', 'Telnet Status', 'SNMP Status'
             ],
             colModel: [
                 { hidden: true, name: 'device_id', index: 'device_id', search: false, key: true },
@@ -261,9 +267,15 @@ export class DeviceLoginComponent implements OnInit {
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         this.devLoginTable$.GridUnload();
                         $('.modal').hide();
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        $('body').css('padding-right', '0px');
                         this.drawDevLoginTable();
                     } else {
                         $('.modal').hide();
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        $('body').css('padding-right', '0px');
                         if (_.get(status, 'message')) {
                             this.modalMsg = _.get(status, 'message');
                             this.closeMsg = '閉じる';
@@ -301,9 +313,15 @@ export class DeviceLoginComponent implements OnInit {
                     let msg = _.get(status, 'message');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         $('.modal').hide();
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        $('body').css('padding-right', '0px');
                         this.router.navigate(['index/deviceview/']);
                     } else {
                         $('.modal').hide();
+                        $('.modal-backdrop').remove();
+                        $('body').removeClass('modal-open');
+                        $('body').css('padding-right', '0px');
                         if (msg) {
                             this.modalMsg = msg;
                             this.closeMsg = '閉じる';

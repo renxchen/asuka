@@ -79,6 +79,7 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
+                    // let type = _.get(status, 'type');
                     let data = _.get(res, 'data');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         if (data && data['data']) {
@@ -92,6 +93,15 @@ export class CLICPLoginComponent implements OnInit, AfterViewInit {
                             });
                         }
                     } else {
+                        // if (type && type === 'NAME_DUPLICATE') {
+                        //     this.uniqueFlg = false;
+                        // }else {
+                        //     if (msg) {
+                        //         this.modalMsg = msg;
+                        //         this.closeMsg = '閉じる';
+                        //         this.showAlertModal(this.modalMsg, this.closeMsg);
+                        //     }
+                        // }
                         // CP_NAME_DUPLICATE
                         if (msg && msg === 'Collection policy name is exist in system.') {
                             _t.uniqueFlg = false;
