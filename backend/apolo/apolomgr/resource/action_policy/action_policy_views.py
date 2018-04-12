@@ -25,6 +25,7 @@ from django.db.models import *
 import sys
 from backend.apolo.apolomgr.resource.action_policy.mem_cache_trigger_and_trigger_detial import \
     MemCacheTriggerTriggerDetail
+import uuid
 
 # from apolo_server.processor.db_units.memcached_helper import TriggerMemCache
 
@@ -466,27 +467,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                                 # self.column_b = item_id_b
                                 expression_detail = self.create_expression(self.trigger_type, item_id_a, item_id_b,
                                                                            trigger_detail=True, device_id=device_id_a)
+                                item_id_a = expression_detail['item_a_id']
+                                item_id_b = expression_detail['item_b_id']
+                                device_id = expression_detail['device_id']
                                 critical_detail = expression_detail['expression_critical']
-                                critical_detail_item_id_a = expression_detail['item_a_id']
-                                critical_detail_item_id_b = expression_detail['item_b_id']
-                                critical_detail_device_id = expression_detail['device_id']
                                 major_detail = expression_detail['expression_major']
-                                major_detail_item_id_a = expression_detail['item_a_id']
-                                major_detail_item_id_b = expression_detail['item_b_id']
-                                major_detail_device_id = expression_detail['device_id']
                                 minor_detail = expression_detail['expression_minor']
-                                minor_detail_item_id_a = expression_detail['item_a_id']
-                                minor_detail_item_id_b = expression_detail['item_b_id']
-                                minor_detail_device_id = expression_detail['device_id']
-                                critical_detail_list.append(
-                                    [critical_detail, critical_detail_item_id_a, critical_detail_item_id_b,
-                                     critical_detail_device_id])
-                                major_detail_list.append(
-                                    [major_detail, major_detail_item_id_a, major_detail_item_id_b,
-                                     major_detail_device_id])
-                                minor_detail_list.append(
-                                    [minor_detail, minor_detail_item_id_a, minor_detail_item_id_b,
-                                     minor_detail_device_id])
+                                critical_detail_list.append([critical_detail, item_id_a, item_id_b, device_id])
+                                major_detail_list.append([major_detail, item_id_a, item_id_b, device_id])
+                                minor_detail_list.append([minor_detail, item_id_a, item_id_b, device_id])
                     expression_detail_result['critical'] = critical_detail_list
                     expression_detail_result['major'] = major_detail_list
                     expression_detail_result['minor'] = minor_detail_list
@@ -497,25 +486,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                         # self.column_a = item_id_a
                         expression_detail = self.create_expression(self.trigger_type, item_id_a, trigger_detail=True,
                                                                    device_id=device_id_a)
+                        item_id_a = expression_detail['item_a_id']
+                        item_id_b = expression_detail['item_b_id']
+                        device_id = expression_detail['device_id']
                         critical_detail = expression_detail['expression_critical']
-                        critical_detail_item_id_a = expression_detail['item_a_id']
-                        critical_detail_item_id_b = expression_detail['item_b_id']
-                        critical_detail_device_id = expression_detail['device_id']
                         major_detail = expression_detail['expression_major']
-                        major_detail_item_id_a = expression_detail['item_a_id']
-                        major_detail_item_id_b = expression_detail['item_b_id']
-                        major_detail_device_id = expression_detail['device_id']
                         minor_detail = expression_detail['expression_minor']
-                        minor_detail_item_id_a = expression_detail['item_a_id']
-                        minor_detail_item_id_b = expression_detail['item_b_id']
-                        minor_detail_device_id = expression_detail['device_id']
-                        critical_detail_list.append(
-                            [critical_detail, critical_detail_item_id_a, critical_detail_item_id_b,
-                             critical_detail_device_id])
-                        major_detail_list.append(
-                            [major_detail, major_detail_item_id_a, major_detail_item_id_b, major_detail_device_id])
-                        minor_detail_list.append(
-                            [minor_detail, minor_detail_item_id_a, minor_detail_item_id_b, minor_detail_device_id])
+                        critical_detail_list.append([critical_detail, item_id_a, item_id_b, device_id])
+                        major_detail_list.append([major_detail, item_id_a, item_id_b, device_id])
+                        minor_detail_list.append([minor_detail, item_id_a, item_id_b, device_id])
 
                     expression_detail_result['critical'] = critical_detail_list
                     expression_detail_result['major'] = major_detail_list
@@ -555,7 +534,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                             continue
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
-                            'expression': critical_dic['critical'],
+                            'expression_itema_itemb_deviceid': critical_dic['critical'],
                             'priority': per.priority,
                             'status': 1,
                             'expression_view': per.expression,
@@ -569,7 +548,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                             continue
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
-                            'expression': major_dic['major'],
+                            'expression_itema_itemb_deviceid': major_dic['major'],
                             'priority': per.priority,
                             'status': 1,
                             'expression_view': per.expression,
@@ -583,7 +562,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                             continue
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
-                            'expression': minor_dic['minor'],
+                            'expression_itema_itemb_deviceid': minor_dic['minor'],
                             'priority': per.priority,
                             'status': 1,
                             'expression_view': per.expression,
@@ -591,10 +570,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                         data.append(data_trigger_detail)
                 TriggerDetail.objects.all().delete()
                 for per in data:
-                    expression_in_trigger_detail = per['expression']
+                    expression_in_trigger_detail = per['expression_itema_itemb_deviceid']
                     for per_expression in expression_in_trigger_detail:
                         per_trigger_detail_data = {
-                            'expression': per_expression,
+                            'expression': per_expression[0],
+                            'itemA': per_expression[1],
+                            'itemB': per_expression[2],
+                            'device_id': per_expression[3],
                             'status': per['status'],
                             'trigger': per['trigger'],
                             'expression_view': per['expression_view']
@@ -883,7 +865,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         return result
 
-    def data_generate(self):
+    def data_generate(self, identifier=None):
         """!@brief
         Generate all data, include of critical, major, minor
         @pre call when after generating critical data, major data and minor data
@@ -904,16 +886,19 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         data_minor = self.data_generate_minor()
         # print 'data_generate-data_minor', data_minor
         if data_critical['data_trigger']:
+            data_critical['data_trigger']['identifier'] = identifier
             insert_trigger.append(data_critical['data_trigger'])
             insert_trigger_detail.append(data_critical['trigger_detail_data'])
             # insert_action.append(data_critical['action_data'])
             insert_action.append(data_critical['action_data'])
         if data_major['data_trigger']:
+            data_major['data_trigger']['identifier'] = identifier
             insert_trigger.append(data_major['data_trigger'])
             insert_trigger_detail.append(data_major['trigger_detail_data'])
             # insert_action.append(data_major['action_data'])
             insert_action.append(data_major['action_data'])
         if data_minor['data_trigger']:
+            data_minor['data_trigger']['identifier'] = identifier
             insert_trigger.append(data_minor['data_trigger'])
             insert_trigger_detail.append(data_minor['trigger_detail_data'])
             # insert_action.append(data_minor['action_data'])
@@ -1299,7 +1284,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         return data
 
-    def create_trigger_related(self, method='POST'):
+    def create_trigger_related(self, method='POST', identifier=None):
         """!@brief
         Insert data into triggers table, actions table and trigger_detail table
         @pre call from POST or PUT method
@@ -1308,7 +1293,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         """
         try:
             with transaction.atomic():
-                data = self.data_generate()
+                data = self.data_generate(identifier=identifier)
                 # print 'create_trigger_related: ', data
                 trigger_priority_dic = {}
                 if data is False:
@@ -1399,7 +1384,9 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         @return data: the status of whether insert successful, and inserted data
         """
         try:
-            data = self.create_trigger_related(method='POST')
+            # base on the timestamp, mac address, random number generate uuid
+            identifier = str(uuid.uuid1())
+            data = self.create_trigger_related(method='POST', identifier=identifier)
             if self.action_policy_name is not '':
                 pass
                 # mem cache
@@ -1419,17 +1406,18 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         @return data: the status of whether modify successful, and modified data
         """
         try:
-            with transaction.atomic():
-                if self.action_policy_name_get_put_delete is not '':
-                    # delete old trigger, trigger_detail, action data
-                    self.delete_trigger_related(self.action_policy_name_get_put_delete)
-                    # create new trigger, trigger_detail, action data
-                    data = self.create_trigger_related(method='PUT')
-                    # mem cache
-                    # data_for_mem_cache = MemCacheTriggerTriggerDetail().get(self.action_policy_name)
-                    # with TriggerMemCache() as trigger:
-                    #     trigger.multi_set(data_for_mem_cache)
-                    return api_return(data=data)
+            if self.action_policy_name_get_put_delete is not '':
+                # delete old trigger, trigger_detail, action data
+                self.delete_trigger_related(self.action_policy_name_get_put_delete)
+                # base on the timestamp, mac address, random number generate uuid
+                identifier = str(uuid.uuid1())
+                # create new trigger, trigger_detail, action data
+                data = self.create_trigger_related(method='PUT', identifier=identifier)
+                # mem cache
+                # data_for_mem_cache = MemCacheTriggerTriggerDetail().get(self.action_policy_name)
+                # with TriggerMemCache() as trigger:
+                #     trigger.multi_set(data_for_mem_cache)
+                return api_return(data=data)
         except Exception, e:
             transaction.rollback()
             if constants.DEBUG_FLAG:
