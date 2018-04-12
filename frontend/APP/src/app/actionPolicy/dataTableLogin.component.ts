@@ -55,7 +55,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    $('#login-modal').parents('div.modal-content').css('width', '600px');
+    this.setModalSize();
     this.setBottomBtns();
   }
 
@@ -131,6 +131,10 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       this.changeFlgs.deviceGroupChaneged = true;
     }
   }
+
+  protected setModalSize() {
+    $('#login-modal').parents('div.modal-content').css('width', '660px');
+   }
 
   // step 1
 
