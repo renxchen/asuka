@@ -91,6 +91,9 @@ class TriggerDetailSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.trigger_detail_id = validated_data.get('trigger_detail_id', instance.trigger_detail_id)
         instance.expression = validated_data.get('expression', instance.expression)
+        instance.itemA = validated_data.get('itemA', instance.itemA)
+        instance.itemB = validated_data.get('itemB', instance.itemB)
+        instance.device_id = validated_data.get('device_id', instance.device_id)
         instance.descr = validated_data.get('descr', instance.descr)
         instance.status = validated_data.get('status', instance.status)
         instance.trigger = validated_data.get('trigger', instance.trigger)
