@@ -23,6 +23,8 @@ import csv, codecs, re
 import string
 import time
 import chardet
+from django.http import HttpResponse
+import json
 
 
 class DevicePreViewSet(APIView):
@@ -48,6 +50,7 @@ class DevicePreViewSet(APIView):
                 headers_expect2 = ["Hostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
                                    "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
                 filename = self.request.FILES['file']
+
                 for line in filename:
                     if chardet.detect(line).get('encoding') not in ['ISO-8859-1', 'ascii', 'UTF-8-SIG', 'utf-8']:
                         data = {
@@ -111,7 +114,7 @@ class DevicePreViewSet(APIView):
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: constants.CSV_HOSTNAME_EMPTY
+                                constants.MESSAGE: constants.NAME_EMPTY
                             },
                         }
                         return api_return(data=data)
@@ -147,6 +150,7 @@ class DevicePreViewSet(APIView):
                                                               and str(letter) != r",")):
                                 dict_check['hostname_check'] = False
                                 flag_err += 1
+                                break
                             else:
                                 dict_check['hostname_check'] = True
                     dict_check['hostname'] = hostname_csv
@@ -194,6 +198,7 @@ class DevicePreViewSet(APIView):
                             if not (str(letter).isalnum() or str(letter) in string.punctuation or str(letter) == ' '):
                                 dict_check['snmp_community'] = False
                                 flag_err += 1
+                                break
                             else:
                                 dict_check['snmp_community'] = True
                     # snmp version
@@ -215,12 +220,10 @@ class DevicePreViewSet(APIView):
                         flag_err += 1
                     else:
                         flag_expect = 0
-                        for symbol in login_expect:
-                            for letter in symbol:
-                                if not (str(letter).isalnum() or str(letter) in string.punctuation or str(
-                                        letter) == ' '):
-                                    dict_check['login_expect'] = False
-                                    flag_expect += 1
+                        for letter in login_expect:
+                            if not (str(letter).isalnum() or str(letter) in string.punctuation or str(
+                                    letter) == ' '):
+                                flag_expect += 1
                         if flag_expect > 0:
                             dict_check['login_expect'] = False
                             flag_err += 1
@@ -322,4 +325,3 @@ class DevicePreViewSet(APIView):
         except Exception, e:
             print e
             raise e
-
