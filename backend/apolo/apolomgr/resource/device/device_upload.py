@@ -22,6 +22,7 @@ from rest_framework.parsers import FileUploadParser
 import csv, codecs, re
 import string
 import time
+import chardet
 
 
 class DevicePreViewSet(APIView):
@@ -47,22 +48,23 @@ class DevicePreViewSet(APIView):
                 headers_expect2 = ["Hostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
                                    "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
                 filename = self.request.FILES['file']
-                try:
-                    dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8", errors="ignore").read(1024))
-                    filename.open()
-                    reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8", errors="ignore"), delimiter=',',
-                                            dialect=dialect)
-                    headers = reader.fieldnames
-                except Exception, e:
-                    data = {
-                        'data': [],
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.CSV_FORMAT_ERROR
-                        },
-                    }
-                    return api_return(data=data)
+                for line in filename:
+                    if chardet.detect(line).get('encoding') not in ['ISO-8859-1', 'ascii', 'UTF-8-SIG', 'utf-8']:
+                        data = {
+                            'data': [],
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.CSV_FORMAT_ERROR
+                            },
+                        }
+                        return api_return(data=data)
+                filename.open()
+                dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8", errors="ignore").read(1024))
+                filename.open()
+                reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8", errors="ignore"), delimiter=',',
+                                        dialect=dialect)
+                headers = reader.fieldnames
                 if headers == headers_expect1:
                     hostname = "\xef\xbb\xbfHostname"
                 elif headers == headers_expect2:
