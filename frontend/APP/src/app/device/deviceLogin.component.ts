@@ -133,7 +133,7 @@ export class DeviceLoginComponent implements OnInit {
                     $('body').css('padding-right', '0px');
                     this.actionFlg = true;
                     if (dataDuplicate && dataDuplicate.length > 0) {
-                        this.modalMsg = '以下のhostnameが重複している。';
+                        this.modalMsg = '以下のhostnameが重複しているため、登録が出来ません。';
                         this.closeMsg = '閉じる';
                         this.showAlertModal(this.modalMsg, this.closeMsg, dataDuplicate);
                     } else {
