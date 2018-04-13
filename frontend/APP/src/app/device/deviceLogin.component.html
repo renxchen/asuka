@@ -1,6 +1,6 @@
 <div class="ibox-content text-center p-md">
     <div class="row">
-        <div class="col-lg-6 text-left">
+        <div class="col-lg-12 text-left">
             <div>
                 <label 
                     title="Import CSV file" 
@@ -19,23 +19,19 @@
                         CSVによるデバイス登録
                 </label>
                 <button 
+                    class="btn btn-warning"
+                    (click)="cancelUpload()"
+                >
+                    キャンセル
+                </button>
+                <button 
                     class="btn btn-primary" 
                     (click)="uploadFile()" 
                     [disabled]="loginFlg"
-                    style="margin-left:15px"
                 >
                     デバイス登録
                 </button>
             </div>
-        </div>
-        <div class="col-lg-6 text-right">
-            <button 
-                class="btn btn-primary"
-                (click)="cancelUpload()"
-            >
-                <i class="fa fa-check"></i>
-                キャンセル
-            </button>
         </div>
     </div>
     <div class="row" id="import-msg">
