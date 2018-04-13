@@ -24,6 +24,7 @@ import string
 import time
 import chardet
 
+
 class DevicePreViewSet(APIView):
     parser_classes = (FileUploadParser,)
 
@@ -42,43 +43,60 @@ class DevicePreViewSet(APIView):
         try:
             with transaction.atomic():
                 import os
-                headers_expect1 = ["\xef\xbb\xbfHostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
-                                   "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
-                headers_expect2 = ["Hostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
-                                   "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
+                line1 = "Hostname,IP Address,Telnet Port,SNMP Port,SNMP Community,SNMP Version,Login Expect,Device Type,OS Type,Group\r\n"
+                line2 = "\xef\xbb\xbfHostname,IP Address,Telnet Port,SNMP Port,SNMP Community,SNMP Version,Login Expect,Device Type,OS Type,Group\r\n"
                 filename = self.request.FILES['file']
 
-                for line in filename:
-                    if chardet.detect(line).get('encoding') not in ['ISO-8859-1', 'ascii', 'UTF-8-SIG', 'utf-8']:
+                for index, line in enumerate(filename):
+                    if index == 0:
+                        # when the uploaded file title doesn`t contains ',',return the wrong csv format
+                        if ',' not in line:
+                            data = {
+                                'data': [],
+                                'new_token': self.new_token,
+                                constants.STATUS: {
+                                    constants.STATUS: constants.FALSE,
+                                    constants.MESSAGE: constants.CSV_FORMAT_ERROR
+                                },
+                            }
+                            return api_return(data=data)
+                        # if the title is not in line1(utf-8) or line2(utf-8 with bom),the title is wrong
+                        if line == line1:
+                            hostname = "Hostname"
+                        elif line == line2:
+                            hostname = "\xef\xbb\xbfHostname"
+                        else:
+                            data = {
+                                'data': [],
+                                'new_token': self.new_token,
+                                constants.STATUS: {
+                                    constants.STATUS: constants.FALSE,
+                                    constants.MESSAGE: constants.CSV_TITLE_ERROR
+                                },
+                            }
+                            return api_return(data=data)
+                    # if the code is not in follow codes , the code of file is wrong
+                    if chardet.detect(line).get('encoding') not in ['ISO-8859-1', 'ascii', 'UTF-8-SIG', 'utf-8', 'Windows-1252']:
                         data = {
                             'data': [],
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: constants.CSV_FORMAT_ERROR
+                                constants.MESSAGE: constants.CSV_CODE_ERROR
                             },
                         }
                         return api_return(data=data)
+                    if chardet.detect(line).get('encoding') in ['ISO-8859-1', 'ascii', 'UTF-8-SIG', 'utf-8']:
+                        file_encode = 'utf-8'
+                    else:
+                        file_encode = 's_jisx0213'
+                        break
                 filename.open()
-                dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8", errors="ignore").read(1024))
+                dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8", file_encode, errors="ignore").read(1024))
                 filename.open()
-                reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8", errors="ignore"), delimiter=',',
+                reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8", file_encode, errors="ignore"), delimiter=',',
                                         dialect=dialect)
                 headers = reader.fieldnames
-                if headers == headers_expect1:
-                    hostname = "\xef\xbb\xbfHostname"
-                elif headers == headers_expect2:
-                    hostname = "Hostname"
-                else:
-                    data = {
-                        'data': [],
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.CSV_TITLE_ERROR
-                        },
-                    }
-                    return api_return(data=data)
                 error_list = []
                 file_x = []
                 operation_id = int(time.time())
