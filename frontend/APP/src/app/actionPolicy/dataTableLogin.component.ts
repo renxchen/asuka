@@ -573,11 +573,4 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   private post(url: string, bodyData: any) {
     return this.httpClient.toJson(this.httpClient.post(url, bodyData));
   }
-  private put(url: string, bodyData: any) {
-    return this.httpClient.toJson(this.httpClient.put(url, bodyData));
-  }
-
-  private delete(url: string) {
-    return this.httpClient.toJson(this.httpClient.delete(url));
-  }
 }
