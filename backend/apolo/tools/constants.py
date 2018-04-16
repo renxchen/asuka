@@ -31,6 +31,7 @@ NUMBER_NINE = 9
 MESSAGE = 'message'
 STATUS = 'status'
 CODE = 'code'
+MSG_TYPE = 'type'
 SUCCESS = 'Success'
 FAILED = 'Failed'
 TRUE = 'True'
