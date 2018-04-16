@@ -124,7 +124,7 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.fullWithoutSpecial(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         if (this.selectedOsType) {
             this.ostypeNotNull = true;
@@ -157,24 +157,15 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    // let type = _.get(status, 'type');
+                    let type = _.get(status, 'type');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('保存しました。');
                         this.bsModalRefEdit.hide();
                         this.modalService.setDismissReason('true');
                     } else {
-                        // if (type && type === 'NAME_DUPLICATE') {
-                        //     this.uniqueFlg = false;
-                        // }else {
-                        //     if (msg) {
-                        //         this.modalMsg = msg;
-                        //         this.closeMsg = '閉じる';
-                        //         this.showAlertModal(this.modalMsg, this.closeMsg);
-                        //     }
-                        // }
-                        if (msg && msg === 'GROUPNAME_ALREADY_EXISTS') {
+                        if (type && type === 'NAME_DUPLICATE') {
                             this.uniqueFlg = false;
-                        } else {
+                        }else {
                             if (msg) {
                                 this.modalMsg = msg;
                                 this.closeMsg = '閉じる';
