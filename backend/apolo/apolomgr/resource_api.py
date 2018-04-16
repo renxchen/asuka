@@ -14,7 +14,7 @@ from backend.apolo.apolomgr.resource.action_policy import action_policy_views, a
     action_policy_column_verify, verify_expression, mem_cache_trigger_and_trigger_detial
 from backend.apolo.apolomgr.resource.common import common_views
 from backend.apolo.apolomgr.resource.data_collection import data_collection_view, new_data_collection_view, \
-    data_collection_by_device_view, data_collection_by_cp_view
+    data_collection_by_device_view, data_collection_by_cp_view, emergency_stop_list_view
 from backend.apolo.apolomgr.resource.device import ostype_views, groups_views, device_views, device_pre_view, \
     device_upload, device_export
 from backend.apolo.apolomgr.resource.login import authentication
@@ -324,3 +324,10 @@ def api_device_pre(request):
 def api_device_export(request):
     resource_object = device_export.ExportDevicesViewSet(request=request).export()
     return resource_object
+
+@api_view(["GET"])
+@auth_if_refresh_required
+@permission_classes((IsAuthenticated,))
+def api_emergency_stop_list(request):
+    resource_object = emergency_stop_list_view.EmergencyStopListViewSet(request=request)
+    return HttpResponse(run_request_method(resource_object))

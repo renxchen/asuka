@@ -70,7 +70,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
                     schedules_dict['policy_group_id'] = -1
 
                 item_list = self.__get_items_list(schedule_id)
-                is_processing = self.__check_is_Processing(item_list)
+                is_processing = self.__check_is_Processing(schedule_id)
                 is_lock = self.__check_is_lock(item_list)
                 data = {
                     'data': schedules_dict,
@@ -210,7 +210,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
 
         try:
             opt = DataCollectionOptCls(**param_dict)
-            new_dict = opt.set_schedule_data()
+            new_dict = opt.set_schedule_data(update_flag=True)
             if is_lock or is_processing:
                 Schedules.objects.filter(schedule_id=schedule_id).update(**new_dict)
             else:
@@ -251,6 +251,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
                         if old_status == 0:
                             # the old schedule status are chanced from all function off to all function on
                             Schedules.objects.filter(device_group=obj[0].device_group).update(status=1)
+
                             obj.update(**new_dict)
                         else:
                             obj.update(**new_dict)
@@ -311,12 +312,6 @@ class DataCollectionViewSet(viewsets.ViewSet):
                 print traceback.format_exc(e)
             return exception_handler(e)
 
-    def __delete_recode_check(self, schedule_id):
-        if self.__check_is_lock(schedule_id):
-            return False
-        else:
-            return False
-
     @staticmethod
     def __check_is_lock(arry):
         queryset = DataTableItems.objects.filter(item__in=arry)
@@ -326,14 +321,13 @@ class DataCollectionViewSet(viewsets.ViewSet):
             return False
 
     @staticmethod
-    def __check_is_Processing(arry):
+    def __check_is_Processing(schedule_id):
         is_processing = False
-        data = Tool.get_data_from_collection_server()
+        data = Tool.get_running_schedule(schedule_id)
         for recoder in data:
             if recoder['valid_status']:
-                if recoder['item_id'] in arry:
-                    is_processing = True
-                    break
+                is_processing = True
+                break
             else:
                 continue
         return is_processing

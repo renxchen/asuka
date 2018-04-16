@@ -174,15 +174,6 @@ class DataCollectionOptCls(object):
     def insert_data_check(self, devices, coll_policies):
 
         try:
-            # select_sql = 'select item_id,schedule_id from items where'
-            # for i in range(len(devices)):
-            #     device_id = devices[i]['device_id']
-            #     for j in range(len(coll_policies)):
-            #         coll_policy_id = coll_policies[j]['coll_policy_id']
-            #         if i == len(devices) - 1 and j == len(coll_policies) - 1:
-            #             select_sql += ' (coll_policy_id = {} and device_id = {})'.format(coll_policy_id, device_id)
-            #         else:
-            #             select_sql += ' (coll_policy_id = {} and device_id = {}) or '.format(coll_policy_id, device_id)
             q_arry=[]
             for i in range(len(devices)):
                 device_id = devices[i]['device_id']
@@ -190,12 +181,11 @@ class DataCollectionOptCls(object):
                     coll_policy_id = coll_policies[j]['coll_policy_id']
                     q_arry.append(Q(coll_policy=coll_policy_id, device=device_id))
             query_list = Items.objects.filter(reduce(operator.or_, q_arry)).values()
-            # query_list = list(Items.objects.raw(select_sql))
             schedule_id_dict = {}
             if len(query_list):
                 for sid in query_list:
-                    if not schedule_id_dict.has_key(sid.schedule_id):
-                        schedule_id_dict[sid.schedule_id] = 1
+                    if not schedule_id_dict.has_key(sid['schedule_id']):
+                        schedule_id_dict[sid['schedule_id']] = 1
                 schedule_id_list = schedule_id_dict.keys()
                 query_set = Schedules.objects.filter(schedule_id__in=schedule_id_list).values('priority').distinct()
                 priorityIsEqual = True
@@ -213,7 +203,7 @@ class DataCollectionOptCls(object):
             print e
             raise e
 
-    def set_schedule_data(self, status=constants.SCHEDULE_STATUS_DEFAULT):
+    def set_schedule_data(self, status=constants.SCHEDULE_STATUS_DEFAULT, update_flag=False):
         policy_group_id = int(self.request_param['policy_group_id'])
         if self.request_param['data_schedule_time'] == '':
             self.request_param['data_schedule_time'] = None
@@ -225,11 +215,12 @@ class DataCollectionOptCls(object):
             policy_group = None
         else:
             policy_group = policy_group_id
-        is_all_function_off = len(Schedules.objects.filter(device_group=int(self.request_param['device_group_id']),
-                                                       policy_group=None))
-        # the device group has been all function off
-        if is_all_function_off >0:
-            status = 0
+        if not update_flag:
+            is_all_function_off = len(Schedules.objects.filter(device_group=int(self.request_param['device_group_id']),
+                                                           policy_group=None))
+            # when add a new schedule ,if the device group has been all function off,the schedule status=0
+            if is_all_function_off >0:
+                status = 0
         schedule_recode_data = {
             'valid_period_type': self.request_param['valid_period_type'],
             'data_schedule_type': self.request_param['data_schedule_type'],

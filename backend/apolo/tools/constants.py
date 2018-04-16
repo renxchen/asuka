@@ -170,7 +170,6 @@ LOAD_RULE_TYPE_ERROR = gettext('Rule type is not defined')  # ルールのタイ
 DB_EXCEPTION = gettext('There is an db exception')
 RULE_ID_IS_USED = 'RULE_ID_USED'  # ルールが利用されています
 CP_NAME_DUPLICATE = 'CP_NAME_DUPLICATE'
-#MSG_TYPE = 'type'
 #########################################
 # value_type of policy tree rule
 #########################################
@@ -191,6 +190,8 @@ VALUE_TYPE = {
     'STRING': 2
 }
 LEAF_NODE_MARK = 1
+ALL_FUNCTION_OFF = u'全機能OFF'
+EMERGENCY_STOP = u'緊急停止'
 ########################################
 # Mapping data
 ########################################
