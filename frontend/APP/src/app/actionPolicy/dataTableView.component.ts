@@ -49,7 +49,10 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
     // public bsModalRef: BsModalRef
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.httpClient.setUrl('/v1');
+
+   }
 
   ngAfterViewInit() {
     this.drawDataTableTable();
@@ -76,12 +79,12 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
     */
     let _t = this;
     let tableJson: any = {
-      // url: '/v1/api_data_collection/',
-      // datatype: 'JSON',
-      datatype: 'local',
-      // mtype: 'get',
+      url: '/v1/api_data_table_step1/',
+      datatype: 'JSON',
+      // datatype: 'local',
+      mtype: 'get',
       colModel: _t.tableModel,
-      data: _t.testData,
+      // data: _t.testData,
       loadComplete: function () { },
       rowNum: 10,
       rowList: [10, 20, 30],
@@ -92,14 +95,14 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
       },
       height: 230,
       pager: '#tablePager',
-      // jsonReader: {
-      //     root: 'data',
-      //     page: 'current_page_num',
-      //     total: 'num_page',
-      //     records: 'total_num',
-      //     userData: 'status',
-      //     repeatitems: false,
-      // },
+      jsonReader: {
+          root: 'data.data',
+          page: 'current_page_num',
+          total: 'num_page',
+          records: 'total_num',
+          userData: 'status',
+          repeatitems: false,
+      },
     };
     $('#tableTable').jqGrid(tableJson);
     $('#tableTable').jqGrid('filterToolbar', { defaultSearch: 'cn' });
