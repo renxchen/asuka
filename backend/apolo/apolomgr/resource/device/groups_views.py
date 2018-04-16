@@ -141,6 +141,7 @@ class GroupsViewSet(viewsets.ViewSet):
                 'new_token': self.new_token,
                 constants.STATUS: {
                     constants.STATUS: constants.FALSE,
+                    'type': constants.NAME_DUPLICATE,
                     constants.MESSAGE: constants.GROUP_ALREADY_EXISTS
                 }
             }
@@ -189,6 +190,7 @@ class GroupsViewSet(viewsets.ViewSet):
                                 'new_token': self.new_token,
                                 constants.STATUS: {
                                     constants.STATUS: constants.FALSE,
+                                    'type': constants.NAME_DUPLICATE,
                                     constants.MESSAGE: constants.GROUP_ALREADY_EXISTS
                                 }
                             }
