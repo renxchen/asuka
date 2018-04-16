@@ -59,6 +59,7 @@ urlpatterns = [
     url(r'^v1/api_data_collection_devices/', resource_api.api_data_collection_by_device),
     url(r"^v1/api_collection_policy_edit_page/", resource_api.api_collection_policy_edit),
     url(r'^v1/api_data_collection_policy/', resource_api.api_data_collection_by_cp),
+    url(r'^v1/api_emergency_stop_list/', resource_api.api_emergency_stop_list),
     # device view related start
     url(r'^v1/api_device_ostype/', resource_api.api_device_ostype),
     url(r'^v1/api_device_groups/', resource_api.api_device_groups),

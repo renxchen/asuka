@@ -70,7 +70,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
                     schedules_dict['policy_group_id'] = -1
 
                 item_list = self.__get_items_list(schedule_id)
-                is_processing = self.__check_is_Processing(item_list)
+                is_processing = self.__check_is_Processing(schedule_id)
                 is_lock = self.__check_is_lock(item_list)
                 data = {
                     'data': schedules_dict,
@@ -174,7 +174,8 @@ class DataCollectionViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         except Exception, e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     def put(self):
@@ -209,7 +210,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
 
         try:
             opt = DataCollectionOptCls(**param_dict)
-            new_dict = opt.set_schedule_data()
+            new_dict = opt.set_schedule_data(update_flag=True)
             if is_lock or is_processing:
                 Schedules.objects.filter(schedule_id=schedule_id).update(**new_dict)
             else:
@@ -221,7 +222,8 @@ class DataCollectionViewSet(viewsets.ViewSet):
                     # the new request that is all functions off
                     if policy_group_id == -1:
                         # the old schedule status is all functions off
-                        if old_status == 0:
+                        # all function off -> all function off
+                        if old_status == 0 and obj[0].policy_group is None:
                             if obj[0].device_group == device_group_id:
                                 obj.update(**new_dict)
                             else:
@@ -230,31 +232,44 @@ class DataCollectionViewSet(viewsets.ViewSet):
                                 Schedules.objects.filter(device_group=device_group_id).update(status=0)
                         else:
                             # the old schedule status chance to all functions off
-                            obj.update(**new_dict)
-                            Schedules.objects.filter(device_group=device_group_id).update(status=0)
+                            res = opt.all_function_off_check(device_group_id=device_group_id)
+                            if res[0]:
+                                obj.update(**new_dict)
+                                Schedules.objects.filter(device_group=device_group_id).update(status=0)
+                            else:
+                                transaction.set_rollback(True)
+                                data = {
+                                    'new_token': self.new_token,
+                                    constants.STATUS: {
+                                        constants.STATUS: constants.FALSE,
+                                        constants.MESSAGE: res[1]
+                                    }
+                                }
+                                return api_return(data=data)
                     else:
 
                         if old_status == 0:
                             # the old schedule status are chanced from all function off to all function on
                             Schedules.objects.filter(device_group=obj[0].device_group).update(status=1)
+
                             obj.update(**new_dict)
                         else:
                             obj.update(**new_dict)
 
-                    devices = opt.get_devices()
-                    policies = opt.get_coll_policies()
-                    if opt.insert_data_check(devices, policies):
-                       opt.insert_new_items(devices, schedule_id, policies)
-                    else:
-                        transaction.set_rollback(True)
-                        data = {
-                            'new_token': self.new_token,
-                            constants.STATUS: {
-                                constants.STATUS: constants.FALSE,
-                                constants.MESSAGE: constants.POLICY_DEVICE_COMBINATION
+                        devices = opt.get_devices()
+                        policies = opt.get_coll_policies()
+                        if opt.insert_data_check(devices, policies)[0]:
+                           opt.insert_new_items(devices, schedule_id, policies)
+                        else:
+                            transaction.set_rollback(True)
+                            data = {
+                                'new_token': self.new_token,
+                                constants.STATUS: {
+                                    constants.STATUS: constants.FALSE,
+                                    constants.MESSAGE: constants.POLICY_DEVICE_COMBINATION
+                                }
                             }
-                        }
-                        return api_return(data=data)
+                            return api_return(data=data)
             data = {
                 'new_token': self.new_token,
                 constants.STATUS: {
@@ -264,11 +279,12 @@ class DataCollectionViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         except Exception as e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
 
     def delete(self):
-        # v1/api_data_collection/?id=1
+
         schedule_id = views_helper.get_request_value(self.request, 'id', 'GET')
         try:
             with transaction.atomic():
@@ -276,7 +292,7 @@ class DataCollectionViewSet(viewsets.ViewSet):
                 obj = Schedules.objects.get(schedule_id=schedule_id)
                 all_function_status = obj.status
                 # all function off is opened
-                if all_function_status == 0:
+                if all_function_status == 0 and obj.policy_group is None:
                     device_group_id = obj.device_group
                     Schedules.objects.filter(device_group=device_group_id).update(status=1)
                 # delete items table
@@ -292,14 +308,9 @@ class DataCollectionViewSet(viewsets.ViewSet):
                 }
                 return api_return(data=data)
         except Exception as e:
-            print traceback.format_exc(e)
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
             return exception_handler(e)
-
-    def __delete_recode_check(self, schedule_id):
-        if self.__check_is_lock(schedule_id):
-            return False
-        else:
-            return False
 
     @staticmethod
     def __check_is_lock(arry):
@@ -310,14 +321,13 @@ class DataCollectionViewSet(viewsets.ViewSet):
             return False
 
     @staticmethod
-    def __check_is_Processing(arry):
+    def __check_is_Processing(schedule_id):
         is_processing = False
-        data = Tool.get_data_from_collection_server()
+        data = Tool.get_running_schedule(schedule_id)
         for recoder in data:
             if recoder['valid_status']:
-                if recoder['item_id'] in arry:
-                    is_processing = True
-                    break
+                is_processing = True
+                break
             else:
                 continue
         return is_processing

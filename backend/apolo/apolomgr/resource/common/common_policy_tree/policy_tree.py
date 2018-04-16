@@ -213,6 +213,7 @@ class Policy_tree(DBOpt):
             'data': {
                 'rule_type': '',
                 'rule_id': 0,
+                'tree_id': 0,
                 'is_root': True,
             },
             'state': {
@@ -346,7 +347,8 @@ class Policy_tree(DBOpt):
                      'icon': '',
                      'data': {
                          'rule_type': Tool.set_rule_type(node.rule_type),
-                         'rule_id': node.rule_id
+                         'rule_id': node.rule_id,
+                         'tree_id': node.tree_id
                      },
                      'state': {
                         'opened': True,

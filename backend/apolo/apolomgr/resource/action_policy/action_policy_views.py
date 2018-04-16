@@ -264,7 +264,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     def map_priority(value):
         """!@brief
         Match the priority， change the integer value into string value,
-        0: critical, 1: major, 2: minor
+        0: minor, 1: major, 2: critical
         @param value: the integer value of priority
         @pre call when need to change priority
         @post return string priority
@@ -272,11 +272,11 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         """
         priority = ''
         if value == constants.NUMBER_ZERO:
-            priority = constants.PRIORITY_CRITICAL
+            priority = constants.PRIORITY_MINOR
         if value == constants.NUMBER_ONE:
             priority = constants.PRIORITY_MAJOR
         if value == constants.NUMBER_TWO:
-            priority = constants.PRIORITY_MINOR
+            priority = constants.PRIORITY_CRITICAL
         return priority
 
     @staticmethod
@@ -526,7 +526,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     self.major_threshold = ''
                     self.minor_threshold = ''
                     self.trigger_type = per.trigger_type
-                    if per.priority == constants.NUMBER_ZERO:
+                    if per.priority == constants.NUMBER_TWO:
                         self.critical_threshold = per.value
                         self.critical_condition = per.condition
                         critical_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)
@@ -554,7 +554,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                             'expression_view': per.expression,
                         }
                         data.append(data_trigger_detail)
-                    if per.priority == constants.NUMBER_TWO:
+                    if per.priority == constants.NUMBER_ZERO:
                         self.minor_threshold = per.value
                         self.minor_condition = per.condition
                         minor_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)
@@ -1128,13 +1128,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 data_dic['coll_policy_group'] = str(coll_policy_group_a) + ',' + str(coll_policy_group_b)
             data_dic['coll_policy_group_id'] = str(coll_policy_group_a_id) + ',' + str(coll_policy_group_b_id)
             for per_priority in priority_dic:
-                if per_priority == constants.NUMBER_ZERO:
+                if per_priority == constants.NUMBER_TWO:
                     data_dic['critical_priority'] = self.migrate(
                         queryset_action_all.filter(trigger_id=priority_dic[0]).values('action_type'))
                 if per_priority == constants.NUMBER_ONE:
                     data_dic['major_priority'] = self.migrate(
                         queryset_action_all.filter(trigger_id=priority_dic[1]).values('action_type'))
-                if per_priority == constants.NUMBER_TWO:
+                if per_priority == constants.NUMBER_ZERO:
                     data_dic['minor_priority'] = self.migrate(
                         queryset_action_all.filter(trigger_id=priority_dic[2]).values('action_type'))
             view_list_data.append(data_dic)
@@ -1197,7 +1197,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             if per['trigger__columnB']:
                 result_common['columnB'] = DataTable.objects.get(table_id=int(per['trigger__columnB'])).name
             priority = per['trigger__priority']
-            if priority == constants.NUMBER_ZERO:
+            if priority == constants.NUMBER_TWO:
                 result_critical['priority'] = self.map_priority(priority)
                 result_critical['value'] = per['trigger__value']
                 result_critical['condition'] = self.map_condition(per['trigger__condition'])
@@ -1237,7 +1237,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 result_action_major['script_path'] = per['script_path']
                 result_action_major['status'] = per['status']
                 result_action_major_list.append(result_action_major)
-            if priority == constants.NUMBER_TWO:
+            if priority == constants.NUMBER_ZERO:
                 result_minor['priority'] = self.map_priority(priority)
                 result_minor['value'] = per['trigger__value']
                 result_minor['condition'] = self.map_condition(per['trigger__condition'])
