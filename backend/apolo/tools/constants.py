@@ -31,6 +31,7 @@ NUMBER_NINE = 9
 MESSAGE = 'message'
 STATUS = 'status'
 CODE = 'code'
+MSG_TYPE = 'type'
 SUCCESS = 'Success'
 FAILED = 'Failed'
 TRUE = 'True'
@@ -189,6 +190,8 @@ VALUE_TYPE = {
     'STRING': 2
 }
 LEAF_NODE_MARK = 1
+ALL_FUNCTION_OFF = u'全機能OFF'
+EMERGENCY_STOP = u'緊急停止'
 ########################################
 # Mapping data
 ########################################
@@ -226,6 +229,8 @@ CAN_NOT_UPDATE_SCHEDULE_MESSAGE = gettext('Can not update schedule data')
 NO_DEVICE_IN_DEVICE_GROUP = gettext('There is no device in device group,please check the group')
 NO_CP_IN_CP_GROUP = gettext('There is no policy in policy group,please check the group')
 NULL_TREE_IN_CP = gettext('There is a null tree in the collection policy')
+DEVICE_GROUP_NOT_IN_SCHEDULE = gettext('The device group is not exist in schedule')
+DEVICE_GROUP_IS_ALL_FUNCTION_ALL = gettext('The device group has been all function off status')
 #########################################
 # render
 #########################################

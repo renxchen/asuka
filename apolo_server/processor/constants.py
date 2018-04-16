@@ -85,3 +85,13 @@ class ActionConstants(object):
     BASE_SCRIPT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "script")
     if os.path.exists(BASE_SCRIPT_PATH) is False:
         os.mkdir(BASE_SCRIPT_PATH)
+    ACTION_TYPE_MAPPING = {
+        0: "SnmpTrapAction",
+        1: "ScriptAction",
+        2: "RundeckAction"
+    }
+    ACTION_TYPE_MAPPING2 = {
+        0: "SnmpTrap",
+        1: "Script",
+        2: "Rundeck"
+    }

@@ -65,6 +65,7 @@ class DataTableNameVerifyViewsSet(viewsets.ViewSet):
                     data = {
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
+                            constants.MSG_TYPE: 'NAME_DUPLICATE',
                             constants.MESSAGE: constants.DATA_TABLE_NAME_DUPLICATE
                         }
                     }
