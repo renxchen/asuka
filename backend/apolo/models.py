@@ -44,6 +44,22 @@ class Actions(models.Model):
         db_table = 'actions'
 
 
+class ActionLog(models.Model):
+    action_time = models.IntegerField()
+    action_date = models.CharField(max_length=11)
+    device_hostname = models.CharField(max_length=256)
+    coll_policy_name = models.CharField(max_length=256)
+    action_level = models.IntegerField()
+    extra_data = models.CharField(max_length=256)
+    exec_action = models.CharField(max_length=256)
+    exec_response = models.CharField(max_length=256)
+    action_status = models.IntegerField()
+    action = models.ForeignKey('Actions', models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'action_log'
+
+
 class CollPolicy(models.Model):
     coll_policy_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256, blank=True, null=True)
@@ -484,6 +500,9 @@ class TriggerDetail(models.Model):
     class Meta:
         # managed = False
         db_table = 'trigger_detail'
+
+
+
 
 
 class Triggers(models.Model):

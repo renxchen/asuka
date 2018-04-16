@@ -1,11 +1,12 @@
 from db_units import *
 
-from backend.apolo.models import Items, CollPolicyCliRule, TriggerDetail, Event, CollPolicyGroups
-#import models
+from backend.apolo.models import Items, CollPolicyCliRule, TriggerDetail, Event, ActionLog
+from backend.apolo import models
 from apolo_server.processor.constants import CommonConstants, TriggerConstants
 from apolo_server.processor.units import TriggerException
 import importlib
 import time
+import threading
 from django.db import connection
 from django.db.utils import OperationalError
 
@@ -51,47 +52,47 @@ class DeviceDbHelp(DbHelp):
     @staticmethod
     def get_items(item_type):
         param_dict = {"policys_groups__status": 1}
-       
-        
+
+
         value_items = ["item_id",
-                "schedule__valid_period_type",
-                "schedule__start_period_time",
-                "schedule__end_period_time",
-                "schedule__data_schedule_type",
-                "schedule__data_schedule_time",
-                "last_exec_time",
-                "item_type",
-                "item_id",
-                "device__device_id",
-                "device__ip",
-                "device__hostname",
-                "coll_policy__name",
-                "coll_policy_id",
-                "value_type",
-                 "policys_groups__exec_interval",
-                 "schedule__priority"
-                ]
+                       "schedule__valid_period_type",
+                       "schedule__start_period_time",
+                       "schedule__end_period_time",
+                       "schedule__data_schedule_type",
+                       "schedule__data_schedule_time",
+                       "last_exec_time",
+                       "item_type",
+                       "item_id",
+                       "device__device_id",
+                       "device__ip",
+                       "device__hostname",
+                       "coll_policy__name",
+                       "coll_policy_id",
+                       "value_type",
+                       "policys_groups__exec_interval",
+                       "schedule__priority"
+                       ]
 
         cli_items=[
-                "device__ostype__start_default_commands",
-                "device__ostype__end_default_commands",
-                "device__ostype__log_fail_judges",
-                "device__ostype__telnet_prompt",
-                "device__ostype__telnet_timeout",
-                "device__login_expect",
-                "device__telnet_port",
-                "coll_policy__cli_command",
-                "coll_policy_rule_tree_treeid",
-                "coll_policy_rule_tree_treeid__rule_id_path",
-                "coll_policy_rule_tree_treeid__rule_id",
-                "coll_policy_rule_tree_treeid__rule__value_type"]
+            "device__ostype__start_default_commands",
+            "device__ostype__end_default_commands",
+            "device__ostype__log_fail_judges",
+            "device__ostype__telnet_prompt",
+            "device__ostype__telnet_timeout",
+            "device__login_expect",
+            "device__telnet_port",
+            "coll_policy__cli_command",
+            "coll_policy_rule_tree_treeid",
+            "coll_policy_rule_tree_treeid__rule_id_path",
+            "coll_policy_rule_tree_treeid__rule_id",
+            "coll_policy_rule_tree_treeid__rule__value_type"]
 
         snmp_items=["device__ostype__snmp_timeout",
-                "device__snmp_port",
-                "device__snmp_community",
-                "device__snmp_version",
-                "coll_policy__snmp_oid"]
-        
+                    "device__snmp_port",
+                    "device__snmp_community",
+                    "device__snmp_version",
+                    "coll_policy__snmp_oid"]
+
         if item_type is not None:
             param_dict["item_type"] = item_type
             if item_type == CommonConstants.CLI_TYPE_CODE:
@@ -102,12 +103,12 @@ class DeviceDbHelp(DbHelp):
 
             value_items.extend(cli_items)
             value_items.extend(snmp_items)
-        
+
 
 
         items = Items.objects.filter(
             **param_dict).order_by(
-                "-policys_groups__exec_interval","schedule__priority").values(*value_items)
+            "-policys_groups__exec_interval","schedule__priority").values(*value_items)
         return list(items)
 
 
@@ -173,7 +174,7 @@ class ParserDbHelp(DbHelp):
         for result in results:
             value_type = result['value_type']
             keys = self.get_history_table(CommonConstants.VALUE_TYPE_MAPPING.get(value_type),
-                                                  CommonConstants.ITEM_TYPE_MAPPING.get(item_type))
+                                          CommonConstants.ITEM_TYPE_MAPPING.get(item_type))
             if keys in data.keys():
                 pass
             else:
@@ -188,15 +189,15 @@ class ParserDbHelp(DbHelp):
             self.__save_cli_bulk(data,_clock,_ns)
         else:
             self.__save_snmp_bulk(data,_clock,_ns)
-        
+
 
 
     def __save_cli_bulk(self, result, clock, ns):
-        
+
         for table in result:
             tmp = []
             for data in result[table]:
-         
+
                 block_path = str(data["data"]['block_path'])
                 item_id = data['item_id']
                 tmp.append(table(
@@ -211,7 +212,7 @@ class ParserDbHelp(DbHelp):
         return True
 
     def __save_snmp_bulk(self, result, clock, ns):
-        
+
 
         for table in result:
             tmp = []
@@ -288,7 +289,6 @@ class TriggerDbHelp(DbHelp):
             triggers.extend(TriggerDetail.objects.filter(**{"device_id": device_id, "status": 1}))
         return triggers
 
-
     def get_triggers_by_item_id(self, items_id):
         """
         search triggers by different expression pattern
@@ -312,7 +312,6 @@ class TriggerDbHelp(DbHelp):
 
         return latest_event
 
-
     def save_events(self, events):
         tmp = []
         for event in events:
@@ -327,11 +326,55 @@ class TriggerDbHelp(DbHelp):
             )
         Event.objects.bulk_create(tmp)
 
+
+class ActionDbHelp(DbHelp):
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def save_action_log(logs):
+        saved_logs = []
+        for log in logs:
+            saved_logs.append(ActionLog(device_hostname=log['device_hostname'],
+                                        action_time=log['action_time'],
+                                        action_date=log['action_date'],
+                                        coll_policy_name=log['coll_policy_name'],
+                                        action_level=log['action_level'],
+                                        extra_data=log['extra_data'],
+                                        action_status=log['action_status'],
+                                        exec_response=log['exec_response'],
+                                        action_id=log['action_id'],
+                                        exec_action=log['exec_action']
+                                        ))
+        ActionLog.objects.bulk_create(saved_logs)
+
+
+def test(id):
+    print id
+    print list(ActionLog.objects.all())[0].id
+
 if __name__ == "__main__":
     time.clock()
     # TriggerDbHelp.get_last_value(4, "Cli", "Str", 1)
     # print TriggerDbHelp.get_trigger(1)[0].expression
     # print time.clock()
     # instance = CollPolicyGroups()
-    for i in TriggerDbHelp().get_triggers_by_item_id(['4', '1']):
-        print i
+    # test(1)
+    # print '1111'
+    # time.sleep(10)
+    # test(2)
+    # for i in range(100):
+    #     t = threading.Thread(target=test, args=(i, ))
+    #     t.start()
+    # time.sleep(10)
+    # t = threading.Thread(target=test, args=(1,))
+    # t.start()
+    # print 1111
+    # time.sleep(5)
+    # t = threading.Thread(target=test, args=(2,))
+    # t.start()
+    # while True:
+    #     pass
+    #
+    # for i in TriggerDbHelp().get_triggers_by_item_id(['4', '1']):
+    #     print i
