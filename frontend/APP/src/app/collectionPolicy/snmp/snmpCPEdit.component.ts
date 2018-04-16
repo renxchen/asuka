@@ -198,7 +198,7 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    // let type = _.get(status, 'type');
+                    let type = _.get(status, 'type');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         this.modalMsg = '保存しました。';
                         this.closeMsg = '一覧へ戻る';
@@ -207,19 +207,9 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                             _t.router.navigate(['/index/cpview/'], { queryParams: { 'cptype': 1 } });
                         });
                     } else {
-                        // if (type && type === 'NAME_DUPLICATE') {
-                        //     this.uniqueFlg = false;
-                        // }else {
-                        //     if (msg) {
-                        //         this.modalMsg = msg;
-                        //         this.closeMsg = '閉じる';
-                        //         this.showAlertModal(this.modalMsg, this.closeMsg);
-                        //     }
-                        // }
-                        // CP_NAME_DUPLICATE
-                        if (msg === 'Collection policy name is exist in system.') {
+                        if (type && type === 'NAME_DUPLICATE') {
                             this.uniqueFlg = false;
-                        } else {
+                        }else {
                             if (msg) {
                                 this.modalMsg = msg;
                                 this.closeMsg = '閉じる';
