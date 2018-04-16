@@ -124,7 +124,7 @@ export class GroupEditComponent implements OnInit, AfterViewInit {
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.fullWithoutSpecial(this.name);
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         if (this.selectedOsType) {
             this.ostypeNotNull = true;
