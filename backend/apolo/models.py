@@ -231,11 +231,13 @@ class DevicesGroups(models.Model):
 
 class Event(models.Model):
     event_id = models.IntegerField(primary_key=True)
-    clock = models.IntegerField(blank=True, null=True)
+    data_clock = models.IntegerField(blank=True, null=True)
     number = models.IntegerField(blank=True, null=True)
-    source = models.IntegerField(blank=True, null=True)
-    value = models.IntegerField(blank=True, null=True)
-    objectid = models.IntegerField(blank=True, null=True)
+    trigger_value = models.IntegerField(blank=True, null=True)
+    trigger_id = models.IntegerField(blank=True, null=True)
+    device_id = models.IntegerField(blank=True, null=True)
+    triggerd = models.IntegerField(blank=True, null=True,default=0)
+    action = models.IntegerField(blank=True, null=True,default=0)
 
     class Meta:
         # managed = False
@@ -517,6 +519,7 @@ class Triggers(models.Model):
     condition = models.IntegerField(blank=True, null=True)
 
     expression = models.CharField(max_length=256, blank=True, null=True)
+    identifier = models.CharField(max_length=255, blank=True, null=True)
     columnA = models.CharField(max_length=255, blank=True, null=True)
     columnB = models.CharField(max_length=255, blank=True, null=True)
 
