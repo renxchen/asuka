@@ -270,8 +270,8 @@ class Groups(models.Model):
 class HistoryCliFloat(models.Model):
     value = models.FloatField(blank=True, null=True)
     clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
+    ns = models.IntegerField(blank=True, null=True, primary_key=True)
+    item = models.ForeignKey('Items', models.DO_NOTHING, primary_key=True)
     block_path = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -283,21 +283,21 @@ class HistoryCliFloat(models.Model):
 class HistoryCliInt(models.Model):
     value = models.BigIntegerField(blank=True, null=True)
     clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
+    ns = models.IntegerField(blank=True, null=True, primary_key=True)
+    item = models.ForeignKey('Items', models.DO_NOTHING, primary_key=True)
     block_path = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         # managed = False
-        db_table = 'history_cli_int'
         unique_together = ("ns", "item")
+        db_table = 'history_cli_int'
 
 
 class HistoryCliStr(models.Model):
     clock = models.IntegerField(blank=True, null=True)
     value = models.CharField(max_length=255, blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
+    ns = models.IntegerField(blank=True, null=True, primary_key=True)
+    item = models.ForeignKey('Items', models.DO_NOTHING, primary_key=True)
     block_path = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -309,8 +309,8 @@ class HistoryCliStr(models.Model):
 class HistoryCliText(models.Model):
     clock = models.IntegerField(blank=True, null=True)
     value = models.TextField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
+    ns = models.IntegerField(blank=True, null=True, primary_key=True)
+    item = models.ForeignKey('Items', models.DO_NOTHING, primary_key=True)
     block_path = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -322,8 +322,8 @@ class HistoryCliText(models.Model):
 class HistorySnmpFloat(models.Model):
     value = models.FloatField(blank=True, null=True)
     clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
+    ns = models.IntegerField(blank=True, null=True, primary_key=True)
+    item = models.ForeignKey('Items', models.DO_NOTHING, primary_key=True)
 
     class Meta:
         # managed = False
@@ -334,8 +334,8 @@ class HistorySnmpFloat(models.Model):
 class HistorySnmpInt(models.Model):
     value = models.BigIntegerField(blank=True, null=True)
     clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
+    ns = models.IntegerField(blank=True, null=True, primary_key=True)
+    item = models.ForeignKey('Items', models.DO_NOTHING, primary_key=True)
 
     class Meta:
         # managed = False
@@ -346,8 +346,8 @@ class HistorySnmpInt(models.Model):
 class HistorySnmpStr(models.Model):
     clock = models.IntegerField(blank=True, null=True)
     value = models.CharField(max_length=255, blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
+    ns = models.IntegerField(blank=True, null=True, primary_key=True)
+    item = models.ForeignKey('Items', models.DO_NOTHING, primary_key=True)
 
     class Meta:
         # managed = False
@@ -358,8 +358,8 @@ class HistorySnmpStr(models.Model):
 class HistorySnmpText(models.Model):
     clock = models.IntegerField(blank=True, null=True)
     value = models.TextField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
+    ns = models.IntegerField(blank=True, null=True, primary_key=True)
+    item = models.ForeignKey('Items', models.DO_NOTHING, primary_key=True)
 
     class Meta:
         # managed = False
