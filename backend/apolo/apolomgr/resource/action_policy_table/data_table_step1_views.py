@@ -21,7 +21,8 @@ from backend.apolo.models import DataTable, DataTableItems, DataTableHistoryItem
 from django.db import transaction
 from backend.apolo.serializer.action_policy_serializer import ActionPolicyDataTableSerializer, \
     ActionPolicyDataTableItemSerializer
-from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
+from backend.apolo.serializer.history_cli_x_serializer import HistoryCliXSerializer
+from backend.apolo.serializer.history_snmp_x_serializer import HistorySnmpXSerializer
 import time
 from backend.apolo.apolomgr.resource.common import csv_export
 import os
@@ -223,7 +224,6 @@ class TableViewsSet(viewsets.ViewSet):
                 'clock__gte': self.start_date_timestamp,
                 'clock__lte': self.end_date_timestamp
             }
-
         history = table.objects.filter(**kwargs).order_by("-clock")
         if value_type not in trigger_numeric:
             for h in history:
@@ -243,6 +243,7 @@ class TableViewsSet(viewsets.ViewSet):
         result_temp = []
         result_history_temp = []
         data_history = {}
+        item_type = 'cli'
         # get all items by provided table id
         # data_table_item_info = self.get_data_table_item(**{'table_id': id, 'item__enable_status': 1})
         data_table_item_info = self.get_data_table_item(**{'table_id': id})
@@ -260,7 +261,10 @@ class TableViewsSet(viewsets.ViewSet):
             # key_str in rule table
             key_str = per_data_table_item_info['item__coll_policy_rule_tree_treeid__rule__key_str']
             history_data = self.get_history(per_data_table_item_info['item'], value_type, item_type)
-            serializer = HistoryXSerializer(history_data, many=True)
+            if item_type.upper() == 'SNMP':
+                serializer = HistorySnmpXSerializer(history_data, many=True)
+            else:
+                serializer = HistoryCliXSerializer(history_data, many=True)
             for per in serializer.data:
                 per['item_id'] = item_id
                 per['table_id'] = table_id
@@ -282,7 +286,10 @@ class TableViewsSet(viewsets.ViewSet):
                 # key_str in rule table
                 key_str = per_data_table_history_item_info['item__coll_policy_rule_tree_treeid__rule__key_str']
                 history_data = self.get_history(per_data_table_history_item_info['item'], value_type, item_type)
-                serializer = HistoryXSerializer(history_data, many=True)
+                if item_type.upper() == 'SNMP':
+                    serializer = HistorySnmpXSerializer(history_data, many=True)
+                else:
+                    serializer = HistoryCliXSerializer(history_data, many=True)
                 for per in serializer.data:
                     per['item_id'] = item_id
                     per['table_id'] = table_id
@@ -303,7 +310,8 @@ class TableViewsSet(viewsets.ViewSet):
         contacts = paginator.page(int(self.page_from))
         for per_history_data in contacts.object_list:
             timestamp = per_history_data['clock']
-            path = per_history_data['block_path']
+            if item_type.upper() == 'CLI':
+                path = per_history_data['block_path']
             value = per_history_data['value']
             device_name = per_history_data['device_name']
             key_str = per_history_data['key_str']
@@ -312,19 +320,23 @@ class TableViewsSet(viewsets.ViewSet):
                 continue
             if self.timestamp and self.timestamp not in str(timestamp):
                 continue
-            if self.path and self.path not in path:
-                continue
+            if item_type.upper() == 'CLI':
+                if self.path and self.path not in path:
+                    continue
             if self.checkitem_value and self.checkitem_value not in str(value):
                 continue
             # table detail page search button end
             data_history['date'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(timestamp)))
-            data_history['path'] = path
+            if item_type.upper() == 'CLI':
+                data_history['path'] = path
             data_history['value'] = value
             data_history['hostname'] = device_name
             data_history['checkitem'] = key_str
             result.append(data_history.copy())
         # table detail page sort start
-        sort_by_list = ['hostname', 'date', 'path', 'value']
+        sort_by_list = ['hostname', 'date', 'value']
+        if item_type.upper() == 'CLI':
+            sort_by_list = ['hostname', 'date', 'path', 'value']
         if self.sort_by and self.sort_by in sort_by_list:
             if self.order:
                 # True: asc, False: desc

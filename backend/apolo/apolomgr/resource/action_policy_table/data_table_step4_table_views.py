@@ -18,7 +18,9 @@ from backend.apolo.models import Items, DevicesGroups, CollPolicy
 from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import views_helper
-from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
+# from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
+from backend.apolo.serializer.history_cli_x_serializer import HistoryCliXSerializer
+from backend.apolo.serializer.history_snmp_x_serializer import HistorySnmpXSerializer
 from backend.apolo.tools import constants
 
 
@@ -191,11 +193,16 @@ class DataTableTableViewsSet(viewsets.ViewSet):
                     value_type = self.get_mapping(item_infos[0]['value_type'])
                     item_type = self.get_mapping_cli_snmp(item_infos[0]['item_type'])
                     queryset = self.get_history(item_id, value_type, item_type)
-                    serializer = HistoryXSerializer(queryset, many=True)
+                    # serializer = HistoryXSerializer(queryset, many=True)
+                    if item_type.upper() == 'SNMP':
+                        serializer = HistorySnmpXSerializer(queryset, many=True)
+                    else:
+                        serializer = HistoryCliXSerializer(queryset, many=True)
                     if serializer.data:
                         result['device_name'] = item_infos[0]['device__hostname']
                         result['time_stamp'] = serializer.data[0]['clock']
-                        result['path'] = serializer.data[0]['block_path']
+                        if item_type.upper() == 'CLI':
+                            result['path'] = serializer.data[0]['block_path']
                         result['value'] = serializer.data[0]['value']
                         result['item_id'] = serializer.data[0]['item']
                         result['rule_name'] = self.rule_name

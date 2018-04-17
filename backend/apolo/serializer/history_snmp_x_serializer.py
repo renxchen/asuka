@@ -3,16 +3,16 @@
 
 @author: necwang
 @contact: necwang@cisco.com
-@file: action_policy_serializer.py
+@file: history_snmp_x_serializer.py
 @time: 2018/1/15 14:22
 @desc:
 
 """
 from rest_framework import serializers
-from backend.apolo.models import HistoryCliFloat
+from backend.apolo.models import HistorySnmpInt
 
 
-class HistoryXSerializer(serializers.ModelSerializer):
+class HistorySnmpXSerializer(serializers.ModelSerializer):
     class Meta:
-        model = HistoryCliFloat
+        model = HistorySnmpInt
         fields = '__all__'
