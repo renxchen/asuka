@@ -402,25 +402,34 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             if self.minor_threshold is not '':
                 expression_minor = self.minor_threshold.replace('A(', str(column_a) + '(').replace('A[', str(
                     column_a) + '[').replace('B(', str(column_b) + '(').replace('B[', str(column_b) + '[')
-        # 1:数値比較-->{4} == 'ok', 2:文字列比較-->{4} > 1000
+        # 1:数値比較-->10(0) == 'ok', 2:文字列比較-->10(0) > 'asd&&**^^sd@@!!'
         elif value == constants.NUMBER_ONE or value == constants.NUMBER_TWO:
             if self.critical_threshold is not '':
-                expression_critical = '{' + str(column_a) + '}' + self.map_condition(self.critical_condition) + str(
-                    self.critical_threshold)
+                # expression_critical = '{' + str(column_a) + '}' + self.map_condition(self.critical_condition) + str(
+                #     self.critical_threshold)
+                expression_critical = str(column_a) + '(' + '0' + ')' + self.map_condition(
+                    self.critical_condition) + str(self.critical_threshold)
             if self.major_threshold is not '':
-                expression_major = '{' + str(column_a) + '}' + self.map_condition(self.major_condition) + str(
-                    self.major_threshold)
+                # expression_major = '{' + str(column_a) + '}' + self.map_condition(self.major_condition) + str(
+                #     self.major_threshold)
+                expression_major = str(column_a) + '(' + '0' + ')' + self.map_condition(
+                    self.major_condition) + str(self.major_threshold)
             if self.minor_threshold is not '':
-                expression_minor = '{' + str(column_a) + '}' + self.map_condition(self.minor_condition) + str(
-                    self.minor_threshold)
+                # expression_minor = '{' + str(column_a) + '}' + self.map_condition(self.minor_condition) + str(
+                #     self.minor_threshold)
+                expression_minor = str(column_a) + '(' + '0' + ')' + self.map_condition(
+                    self.minor_condition) + str(self.minor_threshold)
         # 3:取得失敗-->Fail(1)
         elif value == constants.NUMBER_THREE:
             if self.critical_threshold is not '':
-                expression_critical = 'Fail(' + str(column_a) + ')'
+                # expression_critical = 'Fail(' + str(column_a) + ')'
+                expression_critical = ''
             if self.major_threshold is not '':
-                expression_major = 'Fail(' + str(column_a) + ')'
+                # expression_major = 'Fail(' + str(column_a) + ')'
+                expression_major = ''
             if self.minor_threshold is not '':
-                expression_minor = 'Fail(' + str(column_a) + ')'
+                # expression_minor = 'Fail(' + str(column_a) + ')'
+                expression_minor = ''
         expression['expression_critical'] = expression_critical
         expression['expression_major'] = expression_major
         expression['expression_minor'] = expression_minor

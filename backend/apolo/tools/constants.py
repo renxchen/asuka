@@ -117,6 +117,7 @@ DATA_TABLE_EXIST_IN_TRIGGER = gettext('Current data table is running in action p
 CSV_PATH_NOT_EXIST = gettext('CSV path is not exist.')
 DATA_TABLE_PROORITY_0 = '高'
 DATA_TABLE_PROORITY_1 = '标准'
+EXPORT_CSV_TITLE = ['デバイス名', 'Date', 'Path']
 #########################################
 # Collection Policy Related define
 #########################################

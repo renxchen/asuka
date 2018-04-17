@@ -120,6 +120,23 @@ class TableViewsSet(viewsets.ViewSet):
             return exception_handler(e)
 
     @staticmethod
+    def get_data_table_item_for_delete(**kwargs):
+        """!@brief
+        Get the data of DataTableItems table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of DataTableItems table
+        @post return DataTableItems data
+        @return result: data of DataTableItems table
+        """
+        try:
+            data_table_item_info = DataTableItems.objects.filter(**kwargs)
+            return data_table_item_info
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
+
+    @staticmethod
     def get_data_table_history_item(**kwargs):
         """!@brief
         Get the data of DataTableItems table
@@ -144,7 +161,7 @@ class TableViewsSet(viewsets.ViewSet):
     def get_mapping(code):
         """!@brief
         Match the value type， change the integer value into string value,
-        0: snmp, 1: cli, 2: float, 3: string, 4: text, 5: int
+        0: int, 1: text, 2: float, 3: string
         @param code: the integer value of value type
         @pre call when need to change value type
         @post return the value type
@@ -153,17 +170,31 @@ class TableViewsSet(viewsets.ViewSet):
         # value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
         code_meaning = ''
         if code == constants.NUMBER_ZERO:
-            code_meaning = constants.SNMP
+            code_meaning = constants.INTEGER
         if code == constants.NUMBER_ONE:
-            code_meaning = constants.CLI
+            code_meaning = constants.TEXT
         if code == constants.NUMBER_TWO:
             code_meaning = constants.FLOAT
         if code == constants.NUMBER_THREE:
             code_meaning = constants.STRING
-        if code == constants.NUMBER_FOUR:
-            code_meaning = constants.TEXT
-        if code == constants.NUMBER_FIVE:
-            code_meaning = constants.INTEGER
+        return code_meaning
+
+    @staticmethod
+    def get_mapping_cli_snmp(code):
+        """!@brief
+        Match the value type， change the integer value into string value,
+        0: cli, 1: snmp
+        @param code: the integer value of value type
+        @pre call when need to change value type
+        @post return the value type
+        @return code_meaning: string value type
+        """
+        # value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
+        code_meaning = ''
+        if code == constants.NUMBER_ZERO:
+            code_meaning = constants.CLI
+        if code == constants.NUMBER_ONE:
+            code_meaning = constants.SNMP
         return code_meaning
 
     def get_history(self, item_id, value_type, policy_type):
@@ -192,6 +223,7 @@ class TableViewsSet(viewsets.ViewSet):
                 'clock__gte': self.start_date_timestamp,
                 'clock__lte': self.end_date_timestamp
             }
+
         history = table.objects.filter(**kwargs).order_by("-clock")
         if value_type not in trigger_numeric:
             for h in history:
@@ -219,7 +251,7 @@ class TableViewsSet(viewsets.ViewSet):
             # value type in item table
             value_type = self.get_mapping(per_data_table_item_info['item__value_type'])
             # item type in item table
-            item_type = self.get_mapping(per_data_table_item_info['item__item_type'])
+            item_type = self.get_mapping_cli_snmp(per_data_table_item_info['item__item_type'])
             # host name in Devices table
             hostname = per_data_table_item_info['item__device__hostname']
             # item id in item table
@@ -241,7 +273,7 @@ class TableViewsSet(viewsets.ViewSet):
                 # value type in item table
                 value_type = self.get_mapping(per_data_table_history_item_info['item__value_type'])
                 # item type in item table
-                item_type = self.get_mapping(per_data_table_history_item_info['item__item_type'])
+                item_type = self.get_mapping_cli_snmp(per_data_table_history_item_info['item__item_type'])
                 # host name in Devices table
                 hostname = per_data_table_history_item_info['item__device__hostname']
                 # item id in item table
@@ -321,11 +353,15 @@ class TableViewsSet(viewsets.ViewSet):
     def csv_export(self):
         try:
             if self.id is not '':
-                data = self.get_info_by_table_id(self.id)
-                title = ['デバイス名', 'Time Stamp', 'Path', data['data']['data'][0]['checkitem']]
+                data_result = self.get_info_by_table_id(self.id)
+                check_item_name = 'Check Item'
                 csv_data = []
-                for per in data['data']['data']:
-                    csv_data.append([per['hostname'], per['date'], per['path'], per['value']])
+                if len(data_result['data']['data']):
+                    check_item_name = data_result['data']['data'][0]['checkitem']
+                    for per in data_result['data']['data']:
+                        csv_data.append([per['hostname'], per['date'], per['path'], per['value']])
+                # title = ['デバイス名', 'Time Stamp', 'Path', check_item_name]
+                title = list(constants.EXPORT_CSV_TITLE).append(check_item_name)
                 script_dir = os.path.split(os.path.realpath(__file__))[0]
                 csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))),
                                         constants.CSV_PATH)
@@ -463,6 +499,7 @@ class TableViewsSet(viewsets.ViewSet):
                 kwargs = {'table_id': self.id}
                 data_in_dp = self.get_data_table(**kwargs)
                 data_in_trigger = self.get_trigger(self.id)
+                data_table_item_info = self.get_data_table_item_for_delete(**{'table_id': self.id})
                 if len(data_in_dp) <= 0:
                     data = {
                         'new_token': self.new_token,
@@ -481,6 +518,7 @@ class TableViewsSet(viewsets.ViewSet):
                         }
                     }
                     return api_return(data=data)
+                data_table_item_info.delete()
                 data_in_dp.delete()
                 data = {
                     'new_token': self.new_token,
