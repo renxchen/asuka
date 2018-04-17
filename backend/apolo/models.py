@@ -270,8 +270,8 @@ class Groups(models.Model):
 class HistoryCliFloat(models.Model):
     value = models.FloatField(blank=True, null=True)
     clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
+    ns = models.IntegerField(blank=True, null=True, primary_key=True)
+    item = models.ForeignKey('Items', models.DO_NOTHING, primary_key=True)
     block_path = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
