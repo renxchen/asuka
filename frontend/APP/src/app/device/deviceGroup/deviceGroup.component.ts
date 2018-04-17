@@ -25,6 +25,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
     groupId: any;
     name: any;
     desc: any;
+    descFirstLine: any;
     osType: any;
     osTypeId: any;
     deviceTable$: any;
@@ -184,6 +185,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             this.name = '無所属';
             this.osType = '無所属';
             this.desc = '無所属';
+            this.descFirstLine = '無所属';
             return;
         }
         this.apiPrefix = '/v1';
@@ -200,6 +202,8 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                         this.osType = _.get(_.get(data[0], 'ostype'), 'name');
                         this.desc = _.get(data[0], 'desc');
                     }
+                    this.descFirstLine = null;
+                    this.descFirstLine = _.get(res, 'desc_firstline');
                 } else {
                     if (msg) {
                         this.modalMsg = msg;
@@ -222,8 +226,8 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             this.getPanelData(id);
             $('#deviceTable').jqGrid('clearGridData');
             $('#deviceTable')
-            .jqGrid('setGridParam', { url : '/v1/api_device/?group_id=' + id })
-            .trigger('reloadGrid');
+                .jqGrid('setGridParam', { url : '/v1/api_device/?group_id=' + id })
+                .trigger('reloadGrid');
         }
     }
     public editGroup(id: any) {
