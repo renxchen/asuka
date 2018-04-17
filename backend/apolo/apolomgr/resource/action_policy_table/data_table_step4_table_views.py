@@ -33,8 +33,8 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         self.tree_id = views_helper.get_request_value(self.request, 'tree_id', 'GET')
         # collection policy id
         self.coll_policy_id = views_helper.get_request_value(self.request, 'coll_id', 'GET')
-        # collection policy group id, schedule-->policy_group_id(coll_policy_groups)
-        self.policy_group_id = views_helper.get_request_value(self.request, 'policy_group_id', 'GET')
+        # collection policy group id, schedule-->policy_group_id(coll_policy_groups), not use anymore
+        # self.policy_group_id = views_helper.get_request_value(self.request, 'policy_group_id', 'GET')
         # device group id, from step2-->groups table(device_group_id)
         self.device_group_id = views_helper.get_request_value(self.request, 'device_group_id', 'GET')
         # schedule id
@@ -121,7 +121,7 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         INT = 0
         TEXT = 1
         FLOAT = 2
-        STRING = 3
+        STR = 3
         @param code: the integer value of value type
         @pre call when need to change value type
         @post return the value type
@@ -176,15 +176,16 @@ class DataTableTableViewsSet(viewsets.ViewSet):
                     'device': device_id,
                     'schedule': self.schedule_id,
                     'coll_policy': self.coll_policy_id,
-                    'policys_groups': self.policy_group_id
+                    # 'policys_groups__policy_group': self.policy_group_id
                 }
                 if len(policy_type):
+                    # snmp
                     if int(policy_type[0]['policy_type']) == 1:
                         kwargs = {
                             'device': device_id,
                             'schedule': self.schedule_id,
                             'coll_policy': self.coll_policy_id,
-                            'policys_groups': self.policy_group_id
+                            # 'policys_groups__policy_group': self.policy_group_id
                         }
                 item_infos = Items.objects.filter(**kwargs).values('item_id', 'value_type', 'item_type',
                                                                    'device__hostname')
