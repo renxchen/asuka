@@ -104,7 +104,11 @@ class GroupsViewSet(viewsets.ViewSet):
                     return api_return(data=data)
                 serializer = DeviceGroupIDNameSerializer(query_result)
                 if serializer.data['desc']:
-                    desc_firstline = serializer.data['desc'].splitlines()[0]
+                    desc_firstlines = serializer.data['desc'].splitlines()
+                    if len(desc_firstlines) > 1:
+                        desc_firstline = desc_firstlines[0] + "..."
+                    else:
+                        desc_firstline = desc_firstlines[0]
                 else:
                     desc_firstline = ''
                 query_list = []
