@@ -354,14 +354,14 @@ class TableViewsSet(viewsets.ViewSet):
         try:
             if self.id is not '':
                 data_result = self.get_info_by_table_id(self.id)
-                check_item_name = 'Check Item'
+                check_item_name = constants.EXPORT_CSV_TITLE_COLUMN_4
                 csv_data = []
                 if len(data_result['data']['data']):
                     check_item_name = data_result['data']['data'][0]['checkitem']
                     for per in data_result['data']['data']:
                         csv_data.append([per['hostname'], per['date'], per['path'], per['value']])
-                # title = ['デバイス名', 'Time Stamp', 'Path', check_item_name]
-                title = list(constants.EXPORT_CSV_TITLE).append(check_item_name)
+                title = [constants.EXPORT_CSV_TITLE_COLUMN_1, constants.EXPORT_CSV_TITLE_COLUMN_2,
+                         constants.EXPORT_CSV_TITLE_COLUMN_3, check_item_name]
                 script_dir = os.path.split(os.path.realpath(__file__))[0]
                 csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))),
                                         constants.CSV_PATH)
