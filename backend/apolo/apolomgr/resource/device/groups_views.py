@@ -70,7 +70,8 @@ class GroupsViewSet(viewsets.ViewSet):
             ostype_info = Ostype.objects.get(**kwargs)
             return ostype_info
         except Exception, e:
-            return exception_handler(e)
+            print e
+            raise e
 
     def get(self):
         """@brief
@@ -91,8 +92,8 @@ class GroupsViewSet(viewsets.ViewSet):
                 else:
                     ostype = True
                     name = True
-                queryset = Groups.objects.filter(**query_conditions)
-                if not queryset.exists():
+                query_result = self.get_group(query_conditions)
+                if not query_result:
                     data = {
                         'new_token': self.new_token,
                         constants.STATUS: {
@@ -101,6 +102,29 @@ class GroupsViewSet(viewsets.ViewSet):
                         }
                     }
                     return api_return(data=data)
+                serializer = DeviceGroupIDNameSerializer(query_result)
+                if serializer.data['desc']:
+                    desc_firstline = serializer.data['desc'].splitlines()[0]
+                else:
+                    desc_firstline = ''
+                query_list = []
+                query_list.append(serializer.data)
+                data = {
+                    'data': query_list,
+                    'desc_firstline': desc_firstline,
+                    'new_token': self.new_token,
+                    'verify_result': {
+                        "name": name,
+                        "ostype": ostype,
+                        "desc": "true"
+                    },
+                    constants.STATUS: {
+                        constants.STATUS: constants.TRUE,
+                        constants.MESSAGE: constants.SUCCESS
+                    },
+                }
+                return api_return(data=data)
+
             serializer = DeviceGroupIDNameSerializer(queryset, many=True)
             data = {
                 'data': serializer.data,
@@ -257,7 +281,6 @@ class GroupsViewSet(viewsets.ViewSet):
             print e
             raise e
 
-
     def delete(self):
         """@brief
         delete a group
@@ -312,4 +335,3 @@ class GroupsViewSet(viewsets.ViewSet):
             transaction.rollback()
             print e
             raise e
-
