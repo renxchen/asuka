@@ -277,6 +277,7 @@ class HistoryCliFloat(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_cli_float'
+        unique_together = ("ns", "item")
 
 
 class HistoryCliInt(models.Model):
@@ -289,6 +290,7 @@ class HistoryCliInt(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_cli_int'
+        unique_together = ("ns", "item")
 
 
 class HistoryCliStr(models.Model):
@@ -301,6 +303,7 @@ class HistoryCliStr(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_cli_str'
+        unique_together = ("ns", "item")
 
 
 class HistoryCliText(models.Model):
@@ -313,6 +316,7 @@ class HistoryCliText(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_cli_text'
+        unique_together = ("ns", "item")
 
 
 class HistorySnmpFloat(models.Model):
@@ -324,6 +328,7 @@ class HistorySnmpFloat(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_snmp_float'
+        unique_together = ("ns", "item")
 
 
 class HistorySnmpInt(models.Model):
@@ -335,6 +340,7 @@ class HistorySnmpInt(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_snmp_int'
+        unique_together = ("ns", "item")
 
 
 class HistorySnmpStr(models.Model):
@@ -346,6 +352,7 @@ class HistorySnmpStr(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_snmp_str'
+        unique_together = ("ns", "item")
 
 
 class HistorySnmpText(models.Model):
@@ -357,6 +364,7 @@ class HistorySnmpText(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_snmp_text'
+        unique_together = ("ns", "item")
 
 
 class Items(models.Model):
