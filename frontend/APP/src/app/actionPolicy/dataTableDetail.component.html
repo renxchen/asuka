@@ -9,14 +9,15 @@
     <div class="row">
       <div class="col-md-4 input-div " id="startTime">
         <label>取得開始日時</label>
-        <input type="text" class="form-control" placeholder="YYYY-MM-DD HH:mm:ss" [(ngModel)]="startTime" id="startTimeInput" (ngModelChange)="setMaxAndMinDate('start')">
+        <input type="text" class="form-control" placeholder="YYYY-MM-DD HH:mm" [(ngModel)]="startTime" id="startTimeInput" (ngModelChange)="setMaxAndMinDate('start')">
       </div>
       <div class="col-md-4 input-div " id="endTime">
         <label>取得終了日時</label>
-        <input type="text" class="form-control" placeholder="YYYY-MM-DD HH:mm:ss" [(ngModel)]="endTime" id="endTimeInput" (ngModelChange)="setMaxAndMinDate('end')">
+        <input type="text" class="form-control" placeholder="YYYY-MM-DD HH:mm" [(ngModel)]="endTime" id="endTimeInput" (ngModelChange)="setMaxAndMinDate('end')">
       </div>
       <div class="col-md-4 btn-div" id="searchBtnDiv">
-        <button class="btn btn-default btn-layout" (click)="drawTable('search')">サーチ</button>
+        <button class="btn btn-warning btn-layout " (click)="clearTime()">リセット</button>
+        <button class="btn btn-default btn-layout btn-space" (click)="drawTable('search')">サーチ</button>
         <a class="btn btn-primary btn-layout btn-space"(click)="csvExport()">ＣＳＶエクスポート</a>
       </div>
     </div>

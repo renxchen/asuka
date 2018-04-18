@@ -5,7 +5,7 @@
       <span style="font-size: 30px">&times;</span>
     </button>
   </div>
-  <div class="modal-body" style="padding: 15px 5px 40px 5px;min-height: 340px">
+  <div class="modal-body" style="padding: 15px 5px 40px 5px;min-height: 385px">
     <div style="min-height: 300px;margin-bottom:20px">
       <div class="col-sm-12"  class="stepBtnGroup">
         <button class="btn btn-sm"
@@ -89,27 +89,27 @@
       </div>
     </div>
     <div class="col-sm-12 form-group">
-      <button class="btn btn-xs btn-warning  pull-left" (click)="bsModalRef.hide()">
+      <button class="btn btn-sm btn-warning  pull-left" (click)="bsModalRef.hide()">
         <i class="fa fa-window-close"></i>
         キャンセル
       </button>
       <button *ngIf="btnFlgs.btnFinished"
-       class="btn btn-primary btn-xs pull-right "
+       class="btn btn-primary btn-sm pull-right login-btn-space"
       [disabled]="!btnFlgs.btnFinished"
       (click)="saveTableData()">
       <i class="fa fa-plus-square"></i>
       保存</button>
-      <button class="btn btn-xs pull-right"
+      <button class="btn btn-sm pull-right login-btn-space"
        [ngClass]="{'btn-primary': btnFlgs.btnNext, 'btn-default': !btnFlgs.btnNext}"
         [disabled]="!btnFlgs.btnNext"
         (click)="next()">
-        >>
+        次へ
       </button>
-      <button class="btn btn-xs pull-right" 
+      <button class="btn btn-sm pull-right" 
       [ngClass]="{'btn-primary': btnFlgs.btnPrev, 'btn-default': ! btnFlgs.btnPrev}" 
       [disabled]="!btnFlgs.btnPrev"
         (click)="previous()">
-        << </button>
+        前へ </button>
     </div>
   </div>
 </div>

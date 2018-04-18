@@ -24,7 +24,9 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
   flatPickrEndTime: any;
   pickrOption: any = {
     enableTime: true,
-    time_24hr: true
+    time_24hr: true,
+    altInput: false
+    // allowInput: true
   };
 
 
@@ -53,7 +55,7 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
   }
 
   protected setPopUpSize() {
-    $('#detail-popup').parents('div.modal-content').css('width', '711px');
+    $('#detail-popup').parents('div.modal-content').css('width', '751px');
   }
 
   protected initPickr() {
@@ -61,6 +63,17 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
     let endEle = document.getElementById('endTimeInput');
     this.flatPickrStartTime = new flatpickr(startEle, this.pickrOption);
     this.flatPickrEndTime = new flatpickr(endEle, this.pickrOption);
+
+  }
+
+  protected clearTime() {
+    this.startTime = '';
+    this.endTime = '';
+    console.log('start', this.startTime);
+    console.log('start', this.endTime);
+    this.flatPickrStartTime.setDate(this.startTime, true);
+    this.flatPickrEndTime.setDate(this.endTime, true);
+
 
   }
 
@@ -72,10 +85,10 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
      * brief :set the max value or min value of flatpickr plugin
      */
     if (this.startTime && type === 'start') {
-      this.flatPickrEndTime.set('minDate', this.startTime);
+      this.flatPickrEndTime.set('minDate', this.startTime, this.endTime);
     }
     if (this.endTime && type === 'end') {
-      this.flatPickrStartTime.set('maxDate', this.endTime);
+      this.flatPickrStartTime.set('maxDate', this.endTime, this.startTime);
     }
   }
   protected drawTable(type: string) {
@@ -102,7 +115,7 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
       rowNum: 10,
       rowList: [10, 20, 30],
       autowidth: false,
-      width: 665,
+      width: 705,
       beforeSelectRow: function (rowid, e) { return false; },
       gridComplete: function () { },
       height: 230,
@@ -119,14 +132,17 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
     $('#searchTable').jqGrid(tableJson);
     $('#searchTable').jqGrid('filterToolbar', { defaultSearch: 'cn' });
     if (type === 'search') {
-      if (this.startTime && this.endTime) {
-        let startTime = moment(moment(this.startTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
-        let endTime = moment(moment(this.endTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
-        url = '/v1/api_data_table_step1/?id=' + this.tableId + '&start_date=' + startTime + '&end_date=' + endTime;
-        $('#searchTable').jqGrid().setGridParam({ datatype: 'json', url: url }).trigger('reloadGrid');
-      } else if (this.startTime && !this.endTime || !this.startTime && this.endTime) {
-        alert('取得開始日時と取得終了日時を選択してください！');
+      let startTime = '';
+      let endTime = '';
+      if (this.startTime) {
+        startTime = moment(moment(this.startTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
       }
+      if (this.endTime) {
+        endTime = moment(moment(this.endTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
+      }
+
+      url = '/v1/api_data_table_step1/?id=' + this.tableId + '&start_date=' + startTime + '&end_date=' + endTime;
+      $('#searchTable').jqGrid().setGridParam({ datatype: 'json', url: url }).trigger('reloadGrid');
     }
   }
 
@@ -141,11 +157,15 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
 
   protected csvExport() {
     let url = 'v1/api_data_table_csv_export/?id=' + this.tableId + '&page=1&rows=65536';
-    if (this.startTime && this.endTime) {
-      let startTime = moment(moment(this.startTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
-      let endTime = moment(moment(this.endTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
-      url = 'v1/api_data_table_csv_export/?start_date=' + startTime + '&end_date=' + endTime + '&id=' + this.tableId + '&page=1&rows=65536';
+    let startTime = '';
+    let endTime = '';
+    if (this.startTime) {
+      startTime = moment(moment(this.startTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
     }
+    if (this.endTime) {
+      endTime = moment(moment(this.endTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
+    }
+    url = 'v1/api_data_table_csv_export/?start_date=' + startTime + '&end_date=' + endTime + '&id=' + this.tableId + '&page=1&rows=65536';
     window.location.href = url;
   }
 
