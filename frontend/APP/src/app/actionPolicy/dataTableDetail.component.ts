@@ -69,8 +69,6 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
   protected clearTime() {
     this.startTime = '';
     this.endTime = '';
-    console.log('start', this.startTime);
-    console.log('start', this.endTime);
     this.flatPickrStartTime.setDate(this.startTime, true);
     this.flatPickrEndTime.setDate(this.endTime, true);
 
