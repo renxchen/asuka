@@ -18,7 +18,9 @@ from backend.apolo.models import Items, DevicesGroups, CollPolicy
 from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import views_helper
-from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
+# from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
+from backend.apolo.serializer.history_cli_x_serializer import HistoryCliXSerializer
+from backend.apolo.serializer.history_snmp_x_serializer import HistorySnmpXSerializer
 from backend.apolo.tools import constants
 
 
@@ -31,8 +33,8 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         self.tree_id = views_helper.get_request_value(self.request, 'tree_id', 'GET')
         # collection policy id
         self.coll_policy_id = views_helper.get_request_value(self.request, 'coll_id', 'GET')
-        # collection policy group id, schedule-->policy_group_id(coll_policy_groups)
-        self.policy_group_id = views_helper.get_request_value(self.request, 'policy_group_id', 'GET')
+        # collection policy group id, schedule-->policy_group_id(coll_policy_groups), not use anymore
+        # self.policy_group_id = views_helper.get_request_value(self.request, 'policy_group_id', 'GET')
         # device group id, from step2-->groups table(device_group_id)
         self.device_group_id = views_helper.get_request_value(self.request, 'device_group_id', 'GET')
         # schedule id
@@ -119,7 +121,7 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         INT = 0
         TEXT = 1
         FLOAT = 2
-        STRING = 3
+        STR = 3
         @param code: the integer value of value type
         @pre call when need to change value type
         @post return the value type
@@ -174,15 +176,16 @@ class DataTableTableViewsSet(viewsets.ViewSet):
                     'device': device_id,
                     'schedule': self.schedule_id,
                     'coll_policy': self.coll_policy_id,
-                    'policys_groups': self.policy_group_id
+                    # 'policys_groups__policy_group': self.policy_group_id
                 }
                 if len(policy_type):
+                    # snmp
                     if int(policy_type[0]['policy_type']) == 1:
                         kwargs = {
                             'device': device_id,
                             'schedule': self.schedule_id,
                             'coll_policy': self.coll_policy_id,
-                            'policys_groups': self.policy_group_id
+                            # 'policys_groups__policy_group': self.policy_group_id
                         }
                 item_infos = Items.objects.filter(**kwargs).values('item_id', 'value_type', 'item_type',
                                                                    'device__hostname')
@@ -191,11 +194,16 @@ class DataTableTableViewsSet(viewsets.ViewSet):
                     value_type = self.get_mapping(item_infos[0]['value_type'])
                     item_type = self.get_mapping_cli_snmp(item_infos[0]['item_type'])
                     queryset = self.get_history(item_id, value_type, item_type)
-                    serializer = HistoryXSerializer(queryset, many=True)
+                    # serializer = HistoryXSerializer(queryset, many=True)
+                    if item_type.upper() == 'SNMP':
+                        serializer = HistorySnmpXSerializer(queryset, many=True)
+                    else:
+                        serializer = HistoryCliXSerializer(queryset, many=True)
                     if serializer.data:
                         result['device_name'] = item_infos[0]['device__hostname']
                         result['time_stamp'] = serializer.data[0]['clock']
-                        result['path'] = serializer.data[0]['block_path']
+                        if item_type.upper() == 'CLI':
+                            result['path'] = serializer.data[0]['block_path']
                         result['value'] = serializer.data[0]['value']
                         result['item_id'] = serializer.data[0]['item']
                         result['rule_name'] = self.rule_name

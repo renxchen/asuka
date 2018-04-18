@@ -47,7 +47,7 @@ class DataCollectionByCPViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         else:
-            response_json_data = Tool.get_data_from_collection_server()
+            response_json_data = Tool.get_valid_item({"policys_groups__status": 1, "coll_policy_id": coll_policy_id})
             arry = []
             for one_recoder in response_json_data:
                 if device_name:

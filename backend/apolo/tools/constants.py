@@ -88,7 +88,7 @@ PRIORITY_MINOR = 'MINOR'
 SNMP = 'snmp'
 CLI = 'cli'
 FLOAT = 'float'
-STRING = 'string'
+STRING = 'str'
 TEXT = 'text'
 INTEGER = 'int'
 TRIGGER_TYPE_EXPRESSION_COMPARE = '演算比較'
@@ -117,6 +117,11 @@ DATA_TABLE_EXIST_IN_TRIGGER = gettext('Current data table is running in action p
 CSV_PATH_NOT_EXIST = gettext('CSV path is not exist.')
 DATA_TABLE_PROORITY_0 = '高'
 DATA_TABLE_PROORITY_1 = '标准'
+EXPORT_CSV_TITLE_COLUMN_1 = 'デバイス名'
+EXPORT_CSV_TITLE_COLUMN_2 = 'Date'
+EXPORT_CSV_TITLE_COLUMN_3 = 'Path'
+# use default value in column 4, when the csv file is empty
+EXPORT_CSV_TITLE_COLUMN_4 = 'Check Item'
 #########################################
 # Collection Policy Related define
 #########################################
@@ -190,6 +195,8 @@ VALUE_TYPE = {
     'STRING': 2
 }
 LEAF_NODE_MARK = 1
+ALL_FUNCTION_OFF = u'全機能OFF'
+EMERGENCY_STOP = u'緊急停止'
 ########################################
 # Mapping data
 ########################################
@@ -227,6 +234,8 @@ CAN_NOT_UPDATE_SCHEDULE_MESSAGE = gettext('Can not update schedule data')
 NO_DEVICE_IN_DEVICE_GROUP = gettext('There is no device in device group,please check the group')
 NO_CP_IN_CP_GROUP = gettext('There is no policy in policy group,please check the group')
 NULL_TREE_IN_CP = gettext('There is a null tree in the collection policy')
+DEVICE_GROUP_NOT_IN_SCHEDULE = gettext('The device group is not exist in schedule')
+DEVICE_GROUP_IS_ALL_FUNCTION_ALL = gettext('The device group has been all function off status')
 #########################################
 # render
 #########################################

@@ -17,11 +17,12 @@ from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import constants
 from backend.apolo.tools import views_helper
-from backend.apolo.models import DataTable, DataTableItems, DataTableHistoryItems, Triggers
+from backend.apolo.models import DataTable, DataTableItems, DataTableHistoryItems, Triggers, Items
 from django.db import transaction
 from backend.apolo.serializer.action_policy_serializer import ActionPolicyDataTableSerializer, \
     ActionPolicyDataTableItemSerializer
-from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
+from backend.apolo.serializer.history_cli_x_serializer import HistoryCliXSerializer
+from backend.apolo.serializer.history_snmp_x_serializer import HistorySnmpXSerializer
 import time
 from backend.apolo.apolomgr.resource.common import csv_export
 import os
@@ -54,6 +55,7 @@ class TableViewsSet(viewsets.ViewSet):
         self.hostname = views_helper.get_request_value(self.request, 'hostname', method)
         self.timestamp = views_helper.get_request_value(self.request, 'timestamp', method)
         self.path = views_helper.get_request_value(self.request, 'path', method)
+        self.oid = views_helper.get_request_value(self.request, 'oid', method)
         self.checkitem_value = views_helper.get_request_value(self.request, 'value', method)
         # table detail page search button parameters, start date and end date format 2016-06-06 16:16:16
         self.start_date = views_helper.get_request_value(self.request, 'start_date', method)
@@ -120,6 +122,23 @@ class TableViewsSet(viewsets.ViewSet):
             return exception_handler(e)
 
     @staticmethod
+    def get_data_table_item_for_delete(**kwargs):
+        """!@brief
+        Get the data of DataTableItems table
+        @param kwargs: dictionary type of the query condition
+        @pre call when need data of DataTableItems table
+        @post return DataTableItems data
+        @return result: data of DataTableItems table
+        """
+        try:
+            data_table_item_info = DataTableItems.objects.filter(**kwargs)
+            return data_table_item_info
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
+
+    @staticmethod
     def get_data_table_history_item(**kwargs):
         """!@brief
         Get the data of DataTableItems table
@@ -144,7 +163,7 @@ class TableViewsSet(viewsets.ViewSet):
     def get_mapping(code):
         """!@brief
         Match the value type， change the integer value into string value,
-        0: snmp, 1: cli, 2: float, 3: string, 4: text, 5: int
+        0: int, 1: text, 2: float, 3: string
         @param code: the integer value of value type
         @pre call when need to change value type
         @post return the value type
@@ -153,17 +172,31 @@ class TableViewsSet(viewsets.ViewSet):
         # value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
         code_meaning = ''
         if code == constants.NUMBER_ZERO:
-            code_meaning = constants.SNMP
+            code_meaning = constants.INTEGER
         if code == constants.NUMBER_ONE:
-            code_meaning = constants.CLI
+            code_meaning = constants.TEXT
         if code == constants.NUMBER_TWO:
             code_meaning = constants.FLOAT
         if code == constants.NUMBER_THREE:
             code_meaning = constants.STRING
-        if code == constants.NUMBER_FOUR:
-            code_meaning = constants.TEXT
-        if code == constants.NUMBER_FIVE:
-            code_meaning = constants.INTEGER
+        return code_meaning
+
+    @staticmethod
+    def get_mapping_cli_snmp(code):
+        """!@brief
+        Match the value type， change the integer value into string value,
+        0: cli, 1: snmp
+        @param code: the integer value of value type
+        @pre call when need to change value type
+        @post return the value type
+        @return code_meaning: string value type
+        """
+        # value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
+        code_meaning = ''
+        if code == constants.NUMBER_ZERO:
+            code_meaning = constants.CLI
+        if code == constants.NUMBER_ONE:
+            code_meaning = constants.SNMP
         return code_meaning
 
     def get_history(self, item_id, value_type, policy_type):
@@ -179,6 +212,7 @@ class TableViewsSet(viewsets.ViewSet):
         trigger_db_modules = "backend.apolo.models"
         trigger_numeric = ["Float", "Int"]
         table_name = base_db_format % (policy_type.capitalize(), value_type.capitalize())
+        print table_name, 111
         db_module = importlib.import_module(trigger_db_modules)
         if hasattr(db_module, table_name) is False:
             raise Exception("%s table isn't exist" % table_name)
@@ -211,6 +245,7 @@ class TableViewsSet(viewsets.ViewSet):
         result_temp = []
         result_history_temp = []
         data_history = {}
+        item_type = 'cli'
         # get all items by provided table id
         # data_table_item_info = self.get_data_table_item(**{'table_id': id, 'item__enable_status': 1})
         data_table_item_info = self.get_data_table_item(**{'table_id': id})
@@ -219,7 +254,7 @@ class TableViewsSet(viewsets.ViewSet):
             # value type in item table
             value_type = self.get_mapping(per_data_table_item_info['item__value_type'])
             # item type in item table
-            item_type = self.get_mapping(per_data_table_item_info['item__item_type'])
+            item_type = self.get_mapping_cli_snmp(per_data_table_item_info['item__item_type'])
             # host name in Devices table
             hostname = per_data_table_item_info['item__device__hostname']
             # item id in item table
@@ -228,9 +263,19 @@ class TableViewsSet(viewsets.ViewSet):
             # key_str in rule table
             key_str = per_data_table_item_info['item__coll_policy_rule_tree_treeid__rule__key_str']
             history_data = self.get_history(per_data_table_item_info['item'], value_type, item_type)
-            serializer = HistoryXSerializer(history_data, many=True)
+            if item_type.upper() == 'SNMP':
+                serializer = HistorySnmpXSerializer(history_data, many=True)
+            else:
+                serializer = HistoryCliXSerializer(history_data, many=True)
             for per in serializer.data:
                 per['item_id'] = item_id
+                if item_type.upper() == 'SNMP':
+                    items_info = Items.objects.filter(item_id=item_id).values('coll_policy__snmp_oid')
+                    if len(items_info) > 0:
+                        per['oid'] = items_info[0]['coll_policy__snmp_oid']
+                    per['key_str'] = 'Value'
+                else:
+                    per['key_str'] = key_str
                 per['table_id'] = table_id
                 per['device_name'] = hostname
                 per['key_str'] = key_str
@@ -241,7 +286,7 @@ class TableViewsSet(viewsets.ViewSet):
                 # value type in item table
                 value_type = self.get_mapping(per_data_table_history_item_info['item__value_type'])
                 # item type in item table
-                item_type = self.get_mapping(per_data_table_history_item_info['item__item_type'])
+                item_type = self.get_mapping_cli_snmp(per_data_table_history_item_info['item__item_type'])
                 # host name in Devices table
                 hostname = per_data_table_history_item_info['item__device__hostname']
                 # item id in item table
@@ -250,12 +295,21 @@ class TableViewsSet(viewsets.ViewSet):
                 # key_str in rule table
                 key_str = per_data_table_history_item_info['item__coll_policy_rule_tree_treeid__rule__key_str']
                 history_data = self.get_history(per_data_table_history_item_info['item'], value_type, item_type)
-                serializer = HistoryXSerializer(history_data, many=True)
+                if item_type.upper() == 'SNMP':
+                    serializer = HistorySnmpXSerializer(history_data, many=True)
+                else:
+                    serializer = HistoryCliXSerializer(history_data, many=True)
                 for per in serializer.data:
                     per['item_id'] = item_id
+                    if item_type.upper() == 'SNMP':
+                        items_info = Items.objects.filter(item_id=item_id).values('coll_policy__snmp_oid')
+                        if len(items_info) > 0:
+                            per['oid'] = items_info[0]['coll_policy__snmp_oid']
+                        per['key_str'] = 'Value'
+                    else:
+                        per['key_str'] = key_str
                     per['table_id'] = table_id
                     per['device_name'] = hostname
-                    per['key_str'] = key_str
                     result_history_temp.append(per)
         # delete the repeating data from data_table_history_items and data_table_item
         result_history_without_repeating = []
@@ -271,28 +325,45 @@ class TableViewsSet(viewsets.ViewSet):
         contacts = paginator.page(int(self.page_from))
         for per_history_data in contacts.object_list:
             timestamp = per_history_data['clock']
-            path = per_history_data['block_path']
+            if item_type.upper() == 'CLI':
+                path = per_history_data['block_path']
+                key_str = per_history_data['key_str']
+            else:
+                oid = per_history_data['oid']
+                key_str = 'Value'
             value = per_history_data['value']
             device_name = per_history_data['device_name']
-            key_str = per_history_data['key_str']
+
             # table detail page search button start
             if self.hostname and self.hostname not in device_name:
                 continue
             if self.timestamp and self.timestamp not in str(timestamp):
                 continue
-            if self.path and self.path not in path:
-                continue
+            if item_type.upper() == 'CLI':
+                if self.path and self.path not in path:
+                    continue
+            else:
+                if self.oid and self.oid not in oid:
+                    continue
             if self.checkitem_value and self.checkitem_value not in str(value):
                 continue
             # table detail page search button end
             data_history['date'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(int(timestamp)))
-            data_history['path'] = path
+            if item_type.upper() == 'CLI':
+                data_history['path'] = path
+            else:
+                data_history['oid'] = oid
             data_history['value'] = value
             data_history['hostname'] = device_name
             data_history['checkitem'] = key_str
+            # 1:snmp 0:cli
+            data_history['item_type'] = item_type.upper()
             result.append(data_history.copy())
         # table detail page sort start
-        sort_by_list = ['hostname', 'date', 'path', 'value']
+        if item_type.upper() == 'CLI':
+            sort_by_list = ['hostname', 'date', 'path', 'value']
+        else:
+            sort_by_list = ['hostname', 'date', 'oid', 'value']
         if self.sort_by and self.sort_by in sort_by_list:
             if self.order:
                 # True: asc, False: desc
@@ -321,11 +392,21 @@ class TableViewsSet(viewsets.ViewSet):
     def csv_export(self):
         try:
             if self.id is not '':
-                data = self.get_info_by_table_id(self.id)
-                title = ['デバイス名', 'Time Stamp', 'Path', data['data']['data'][0]['checkitem']]
+                data_result = self.get_info_by_table_id(self.id)
+                check_item_name = constants.EXPORT_CSV_TITLE_COLUMN_4
                 csv_data = []
-                for per in data['data']['data']:
-                    csv_data.append([per['hostname'], per['date'], per['path'], per['value']])
+                if len(data_result['data']['data']):
+                    check_item_name = data_result['data']['data'][0]['checkitem']
+                    if data_result['data']['data'][0]['item_type'].upper() == 'SNMP':
+                        check_item_name = 'Value'
+                        constants.EXPORT_CSV_TITLE_COLUMN_3 = 'OID'
+                    for per in data_result['data']['data']:
+                        if per['item_type'].upper() == 'CLI':
+                            csv_data.append([per['hostname'], per['date'], per['path'], per['value']])
+                        else:
+                            csv_data.append([per['hostname'], per['date'], per['oid'], per['value']])
+                title = [constants.EXPORT_CSV_TITLE_COLUMN_1, constants.EXPORT_CSV_TITLE_COLUMN_2,
+                         constants.EXPORT_CSV_TITLE_COLUMN_3, check_item_name]
                 script_dir = os.path.split(os.path.realpath(__file__))[0]
                 csv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))),
                                         constants.CSV_PATH)
@@ -371,10 +452,12 @@ class TableViewsSet(viewsets.ViewSet):
             total_num = len(DataTable.objects.all())
             if search_conditions:
                 queryset = DataTable.objects.filter(**search_conditions).values(
-                    *['table_id', 'descr', 'name', 'coll_policy', 'groups', 'tree']).order_by(*sorts)
+                    *['table_id', 'descr', 'name', 'coll_policy', 'groups', 'tree',
+                      'coll_policy__policy_type']).order_by(*sorts)
             else:
                 queryset = DataTable.objects.all().values(
-                    *['table_id', 'descr', 'name', 'coll_policy', 'groups', 'tree']).order_by(*sorts)
+                    *['table_id', 'descr', 'name', 'coll_policy', 'groups', 'tree',
+                      'coll_policy__policy_type']).order_by(*sorts)
             # serializer = ActionPolicyDataTableSerializer(queryset, many=True)
             paginator = Paginator(list(queryset), int(self.max_size_per_page))
             contacts = paginator.page(int(self.page_from))
@@ -463,6 +546,7 @@ class TableViewsSet(viewsets.ViewSet):
                 kwargs = {'table_id': self.id}
                 data_in_dp = self.get_data_table(**kwargs)
                 data_in_trigger = self.get_trigger(self.id)
+                data_table_item_info = self.get_data_table_item_for_delete(**{'table_id': self.id})
                 if len(data_in_dp) <= 0:
                     data = {
                         'new_token': self.new_token,
@@ -481,6 +565,7 @@ class TableViewsSet(viewsets.ViewSet):
                         }
                     }
                     return api_return(data=data)
+                data_table_item_info.delete()
                 data_in_dp.delete()
                 data = {
                     'new_token': self.new_token,

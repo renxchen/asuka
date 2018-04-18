@@ -18,8 +18,10 @@ class MemCacheBase(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            return False
         self._disconnect_all()
-        return self
+        return True
 
     def _connect(self):
         self._mc = memcache.Client(CommonConstants.MEM_CACHE_HOSTS, debug=True)

@@ -44,6 +44,22 @@ class Actions(models.Model):
         db_table = 'actions'
 
 
+class ActionLog(models.Model):
+    action_time = models.IntegerField()
+    action_date = models.CharField(max_length=11)
+    device_hostname = models.CharField(max_length=256)
+    coll_policy_name = models.CharField(max_length=256)
+    action_level = models.IntegerField()
+    extra_data = models.CharField(max_length=256)
+    exec_action = models.CharField(max_length=256)
+    exec_response = models.CharField(max_length=256)
+    action_status = models.IntegerField()
+    action = models.ForeignKey('Actions', models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'action_log'
+
+
 class CollPolicy(models.Model):
     coll_policy_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256, blank=True, null=True)
@@ -215,11 +231,13 @@ class DevicesGroups(models.Model):
 
 class Event(models.Model):
     event_id = models.IntegerField(primary_key=True)
-    clock = models.IntegerField(blank=True, null=True)
+    data_clock = models.IntegerField(blank=True, null=True)
     number = models.IntegerField(blank=True, null=True)
-    source = models.IntegerField(blank=True, null=True)
-    value = models.IntegerField(blank=True, null=True)
-    objectid = models.IntegerField(blank=True, null=True)
+    trigger_value = models.IntegerField(blank=True, null=True)
+    trigger_id = models.IntegerField(blank=True, null=True)
+    device_id = models.IntegerField(blank=True, null=True)
+    triggerd = models.IntegerField(blank=True, null=True,default=0)
+    action = models.IntegerField(blank=True, null=True,default=0)
 
     class Meta:
         # managed = False
@@ -252,93 +270,101 @@ class Groups(models.Model):
 class HistoryCliFloat(models.Model):
     value = models.FloatField(blank=True, null=True)
     clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
+    ns = models.IntegerField(blank=True, primary_key=True)
     item = models.ForeignKey('Items', models.DO_NOTHING)
     block_path = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         # managed = False
         db_table = 'history_cli_float'
+        unique_together = ("ns", "item")
 
 
 class HistoryCliInt(models.Model):
     value = models.BigIntegerField(blank=True, null=True)
     clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
+    ns = models.IntegerField(blank=True, primary_key=True)
     item = models.ForeignKey('Items', models.DO_NOTHING)
     block_path = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         # managed = False
+        unique_together = ("ns", "item")
         db_table = 'history_cli_int'
 
 
 class HistoryCliStr(models.Model):
     clock = models.IntegerField(blank=True, null=True)
     value = models.CharField(max_length=255, blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
+    ns = models.IntegerField(blank=True, primary_key=True)
     item = models.ForeignKey('Items', models.DO_NOTHING)
     block_path = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         # managed = False
         db_table = 'history_cli_str'
+        unique_together = ("ns", "item")
 
 
 class HistoryCliText(models.Model):
     clock = models.IntegerField(blank=True, null=True)
     value = models.TextField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
+    ns = models.IntegerField(blank=True, primary_key=True)
     item = models.ForeignKey('Items', models.DO_NOTHING)
     block_path = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
         # managed = False
         db_table = 'history_cli_text'
+        unique_together = ("ns", "item")
 
 
 class HistorySnmpFloat(models.Model):
     value = models.FloatField(blank=True, null=True)
     clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
+    ns = models.IntegerField(blank=True, primary_key=True)
     item = models.ForeignKey('Items', models.DO_NOTHING)
 
     class Meta:
         # managed = False
         db_table = 'history_snmp_float'
+        unique_together = ("ns", "item")
 
 
 class HistorySnmpInt(models.Model):
     value = models.BigIntegerField(blank=True, null=True)
     clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
+    ns = models.IntegerField(blank=True, primary_key=True)
     item = models.ForeignKey('Items', models.DO_NOTHING)
 
     class Meta:
         # managed = False
         db_table = 'history_snmp_int'
+        unique_together = ("ns", "item")
 
 
 class HistorySnmpStr(models.Model):
     clock = models.IntegerField(blank=True, null=True)
     value = models.CharField(max_length=255, blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
+    ns = models.IntegerField(blank=True, primary_key=True)
     item = models.ForeignKey('Items', models.DO_NOTHING)
 
     class Meta:
         # managed = False
         db_table = 'history_snmp_str'
+        unique_together = ("ns", "item")
 
 
 class HistorySnmpText(models.Model):
     clock = models.IntegerField(blank=True, null=True)
     value = models.TextField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, null=True)
+    ns = models.IntegerField(blank=True, primary_key=True)
     item = models.ForeignKey('Items', models.DO_NOTHING)
 
     class Meta:
         # managed = False
         db_table = 'history_snmp_text'
+        unique_together = ("ns", "item")
 
 
 class Items(models.Model):
@@ -486,6 +512,9 @@ class TriggerDetail(models.Model):
         db_table = 'trigger_detail'
 
 
+
+
+
 class Triggers(models.Model):
     trigger_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256, blank=True, null=True)
@@ -498,6 +527,7 @@ class Triggers(models.Model):
     condition = models.IntegerField(blank=True, null=True)
 
     expression = models.CharField(max_length=256, blank=True, null=True)
+    identifier = models.CharField(max_length=255, blank=True, null=True)
     columnA = models.CharField(max_length=255, blank=True, null=True)
     columnB = models.CharField(max_length=255, blank=True, null=True)
 
