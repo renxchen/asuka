@@ -19,6 +19,7 @@ import { CPViewComponentModule } from './collectionPolicy/collectionPolicy.modul
 import { DataCollectionComponentModule } from './dataCollection/dataCollection.module';
 import { ActionPolicyComponentModule } from './actionPolicy/actionPolicy.module';
 import { TestComponentModule } from './testModule/test.module';
+import { TestVirServerModule } from './testVirServer/testVirServer.module';
 
 @NgModule({
     declarations: [
@@ -47,6 +48,7 @@ import { TestComponentModule } from './testModule/test.module';
         BreadCrumbModule,
         ModModule,
         TestComponentModule,
+        TestVirServerModule
     ],
     providers: [],
     bootstrap: [AppComponent],
