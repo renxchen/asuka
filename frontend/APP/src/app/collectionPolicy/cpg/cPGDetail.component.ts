@@ -36,7 +36,6 @@ export class CPGDetailComponent implements OnInit, OnDestroy {
         private httpClient: HttpClientComponent,
         private activatedRoute: ActivatedRoute,
         private router: Router,
-        private bsModalRef: BsModalRef,
         private modalService: BsModalService
     ) {
         let cPIdTmp = this.activatedRoute.snapshot.queryParams['id'];
