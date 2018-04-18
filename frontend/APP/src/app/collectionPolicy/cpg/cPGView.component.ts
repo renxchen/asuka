@@ -6,7 +6,7 @@
 * @desc: collection policy group summary
 */
 
-import { Component, OnInit, AfterViewInit, ComponentFactory } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ComponentFactory } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Router } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -24,7 +24,7 @@ declare var $: any;
     templateUrl: './cPGView.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
-export class CPGViewComponent implements OnInit, AfterViewInit {
+export class CPGViewComponent implements OnInit, AfterViewInit, OnDestroy {
     cpgTable$: any;
     apiPrefix: string;
     closeMsg: any;
@@ -245,5 +245,10 @@ export class CPGViewComponent implements OnInit, AfterViewInit {
     }
     public unsubscribe(res: any) {
         res.unsubscribe();
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

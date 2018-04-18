@@ -5,7 +5,7 @@
  * @time: 2018/03/08
  * @desc: import devices
  */
-import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Http } from '@angular/http';
 import { Router } from '@angular/router';
@@ -23,7 +23,8 @@ declare var $: any;
     templateUrl: './deviceLogin.component.html',
     styleUrls: ['./device.component.less']
 })
-export class DeviceLoginComponent implements OnInit {
+export class DeviceLoginComponent implements OnInit, OnDestroy {
+    @ViewChild('uploadInfo') inputFile: any;
     filename: any;
     devLoginTable$: any;
     apiPrefix: any;
@@ -32,7 +33,7 @@ export class DeviceLoginComponent implements OnInit {
     optId: any;
     loginFlg: Boolean = true;
     actionFlg: Boolean = true;
-    formData: FormData;
+    formData: FormData = new FormData();
     modalRef: BsModalRef;
     processbar: BsModalRef;
     closeMsg: any;
@@ -72,9 +73,8 @@ export class DeviceLoginComponent implements OnInit {
             let file: File = files.item(0);
             let fileType = file.type;
             this.filename = file.name;
-            this.formData = new FormData();
-            this.formData.append('file', file);
             if (this.filename.indexOf('.csv') > -1) {
+                this.formData.append('file', file);
                 this.uploadFlg = 'csv';
                 this.loginFlg = false;
             } else {
@@ -111,6 +111,7 @@ export class DeviceLoginComponent implements OnInit {
                 let status = _.get(res, 'status');
                 let msg = _.get(status, 'message');
                 let data: any = _.get(res, 'error_list');
+                let dataDuplicate: any = _.get(res, 'data_duplicate');
                 this.optId = _.get(res, 'operation_id');
                 if (status && status['status'].toString().toLowerCase() === 'true') {
                     $('.modal').hide();
@@ -131,10 +132,16 @@ export class DeviceLoginComponent implements OnInit {
                     $('body').removeClass('modal-open');
                     $('body').css('padding-right', '0px');
                     this.actionFlg = true;
-                    if (msg) {
-                        this.modalMsg = msg;
+                    if (dataDuplicate && dataDuplicate.length > 0) {
+                        this.modalMsg = '以下のhostnameが重複しているため、登録が出来ません。';
                         this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        this.showAlertModal(this.modalMsg, this.closeMsg, dataDuplicate);
+                    } else {
+                        if (msg) {
+                            this.modalMsg = msg;
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                        }
                     }
                 }
             });
@@ -284,7 +291,7 @@ export class DeviceLoginComponent implements OnInit {
                     }
                 });
         } else {
-            this.modalMsg = 'Please choose one device at least.';
+            this.modalMsg = 'ステータスチェックを実行するデバイスを選択して下さい。';
             this.closeMsg = '閉じる';
             this.showAlertModal(this.modalMsg, this.closeMsg);
         }
@@ -330,12 +337,24 @@ export class DeviceLoginComponent implements OnInit {
                     }
                 });
         } else {
-            this.modalMsg = 'There is no devcie to be saved.Please upload the correct devices';
+            this.modalMsg = '登録できるデバイスが存在しないので、保存できません。CSVファイルをチェックしてください。';
             this.closeMsg = '閉じる';
             this.showAlertModal(this.modalMsg, this.closeMsg);
         }
     }
-    public showAlertModal(modalMsg: any, closeMsg: any) {
+    public cancelUpload() {
+        this.uploadFlg = 'null';
+        if (this.devLoginTable$) {
+            this.devLoginTable$.GridUnload();
+        }
+        this.inputFile.nativeElement.value = '';
+        if (this.filename) {
+            this.filename = null;
+        }
+        this.loginFlg = true;
+        this.actionFlg = true;
+    }
+    public showAlertModal(modalMsg: any, closeMsg: any, data?: any) {
         /**
         * @brief show modal dialog
         * @author Zizhuang Jiang
@@ -344,5 +363,11 @@ export class DeviceLoginComponent implements OnInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+        this.modalRef.content.data = data;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 from worker_base import WorkerBase, main
-from parser_helper import parser_main
+from parser_helper import ParserHelp
 from apolo_server.processor.trigger.trigger_helper import TriggerHelp
 from apolo_server.processor.constants import ParserConstants, CommonConstants
 import logging
@@ -15,7 +15,7 @@ __author__ = 'Rubick <haonchen@cisco.com>'
 class Parser(WorkerBase):
     name = "parser_trigger"
     channels = ('parser',)
-    threads = 15
+    threads = 10
 
     def handler(self, task_id, task, data, logger):
 
@@ -36,10 +36,11 @@ class Parser(WorkerBase):
                 items = []
 
             else:
-                clock = data
-                deviceinfo = task["device_info"]
-                device_log_info = "Device ID: %s,IP: %s,HostName: %s" % (deviceinfo["device_id"],deviceinfo["ip"],deviceinfo["hostname"])
-                items = parser_main(task,clock,device_log_info,self.logger)
+                clock = data                
+                parser = ParserHelp(clock,self.logger)
+                parser.parse(task,clock)
+                items = parser.get_items()
+                
                 trigger = TriggerHelp(task,items,clock,logger)
                 trigger.trigger()
                 unhandle_triggers = trigger.unhandle_triggers
@@ -67,7 +68,7 @@ class Parser(WorkerBase):
                 message=str(e)
             )
             logger.error(device_log_info+" "+str(e))
-            #print traceback.format_exc()
+            print traceback.format_exc()
         return result
 
 main(Parser)

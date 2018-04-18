@@ -2,7 +2,7 @@
     <div class="modal-header popup-title" style="font-size:21px">
         <i class="fa fa-pencil"></i>
         <span>デバイスグループ編集</span>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRefEdit.hide()">
             <i class="fa fa-times"></i>
         </button>
     </div>
@@ -27,7 +27,7 @@
                         id="name" 
                         name="name"
                         [(ngModel)]="name" 
-                        placeholder="日本語、英数字、記号可" 
+                        placeholder="半角英数字，記号" 
                         maxlength="256" 
                         required=""
                         autocomplete="off" 
@@ -95,7 +95,7 @@
                 class="col-sm-12 text-warning" 
                 *ngIf='nameNotNull&&!nameFlg'
             >
-                デバイスグループ名にはシングルクォート、ダブルクォート、スペース文字とカンマを入力しないでください。
+                デバイスグループ名はシングルクォート、ダブルクォート、スペース文字とカンマ以外の半角英数字と記号で入力してください。
             </div>            
             <div 
                 class="col-sm-12 text-warning" 

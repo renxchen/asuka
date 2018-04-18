@@ -310,16 +310,17 @@ class Tool(object):
         tmp_key_dict = dict()
         result = []
         for recoder in items:
-            if tmp_key_dict.has_key(recoder['item_key']):
+            item_key = '{}_{}'.format(recoder['device_id'], recoder['item_key'])
+            if tmp_key_dict.has_key(item_key):
                 pass
             else:
                 if device_name:
                     if device_name in recoder['device_name']:
                         result.append(recoder)
-                        tmp_key_dict.update({recoder['item_key']: 1})
+                        tmp_key_dict.update({item_key: 1})
                 else:
                     result.append(recoder)
-                    tmp_key_dict.update({recoder['item_key']: 1})
+                    tmp_key_dict.update({item_key: 1})
         return result
 
     @staticmethod

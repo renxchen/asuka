@@ -40,7 +40,7 @@ VERIFY_WHETHER_EXECUTING_SERVER_URL = "http://%s:%s/api/v1/valid"
 VERIFY_WHETHER_EXECUTING_SERVER_IP = '127.0.0.1'
 VERIFY_WHETHER_EXECUTING_SERVER_PORT = '7777'
 VERIFY_WHETHER_CAN_CONNECT_URL = "http://%s:%s/api/v1/devicestatus"
-SYSTEM_ERROR = gettext('System access failed, please connect the administrator.')
+SYSTEM_ERROR = gettext('システムに異常が発生しました。本メッセージが継続的に発生する場合は管理者に問い合わせ下さい。')
 POST_SUCCESSFUL = gettext('Data create successfully.')
 PUT_SUCCESSFUL = gettext('Data update successfully.')
 DELETE_SUCCESSFUL = gettext('Data delete successfully.')
@@ -63,14 +63,14 @@ USERNAME = 'username'
 PASSWORD = 'password'
 TOKEN_EXPIRED_MSG = gettext('Token has expired.')
 TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = gettext('There was no token found for current user.')
-NO_USERNAME_OR_PASSWORD_FONUD_ERROR = gettext("No access, please login first.")
+NO_USERNAME_OR_PASSWORD_FONUD_ERROR = gettext("ログインがされていません。ログインして下さい。")
 LOGIN_FAILED_ERROR = gettext("Login failed with incorrect username or password.")
 REFRESH_EXPIRED = gettext("Access is expired, please login again.")
 ORIG_IAT_REQUIRED = gettext("orig_iat field is required.")
 USERNAME_INACTIVE_ERROR = gettext("Username is inactive.")
 LOGIN_SUCCESSFUL = gettext("Login successful.")
 NO_USERNAME_OR_PASSWORD = gettext("No user or password found.")
-USER_AND_PASSWD_INCORRECT = gettext("User or password is incorrect.")
+USER_AND_PASSWD_INCORRECT = gettext("ユーザ名あるいはパスワードが間違っています")
 USER_DISABLED = gettext("User is inactive.")
 USER_LOGOUT_SUCCESSFUL = gettext("User logout successful.")
 #########################################
@@ -105,6 +105,7 @@ EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = gettext('A and B maybe do not have the same
 EXPRESSION_A_B_NOT_EXIST = gettext('There is not A or B in expression, should be at least A in expression.')
 EXPRESSION_CONDITION_ILLEGAL = gettext('The expression condition should be in <=, >=, ==, !=, >, <.')
 EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION = gettext('There is illegal format in current expression.')
+EXPRESSION_HEXADECIMAL_ILLEGAL = gettext('Hexadecimal expression should be placed at the outermost level.')
 EXPRESSION_EVAL_VERIFY_FAILED = gettext('The expression eval verification failed.')
 EXPRESSION_VERIFY_FAILED = gettext('The expression verify failed')
 ACTION_POLICY_NAME_DUPLICATE = gettext('The action name is exist in current system, please change name.')
@@ -269,14 +270,15 @@ SPAN_END = '</span>'
 #########################################
 # device, group and ostype information define
 #########################################
-CSV_TITLE_ERROR = gettext('The title in csv_flie is wrong, please check')
+CSV_TITLE_ERROR = gettext('想定されないフォーマットのCSVが選択されています。登録できません。')
 CSV_FORMAT_ERROR = gettext('The type of file is wrong, please check')
-CSV_HOSTNAME_EMPTY = gettext('The hostname in csv is empty')
+CSV_HOSTNAME_EMPTY = gettext('hostnameが空欄のものがCSVファイル内に存在します。登録できません')
 CSV_HOSTNAME_DUPLICATE = gettext('The hostname in csv is repeated')
 GROUP_NOT_EXIST = gettext('There is no result for current query.')
 GROUP_NAME_FORMAT_ERROR = gettext('The format of group name is incorrect')
-EXISTS_IN_DEVICESGROUPS = gettext('There are devices under the current group')
+EXISTS_IN_DEVICESGROUPS = gettext('このデバイスグループに属しているデバイスが存在するため削除できません。')
 EXISTS_IN_SCHEDULES = gettext('The group is already in schedules')
+NAME_DUPLICATE = gettext('NAME_DUPLICATE')
 GROUP_ALREADY_EXISTS = gettext('GROUPNAME_ALREADY_EXISTS')
 END_DEFAULT_COMMANDS_ERROR = gettext("END_DEFAULT_COMMANDS_ERROR")
 START_DEFAULT_COMMANDS_ERROR = gettext("START_DEFAULT_COMMANDS_ERROR")

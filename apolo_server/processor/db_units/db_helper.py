@@ -1,7 +1,7 @@
 import os
 import sys
 
-from db_units import *
+#from db_units import *
 from backend.apolo.models import Items, CollPolicyCliRule, TriggerDetail, Event, CollPolicyGroups
 # import models
 from apolo_server.processor.constants import CommonConstants, TriggerConstants
@@ -151,6 +151,37 @@ class DeviceDbHelp(DbHelp):
 class ParserDbHelp(DbHelp):
     def __init__(self):
         pass
+    @staticmethod
+    def snmp_save(data,clock,ns):
+        
+        value_type = data['value_type']
+        table_name = "HistorySnmp%s" % CommonConstants.VALUE_TYPE_MAPPING.get(value_type)
+        table = ParserDbHelp.get_history_table(table_name)
+        value = data['value']
+        item_id = data['item_id']
+        
+        table.objects.create(value=value,
+                    ns=ns,
+                    clock=clock,
+                    item_id=item_id)
+
+
+
+    @staticmethod
+    def cli_save(data,clock,ns):
+        value_type = data['value_type']
+        table_name = "HistoryCli%s" % CommonConstants.VALUE_TYPE_MAPPING.get(value_type)
+        table = ParserDbHelp.get_history_table(table_name)
+        
+        block_path = str(data['block_path'])
+        item_id = data['item_id']
+        table.objects.create(
+                    value=data["value"],
+                    ns=ns,
+                    clock=clock,
+                    item_id=item_id,
+                    block_path=block_path)
+       
 
     def bulk_save_result(self, results, clock, item_type):
         data = {}
@@ -197,7 +228,7 @@ class ParserDbHelp(DbHelp):
         for table in result:
             tmp = []
             for data in result[table]:
-                output = data['value']
+                values = data['value']
                 item_id = data['item_id']
                 mibs = output.keys()[0]
                 value1 = output[mibs][0]
@@ -210,8 +241,8 @@ class ParserDbHelp(DbHelp):
                 ))
             table.objects.bulk_create(tmp)
         return True
-
-    def get_history_table(self, value_type, policy_type):
+    @staticmethod
+    def get_history_table(table_name):
         """
         Search history data from db by given item id and value type
         :param item_id:
@@ -220,12 +251,12 @@ class ParserDbHelp(DbHelp):
         :return: history list
         """
 
-        base_db_format = "History%s%s"
-        table_name = base_db_format % (policy_type, value_type)
+        #base_db_format = "History%s%s"
+        #table_name = base_db_format % (policy_type, value_type)
         db_module = importlib.import_module(
             TriggerConstants.TRIGGER_DB_MODULES)
-        if hasattr(db_module, table_name) is False:
-            raise Exception("%s table isn't exist" % table_name)
+        #if hasattr(db_module, table_name) is False:
+        #    raise Exception("%s table isn't exist" % table_name)
         table = getattr(db_module, table_name)
         return table
 

@@ -21,7 +21,7 @@ import * as _ from 'lodash';
     templateUrl: './cPGLogin.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
-export class CPGLoginComponent implements OnInit, AfterViewInit {
+export class CPGLoginComponent implements OnInit, AfterViewInit, OnDestroy {
     cPGId: any;
     apiPrefix: any;
     cpgActionGrid$: any;
@@ -54,7 +54,8 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         private activatedRoute: ActivatedRoute,
         private router: Router,
         private bsModalRef: BsModalRef,
-        private modalService: BsModalService,
+        private bsModalRefLogin: BsModalRef,
+        private modalService: BsModalService
     ) { }
 
     ngOnInit() {
@@ -246,13 +247,16 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
             let idTmp = $(event)[0].target.id.split('_');
             let type: any = _.indexOf(idTmp, 0);
             if (_.indexOf(idTmp, 'cli', 0) !== -1) {
-                _t.bsModalRef.hide();
+                _t.bsModalRefLogin.hide();
                 _t.router.navigate(['/index/clicpdetail'],
                     { queryParams: { 'id': idTmp[1] } });
             } else if (_.indexOf(idTmp, 'snmp', 0) !== -1) {
-                _t.bsModalRef.hide();
+                _t.bsModalRefLogin.hide();
                 _t.router.navigate(['/index/snmpcpdetail'],
                     { queryParams: { 'id': idTmp[1] } });
+            } else {
+                event.stopPropagation();
+                return;
             }
             event.stopPropagation();
         });
@@ -452,24 +456,15 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    // let type = _.get(status, 'type');
+                    let type = _.get(status, 'type');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('保存しました。');
-                        this.bsModalRef.hide();
+                        this.bsModalRefLogin.hide();
                         this.modalService.setDismissReason('true');
                     } else {
-                        // if (type && type === 'NAME_DUPLICATE') {
-                        //     this.uniqueFlg = false;
-                        // }else {
-                        //     if (msg) {
-                        //         this.modalMsg = msg;
-                        //         this.closeMsg = '閉じる';
-                        //         this.showAlertModal(this.modalMsg, this.closeMsg);
-                        //     }
-                        // }
-                        if (msg && msg === 'Collection policy group name is exist in system.') {
+                        if (type && type === 'NAME_DUPLICATE') {
                             this.uniqueFlg = false;
-                        } else {
+                        }else {
                             if (msg) {
                                 this.modalMsg = msg;
                                 this.closeMsg = '閉じる';
@@ -489,5 +484,10 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

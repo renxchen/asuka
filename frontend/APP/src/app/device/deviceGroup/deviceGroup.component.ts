@@ -5,7 +5,7 @@
  * @file: deviceGroup.component.ts
  * @time: 2018/03/08
  * @desc: device group summary
- */import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
+ */import { Component, OnInit, AfterViewInit, OnDestroy, TemplateRef } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -21,10 +21,11 @@ declare var $: any;
     templateUrl: './deviceGroup.component.html',
     styleUrls: ['.././device.component.less']
 })
-export class DeviceGroupComponent implements OnInit, AfterViewInit {
+export class DeviceGroupComponent implements OnInit, AfterViewInit, OnDestroy {
     groupId: any;
     name: any;
     desc: any;
+    descFirstLine: any;
     osType: any;
     osTypeId: any;
     deviceTable$: any;
@@ -184,6 +185,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             this.name = '無所属';
             this.osType = '無所属';
             this.desc = '無所属';
+            this.descFirstLine = '無所属';
             return;
         }
         this.apiPrefix = '/v1';
@@ -200,6 +202,8 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
                         this.osType = _.get(_.get(data[0], 'ostype'), 'name');
                         this.desc = _.get(data[0], 'desc');
                     }
+                    this.descFirstLine = null;
+                    this.descFirstLine = _.get(res, 'desc_firstline');
                 } else {
                     if (msg) {
                         this.modalMsg = msg;
@@ -222,8 +226,8 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             this.getPanelData(id);
             $('#deviceTable').jqGrid('clearGridData');
             $('#deviceTable')
-            .jqGrid('setGridParam', { url : '/v1/api_device/?group_id=' + id })
-            .trigger('reloadGrid');
+                .jqGrid('setGridParam', { url: '/v1/api_device/?group_id=' + id })
+                .trigger('reloadGrid');
         }
     }
     public editGroup(id: any) {
@@ -308,5 +312,10 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

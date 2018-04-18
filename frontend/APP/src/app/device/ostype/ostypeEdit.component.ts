@@ -6,7 +6,7 @@
  * @time: 2018/03/08
  * @desc: edit a ostype
  */
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
 import { Validator } from '../../../components/validation/validation';
@@ -20,7 +20,7 @@ import * as _ from 'lodash';
     styleUrls: ['.././device.component.less']
 })
 
-export class OstypeEditComponent implements OnInit, AfterViewInit {
+export class OstypeEditComponent implements OnInit, AfterViewInit, OnDestroy {
     id: any;
     apiPrefix: any;
     name: any;
@@ -58,6 +58,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         private httpClient: HttpClientComponent,
         private modalService: BsModalService,
         private bsModalRef: BsModalRef,
+        private bsModalRefEdit: BsModalRef
     ) { }
     ngOnInit() {
     }
@@ -359,7 +360,7 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         this.uniqueFlg = true;
         this.nameNotNull = Validator.notNullCheck(this.name);
         if (this.nameNotNull) {
-            this.nameFlg = Validator.fullWithoutSpecial(this.name) && this.name.length < 31;
+            this.nameFlg = Validator.halfWithoutSpecial(this.name);
         }
         this.telPromptNotNull = Validator.notNullCheck(this.telPrompt);
         if (this.telPromptNotNull) {
@@ -517,24 +518,15 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    // let type = _.get(status, 'type');
+                    let type = _.get(status, 'type');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('保存しました。');
-                        this.bsModalRef.hide();
+                        this.bsModalRefEdit.hide();
                         this.modalService.setDismissReason('true');
                     } else {
-                        // if (type && type === 'NAME_DUPLICATE') {
-                        //     this.uniqueFlg = false;
-                        // }else {
-                        //     if (msg) {
-                        //         this.modalMsg = msg;
-                        //         this.closeMsg = '閉じる';
-                        //         this.showAlertModal(this.modalMsg, this.closeMsg);
-                        //     }
-                        // }
-                        if (msg && msg === 'NAME_IS_EXISTENCE') {
+                        if (type && type === 'NAME_DUPLICATE') {
                             this.uniqueFlg = false;
-                        } else {
+                        }else {
                             if (msg) {
                                 this.modalMsg = msg;
                                 this.closeMsg = '閉じる';
@@ -555,6 +547,11 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }
 
