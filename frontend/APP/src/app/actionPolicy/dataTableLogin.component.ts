@@ -84,12 +84,14 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     if (this.currentStep === 4) {
       this.getTreeData();
     }
+
     if (contuineFlg) {
       this.maxStep === this.currentStep ? this.maxStep++ : this.maxStep = this.maxStep;
       this.currentStep++;
       // this.maxStep === 4 ? this.maxStep = 4 : this.maxStep++;
-      this.setBottomBtns();
     }
+    this.setBottomBtns();
+
   }
 
   public previous() {
@@ -124,6 +126,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   }
   public setSteps(step: number) {
     this.currentStep = step;
+    this.setBottomBtns();
   }
 
   public setChangeFlgs(type) {
@@ -553,9 +556,14 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       let url = '/api_data_table_step1/';
       this.collectSaveData();
       this.post(url, this.sendData).subscribe((res: any) => {
-        if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'false') {
-          let msg = res.status.status;
-          alert(msg);
+        if (res && res.status) {
+          if (res.status.status && res.status.status.toLowerCase() === 'false') {
+            let msg = res.status.status;
+            alert(msg);
+          } else {
+            this.bsModalRef.hide();
+            alert('保存しました！');
+          }
         }
       });
     } else {
@@ -572,12 +580,5 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
 
   private post(url: string, bodyData: any) {
     return this.httpClient.toJson(this.httpClient.post(url, bodyData));
-  }
-  private put(url: string, bodyData: any) {
-    return this.httpClient.toJson(this.httpClient.put(url, bodyData));
-  }
-
-  private delete(url: string) {
-    return this.httpClient.toJson(this.httpClient.delete(url));
   }
 }

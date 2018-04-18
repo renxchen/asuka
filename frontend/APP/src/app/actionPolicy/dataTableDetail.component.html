@@ -1,19 +1,39 @@
-<div class="modal-content">
-    <div class="modal-header" style="padding-bottom: 30px;">
-        <h3 class="modal-title pull-left">テーブル名：{{id}}</h3>
-        <button type="button" class="close pull-right" (click)="bsModalRef.hide()">
-          <span style="font-size: 30px">&times;</span>
-        </button>
+<div class="modal-content" id="detail-popup">
+  <div class="modal-header" style="padding-bottom: 30px;">
+    <h3 class="modal-title pull-left">テーブル名：{{tableName}}</h3>
+    <button type="button" class="close pull-right" (click)="bsModalRef.hide()">
+      <span style="font-size: 30px">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body detail-dialog-body">
+    <div class="row">
+      <div class="col-md-4 input-div " id="startTime">
+        <label>取得開始日時</label>
+        <input type="text" class="form-control" placeholder="YYYY-MM-DD HH:mm" [(ngModel)]="startTime" id="startTimeInput" (ngModelChange)="setMaxAndMinDate('start')">
+      </div>
+      <div class="col-md-4 input-div " id="endTime">
+        <label>取得終了日時</label>
+        <input type="text" class="form-control" placeholder="YYYY-MM-DD HH:mm" [(ngModel)]="endTime" id="endTimeInput" (ngModelChange)="setMaxAndMinDate('end')">
+      </div>
+      <div class="col-md-4 btn-div" id="searchBtnDiv">
+        <button class="btn btn-warning btn-layout " (click)="clearTime()">リセット</button>
+        <button class="btn btn-default btn-layout btn-space" (click)="drawTable('search')">サーチ</button>
+        <a class="btn btn-primary btn-layout btn-space"(click)="csvExport()">ＣＳＶエクスポート</a>
+      </div>
     </div>
-    <div class="modal-body" style="padding: 15px 5px 40px 5px;min-height: 320px">
-
-        <div>
-            period serch export
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-margin">
+          <table id="searchTable"></table>
+          <div id='searchTablePager'></div>
         </div>
-        <div>
-            <table id="historyData"></table>
-            <div id="historyDataPager"></div>
-        </div>
-
+      </div>
     </div>
+    <div class="row">
+      <div class="col-md-12 table-margin">
+        <button class="btn btn-primary pull-right"(click)="close()">
+          <i class="fa fa-window-close"></i>&nbsp;閉じる</button>
+      </div>
+    </div>
+  </div>
 </div>
