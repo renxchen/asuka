@@ -218,12 +218,11 @@ class Tool(object):
         @author Gin Chen
         @date 2018/1/4
         """
-        if cp_status_value == constants.CP_STATUS_OFF_VALUE:
-            return constants.CP_STATUS_OFF_KEY
-        elif cp_status_value == constants.CP_STATUS_ON_VAULE:
+
+        if cp_status_value == constants.CP_STATUS_ON_VAULE:
             return constants.CP_STATUS_ON_KEY
         else:
-            return 'ERROR'
+            return constants.CP_STATUS_OFF_KEY
 
     @staticmethod
     def get_running_schedule(schedule_id):
@@ -267,14 +266,40 @@ class Tool(object):
         return result
 
     @staticmethod
-    def get_emergency_stop_list(device_name):
+    def get_valid_item_by_cp(query_dict):
         """!@brief
-        get items that are valid
+        get items that are valid by cp
         @param
         @pre
         @post
         @note
         @return return json data of items that are valid
+        @author Gin Chen
+        @date 2018/1/4
+        """
+        test_instance = GetValidItem()
+        valid_items = test_instance.valid(int(time.time()), query_dict)
+        items = map(Tool.__item_type_mapping, valid_items)
+        tmp_key_dict = dict()
+        result = []
+        for recoder in items:
+            item_key = '{}_{}'.format(recoder['device_id'], recoder['coll_policy_id'])
+            if tmp_key_dict.has_key(item_key):
+                pass
+            else:
+                result.append(recoder)
+                tmp_key_dict.update({item_key: 1})
+        return result
+
+    @staticmethod
+    def get_emergency_stop_list(device_name):
+        """!@brief
+        get emergency stop list
+        @param
+        @pre
+        @post
+        @note
+        @return return  emergency stop list
         @author Gin Chen
         @date 2018/1/4
         """
@@ -296,8 +321,19 @@ class Tool(object):
                     result.append(recoder)
                     tmp_key_dict.update({recoder['item_key']: 1})
         return result
+
     @staticmethod
     def __item_type_mapping(item):
+        """!@brief
+        set item format
+        @param
+        @pre
+        @post
+        @note
+        @return cleaned data format
+        @author Gin Chen
+        @date 2018/1/4
+        """
 
         def common(item):
             tmp_item = {}
@@ -318,7 +354,7 @@ class Tool(object):
             tmp_item['priority'] = item['schedule__priority']
             tmp_item['device_name'] = item['device__hostname']
             tmp_item['policy_name'] = item['coll_policy__name']
-            tmp_item['exec_interval'] = item['policys_groups__exec_interval']
+            tmp_item['exec_interval'] = Tool.interval_time_mapping(item['policys_groups__exec_interval'])
             tmp_item['item_key'] = '{}_{}_{}_{}'.format(tmp_item['device_group_id'],
                                                         tmp_item['policy_group_id'],
                                                         tmp_item['priority'],
@@ -388,3 +424,19 @@ class Tool(object):
                 xmlString = xmlString.replace('>', '&gt;')
         return xmlString
 
+    @staticmethod
+    def interval_time_mapping(exec_interval):
+        """!@brief
+        chance time format
+        @param
+        @pre
+        @post
+        @note
+        @return chanced time format
+        @author Gin Chen
+        @date 2018/1/4
+        """
+        if exec_interval / 60 > 60:
+            return '1{}'.format(constants.DAY_INTERVAL)
+        else:
+            return '{}{}'.format(exec_interval / 60, constants.MINUTE_INTERVAL)

@@ -224,6 +224,8 @@ CP_STATUS_OFF_VALUE = 0
 CP_STATUS_ON_KEY = u'取得中'
 CP_STATUS_ON_VAULE = 1
 
+DAY_INTERVAL = u'日おき'
+MINUTE_INTERVAL = u'分おき'
 #########################################
 # data collection Error Message
 #########################################

@@ -99,9 +99,7 @@ class EmergencyStopListViewSet(viewsets.ViewSet):
                             data = {
                                 "item_id": entry['item_id'],
                                 "device": entry['device_name'],
-                                "device_id": entry['device_id'],
-                                #"valid_status": entry['valid_status'],
-                                #"btn_status": entry['btn_status'],
+                                "deviceNo": entry['device_id'],
                                 'policyNo': entry['coll_policy_id'],
                                 'cpGroup': entry['policy_group_name'],
                                 'cpGroupNo': entry['policy_group_id'],
@@ -109,7 +107,7 @@ class EmergencyStopListViewSet(viewsets.ViewSet):
                                 'deviceGroupNo': entry['device_group_id'],
                                 'deviceGroup': entry['device_group_name'],
                                 'priority': Tool.set_priority_mapping(entry['priority']),
-                                'policy': '{} {}'.format(entry['policy_name'], entry['exec_interval']),
+                                'policy': '{}  {}'.format(entry['policy_name'], entry['exec_interval']),
                                 'attr': {
                                     'device': {
                                         'rowspan': None
