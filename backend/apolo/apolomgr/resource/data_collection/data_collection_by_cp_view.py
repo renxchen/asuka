@@ -47,7 +47,7 @@ class DataCollectionByCPViewSet(viewsets.ViewSet):
             }
             return api_return(data=data)
         else:
-            response_json_data = Tool.get_valid_item({"policys_groups__status": 1, "coll_policy_id": coll_policy_id})
+            response_json_data = Tool.get_valid_item_by_cp({"policys_groups__status": 1, "coll_policy_id": coll_policy_id})
             arry = []
             for one_recoder in response_json_data:
                 if device_name:
@@ -61,7 +61,7 @@ class DataCollectionByCPViewSet(viewsets.ViewSet):
                     info = {
                         'deviceNo': one_recoder['device_id'],
                         'device': one_recoder['device_name'],
-                        'status': Tool.set_cp_status_mapping(one_recoder['valid_status']),
+                        'status': Tool.set_cp_status_mapping(one_recoder['btn_status']),
                     }
                     arry.append(info)
             total_num = len(arry)
