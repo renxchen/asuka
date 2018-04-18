@@ -152,8 +152,13 @@ class CiscoCLI(object):
                 flag = 1
         prompt = re.split(",", self.expect)[-1]
         self.hostname = hostname = child.before.splitlines()[-1]
+        
+        get_prompt = hostname + prompt
         if not self.prompt:
-            self.prompt = hostname + prompt
+            self.prompt = get_prompt
+        else:
+            if re.search(self.prompt,get_prompt) is None:
+                raise Exception("Given Prompt Error")
 
         self.child = child
         self.logger.info('%s Login success. Got device hostname: %s' % (self.device_log_info,hostname))
