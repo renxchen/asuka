@@ -60,8 +60,8 @@ class TaskDispatcher(Thread):
                                   (task_id, channel))
 
             elif channel == "parser":
-                task_q = device_q[channel]
-                if task_q.qsize():
+                q = task_q[channel]
+                if q.qsize():
                     task_id = task_q.get()
                     task = session_mgr.get(task_id)
                     has_response = True
@@ -304,7 +304,7 @@ def on_worker_data_in(data):
         if result_type in "status_snmp status_cli":
             if task:
                 timer = time.time()
-                session_mgr.update(task_id, dict(status='all_finish',
+                task.update(dict(status='all_finish',
                                                  result=result,
                                                  finish_timer=timer))
             try:
@@ -324,7 +324,10 @@ def on_worker_data_in(data):
                              coll_result=result))
             need_task_finish_check = True
         elif result_type == "parser":
-            session_mgr.update_parser_result(task_id, result)
+            #session_mgr.update_parser_result(task_id, result)
+            clock = result["collection_clock"]
+            task.setdefault("parser_result",{})[clock] = result
+
             need_task_finish_check = True
         elif result_type == CommonConstants.ALL_FINISH_CHECK_FLAG:
             handle_pedding_task(channel, device_id, timer, timestamp)
@@ -344,9 +347,9 @@ def on_worker_data_in(data):
             else:
                 data = result["clock"]
 
-            if new_channel not in device_q:
-                device_q[new_channel] = Queue.Queue()
-            parser_q = device_q[new_channel]
+            if new_channel not in task_q:
+                task_q[new_channel] = Queue.Queue()
+            parser_q = task_q[new_channel]
             parser_q.put(task_id)
             zmq_publish.send_string(b'%s task %s' % (new_channel, data))
 
