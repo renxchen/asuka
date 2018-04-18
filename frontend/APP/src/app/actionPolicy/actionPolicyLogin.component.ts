@@ -17,7 +17,7 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
     title: string;
 
     modalRef: BsModalRef;
-    modalConfig = {
+    modalConfig: any = {
         animated: true,
         keyboard: true,
         backdrop: true,
@@ -214,7 +214,6 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
         this.httpClient
             .toJson(this.httpClient.get(url))
             .subscribe(res => {
-                // this.initVariable(res);
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['data']) {
                         this.initVariable(res['data']);
@@ -231,25 +230,107 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
     initVariable(data){
         console.log(data);
         let commonData = data['common_data'];
-        this.actionPolicyName = commonData['name'];
+        // this.actionPolicyName = commonData['name'];
         this.actionPolicyDescription = commonData['desc'];
         this.triggerType = commonData['trigger_type'];
 
-        if (data['critical']){
+        let critical_data: any = null;
+        let major_data: any = null;
+        let minor_data: any = null;
+
+
+        if (data['critical']['common_data']){
+            critical_data = data['critical'];
+        }
+
+        if (data['major']['common_data']){
+            major_data = data['critical'];
+        }
+
+        if (data['minor']['common_data']){
+            minor_data = data['critical'];
+        }
+        if (this.triggerType == 0){
+
+        } else if (this.triggerType==1){
+            this.columnOne = commonData['columnA'];
+            this.initNumberType(critical_data, major_data, minor_data);
+        } else if (this.triggerType==2){
+            this.columnOne = commonData['columnA'];
+            this.initStringType(critical_data, major_data, minor_data);
+        } else if (this.triggerType==3){
+            this.columnOne = commonData['columnA'];
+            this.initFailedType(critical_data, major_data, minor_data);
+        }
+    }
+
+    initNumberType(critical: any, major: any, minor: any){
+        if (critical){
+            this.critical_value = critical['common_data']['value'];
+            this.critical_continuous_condition = critical['common_data']['trigger_limit_nums'];
+            this.critical_number_condition = critical['common_data']['condition'];
+        }
+
+        if (major){
 
         }
 
-        if (data['major']){
-
-        }
-
-        if (data['minor']){
+        if (minor){
 
         }
     }
 
+    initStringType(critical: any, major: any, minor: any){
+        if (critical){
+            this.critical_value = critical['common_data']['value'];
+            this.critical_continuous_condition = critical['common_data']['trigger_limit_nums'];
+            this.critical_string_condition = critical['common_data']['condition'];
+        }
+
+        if (major){
+
+        }
+
+        if (minor){
+
+        }
+
+    }
+
+    initCalculationType(critical: any, major: any, minor: any){
+        if (critical){
+            this.critical_function = critical['common_data']['value'];
+            this.critical_continuous_condition = critical['common_data']['trigger_limit_nums'];
+        }
+
+        if (major){
+
+        }
+
+        if (minor){
+
+        }
+
+    }
+
+    initFailedType(critical: any, major: any, minor: any){
+        if (critical){
+        }
+
+        if (major){
+
+        }
+
+        if (minor){
+
+        }
+
+    }
+
     resetAll(){
         this.resetColumn();
+        this.resetTable();
+        this.resetActions();
     }
 
     resetColumn(){
@@ -259,7 +340,112 @@ export class ActionPolicyLoginComponent implements OnInit, AfterViewInit {
     }
 
     resetTable(){
+        this.critical_value = "";
+        this.major_value = "";
+        this.minor_value = "";
 
+        this.critical_string_condition = 1;
+        this.major_string_condition = 1;
+        this.minor_string_condition = 1;
+
+        this.critical_number_condition = 4;
+        this.major_number_condition = 4;
+        this.minor_number_condition = 4;
+
+        this.critical_function = "";
+        this.major_function = "";
+        this.minor_function = "";
+
+        this.critical_continuous_condition = 1;
+        this.major_continuous_condition = 1;
+        this.minor_continuous_condition = 1;
+    }
+
+    resetActions(){
+        this.criticalActionA = "Please select action 1";
+        this.criticalActionB = "Please select action 2";
+        this.majorActionA = "Please select action 1";
+        this.majorActionB = "Please select action 2";
+        this.minorActionA = "Please select action 1";
+        this.minorActionB = "Please select action 2";
+
+        this.criticalActionSelectedType1 = 0;
+        this.criticalSnmpVersion1 = 1;
+        this.criticalCommunity1 = "";
+        this.criticalAgentAddress1 = "";
+        this.criticalIp1 = "";
+        this.criticalOid1 = "";
+        this.criticalMessage1 = "";
+        this.criticalScript1 = "";
+        this.criticalRundeckIp1 = "";
+        this.criticalUser1 = "";
+        this.criticalPassword1 = "";
+        this.criticalCommand1 = "";
+
+        this.criticalActionSelectedType2 = 0;
+        this.criticalSnmpVersion2 = 1;
+        this.criticalCommunity2 = "";
+        this.criticalAgentAddress2 = "";
+        this.criticalIp2 = "";
+        this.criticalOid2 = "";
+        this.criticalMessage2 = "";
+        this.criticalScript2 = "";
+        this.criticalRundeckIp2 = "";
+        this.criticalUser2 = "";
+        this.criticalPassword2 = "";
+        this.criticalCommand2 = "";
+
+        this.majorActionSelectedType1 = 0;
+        this.majorSnmpVersion1 = 1;
+        this.majorCommunity1 = "";
+        this.majorAgentAddress1 = "";
+        this.majorIp1 = "";
+        this.majorOid1 = "";
+        this.majorMessage1 = "";
+        this.majorScript1 = "";
+        this.majorRundeckIp1 = "";
+        this.majorUser1 = "";
+        this.majorPassword1 = "";
+        this.majorCommand1 = "";
+
+        this.majorActionSelectedType2 = 0;
+        this.majorSnmpVersion2 = 1;
+        this.majorCommunity2 = "";
+        this.majorAgentAddress2 = "";
+        this.majorIp2 = "";
+        this.majorOid2 = "";
+        this.majorMessage2 = "";
+        this.majorScript2 = "";
+        this.majorRundeckIp2 = "";
+        this.majorUser2 = "";
+        this.majorPassword2 = "";
+        this.majorCommand2 = "";
+
+        this.minorActionSelectedType1 = 0;
+        this.minorSnmpVersion1 = 1;
+        this.minorCommunity1 = "";
+        this.minorAgentAddress1 = "";
+        this.minorIp1 = "";
+        this.minorOid1 = "";
+        this.minorMessage1 = "";
+        this.minorScript1 = "";
+        this.minorRundeckIp1 = "";
+        this.minorUser1 = "";
+        this.minorPassword1 = "";
+        this.minorCommand1 = "";
+
+        this.minorActionSelectedType2 = 0;
+        this.minorSnmpVersion2 = 1;
+        this.minorCommunity2 = "";
+        this.minorAgentAddress2 = "";
+        this.minorIp2 = "";
+        this.minorOid2 = "";
+        this.minorMessage2 = "";
+        this.minorScript2 = "";
+        this.minorRundeckIp2 = "";
+        this.minorUser2 = "";
+        this.minorPassword2 = "";
+        this.minorCommand2 = "";
     }
 
     selectColumn(template, isWhich){
