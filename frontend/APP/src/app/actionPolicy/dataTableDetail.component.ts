@@ -84,7 +84,7 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
     let nameTmp = _t.tableType == '1' ? 'oid' : 'path';
     let tableModel = [
       { label: 'デバイス名', name: 'hostname', align: 'center' },
-      { label: 'Time Stamp', name: 'date', align: 'center' },
+      { label: 'Time Stamp', name: 'date', index: 'date', align: 'center' },
       { label: lableTmp, name: nameTmp, align: 'center' },
       { label: 'Value', name: 'value', align: 'center' },
     ];
