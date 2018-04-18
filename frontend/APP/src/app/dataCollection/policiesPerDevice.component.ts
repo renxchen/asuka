@@ -17,12 +17,14 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
     apiPrefix: any = '/v1';
     // dd: string = '1';
     deviceNo: any;
-    stopAll = '<button class="btn btn-xs btn-primary" id="stopAll">全停止</button>';
+    stopAll = '<button class="btn btn-xs btn-primary" id="stopAll">監視全停止</button>';
     startAll = '<button class="btn btn-xs btn-default" id="stopAll">全解除</button>';
     ppdModel: any = [
         {label: 'No', hidden: true, name: 'policyNo', index: 'policyNo'},
         // {label: 'デバイス',  name: 'device', width: 30, align: 'center',
         // cellattr: this.arrtSetting, sortable: false,},
+        {label: 'デバイスグループ名',  name: 'deviceGroup', width: 100,
+            align: 'center', sortable: false, cellattr: this.arrtSetting,},
         {label: 'コレクションポリシーグループ名',  name: 'cpGroup', width: 100,
             align: 'center', sortable: false, cellattr: this.arrtSetting,},
 
@@ -32,7 +34,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
         {label: 'コレクションポリシー', name: 'policy', width: 50, align: 'center',
             classes: 'policy', sortable: false,cellattr: this.renderCpColor },
 
-        {label: ' ', name: 'valid_status', width: 50, align: 'center', search: false,
+        {label: ' ', name: 'btn_status', width: 50, align: 'center', search: false,
         formatter: this.fomatterBtn, sortable: false, height: 50,},
         // {label: '', name: 'action', width: 50, align: 'center', search: false,
         // formatter: this.fomatterBtn, sortable: false, height: 50,}
@@ -129,12 +131,20 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
     setStopAllButton(res){
         // console.log(res.data.length);
         if (res.data.length != 0){
+            let flag = false;
             for (let item of res.data) {
-                if (item.valid_status == true){
+                // console.log(item);
+                if (item.btn_status == 1){
                     return this.stopAll;
+                } else if (item.btn_status == 0){
+                    flag = true;
                 }
             }
-            return this.startAll;
+            if (flag) {
+                return this.startAll;
+            } else {
+                return '';
+            }
         } else {
             return ' ';
         }
@@ -182,12 +192,14 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
     public fomatterBtn(cellvalue, options, rowObject) {
         // console.log(rowObject);
-        if (cellvalue == true){
+        if (cellvalue == 1){
             return '<button class="btn btn-xs btn-primary stop"' +
-                ' name="'+ rowObject["policy"] +'" id="'+ rowObject["cpGroupNo"] + "_" + rowObject["priority"] + "_" + rowObject["policyNo"] + '">停止</button>';
+                ' name="'+ rowObject["policy"] +'" id="'+ rowObject["cpGroupNo"] + "_" + rowObject["priority"] + "_" + rowObject["policyNo"] + '">監視停止</button>';
         } else if (cellvalue == 0){
             return '<button class="btn btn-xs btn-default stop"' +
                 ' name="'+ rowObject["policy"] +'" id="'+ rowObject["cpGroupNo"] + "_" + rowObject["priority"] + "_" +  rowObject["policyNo"] + '">解除</button>';
+        } else if (cellvalue == -1){
+            return ""
         } else {
             return cellvalue;
         }
@@ -216,11 +228,11 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
 
         let _this = this;
         // $('#policiesTable').jqGrid('setLabel', 'action', 'asd');
-        $('#policiesTable').jqGrid('setLabel', 'valid_status', _this.setStopAllButton(res));
+        $('#policiesTable').jqGrid('setLabel', 'btn_status', _this.setStopAllButton(res));
         let url = '/api_data_collection_devices/';
         $('#stopAll').click(function (event) {
             // console.log(event);
-            if(event.target.innerHTML == '全停止'){
+            if(event.target.innerHTML == '監視全停止'){
                 let _confirm = confirm('Stop All?');
                 // event.target.parentElement.innerHTML = _this.startAll;
 
@@ -301,7 +313,7 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
             let policy_group_id = id.split('_')[0];
             let url = '/api_data_collection_devices/';
 
-            if ($('#'+id).html() == '停止'){
+            if ($('#'+id).html() == '監視停止'){
                 let _confirm = confirm('Stop '+policy+'?');
                 if(_confirm){
                     // $('#'+id).html('解除').removeClass('btn-primary').addClass('btn-default');
@@ -329,14 +341,12 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                                 // }
                             }
                     });
-                    // send the request to background, return if success; if success, reload the table
+
                 }
 
             } else {
                 let _confirm = confirm('Start '+policy+'?');
                 if(_confirm){
-                    // $('#'+id).html('停止').removeClass('btn-default').addClass('btn-primary');
-                    // send the request to background, return if success; if success, reload the table
                     _this.httpClient
                         .toJson(_this.httpClient.put(url,
                                     {"is_all": 0, 'device_id': _this.deviceNo, "coll_policy_id": coll_policy_id,
@@ -346,24 +356,13 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                             if (res['status']['status'].toString().toLowerCase() === 'true') {
                                 let newUrl = '/v1/api_data_collection_devices/?device_id='+_this.deviceNo;
                                 $("#policiesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
-                                // if (res['data']) {
-                                //     // let id = res['data']['coll_policy_id'];
-                                //     // this.router.navigate(['/index/cliCPEdit'],
-                                //     //     { queryParams: { 'id': id } });
-                                // }
                             } else {
                                 alert('failed');
-                                // if (res['status'] && res['status']['message'] === 'CP_NAME_DUPLICATE') {
-                                //     this.uniqueFlg = false;
-                                // } else {
-                                //     alert(res['status']['message']);
-                                // }
+
                             }
                     });
                 }
-
             }
-
         });
     }
 
@@ -392,17 +391,13 @@ export class PoliciesPerDeviceComponent implements OnInit, AfterViewInit {
                 _this.renderTitleHeight();
                 _this.allAction(res);
             },
-            rowNum: 10,
+            // rowNum: 10,
             // rowList: [10, 20, 30],
             autowidth: true,
             beforeSelectRow: function (rowid, e) {
                 return false;
             },
-            // autoheight: true,
-            // grouping:true,
-            // groupingView : {
-            //     groupField : ['device']
-            // },
+            height: 400,
             // pager: '#policiesPager',
             jsonReader: {
                 root: 'data',
