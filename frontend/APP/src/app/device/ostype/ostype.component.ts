@@ -5,7 +5,7 @@
  * @time: 2018/03/08
  * @desc: ostype summary
  */
-import { Component, OnInit, AfterViewInit, ComponentFactory } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ComponentFactory } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Router } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -22,7 +22,7 @@ declare var $: any;
     templateUrl: './ostype.component.html',
     styleUrls: ['.././device.component.less']
 })
-export class OstypeComponent implements OnInit, AfterViewInit {
+export class OstypeComponent implements OnInit, AfterViewInit, OnDestroy {
     ostypeTable$: any;
     apiPrefix: string;
     closeMsg: any;
@@ -269,5 +269,10 @@ export class OstypeComponent implements OnInit, AfterViewInit {
     }
     public unsubscribe(res: any) {
         res.unsubscribe();
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

@@ -21,7 +21,7 @@ import * as _ from 'lodash';
     templateUrl: './cPGLogin.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
-export class CPGLoginComponent implements OnInit, AfterViewInit {
+export class CPGLoginComponent implements OnInit, AfterViewInit, OnDestroy {
     cPGId: any;
     apiPrefix: any;
     cpgActionGrid$: any;
@@ -484,5 +484,10 @@ export class CPGLoginComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

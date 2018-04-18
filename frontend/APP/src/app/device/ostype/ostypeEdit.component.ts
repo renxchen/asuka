@@ -6,7 +6,7 @@
  * @time: 2018/03/08
  * @desc: edit a ostype
  */
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
 import { Validator } from '../../../components/validation/validation';
@@ -20,7 +20,7 @@ import * as _ from 'lodash';
     styleUrls: ['.././device.component.less']
 })
 
-export class OstypeEditComponent implements OnInit, AfterViewInit {
+export class OstypeEditComponent implements OnInit, AfterViewInit, OnDestroy {
     id: any;
     apiPrefix: any;
     name: any;
@@ -547,6 +547,11 @@ export class OstypeEditComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }
 

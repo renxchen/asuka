@@ -5,7 +5,7 @@
  * @time: 2018/03/08
  * @desc: create a ostype
  */
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
 import { Validator } from '../../../components/validation/validation';
@@ -18,7 +18,7 @@ import * as _ from 'lodash';
     templateUrl: './ostypeLogin.component.html',
     styleUrls: ['.././device.component.less']
 })
-export class OstypeLoginComponent implements OnInit, AfterViewInit {
+export class OstypeLoginComponent implements OnInit, AfterViewInit, OnDestroy {
     apiPrefix: any;
     name: any;
     desc: any;
@@ -425,5 +425,10 @@ export class OstypeLoginComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

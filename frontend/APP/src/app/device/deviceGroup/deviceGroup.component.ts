@@ -5,7 +5,7 @@
  * @file: deviceGroup.component.ts
  * @time: 2018/03/08
  * @desc: device group summary
- */import { Component, OnInit, AfterViewInit, TemplateRef } from '@angular/core';
+ */import { Component, OnInit, AfterViewInit, OnDestroy, TemplateRef } from '@angular/core';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -21,7 +21,7 @@ declare var $: any;
     templateUrl: './deviceGroup.component.html',
     styleUrls: ['.././device.component.less']
 })
-export class DeviceGroupComponent implements OnInit, AfterViewInit {
+export class DeviceGroupComponent implements OnInit, AfterViewInit, OnDestroy {
     groupId: any;
     name: any;
     desc: any;
@@ -226,7 +226,7 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
             this.getPanelData(id);
             $('#deviceTable').jqGrid('clearGridData');
             $('#deviceTable')
-                .jqGrid('setGridParam', { url : '/v1/api_device/?group_id=' + id })
+                .jqGrid('setGridParam', { url: '/v1/api_device/?group_id=' + id })
                 .trigger('reloadGrid');
         }
     }
@@ -312,5 +312,10 @@ export class DeviceGroupComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

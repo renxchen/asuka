@@ -5,7 +5,7 @@
  * @time: 2018/01/23
  * @desc: collection policy summary
  */
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -18,7 +18,7 @@ declare var $: any;
     templateUrl: './cPView.component.html',
     styleUrls: ['./collectionPolicy.component.less']
 })
-export class CPViewComponent implements OnInit, AfterViewInit {
+export class CPViewComponent implements OnInit, AfterViewInit, OnDestroy {
     cPType: any;
     thirdCol: any;
     thirdName: any;
@@ -290,5 +290,10 @@ export class CPViewComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

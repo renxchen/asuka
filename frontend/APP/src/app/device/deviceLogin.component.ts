@@ -5,7 +5,7 @@
  * @time: 2018/03/08
  * @desc: import devices
  */
-import { Component, OnInit, AfterViewInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { Http } from '@angular/http';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ declare var $: any;
     templateUrl: './deviceLogin.component.html',
     styleUrls: ['./device.component.less']
 })
-export class DeviceLoginComponent implements OnInit {
+export class DeviceLoginComponent implements OnInit, OnDestroy {
     @ViewChild('uploadInfo') inputFile: any;
     filename: any;
     devLoginTable$: any;
@@ -291,7 +291,7 @@ export class DeviceLoginComponent implements OnInit {
                     }
                 });
         } else {
-            this.modalMsg = 'Please choose one device at least.';
+            this.modalMsg = 'ステータスチェックを実行するデバイスを選択して下さい。';
             this.closeMsg = '閉じる';
             this.showAlertModal(this.modalMsg, this.closeMsg);
         }
@@ -337,7 +337,7 @@ export class DeviceLoginComponent implements OnInit {
                     }
                 });
         } else {
-            this.modalMsg = 'There is no devcie to be saved.Please upload the correct devices';
+            this.modalMsg = '登録できるデバイスが存在しないので、保存できません。CSVファイルをチェックしてください。';
             this.closeMsg = '閉じる';
             this.showAlertModal(this.modalMsg, this.closeMsg);
         }
@@ -364,5 +364,10 @@ export class DeviceLoginComponent implements OnInit {
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
         this.modalRef.content.data = data;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

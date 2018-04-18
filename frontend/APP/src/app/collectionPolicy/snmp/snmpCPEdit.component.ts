@@ -5,7 +5,7 @@
 * @time: 2017/01/25
 * @desc: edit snmp collection policy
 */
-import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -20,7 +20,7 @@ import * as _ from 'lodash';
     styleUrls: ['.././collectionPolicy.component.less']
 })
 
-export class SNMPCPEditComponent implements OnInit, AfterViewInit {
+export class SNMPCPEditComponent implements OnInit, AfterViewInit, OnDestroy {
     cPId: any;
     cPType: any;
     apiPrefix: string;
@@ -218,6 +218,11 @@ export class SNMPCPEditComponent implements OnInit, AfterViewInit {
                         }
                     }
                 });
+        }
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
         }
     }
 }

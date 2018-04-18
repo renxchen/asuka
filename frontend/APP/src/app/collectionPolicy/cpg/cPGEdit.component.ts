@@ -5,7 +5,7 @@
 * @time: 2018/03/13
 * @desc: edit collection policy group
 */
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Validator } from '../../../components/validation/validation';
@@ -21,7 +21,7 @@ declare var $: any;
     templateUrl: './cPGEdit.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
-export class CPGEditComponent implements OnInit {
+export class CPGEditComponent implements OnInit, OnDestroy {
     cPGId: any;
     apiPrefix: any;
     cpgActionGrid$: any;
@@ -526,5 +526,10 @@ export class CPGEditComponent implements OnInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

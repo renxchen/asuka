@@ -5,7 +5,7 @@
 * @time: 2018/03/13
 * @desc: display collection policy group in detail
 */
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
@@ -19,7 +19,7 @@ declare var $: any;
     templateUrl: './cPGDetail.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
-export class CPGDetailComponent implements OnInit {
+export class CPGDetailComponent implements OnInit, OnDestroy {
     cPGId: any;
     apiPrefix: any;
     cpgActionGrid$: any;
@@ -265,5 +265,10 @@ export class CPGDetailComponent implements OnInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }
