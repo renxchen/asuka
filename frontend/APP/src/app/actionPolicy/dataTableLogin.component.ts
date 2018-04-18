@@ -556,9 +556,14 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       let url = '/api_data_table_step1/';
       this.collectSaveData();
       this.post(url, this.sendData).subscribe((res: any) => {
-        if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'false') {
-          let msg = res.status.status;
-          alert(msg);
+        if (res && res.status) {
+          if (res.status.status && res.status.status.toLowerCase() === 'false') {
+            let msg = res.status.status;
+            alert(msg);
+          } else {
+            this.bsModalRef.hide();
+            alert('保存しました！');
+          }
         }
       });
     } else {
