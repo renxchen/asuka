@@ -5,7 +5,7 @@
 * @time: 2018/03/13
 * @desc: edit collection policy group
 */
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { Validator } from '../../../components/validation/validation';
@@ -21,7 +21,7 @@ declare var $: any;
     templateUrl: './cPGEdit.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
-export class CPGEditComponent implements OnInit {
+export class CPGEditComponent implements OnInit, OnDestroy {
     cPGId: any;
     apiPrefix: any;
     cpgActionGrid$: any;
@@ -52,7 +52,6 @@ export class CPGEditComponent implements OnInit {
     addExecFlg: Boolean = true;
     exeFlg: Boolean = true;
     sameCPFlg: Boolean = true;
-    bsModalRef: any;
     modalRef: BsModalRef;
     modalMsg: any;
     closeMsg: any;
@@ -298,6 +297,9 @@ export class CPGEditComponent implements OnInit {
             } else if (_.indexOf(idTmp, 'snmp', 0) !== -1) {
                 _t.router.navigate(['/index/snmpcpdetail'],
                     { queryParams: { 'id': idTmp[1] } });
+            }else {
+                event.stopPropagation();
+                return;
             }
             event.stopPropagation();
         });
@@ -497,23 +499,14 @@ export class CPGEditComponent implements OnInit {
                 .subscribe(res => {
                     let status = _.get(res, 'status');
                     let msg = _.get(status, 'message');
-                    // let type = _.get(status, 'type');
+                    let type = _.get(status, 'type');
                     if (status && status['status'].toString().toLowerCase() === 'true') {
                         alert('保存しました。');
                         this.router.navigate(['/index/cpgview/']);
                     } else {
-                        // if (type && type === 'NAME_DUPLICATE') {
-                        //     this.uniqueFlg = false;
-                        // }else {
-                        //     if (msg) {
-                        //         this.modalMsg = msg;
-                        //         this.closeMsg = '閉じる';
-                        //         this.showAlertModal(this.modalMsg, this.closeMsg);
-                        //     }
-                        // }
-                        if (msg && msg === 'Collection policy group name is exist in system.') {
+                        if (type && type === 'NAME_DUPLICATE') {
                             this.uniqueFlg = false;
-                        } else {
+                        }else {
                             if (msg) {
                                 this.modalMsg = msg;
                                 this.closeMsg = '閉じる';
@@ -533,5 +526,10 @@ export class CPGEditComponent implements OnInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

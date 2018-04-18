@@ -81,11 +81,11 @@ export class HttpClientComponent {
                     if (status.status.toString().toLowerCase() === 'false') {
                         if (status.code === 102) {
                             localStorage.setItem('sessionTimeOut', status.message);
-                            this.router.navigate(['/login'], { queryParams: this.getSearchParams() });
+                            this.router.navigate(['/login']);
                         }
                         if (status.code === 103) {
                             localStorage.setItem('sessionTimeOut', status.message);
-                            this.router.navigate(['/login'], { queryParams: this.getSearchParams() });
+                            this.router.navigate(['/login']);
                         }
                     } else {
                         if (token && token.code === 100 && token.new_token) {
@@ -102,15 +102,15 @@ export class HttpClientComponent {
                     return Observable.of({
                         'status': {
                             'status': false,
-                            'message': 'System access failed, please connect the administrator.'
+                            'message': 'システムに異常が発生しました。本メッセージが継続的に発生する場合は管理者に問い合わせ下さい。'
                         },
                         'data': null
                     });
                 });
         } else {
             let ret: any = { 'status': { 'status': false } };
-            localStorage.setItem('sessionTimeOut', 'No access or user expired,please login.');
-            this.router.navigate(['/login'], { queryParams: this.getSearchParams() });
+            localStorage.setItem('sessionTimeOut', 'ログインがされていません。ログインして下さい。');
+            this.router.navigate(['/login']);
             return Observable.of(ret);
         }
     }
@@ -125,9 +125,10 @@ export class HttpClientComponent {
                 }
             );
         } else {
-            let ret: any = { 'meta': { 'status': true } };
-            localStorage.setItem('sessionTimeOut', 'No access or user expired,please login.');
-            this.router.navigate(['login'], { queryParams: this.getSearchParams() });
+            let ret: any = { 'meta': { 'status': false } };
+            localStorage.setItem('sessionTimeOut', 'ログインがされていません。ログインして下さい。');
+            this.router.navigate(['login']);
+            window.location.reload();
         }
     }
 

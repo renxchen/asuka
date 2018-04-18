@@ -72,7 +72,7 @@ class OsTypeViewSet(viewsets.ViewSet):
         try:
             if self.id:
                 # return verify field for name
-                queryset_devices = Devices.objects.filter(ostype_id=self.id)
+                queryset_devices = Devices.objects.filter(ostype_id=self.id).filter(status=1)
                 queryset_groups = Groups.objects.filter(ostype_id=self.id)
                 schedules_queryset = Schedules.objects.filter(ostype_id=self.id)
                 coll_policy_queryset = CollPolicy.objects.filter(ostype_id=self.id)
@@ -276,6 +276,7 @@ class OsTypeViewSet(viewsets.ViewSet):
                             'new_token': self.new_token,
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
+                                constants.MSG_TYPE: constants.NAME_DUPLICATE,
                                 constants.MESSAGE: constants.OSTYPE_NAME_EXISTS,
                             }
                         }
@@ -445,6 +446,7 @@ class OsTypeViewSet(viewsets.ViewSet):
                                     'new_token': self.new_token,
                                     constants.STATUS: {
                                         constants.STATUS: constants.FALSE,
+                                        constants.MSG_TYPE: constants.NAME_DUPLICATE,
                                         constants.MESSAGE: constants.OSTYPE_NAME_EXISTS,
                                     }
                                 }
@@ -488,7 +490,7 @@ class OsTypeViewSet(viewsets.ViewSet):
                             return api_return(data=data)
                     else:
                         message = ''
-                        devices_queryset = Devices.objects.filter(ostype_id=self.id)
+                        devices_queryset = Devices.objects.filter(ostype_id=self.id).filter(status=1)
                         if devices_queryset.exists():
                             message += constants.OSTYPE_EXIST_IN_DEVICES + " "
                         queryset_groups = Groups.objects.filter(ostype_id=self.id)
@@ -525,4 +527,3 @@ class OsTypeViewSet(viewsets.ViewSet):
             transaction.rollback()
             print e
             raise e
-
