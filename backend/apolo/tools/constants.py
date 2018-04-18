@@ -105,6 +105,7 @@ EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = gettext('A and B maybe do not have the same
 EXPRESSION_A_B_NOT_EXIST = gettext('There is not A or B in expression, should be at least A in expression.')
 EXPRESSION_CONDITION_ILLEGAL = gettext('The expression condition should be in <=, >=, ==, !=, >, <.')
 EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION = gettext('There is illegal format in current expression.')
+EXPRESSION_HEXADECIMAL_ILLEGAL = gettext('Hexadecimal expression should be placed at the outermost level.')
 EXPRESSION_EVAL_VERIFY_FAILED = gettext('The expression eval verification failed.')
 EXPRESSION_VERIFY_FAILED = gettext('The expression verify failed')
 ACTION_POLICY_NAME_DUPLICATE = gettext('The action name is exist in current system, please change name.')

@@ -32,12 +32,12 @@ class ExpressionVerify(viewsets.ViewSet):
         # self.value = 'A{4} > 1000'  # 验证失败
         # self.value = '(A{0} - Hex2Dec(Max(B[3])))*8 > 1'  # 验证失败
         # self.value = 'Min(4[10]) != 1500'  # 验证失败
+        # self.value = 'Hex2Dec(Min(A[10])) > 1500'   Hex2Dec函数不允许套在其他函数外面， 不合法HEX2DEC\((\d+)[\[\(]\d+[\)\]]
+
+        # self.value = 'Hex2Dec(A[10]) != 1500'
         # self.value = '(A[2] - Hex2Dec(Max(B[3])))*8 > 1'
         # self.value = 'Min(A[10]) != 1500'
         # self.value = 'Avg(A[10]) + Max(B[9]) > 1500'
-        # self.value = 'Hex2Dec(Min(A[10])) > 1500'
-        # self.value = 'Hex2Dec(Min(A[10])) == 1500'
-        # self.value = 'Hex2Dec(Min(A[10])) != 1500'
         # self.value = 'Avg(A[10]) + Max(B[9]) == 1500'
         # self.value = 'A[2] == "$%^*())"'
         # self.value = 'A(4) > 1000'
@@ -63,7 +63,6 @@ class ExpressionVerify(viewsets.ViewSet):
         """
         initial_expression = self.value
         value = self.value.upper()
-
         operators = "(<>|<=|>=|==|!=|<|>)"
 
         reg_num_chars = re.compile("[^AB\d\w\+\-\*/%\(\)\[\]\s\!\@\#\$\&\"\^]")
@@ -115,9 +114,35 @@ class ExpressionVerify(viewsets.ViewSet):
                 constants.MESSAGE: constants.EXPRESSION_CONDITION_ILLEGAL,
             }
             return result
+        # 检查左右表达式中是否包含HEX2DEC运算， 如果包含，HEX2DEC必须属于最外层，即Hex2Dec(A[10])形式
+        hexadecimal_regexp = re.compile("(?i)HEX2DEC\(([AB])\[\d+\]\)|(?i)HEX2DEC\(([AB])\(\d+\)\)")
+        # Hex2Dec(Min(A[10])) > 1500  验证失败
+        # Hex2Dec(A[10]) + Hex2Dec(A[10]) > Hex2Dec(Min(A[10]))     验证失败
+        # Min(Hex2Dec(A[10])) > 1500   通过
+        # Hex2Dec(A[10]) > 1500       通过
+        # 左表达式以运算符分割， 分别判断每一块含有HEX2DEC的表达式是否在最外层
+        sign = "(\+|\-|\*|\/)"
+        exp_left_splited = re.split(sign, exp_left)
+        exp_right_splited = re.split(sign, exp_right)
+        for i in exp_left_splited:
+            if 'HEX2DEC' in i.upper():
+                if re.search(hexadecimal_regexp, i.upper()) is None:
+                    result = {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.EXPRESSION_HEXADECIMAL_ILLEGAL,
+                    }
+                    return result
+        # 右表达式以运算符分割， 分别判断每一块含有HEX2DEC的表达式是否在最外层
+        for i in exp_right_splited:
+            if 'HEX2DEC' in i.upper():
+                if re.search(hexadecimal_regexp, i.upper()) is None:
+                    result = {
+                        constants.STATUS: constants.FALSE,
+                        constants.MESSAGE: constants.EXPRESSION_HEXADECIMAL_ILLEGAL,
+                    }
+                    return result
         # 替换左表达式中的运算符(MAX|MIN|AVG|HEX2DEC)为""
         result_left = reg_function_chars.subn("", exp_left)[0]
-        print  result_left, 11
         # 替换右表达式中的运算符(MAX|MIN|AVG|HEX2DEC)为""
         result_right = reg_function_chars.subn("", exp_right)[0]
         reg_check = reg_num_chars
@@ -162,7 +187,6 @@ class ExpressionVerify(viewsets.ViewSet):
         2.目的是将OK替换成-9999
         """
         value = re.compile("\w+").subn("-9999", value)[0]
-        print value
         try:
             eval(value)
         except Exception, e:
