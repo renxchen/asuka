@@ -62,7 +62,7 @@ class TaskDispatcher(Thread):
             elif channel == "parser":
                 q = task_q[channel]
                 if q.qsize():
-                    task_id = task_q.get()
+                    task_id = q.get()
                     task = session_mgr.get(task_id)
                     has_response = True
                     zmq_dispatch.send_string(
