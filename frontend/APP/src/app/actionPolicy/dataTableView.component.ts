@@ -21,17 +21,13 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
     { label: 'No', hidden: true, name: 'table_id', index: 'table_id' },
     { label: 'テーブル名', name: 'name', width: 30, align: 'center' },
     { label: '概要', name: 'description', width: 45, align: 'center' },
+    { label: 'type', name: 'coll_policy__policy_type', hidden: true, align: 'center' },
     {
       label: 'アクション', name: 'action', width: 30, align: 'center', search: false,
       formatter: this.formatterButtons
     },
   ];
 
-  testData: any = [
-    { table_id: 10, name: 'data table 1', description: 'description of data table 1' },
-    { table_id: 11, name: 'data table 2', description: 'description of data table 2' },
-    { table_id: 12, name: 'data table 3', description: 'description of data table 3' },
-  ];
 
   modalRef: BsModalRef;
   modalConfig = {
@@ -52,7 +48,7 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.httpClient.setUrl('/v1');
 
-   }
+  }
 
   ngAfterViewInit() {
     this.drawDataTableTable();
@@ -96,12 +92,12 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
       height: 230,
       pager: '#tablePager',
       jsonReader: {
-          root: 'data.data',
-          page: 'current_page_num',
-          total: 'num_page',
-          records: 'total_num',
-          userData: 'status',
-          repeatitems: false,
+        root: 'data.data',
+        page: 'current_page_num',
+        total: 'num_page',
+        records: 'total_num',
+        userData: 'status',
+        repeatitems: false,
       },
     };
     $('#tableTable').jqGrid(tableJson);
@@ -121,7 +117,7 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
       let tarEle = $(event.target);
       if (tarEle.is('i')) {
         selectedBtnId = tarEle.parents('button')[0].id;
-       }
+      }
       let selectedRowId = selectedBtnId.split('_')[1];
       let rowData = $('#tableTable').jqGrid('getRowData', selectedRowId);
       _t.selectRowObj = rowData;
@@ -135,13 +131,16 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
     *@author:necy
     *date:20180413
     */
+
     if (this.selectRowObj && this.selectRowObj['table_id']) {
+      let confirmFlg = confirm(this.selectRowObj['name'] + 'を削除します。よろしいですか？');
       let table_id = this.selectRowObj['table_id'];
       let url = '/api_data_table_step1/?id=' + table_id;
-
-      this.delete(url).subscribe((res: any) => {
-        this.showMsg(res);
-      });
+      if (confirmFlg) {
+        this.delete(url).subscribe((res: any) => {
+          this.showMsg(res);
+        });
+      }
     }
   }
 
@@ -153,7 +152,7 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
      *date:20180413
     */
     let type = btn_id.split('_')[0];
-    console.log('this.selectedRow', this.selectRowObj);
+    // console.log('this.selectedRow', this.selectRowObj);
     if (type === 'show') {
       this.showDataTableDetail();
     } else if (type === 'del') {

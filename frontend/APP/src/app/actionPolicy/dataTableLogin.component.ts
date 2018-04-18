@@ -84,12 +84,14 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     if (this.currentStep === 4) {
       this.getTreeData();
     }
+
     if (contuineFlg) {
       this.maxStep === this.currentStep ? this.maxStep++ : this.maxStep = this.maxStep;
       this.currentStep++;
       // this.maxStep === 4 ? this.maxStep = 4 : this.maxStep++;
-      this.setBottomBtns();
     }
+    this.setBottomBtns();
+
   }
 
   public previous() {
@@ -124,6 +126,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
   }
   public setSteps(step: number) {
     this.currentStep = step;
+    this.setBottomBtns();
   }
 
   public setChangeFlgs(type) {

@@ -15,6 +15,7 @@ import * as flatpickr from 'flatpickr';
 export class DataTableDetailComponent implements OnInit, AfterViewInit {
   tableName: string;
   tableId: string;
+  tableType: string;
   apiPrefix: String = '/v1';
   contentData: any;
   startTime: any;
@@ -22,7 +23,8 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
   flatPickrStartTime: any;
   flatPickrEndTime: any;
   pickrOption: any = {
-    enableTime: true
+    enableTime: true,
+    time_24hr: true
   };
 
 
@@ -44,6 +46,7 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       _t.tableName = _t.contentData['name'];
       _t.tableId = _t.contentData['table_id'];
+      _t.tableType = _t.contentData['coll_policy__policy_type'];
       _t.drawTable('init');
     }, 0);
     this.initPickr();
@@ -77,10 +80,12 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
   }
   protected drawTable(type: string) {
     let _t = this;
+    let lableTmp = _t.tableType == '1' ? 'OID' : 'Path';
+    let nameTmp = _t.tableType == '1' ? 'oid' : 'path';
     let tableModel = [
       { label: 'デバイス名', name: 'hostname', align: 'center' },
       { label: 'Time Stamp', name: 'date', align: 'center' },
-      { label: 'Path', name: 'path', align: 'center' },
+      { label: lableTmp, name: nameTmp, align: 'center' },
       { label: 'Value', name: 'value', align: 'center' },
     ];
     let url = '/v1/api_data_table_step1/?id=' + this.tableId;
@@ -115,13 +120,13 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
     $('#searchTable').jqGrid('filterToolbar', { defaultSearch: 'cn' });
     if (type === 'search') {
       if (this.startTime && this.endTime) {
-        let startTime = moment(this.startTime).unix() * 1000;
-        // let startTime = moment(moment(this.startTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
-        let endTime = moment(this.endTime).unix() * 1000;
-        // let endTime = moment(moment(this.endTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
+        let startTime = moment(moment(this.startTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
+        let endTime = moment(moment(this.endTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
         url = '/v1/api_data_table_step1/?id=' + this.tableId + '&start_date=' + startTime + '&end_date=' + endTime;
+        $('#searchTable').jqGrid().setGridParam({ datatype: 'json', url: url }).trigger('reloadGrid');
+      } else if (this.startTime && !this.endTime || !this.startTime && this.endTime) {
+        alert('取得開始日時と取得終了日時を選択してください！');
       }
-      $('#searchTable').jqGrid().setGridParam({ datatype: 'json', url: url }).trigger('reloadGrid');
     }
   }
 
@@ -137,10 +142,9 @@ export class DataTableDetailComponent implements OnInit, AfterViewInit {
   protected csvExport() {
     let url = 'v1/api_data_table_csv_export/?id=' + this.tableId + '&page=1&rows=65536';
     if (this.startTime && this.endTime) {
-      let startTime = moment(this.startTime).unix() * 1000;
-      let endTime = moment(this.endTime).unix() * 1000;
-      url = 'api_data_table_csv_export/?start_date=' + startTime + '&end_date=' + endTime + '&id=' + this.tableId + '&page=1&rows=65536';
-      // url = 'v1/api_data_table_csv_export/?start_date=2018-1-16 17:49:48&end_date=2018-1-16 17:49:50&id=13&page=1&rows=65536';
+      let startTime = moment(moment(this.startTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
+      let endTime = moment(moment(this.endTime).unix() * 1000).format('YYYY-MM-DD HH:mm:ss');
+      url = 'v1/api_data_table_csv_export/?start_date=' + startTime + '&end_date=' + endTime + '&id=' + this.tableId + '&page=1&rows=65536';
     }
     window.location.href = url;
   }
