@@ -2,7 +2,7 @@ import memcache
 import logging
 import time
 from apolo_server.processor.constants import CommonConstants
-from db_helper import DeviceDbHelp
+from db_helper import DeviceDbHelp,TriggerDbHelp
 
 
 class MemCacheBase(object):
@@ -82,28 +82,6 @@ class LastCheckTimeMemCache(MemCacheBase):
                 self.set(data)
         return data
 
-
-class ItemMemCacheDb(MemCacheBase):
-    def __init__(self):
-        super(ItemMemCacheDb, self).__init__()
-        self.key = "DB_Item"
-
-    def do_get(self):
-        items = DeviceDbHelp.get_all_items_from_db()
-        result = [item for item in items]
-        return result
-
-
-
-class TaskRunningMemCacheDb(MemCacheBase):
-    def __init__(self):
-        super(TaskRunningMemCacheDb, self).__init__()
-        self.key = "Task_Running_Status"
-
-    def do_get(self):
-        return False
-
-
 class BatchMemCacheBase(MemCacheBase):
     def __init__(self):
         super(BatchMemCacheBase, self).__init__()
@@ -118,22 +96,61 @@ class BatchMemCacheBase(MemCacheBase):
 
 class TriggerMemCache(BatchMemCacheBase):
     def __init__(self):
+
         super(TriggerMemCache, self).__init__()
-        self.key_prefix = "Trigger"
+        self.key_prefix = "trigger_"
+
+    def get(self,device_id):
+        
+        search_key = self.key_prefix+device_id
+        data = self._mc.get(search_key)
+        if data is not None:
+            logging.debug("Get data from memory cache")
+        else:
+
+            data = TriggerDbHelp.get_triggerDetail_by_deviceid(int(device_id))
+            self._mc.set(search_key, data)
+            #if self.AUTO_SAVE_CACHE:
+            #self.set(data)
+        return data
+
+class EventMemCache(MemCacheBase):
+    def __init__(self):
+        super(EventMemCache, self).__init__()
+        self.key_prefix = "event_"
+
+    def get(self,device_id):
+        search_key = self.key_prefix+device_id
+        data = self._mc.get(search_key)
+        if data is not None:
+            logging.debug("Get data from memory cache")
+        else:
+            data = TriggerDbHelp.get_latest_event(device_id)
+            self._mc.set(search_key, data)
+            #if self.AUTO_SAVE_CACHE:
+            #self.set(data)
+        return data
+    
+    def set(self,device_id):
+        search_key = self.key_prefix+device_id
+        data = TriggerDbHelp.get_latest_event(device_id)
+        self._mc.set(search_key, data)
+
 
 if __name__ == "__main__":
+    pass
     # with RulesMemCacheDb() as item:
     #     print item.get()
+    # with TriggerMemCache() as cache:
+    #     data = TriggerDbHelp.get_triggerDetail_by_deviceid(2042)
+    #     cache._mc.set("trigger_2042", data)
+    #     print cache.get("2042")     
+    with EventMemCache() as cache:
+        print cache.set("2042")
 
-    # TaskRunningMemCacheDb().get()
-        #print cache.get()
-    # item.flush_all()
-    # for i in item._get():
-    #     print is
-    test = {'device1': [1, 2, 3, 4], 'device2': [1, 2, 3, 4]}
-    with TriggerMemCache() as trigger:
-        # trigger.multi_set(test)
-        print trigger.multi_get(["1", "2"])
+    with TriggerMemCache() as cache:
+        cache._mc.delete("trigger_2042")
+
 
 
 
