@@ -252,7 +252,7 @@ class SNMP(object):
 
                     err_msg = ""
                     if _exception_msg:
-                        err_msg = "%s OID:%s Error Info:%s"%(device_log_info,origin_oid,str(_exception_msg))
+                        err_msg = "%s OID:%s Error Info:%s"%(self.device_log_info,origin_oid,str(_exception_msg))
                         output.append(dict( status="fail",
                                             origin_oid=origin_oid,
                                             oid=_oid_str,
@@ -260,7 +260,7 @@ class SNMP(object):
                                             message=str(_exception_msg)))
 
                     elif _error_indication:
-                        err_msg = "%s OID:%s Error Info:%s"%(device_log_info,origin_oid,str(_error_indication))
+                        err_msg = "%s OID:%s Error Info:%s"%(self.device_log_info,origin_oid,str(_error_indication))
                         output.append(dict(status="fail",
                                             origin_oid=origin_oid,
                                             oid=_oid_str,
@@ -268,7 +268,7 @@ class SNMP(object):
                                             message=str(_error_indication)))
                     elif _error_status:
                         error_msg = _error_status.prettyPrint()
-                        error_msg = '%s: OID:%s Error Info:%s at %s' % (device_log_info,origin_oid,error_msg,_error_index and _var_binds[-1][int(_error_index) - 1] or '?')
+                        error_msg = '%s: OID:%s Error Info:%s at %s' % (self.device_log_info,origin_oid,error_msg,_error_index and _var_binds[-1][int(_error_index) - 1] or '?')
                         output.append(dict(
                                             status="fail",
                                             origin_oid=origin_oid,
@@ -290,7 +290,7 @@ class SNMP(object):
             else:
                 err_msg = ""
                 if exception_msg:
-                    err_msg = "%s OID:%s Error Info:%s"%(device_log_info,oids[0],str(exception_msg))
+                    err_msg = "%s OID:%s Error Info:%s"%(self.device_log_info,oids[0],str(exception_msg))
                     output.append(dict(status="fail",
                                         origin_oid=oids[0],
                                         oid=_oid_strs[0],
@@ -298,7 +298,7 @@ class SNMP(object):
                                         message=str(exception_msg)))
 
                 elif error_indication:
-                    err_msg = "%s OID:%s Error Info:%s"%(device_log_info,oids[0],str(error_indication))
+                    err_msg = "%s OID:%s Error Info:%s"%(self.device_log_info,oids[0],str(error_indication))
                     #self.logger.error('%s: %s', error_indication, self.ip)
                     output.append(dict(
                                         status="fail",
@@ -308,7 +308,7 @@ class SNMP(object):
                                         message=str(error_indication)))
                 elif error_status:
                     error_msg = error_status.prettyPrint()
-                    error_msg = '%s: OID:%s Error Info:%s at %s' % (device_log_info,oids[0],error_msg,error_index and var_binds[-1][int(error_index) - 1] or '?')
+                    error_msg = '%s: OID:%s Error Info:%s at %s' % (self.device_log_info,oids[0],error_msg,error_index and var_binds[-1][int(error_index) - 1] or '?')
                     output.append(dict(status="fail",
                                         origin_oid=oids[0],
                                         oid=_oid_strs[0],

@@ -52,6 +52,7 @@ class CommonConstants(object):
     CLI_TYPE_CODE = 0
     ALL_TYPE_CODE = -1
     MEM_CACHE_HOSTS = [('10.71.244.134:11211', 1), ]
+    ALL_FINISH_CHECK_FLAG="ALL_FINISH"
 
 
 class TriggerConstants(object):
@@ -66,8 +67,20 @@ class TriggerConstants(object):
     TRIGGER_CLOSE = 1
     TRIGGER_VALUE = 1
     NORMAL_VALUE = 0
+    TRIGGERD = 1
+    NOT_TRIGERD=0
     FUNCTION_LIST = ["Hex2Dec", "Ave", "Max", "Min", "A", "B"]
+    PRIORITY_STANDARD_LEVEL_VALUE = 0
+    PRIORITY_HIGH_LEVEL_VALUE = 1
+    PRIORITY_URGENT_LEVEL_VALUE = 2
 
+    TRIGGER_TYPE_EXPRESSION_COMPARE = 0
+    TRIGGER_TYPE_INTEGER_COMPARE = 1
+    TRIGGER_TYPE_STRING__COMPARE = 2
+    TRIGGER_TYPE_FAILED = 3
+
+    TAKE_ACTION=1
+    NO_ACTION=0
 
 class ParserConstants(object):
     """
