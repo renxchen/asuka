@@ -84,7 +84,7 @@ export class ActionPolicyViewComponent implements OnInit, AfterViewInit {
     }
 
     newActionPolicy(){
-        this.router.navigate(['/index/actionpolicylogin'],{queryParams:{'name':''}});
+        this.router.navigate(['/index/actionpolicylogin'],{queryParams:{'name':'', 'mode': 'new'}});
     }
 
     detailActionPolicy(){
