@@ -5,6 +5,7 @@ import sys
 import os
 from constants import SYS_PATH, CommonConstants
 sys.path.append(SYS_PATH)
+from apolo_server.processor.db_units.db_units import *
 import json
 import time
 import Queue
@@ -19,6 +20,7 @@ from apolo_server.processor.session_mgr import SessionManager
 from apolo_server.processor.configurations import Configurations
 from apolo_server.processor.collection.devices_helper import get_devices
 from helper import get_logger
+
 
 
 class TaskDispatcher(Thread):
