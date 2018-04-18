@@ -18,8 +18,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     title: string;
     id: number = -1;
 
-    // minDate = new Date(2017, 5, 10);
-    // maxDate = new Date(2018, 10, 15);
     bsValue: Date = new Date();
     isTimeMeridian: boolean = false;
     isValid: boolean;
@@ -33,8 +31,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     isEnabled: boolean = false;
     isLock: boolean = false;
     isProcessing: boolean = false;
-
-    // bsRangeValue: any = [new Date(2017, 7, 4), new Date(2017, 7, 20)];
 
     selectedOsType: string;
     osType: any = [];
@@ -101,7 +97,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                             this.selectedOsType = this.osType[0]['ostypeid'].toString();
                         }
                         this.getGroups();
-
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
@@ -116,7 +111,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             .toJson(this.httpClient.get('/api_new_data_collection/?ostype_id='+this.selectedOsType))
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    // if (res['data']) {
                     this.deviceGroups = res['device_groups'];
                     this.policyGroups = res['cp_groups'];
 
@@ -138,18 +132,12 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                             this.policyGroups.unshift({policy_group_id:-1, name: '全機能OFF'});
                         }
                     }
-
-                    // }
                 } else {
                     if (res['status'] && res['status']['message']) {
                         alert(res['status']['message']);
                     }
                 }
             });
-        // this.deviceGroups = [{id: 0, name: 'device group 1'}, {id:1, name: 'device group 2'}];
-        // this.policyGroups = [{id: 0, name: 'cpg 1'}, {id:1, name: 'cpg 2'}];
-
-
     }
 
     changePriority(){
@@ -164,7 +152,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 }
             }
         }
-
     }
 
     changeCPG(){
@@ -193,21 +180,12 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                 if (res['data']) {
                     let data = res['data'];
-
-                    // setTimeout(function () {
-                    //     this.validPeriodType = _.get(data, 'valid_period_type');
-                    //     this.dataScheduleType = _.get(data, 'data_schedule_type');
-                    // },0);
-
-
                     let valid_period_type = _.get(data, 'valid_period_type');
                     $('input[name="validPeriodType"][value="'+valid_period_type+'"]').attr('checked','checked');
                     this.changeValidPeriodType(valid_period_type);
                     let data_schedule_type = _.get(data, 'data_schedule_type');
                     $('input[name="dataScheduleType"][value="'+data_schedule_type+'"]').attr('checked','checked');
                     this.changeDataScheduleType(data_schedule_type);
-
-
 
                     this.id = _.get(data, 'schedule_id');
                     this.selectedOsType = _.get(data, 'ostype_id');
@@ -217,7 +195,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     this.getOsTypes();
 
                     this.isProcessing = _.get(res, 'isProcessing');
-                    // console.log(this.isProcessing);
                     this.setSchedule(this.isProcessing);
                     if (this.isProcessing){
                         this.isLock = true;
@@ -264,7 +241,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         this.dataScheduleType = 0;
         this.validPeriodType = 0;
         this.priority = 0;
-
     }
 
     setOsDgPg(flag: boolean){
@@ -406,7 +382,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         $('#dcTable').trigger("reloadGrid");
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
                             if (res['status']['message'] == "Success") {
-                               alert('データ取得追加しました。');
+                               alert('追加しました。');
                             }
                         } else {
                             alert(res['status']['message']);
@@ -421,11 +397,10 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         $('#dcTable').trigger("reloadGrid");
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
                             if (res['status']['message'] == "Success") {
-                                alert('データ取得更新しました。');
+                                alert('更新しました。');
                             }
                         } else {
                             alert(res['status']['message']);
-
                         }
                 });
                 this.bsModalRef.hide();
@@ -478,16 +453,14 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 message += "The start time cannot earlier than the end time for period collection.";
             }
         }
-
         result['flag'] = flag;
         result['message'] = message;
         console.log(result);
         return result;
-
     }
 
     delete() {
-        let isDelete: boolean = confirm('delete?');
+        let isDelete: boolean = confirm('該当データ取得を削除します。よろしいですか？');
         if (isDelete){
             let url = '/api_data_collection/?id=' + this.id;
             this.httpClient
@@ -500,14 +473,10 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         }
                     } else {
                         alert(res['status']['message']);
-
                     }
-
                 });
-
             this.bsModalRef.hide();
         } else {
-
         }
     }
 

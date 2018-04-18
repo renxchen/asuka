@@ -88,7 +88,7 @@ PRIORITY_MINOR = 'MINOR'
 SNMP = 'snmp'
 CLI = 'cli'
 FLOAT = 'float'
-STRING = 'string'
+STRING = 'str'
 TEXT = 'text'
 INTEGER = 'int'
 TRIGGER_TYPE_EXPRESSION_COMPARE = '演算比較'
@@ -117,6 +117,11 @@ DATA_TABLE_EXIST_IN_TRIGGER = gettext('Current data table is running in action p
 CSV_PATH_NOT_EXIST = gettext('CSV path is not exist.')
 DATA_TABLE_PROORITY_0 = '高'
 DATA_TABLE_PROORITY_1 = '标准'
+EXPORT_CSV_TITLE_COLUMN_1 = 'デバイス名'
+EXPORT_CSV_TITLE_COLUMN_2 = 'Date'
+EXPORT_CSV_TITLE_COLUMN_3 = 'Path'
+# use default value in column 4, when the csv file is empty
+EXPORT_CSV_TITLE_COLUMN_4 = 'Check Item'
 #########################################
 # Collection Policy Related define
 #########################################
@@ -219,6 +224,8 @@ CP_STATUS_OFF_VALUE = 0
 CP_STATUS_ON_KEY = u'取得中'
 CP_STATUS_ON_VAULE = 1
 
+DAY_INTERVAL = u'日おき'
+MINUTE_INTERVAL = u'分おき'
 #########################################
 # data collection Error Message
 #########################################

@@ -503,6 +503,11 @@ module.exports = {
             // "target": "http://127.0.0.1:1111",
             "secure": false,
             "changeOrigin": true
+        },
+        '/api/v1/**': {
+            "target": "http://10.71.244.134:7878",
+            "secure": false,
+            "changeOrigin": true
         }
     }
   }

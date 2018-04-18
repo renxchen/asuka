@@ -4,8 +4,7 @@ import time
 import copy
 import json
 from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
-from apolo_server.processor.db_units.memcached_helper import ItemMemCacheDb
-from apolo_server.processor.db_units.db_helper import DeviceDbHelp, ItemsDbHelp
+from apolo_server.processor.db_units.db_helper import DeviceDbHelp
 from backend.apolo.apolomgr.resource.common.tool import Tool
 
 __version__ = '0.1'
@@ -185,7 +184,7 @@ def __merge_cli(item, deviceinfo_dict,rule_dict):
         deviceinfo_dict['ip'] = item['device__ip']
         deviceinfo_dict['hostname'] = item['device__hostname']
         deviceinfo_dict['expect'] = item['device__login_expect']
-        deviceinfo_dict['port'] = item['device__snmp_port']
+        deviceinfo_dict['port'] = item['device__telnet_port']
         
         """
         deviceinfo_dict['ip'] = "10.71.244.135"

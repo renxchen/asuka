@@ -76,7 +76,6 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
 
                 with transaction.atomic():
                     for obj in policys_groups_id_queryset:
-                        print device_id, obj.policys_groups_id, status, obj.policy
                         Items.objects.filter(device=device_id,
                                              coll_policy=obj.policy,
                                              policys_groups=obj.policys_groups_id).update(status=status)
@@ -161,7 +160,7 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
                                 'deviceGroupNo': entry['device_group_id'],
                                 'deviceGroup': entry['device_group_name'],
                                 'priority': Tool.set_priority_mapping(entry['priority']),
-                                'policy': '{} {}'.format(entry['policy_name'], entry['exec_interval']),
+                                'policy': '{}  {}'.format(entry['policy_name'], entry['exec_interval']),
                                 'attr': {
                                     'deviceGroup': {
                                         'rowspan': None
@@ -186,7 +185,7 @@ class DataCollectionByDeviceViewSet(viewsets.ViewSet):
                                     'deviceGroupNo': -1,
                                     'deviceGroup': constants.EMERGENCY_STOP,
                                     'priority': constants.PRIORITY_URGENT_LEVEL_KEY,
-                                    'policy': '{} {}'.format(entry['policy_name'], constants.EMERGENCY_STOP),
+                                    'policy': '{}  {}'.format(entry['policy_name'], constants.EMERGENCY_STOP),
                                     'attr': {
                                         'deviceGroup': {
                                             'rowspan': None

@@ -1,0 +1,207 @@
+<div class="row">
+    <div class="col-lg-6">
+        <div class="ibox float-e-margins col-sm-5" style="clear: none;width:46%;margin-right:25px;">
+            <div class="ibox-title">
+                <h5>Operate Server</h5>
+            </div>
+            <div class="ibox-content" style="min-height:124px">
+                <button 
+                    class="btn btn-primary" 
+                    (click)="startServer()" 
+                >
+                    <i [ngClass]="{'fa fa-spinner': loadingStart}"></i>
+                    Start
+                </button>
+                <button 
+                    class="btn btn-danger" 
+                    (click)="stopServer()" 
+                    id="stop-button"
+                >
+                    <i [ngClass]="{'fa fa-spinner': loadingStop}"></i>
+                    Stop
+                </button>
+                <button 
+                    class="btn btn-warning" 
+                    (click)="restartServer()" 
+                >
+                    <i [ngClass]="{'fa fa-spinner': loadingRestart}"></i>
+                    Restart
+                </button>
+            </div>
+        </div>
+        <div class="ibox float-e-margins col-sm-7" style="clear: none;min-height:170px;width:50%">
+            <div class="ibox-title">
+                <h5>
+                    Import CSV File
+                </h5>
+            </div>
+            <div class="ibox-content" style="min-height:125px">
+                <label 
+                    title="Import CSV file" 
+                    for="uploadInfo"
+                    class="btn btn-primary"
+                >   
+                <input
+                    type="file"
+                    name="uploadInfo"
+                    (change)="changeFile($event.target.files)"
+                    id="uploadInfo"
+                    class="hide"
+                    accept=".csv"
+                /> 
+                    Add CSV File
+                </label>
+                <button 
+                    class="btn btn-primary import-button" 
+                    (click)="uploadFile()" 
+                    [disabled]="loginFlg"
+                >
+                    <i [ngClass]="{'fa fa-spinner': loadingUpload}"></i>
+                    Import CSV File
+                </button>
+                <div class="file-message">
+                    <span *ngIf="uploadFlg=='null'">
+                        <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                        Please select a csv format file named 'config'.
+                    </span>
+                    <span *ngIf="uploadFlg=='csv'">
+                        {{filename}}
+                        <i class="fa fa-check" style="color:green"></i>
+                    </span>
+                    <span *ngIf="uploadFlg=='other'">
+                        {{filename}}
+                        <i class="fa fa-times" style="color:red"></i>
+                        <span style="color:red;display:inline-block">
+                            Only the csv format file named 'config' allowed.
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="ibox float-e-margins col-sm-12">
+            <div class="ibox-title">
+                    <h5>Data Collection</h5>
+            </div>
+            <div class="ibox-content" style="max-height:350px;min-height:200px;overflow:auto">
+                <form class="form-horizontal" id="form" novalidate="novalidate">
+                    <div class="form-group">
+                        <label 
+                            for="startCmd" 
+                            class="col-sm-3 control-label"
+                            [ngClass]="{'text-warning': !startRegFlg}"
+                        >
+                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                            Command:
+                        </label>
+                        <div class="col-sm-9">
+                            <div *ngFor="let startCmd of startCmds" style="width:100%">
+                                <div class="multi-input" [ngClass]="{'has-warning': !startCmd.startRegFlg}">
+                                    <input type="text" 
+                                        class="form-control" 
+                                        id="start_id_{{startCmd.id}}"
+                                        name="start_name_{{startCmd.id}}" 
+                                        maxlength="256"
+                                        placeholder="Command"
+                                        [(ngModel)]="startCmd.name"
+                                    >
+                                </div>
+                                <div class="multi-i">
+                                    <span [hidden]="startTrashBinFlg">
+                                        <i class="fa fa-lg fa-trash-o"
+                                            style="color:#f8ac59;"
+                                            (click)="delStartCmd(startCmd)"
+                                        >
+                                        </i>
+                                    </span> 
+                                    <span [hidden]="startCmd.startCmdFlg">
+                                        &nbsp;&nbsp;
+                                        <i class="fa fa-lg fa-plus"
+                                            style="color:#1ab394;"
+                                            (click)="addStartCmd()"
+                                            >
+                                        </i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-9 text-warning" *ngIf='!startRegFlg'>
+                            Please enter a valid command(s).
+                        </div> 
+                    </div>
+                    <div class="form-group">
+                        <label
+                            for="port" 
+                            class="col-sm-3 control-label"
+                            [ngClass]="{'text-warning': !portNotNull||!portFlg}"
+                        >
+                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                            Port:
+                        </label>
+                        <div class="col-sm-9" [ngClass]="{'has-warning': !portNotNull||!portFlg}">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="port" 
+                                name="port"
+                                placeholder="Port"
+                                [(ngModel)]="port"
+                                >
+                        </div>
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-9 text-warning" *ngIf='!portNotNull'>
+                            Please enter port.
+                        </div> 
+                        <div class="col-sm-9 text-warning" *ngIf='portNotNull&&!portFlg'>
+                            Please enter a valid port.
+                        </div> 
+                    </div>
+                    <div class="form-group">
+                        <label
+                            for="expect" 
+                            class="col-sm-3 control-label"
+                            [ngClass]="{'text-warning': !expectNotNull||!expectFlg}"
+                        >
+                            <i class="fa fa-asterisk text-danger" title="必須項目"></i>
+                            Expect:
+                        </label>
+                        <div class="col-sm-9" [ngClass]="{'has-warning': !expectNotNull||!expectFlg}">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="expect" 
+                                name="expect"
+                                placeholder="Expect"
+                                [(ngModel)]="expect"
+                                >
+                        </div>
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-9 text-warning" *ngIf='!expectNotNull'>
+                            Please enter expect.
+                        </div> 
+                        <div class="col-sm-9 text-warning" *ngIf='expectNotNull&&!expectFlg'>
+                            Please enter a valid expect.
+                        </div> 
+                    </div>           
+                </form>
+            </div>
+            <div class="ibox-footer" style="text-align:right">
+                <button 
+                    class="btn btn-primary" 
+                    (click)="queryOutput()" 
+                >
+                    <i [ngClass]="{'fa fa-spinner': loadingQuery}"></i>
+                    Query
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="ibox-content" style="max-height:650px;min-height:500px;clear: none; overflow:auto">
+            <div *ngFor="let item of outputs">
+                <pre style="border-color:#1ab394">{{item.output}}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+

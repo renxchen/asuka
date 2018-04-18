@@ -12,21 +12,16 @@ declare var $: any;
 
 export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
 
-    // total: number;
     apiPrefix: any = '/v1';
     policyNo: any;
     policyList: any = [];
 
-
     dppModel: any = [
         {label: 'No', hidden: true, name: 'deviceNo', index: 'deviceNo'},
-        // {label: 'コレクションポリシー',  name: 'policy', width: 30, align: 'center',
-        // cellattr: this.arrtSetting.bind(this), sortable: false, classes: 'policy', search: false,},
         {label: 'デバイス', name: 'device', width: 50, align: 'center',
             classes: 'device', sortable:false},
         {label: 'ステータス',  name: 'status', width: 30,
             align: 'center', sortable: false, search: false},
-
     ];
 
     testData: any = [
@@ -44,11 +39,9 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.httpClient.setUrl(this.apiPrefix);
         this.getPolicy();
-        // this.total = this.testData.length;
     }
 
     ngAfterViewInit() {
-        // this.setSelect();
         this.drawDPPTable();
     }
 
@@ -59,30 +52,16 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                     if (res['policies']) {
-
                         this.policyList = res['policies'];
-                        // console.log(this.deviceList);
                         this.policyNo = this.route.snapshot.queryParams['id'];
-                        // console.log(this.deviceNo);
-                        // console.log(typeof(this.deviceNo));
 
                         if(typeof(this.policyNo) == 'undefined'){
-                            // console.log("ununun");
-                            // console.log(this.deviceList[0]['device_id']);
                             this.policyNo = this.policyList[0]['coll_policy_id'];
-                            // console.log('init,no=1 :',this.deviceNo);
-
                         }
                         this.drawDPPTable();
-
                         setTimeout(function () {
                             _t.setSelect();
                         }, 0);
-
-
-                        // $('#device').chosen();
-
-
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
@@ -99,10 +78,7 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
             search_contains: true,
         }).change( function () {
             _this.policyNo = $('#policy').val();
-            // console.log('deviceNo',_this.deviceNo);
             let newUrl = '/v1/api_data_collection_policy/?coll_policy_id='+_this.policyNo;
-            // console.log(newUrl);
-            // $("#policiesTable").trigger("reloadGrid");
             $("#devicesTable").jqGrid().setGridParam({url : newUrl}).trigger("reloadGrid");
 
         }).val(this.policyNo).trigger("chosen:updated");
@@ -113,7 +89,7 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
         let _device = $('.device');
         for (let i=0;i<_device.length;i++){
             let _target = $(_device[i]);
-            let _content = '<div style="color:blue;">';
+            let _content = '<div style="color:blue; text-decoration: underline;cursor: pointer">';
             _content += _target.html() + '</div>';
             _target.html(_content);
             let deviceNo = _target.prev().html();
@@ -121,11 +97,6 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
                 _this.router.navigate(['/index/policiesperdevice'],{queryParams:{'id':deviceNo}});
             })
         }
-
-        let _policy = $($('.policy')["0"]);
-        let _content2 = '<a href="#" style="color:blue;">';
-        _content2 += _policy.html() + '</a>';
-        _policy.html(_content2);
     }
 
     jumpToPolicy(){
@@ -140,23 +111,6 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
             }
         }
     }
-
-    // public arrtSetting(rowId, val, rowObject, cm) {
-    //     // let result;
-    //     // if (rowId == 1){
-    //     //     result = 'rowspan=' + '"' + this.total + '"';
-    //     // } else {
-    //     //     result = 'style="display:none"';
-    //     // }
-    //     // return result;
-    //     let attr = rowObject.attr[cm.name], result;
-    //     if (attr.rowspan != null) {
-    //         result = ' rowspan=' + '"' + attr.rowspan + '"';
-    //     } else {
-    //         result = ' style="display:none"';
-    //     }
-    //     return result;
-    // }
 
     public drawDPPTable() {
         let _this = this;
@@ -179,17 +133,13 @@ export class DevicesPerPolicyComponent implements OnInit, AfterViewInit {
                 // _this.stopPolicy();
                 _this.renderLink();
             },
-            rowNum: 2,
-            rowList: [1, 2, 3],
+            // rowNum: 2,
+            rowList: [10, 20, 30],
             autowidth: true,
             beforeSelectRow: function (rowid, e) {
                 return false;
             },
-            autoheight: true,
-            // grouping:true,
-            // groupingView : {
-            //     groupField : ['device']
-            // },
+            height: 400,
             pager: '#devicesPager',
             jsonReader: {
                 root: 'data',

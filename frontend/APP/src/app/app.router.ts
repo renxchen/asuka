@@ -57,6 +57,9 @@ import { DataTableDetailComponent } from './actionPolicy/dataTableDetail.compone
 import { TestTelnetComponent } from './testModule/testTelnet.component';
 import { TestSnmpComponent } from './testModule/testSnmp.component';
 
+// testVirServer
+import { TestVirServerComponent } from './testVirServer/testVirServer.component';
+
 const routes: Routes = [
     {
         path: '',
@@ -89,6 +92,14 @@ const routes: Routes = [
                 data: {
                     parentTitle: 'test',
                     title: 'snmp'
+                }
+            },
+            {
+                path: 'testvirserver',
+                component: TestVirServerComponent,
+                data: {
+                    parentTitle: 'test virServer',
+                    title: 'test virServer'
                 }
             },
             {
