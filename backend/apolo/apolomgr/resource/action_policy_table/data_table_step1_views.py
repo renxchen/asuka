@@ -53,18 +53,18 @@ class TableViewsSet(viewsets.ViewSet):
         self.order = views_helper.get_request_value(self.request, 'sord', method)
         # table detail page search parameters
         self.hostname = views_helper.get_request_value(self.request, 'hostname', method)
-        self.timestamp = views_helper.get_request_value(self.request, 'timestamp', method)
+        self.timestamp = views_helper.get_request_value(self.request, 'date', method)
         self.path = views_helper.get_request_value(self.request, 'path', method)
         self.oid = views_helper.get_request_value(self.request, 'oid', method)
         self.checkitem_value = views_helper.get_request_value(self.request, 'value', method)
         # table detail page search button parameters, start date and end date format 2016-06-06 16:16:16
         self.start_date = views_helper.get_request_value(self.request, 'start_date', method)
         self.end_date = views_helper.get_request_value(self.request, 'end_date', method)
-        self.start_date_timestamp = 0
-        self.end_date_timestamp = 0
-        if self.start_date and self.end_date:
-            self.start_date_timestamp = time.mktime(time.strptime(self.start_date, "%Y-%m-%d %H:%M:%S"))
-            self.end_date_timestamp = time.mktime(time.strptime(self.end_date, "%Y-%m-%d %H:%M:%S"))
+        # self.start_date_timestamp = 0
+        # self.end_date_timestamp = 0
+        # if self.start_date and self.end_date:
+        #     self.start_date_timestamp = time.mktime(time.strptime(self.start_date, "%Y-%m-%d %H:%M:%S"))
+        #     self.end_date_timestamp = time.mktime(time.strptime(self.end_date, "%Y-%m-%d %H:%M:%S"))
         self.item_ids = views_helper.get_request_value(self.request, 'item_id', method).split(',')
 
     @staticmethod
@@ -212,7 +212,6 @@ class TableViewsSet(viewsets.ViewSet):
         trigger_db_modules = "backend.apolo.models"
         trigger_numeric = ["Float", "Int"]
         table_name = base_db_format % (policy_type.capitalize(), value_type.capitalize())
-        print table_name, 111
         db_module = importlib.import_module(trigger_db_modules)
         if hasattr(db_module, table_name) is False:
             raise Exception("%s table isn't exist" % table_name)
@@ -220,12 +219,27 @@ class TableViewsSet(viewsets.ViewSet):
         kwargs = {
             "item_id": item_id,
         }
-        if self.start_date and self.end_date:
+        if self.start_date:
+            start_date_timestamp = time.mktime(time.strptime(self.start_date, "%Y-%m-%d %H:%M:%S"))
             kwargs = {
                 "item_id": item_id,
-                'clock__gte': self.start_date_timestamp,
-                'clock__lte': self.end_date_timestamp
+                'clock__gte': start_date_timestamp,
             }
+        elif self.end_date:
+            end_date_timestamp = time.mktime(time.strptime(self.end_date, "%Y-%m-%d %H:%M:%S"))
+            kwargs = {
+                "item_id": item_id,
+                'clock__lte': end_date_timestamp
+            }
+        elif self.start_date and self.end_date:
+            start_date_timestamp = time.mktime(time.strptime(self.start_date, "%Y-%m-%d %H:%M:%S"))
+            end_date_timestamp = time.mktime(time.strptime(self.end_date, "%Y-%m-%d %H:%M:%S"))
+            kwargs = {
+                "item_id": item_id,
+                'clock__gte': start_date_timestamp,
+                'clock__lte': end_date_timestamp
+            }
+
         history = table.objects.filter(**kwargs).order_by("-clock")
         if value_type not in trigger_numeric:
             for h in history:
@@ -337,7 +351,8 @@ class TableViewsSet(viewsets.ViewSet):
             # table detail page search button start
             if self.hostname and self.hostname not in device_name:
                 continue
-            if self.timestamp and self.timestamp not in str(timestamp):
+            if self.timestamp and self.timestamp not in time.strftime("%Y-%m-%d %H:%M:%S",
+                                                                      time.localtime(int(timestamp))):
                 continue
             if item_type.upper() == 'CLI':
                 if self.path and self.path not in path:
