@@ -275,20 +275,24 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     }
                     this.setOsDgPg(this.isLock);
 
-                    let start_period_time = _.get(data, 'start_period_time');
-                    let end_period_time = _.get(data, 'end_period_time');
-                    if(start_period_time != null && end_period_time != null){
-                        this.startDateTime = start_period_time.replace('@', ' ');
-                        this.endDateTime = end_period_time.replace('@', ' ');
+                    if (this.validPeriodType == 1){
+                        let start_period_time = _.get(data, 'start_period_time');
+                        let end_period_time = _.get(data, 'end_period_time');
+                        if(start_period_time != null && end_period_time != null){
+                            this.startDateTime = start_period_time.replace('@', ' ');
+                            this.endDateTime = end_period_time.replace('@', ' ');
+                        }
                     }
 
-                    this.startTime = _.get(data, 'schedule_start_time');
-                    this.endTime = _.get(data, 'schedule_end_time');
+                    if (this.dataScheduleType == 2){
+                        this.startTime = _.get(data, 'schedule_start_time');
+                        this.endTime = _.get(data, 'schedule_end_time');
 
-                    let weeks: any = _.get(data, 'weeks');
-                    for (let i=0; i< this.weekdays.length; i++){
-                        if (weeks.indexOf(this.weekdays[i]['id'].toString()) != -1){
-                            this.weekdays[i]['ifCheck'] = 'checked';
+                        let weeks: any = _.get(data, 'weeks');
+                        for (let i=0; i< this.weekdays.length; i++){
+                            if (weeks.indexOf(this.weekdays[i]['id'].toString()) != -1){
+                                this.weekdays[i]['ifCheck'] = 'checked';
+                            }
                         }
                     }
                 }
