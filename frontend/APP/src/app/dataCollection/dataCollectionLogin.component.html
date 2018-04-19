@@ -79,6 +79,9 @@
                                    placeholder="YYYY-MM-DD HH:mm" [(ngModel)]="startDateTime"
                                    (ngModelChange)="setMaxAndMinDate('start')">
                         </div>
+                        <div class="col-sm-1 clear-div">
+                            <i class="fa fa-ban clear-icon" (click)="clearDate('startDate')"></i>
+                        </div>
                     </div>
                     <div class="col-sm-3"></div>
                     <div class="col-sm-9 datepickr-group ">
@@ -89,6 +92,9 @@
                             <input id="endDateTimeInput" type="text" class="form-control" name="endDateTime"
                                    placeholder="YYYY-MM-DD HH:mm" [(ngModel)]="endDateTime"
                                    (ngModelChange)="setMaxAndMinDate('end')">
+                        </div>
+                        <div class="col-sm-1 clear-div">
+                            <i class="fa fa-ban clear-icon" (click)="clearDate('endDate')"></i>
                         </div>
                     </div>
                 </div>

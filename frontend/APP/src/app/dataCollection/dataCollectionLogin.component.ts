@@ -78,18 +78,20 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.httpClient.setUrl(this.apiPrefix);
+        this.startTime = '00:00';
+        this.endTime = '23:59';
 
     }
 
     ngAfterViewInit() {
         this.initPickr();
-        this.initPickrTime();
         setTimeout(() => {
             $('#validPeriod').hide();
             $('#dataSchedule').hide();
             if(this.id == -1){
                 this.getOsTypes();
                 this.setInitSelect();
+                this.initPickrTime();
                 $('button.btn-danger').hide();
             } else {
                 this.getDetailById(this.id);
@@ -186,23 +188,22 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     }
 
     initPickrTime() {
+
         let startOp: any = {
             noCalendar: true,
             dateFormat: 'H:i',
             enableTime: true,
             time_24hr: true,
-            defaultDate: '00:00'
+            defaultDate: this.startTime
         };
         let endOp: any = {
             noCalendar: true,
             dateFormat: 'H:i',
             enableTime: true,
             time_24hr: true,
-            defaultDate: '23:59'
+            defaultDate: this.endTime
         };
 
-        this.startTime = '00:00';
-        this.endTime = '23:59';
         let startEle = document.getElementById('startTimeInput');
         let endEle = document.getElementById('endTimeInput');
         this.flatPickrStartTime = new flatpickr(startEle, startOp);
@@ -239,11 +240,12 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         }
     }
 
-    updateTime(hour:number, minute:number){
-        let d = new Date();
-        d.setHours(hour);
-        d.setMinutes(minute);
-        return d;
+    clearDate(which){
+        if (which == 'startDate'){
+            this.startDateTime = '';
+        } else if (which == 'endDate'){
+            this.endDateTime = '';
+        }
     }
 
     getDetailById(id){
@@ -280,20 +282,28 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         let end_period_time = _.get(data, 'end_period_time');
                         if(start_period_time != null && end_period_time != null){
                             this.startDateTime = start_period_time.replace('@', ' ');
+                            this.setMaxAndMinDate('start');
                             this.endDateTime = end_period_time.replace('@', ' ');
+                            this.setMaxAndMinDate('end');
+                            this.startDateTime = start_period_time.replace('@', ' ');
                         }
                     }
 
                     if (this.dataScheduleType == 2){
                         this.startTime = _.get(data, 'schedule_start_time');
                         this.endTime = _.get(data, 'schedule_end_time');
-
+                        this.initPickrTime();
+                        this.setMaxAndMinTime('start');
+                        this.endTime = _.get(data, 'schedule_end_time');
+                        this.setMaxAndMinTime('end');
+                        this.startTime = _.get(data, 'schedule_start_time');
                         let weeks: any = _.get(data, 'weeks');
                         for (let i=0; i< this.weekdays.length; i++){
                             if (weeks.indexOf(this.weekdays[i]['id'].toString()) != -1){
                                 this.weekdays[i]['ifCheck'] = 'checked';
                             }
                         }
+
                     }
                 }
             } else {
