@@ -13,7 +13,7 @@ __author__ = 'Rubick <haonchen@cisco.com>'
 
 
 class Parser(WorkerBase):
-    name = "parser_trigger"
+    name = "parser"
     channels = ('parser',)
     threads = 10
 
@@ -25,14 +25,15 @@ class Parser(WorkerBase):
 
             if data == CommonConstants.ALL_FINISH_CHECK_FLAG:
                 result_type = CommonConstants.ALL_FINISH_CHECK_FLAG
-                trigger = TriggerHelp(task,[],"",logger)
-                if "parser_result" in task:
-                    trigger.handle_complex_triggers(task["parser_result"])
+                #trigger = TriggerHelp(task,[],"",logger)
+                #if "parser_result" in task:
+                #    trigger.handle_complex_triggers(task["parser_result"])
                 
-                trigger.cache_event()
+                #trigger.cache_event()
 
                 unhandle_triggers = []
-                db_events = trigger.db_events
+                #db_events = trigger.db_events
+                db_events=[]
                 items = []
 
             else:
@@ -41,10 +42,13 @@ class Parser(WorkerBase):
                 parser.parse(task,clock)
                 items = parser.get_items()
                 
-                trigger = TriggerHelp(task,items,clock,logger)
-                trigger.trigger()
-                unhandle_triggers = trigger.unhandle_triggers
-                db_events = trigger.db_events
+                #trigger = TriggerHelp(task,items,clock,logger)
+                #trigger.trigger()
+                #unhandle_triggers = trigger.unhandle_triggers
+                #db_events = trigger.db_events
+
+                unhandle_triggers = []
+                db_events=[]
 
             result = dict(
                     result_type = result_type,

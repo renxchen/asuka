@@ -48,15 +48,10 @@ class WorkerBase(Thread):
             try:
                 # waiting for command from server
                 #channel, message
-                result = zmq_subscripe.recv_string().split(" ",3)
+                result = zmq_subscripe.recv_string().split()
                 channel = result[0]
                 message = result[1]
-                #task_id = None
-                data = None
-                if len(result) >=3:
-                    data = result[2]
-                #if len(result) ==4:
-                #    data = result[3]
+                data=None
 
                 self.logger.debug('Receive published message: %s', message)
                 if message == 'task':  # has new task
@@ -68,6 +63,11 @@ class WorkerBase(Thread):
                     # deal with task by handler, and get result
                     task = json.loads(task_str)
                     start_time = time.strftime('%Y-%m-%d %H:%M:%S')
+                    if task_id.find("__") > -1:
+                        tmp_arr = task_id.split("__")
+                        task_id = tmp_arr[0]
+                        data = tmp_arr[1]
+
                     result = self.handler(task_id, task, data ,self.logger)
                     end_time = time.strftime('%Y-%m-%d %H:%M:%S')
                     result.update(dict(start_time=start_time, end_time=end_time))
