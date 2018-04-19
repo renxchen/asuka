@@ -431,7 +431,7 @@ export class CPGEditComponent implements OnInit, OnDestroy {
             autowidth: true,
             height: 150,
             viewrecords: true,
-            emptyrecords: 'Nothing to display',
+            // emptyrecords: 'Nothing to display',
         });
         $('#moreInfoTable').jqGrid({ searchOnEnter: true, defaultSearch: 'cn' });
     }
