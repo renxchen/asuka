@@ -352,7 +352,7 @@ class Policy(object):
                 # error message
                 self.res['error_msg'] = msg
                 # block rule path
-                self.res['block_rule_path'] = self.block_path
+                self.res['block_path'] = self.block_path
             return [self.res]
         except Exception as e:
             self.res['extract_data'] = None
@@ -418,7 +418,7 @@ class Policy(object):
                 line_num = len(self.raw_data_list)
 
             if line_num > 0:
-                self.res['extract_data'] = len(self.raw_data_list)
+                self.res['extract_data'] = [len(self.raw_data_list)]
                 self.res['extract_data_result'] = [(0, line_num)]
                 self.res['extract_match_flag'] = True
                 self.res['block_path'] = self.block_path
@@ -445,7 +445,7 @@ class Policy(object):
         try:
             self.__set_input()
             if len(self.raw_data_list) > 0:
-                self.res['extract_data'] = '\n'.join(self.raw_data_list)
+                self.res['extract_data'] = ['\n'.join(self.raw_data_list)]
                 self.res['extract_data_result'] = [(0, self.res['extract_data'])]
                 self.res['extract_match_flag'] = True
                 self.res['block_path'] = self.block_path
