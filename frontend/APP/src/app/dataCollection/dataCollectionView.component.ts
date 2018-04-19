@@ -20,14 +20,14 @@ declare var $: any;
 
 export class DataCollectionViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
-    testData: any = [
-        {dcNo: 10, priority: '標準', ostype: 'Cisco_IOSXR',
-        deviceGroup: 'Cisco AER', cpGroup: 'Cisco AER 基本監視',
-        validPeriod: '期間なし', scheduleType: '常に取得',  status: '無効'},
-        {dcNo: 20, priority: '高', ostype: 'Cisco_IOSXR',
-        deviceGroup: 'Cisco AER', cpGroup: 'Cisco AER 基本監視',
-        validPeriod: '2017/12/12 23:59\n– 2018/1/12 23:59', scheduleType: '取得停止',  status: '有効'},
-    ];
+    // testData: any = [
+    //     {dcNo: 10, priority: '標準', ostype: 'Cisco_IOSXR',
+    //     deviceGroup: 'Cisco AER', cpGroup: 'Cisco AER 基本監視',
+    //     validPeriod: '期間なし', scheduleType: '常に取得',  status: '無効'},
+    //     {dcNo: 20, priority: '高', ostype: 'Cisco_IOSXR',
+    //     deviceGroup: 'Cisco AER', cpGroup: 'Cisco AER 基本監視',
+    //     validPeriod: '2017/12/12 23:59\n– 2018/1/12 23:59', scheduleType: '取得停止',  status: '有効'},
+    // ];
     dcModel: any = [
         {label: 'No', hidden: true, name: 'schedule_id', index: 'schedule_id'},
         {label: '優先度',  name: 'priority', width: 30, align: 'center',

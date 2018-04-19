@@ -4,7 +4,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { HttpModule, Http } from '@angular/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { appRouting, entryComponentList } from './app.router';
-import { ModalModule, BsDatepickerModule, TimepickerModule } from 'ngx-bootstrap';
+import { ModalModule } from 'ngx-bootstrap';
 import { AppComponent } from './app.component';
 import { HClientModule } from '../components/utils/httpClient.module';
 import { StepsModule } from '../components/steps/steps.module';
@@ -29,8 +29,6 @@ import { TestVirServerModule } from './testVirServer/testVirServer.module';
         BrowserModule,
         HttpClientModule,
         ModalModule.forRoot(),
-        BsDatepickerModule.forRoot(),
-        TimepickerModule.forRoot(),
         HttpModule,
         FormsModule,
         ReactiveFormsModule,
