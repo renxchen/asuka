@@ -72,7 +72,7 @@ LOGIN_SUCCESSFUL = gettext("Login successful.")
 NO_USERNAME_OR_PASSWORD = gettext("No user or password found.")
 USER_AND_PASSWD_INCORRECT = gettext("ユーザ名あるいはパスワードが間違っています")
 USER_DISABLED = gettext("User is inactive.")
-USER_LOGOUT_SUCCESSFUL = gettext("User logout successful.")
+USER_LOGOUT_SUCCESSFUL = gettext("Logout successful.")
 #########################################
 # Action Policy Related define
 #########################################
