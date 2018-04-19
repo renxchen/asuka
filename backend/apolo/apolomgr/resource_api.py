@@ -63,14 +63,8 @@ def run_request_method(resource_object):
         return exception_handler(e)
 
 
-@api_view(["POST"])
-def login(request):
-    resource_object = authentication.Auth(request=request)
-    return HttpResponse(run_request_method(resource_object))
-
-
-@api_view(["DELETE"])
-def logout(request):
+@api_view(["POST", "GET", "DELETE"])
+def api_permission_auth(request):
     resource_object = authentication.Auth(request=request)
     return HttpResponse(run_request_method(resource_object))
 
