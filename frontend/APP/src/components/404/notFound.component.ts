@@ -18,12 +18,12 @@ export class NotFoundComponent implements OnInit, AfterViewInit {
         this.httpClient.setUrl('/v1');
         this.
             httpClient
-            .toJson(this.httpClient.delete('/logout/'))
+            .toJson(this.httpClient.delete('/api_permission_auth/'))
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
+                    this.router.navigate(['/login']);
                     localStorage.removeItem('token');
                     localStorage.removeItem('sessionTimeOut');
-                    this.router.navigate(['/login/']);
                 }
             });
     }
