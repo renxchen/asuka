@@ -277,7 +277,7 @@ class HistoryCliFloat(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_cli_float'
-        unique_together = ("ns", "item")
+        unique_together = ("ns", "item", "clock")
 
 
 class HistoryCliInt(models.Model):
@@ -289,13 +289,13 @@ class HistoryCliInt(models.Model):
 
     class Meta:
         # managed = False
-        unique_together = ("ns", "item")
+        unique_together = ("ns", "item", "clock")
         db_table = 'history_cli_int'
 
 
 class HistoryCliStr(models.Model):
     clock = models.IntegerField(blank=True, null=True)
-    value = models.CharField(max_length=255, blank=True, null=True)
+    value = models.CharField(max_length=1000, blank=True, null=True)
     ns = models.IntegerField(blank=True, primary_key=True)
     item = models.ForeignKey('Items', models.DO_NOTHING)
     block_path = models.CharField(max_length=255, blank=True, null=True)
@@ -303,7 +303,7 @@ class HistoryCliStr(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_cli_str'
-        unique_together = ("ns", "item")
+        unique_together = ("ns", "item", "clock")
 
 
 class HistoryCliText(models.Model):
@@ -316,7 +316,7 @@ class HistoryCliText(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_cli_text'
-        unique_together = ("ns", "item")
+        unique_together = ("ns", "item", "clock")
 
 
 class HistorySnmpFloat(models.Model):
@@ -328,7 +328,7 @@ class HistorySnmpFloat(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_snmp_float'
-        unique_together = ("ns", "item")
+        unique_together = ("ns", "item", "clock")
 
 
 class HistorySnmpInt(models.Model):
@@ -340,19 +340,19 @@ class HistorySnmpInt(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_snmp_int'
-        unique_together = ("ns", "item")
+        unique_together = ("ns", "item", "clock")
 
 
 class HistorySnmpStr(models.Model):
     clock = models.IntegerField(blank=True, null=True)
-    value = models.CharField(max_length=255, blank=True, null=True)
+    value = models.CharField(max_length=1000, blank=True, null=True)
     ns = models.IntegerField(blank=True, primary_key=True)
     item = models.ForeignKey('Items', models.DO_NOTHING)
 
     class Meta:
         # managed = False
         db_table = 'history_snmp_str'
-        unique_together = ("ns", "item")
+        unique_together = ("ns", "item", "clock")
 
 
 class HistorySnmpText(models.Model):
@@ -364,7 +364,7 @@ class HistorySnmpText(models.Model):
     class Meta:
         # managed = False
         db_table = 'history_snmp_text'
-        unique_together = ("ns", "item")
+        unique_together = ("ns", "item", "clock")
 
 
 class Items(models.Model):
