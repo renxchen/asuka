@@ -75,8 +75,12 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
             kwargs = {}
             if trigger_id is not None:
                 kwargs = {'trigger_id': trigger_id}
-            result = TriggerDetail.objects.filter(**kwargs).values('expression', 'itemA', 'itemB',
-                                                                   'trigger__trigger_type', 'trigger__identifier',
+            result = TriggerDetail.objects.filter(**kwargs).values('expression',
+                                                                   'itemA',
+                                                                   'itemB',
+                                                                   'trigger__trigger_type',
+                                                                   'trigger__identifier',
+                                                                   'trigger__priority',
                                                                    'trigger__trigger_limit_nums')
             return result
         except Exception as e:
@@ -106,6 +110,8 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
             step 2：
             # 根据step 1返回的trigger_dic中的trigger_id， 查询trigger_detail表中对应的expression.
             # 返回字典
+            "trigger_id", "expression", "itemA", "itemB","trigger__priority",
+            "trigger__trigger_type","trigger__identifier", "trigger__trigger_limit_nums"
             {
                 triggerid_columnA: [
                     {
@@ -151,6 +157,7 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
                                 'itemB': per_trigger_detail['itemB'],
                                 'trigger_type': per_trigger_detail['trigger__trigger_type'],
                                 'identifier': per_trigger_detail['trigger__identifier'],
+                                'trigger_priority': per_trigger_detail['trigger__priority'],
                                 'trigger_limit_nums': per_trigger_detail['trigger__trigger_limit_nums'],
                             }
                         ])
@@ -171,6 +178,7 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
                             'itemB':itemB,
                             'trigger_type': trigger__trigger_type,
                             'identifier': trigger__identifier,
+                            'trigger_priority': trigger__priority,
                             'trigger_limit_nums': trigger__trigger_limit_nums,
                         }
                     ]
@@ -189,6 +197,7 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
                             'itemB':itemB,
                             'trigger_type': trigger__trigger_type,
                             'identifier': trigger__identifier,
+                            'trigger_priority': trigger__priority,
                             'trigger_limit_nums': trigger__trigger_limit_nums,
                         }
                     ]
@@ -218,6 +227,7 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
                             'itemB':itemB,
                             'trigger_type': trigger__trigger_type,
                             'identifier': trigger__identifier,
+                            'trigger_priority': trigger__priority,
                             'trigger_limit_nums': trigger__trigger_limit_nums,
                         }
                     ]
@@ -235,6 +245,7 @@ class MemCacheTriggerTriggerDetail(viewsets.ViewSet):
                             'itemB':itemB,
                             'trigger_type': trigger__trigger_type,
                             'identifier': trigger__identifier,
+                            'trigger_priority': trigger__priority,
                             'trigger_limit_nums': trigger__trigger_limit_nums,
                         }
                     ]
