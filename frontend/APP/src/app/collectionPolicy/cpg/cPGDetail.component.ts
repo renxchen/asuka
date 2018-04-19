@@ -199,7 +199,7 @@ export class CPGDetailComponent implements OnInit, OnDestroy {
             autowidth: true,
             height: 150,
             viewrecords: true,
-            emptyrecords: 'No data to display',
+            // emptyrecords: 'No data to display',
         });
         $('#cpglogintable').jqGrid({ searchOnEnter: true, defaultSearch: 'cn' });
     }

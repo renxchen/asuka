@@ -54,7 +54,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         * @date 2018/01/25
         */
         this.apiPrefix = '/v1';
-        let loginUrl = '/login/';
+        let loginUrl = '/api_permission_auth/';
         if (this.username
             && this.password
             && this.username.trim()
@@ -75,9 +75,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
                         }
                         this.router.navigate(['/index/']);
                     } else {
-                        this.modalMsg = _.get(status, 'message');
-                        this.closeMsg = '閉じる';
-                        this.showAlertModal(this.modalMsg, this.closeMsg);
+                        if (_.get(status, 'message')) {
+                            this.modalMsg = _.get(status, 'message');
+                            this.closeMsg = '閉じる';
+                            this.showAlertModal(this.modalMsg, this.closeMsg);
+                        }
                     }
 
                 });

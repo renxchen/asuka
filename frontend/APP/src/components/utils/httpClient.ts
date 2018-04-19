@@ -22,7 +22,7 @@ export class HttpClientComponent {
         if (!localStorage.getItem('token') ||
             localStorage.getItem('token') === '' ||
             typeof (localStorage.getItem('token')) === 'undefined') {
-            if (url.indexOf('login') !== -1) {
+            if (url.indexOf('api_permission_auth') !== -1) {
                 return true;
             } else {
                 return false;
@@ -127,7 +127,7 @@ export class HttpClientComponent {
         } else {
             let ret: any = { 'meta': { 'status': false } };
             localStorage.setItem('sessionTimeOut', 'ログインがされていません。ログインして下さい。');
-            this.router.navigate(['login']);
+            this.router.navigate(['/login']);
             window.location.reload();
         }
     }

@@ -23,7 +23,8 @@ export class IndexComponent implements OnInit, AfterViewInit {
     constructor(
         private elementRef: ElementRef,
         private activatedRoute: ActivatedRoute,
-        public httpClient: HttpClientComponent) {
+        public httpClient: HttpClientComponent,
+        private router: Router) {
     }
     ngOnInit() {
         localStorage.setItem('requestFailed', '');
@@ -67,12 +68,13 @@ export class IndexComponent implements OnInit, AfterViewInit {
         */
         this.apiPrefix = '/v1';
         this.httpClient.setUrl(this.apiPrefix);
-        this.httpClient.toJson(this.httpClient.delete('/logout/'))
-       .subscribe(res => {
-            if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
-                localStorage.removeItem('token');
-                localStorage.removeItem('sessionTimeOut');
-            }
-        });
+        this.httpClient.toJson(this.httpClient.delete('/api_permission_auth/'))
+            .subscribe(res => {
+                if (res['status'] && res['status']['status'].toString().toLowerCase() === 'true') {
+                    this.router.navigate(['/login']);
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('sessionTimeOut');
+                }
+            });
     }
 }
