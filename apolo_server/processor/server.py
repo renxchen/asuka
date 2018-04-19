@@ -460,7 +460,7 @@ if __name__ == '__main__':
     task_dispatcher.daemon = True
     task_dispatcher.start()
 
-    session_mgr = SessionManager(zmq_publish)
+    session_mgr = SessionManager(handle_pedding_task)
     session_mgr.daemon = True
     session_mgr.start()
 
