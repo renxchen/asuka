@@ -4,7 +4,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import * as _ from 'lodash';
 declare var $: any;
-import * as moment from 'moment';
 import * as flatpickr from 'flatpickr';
 
 enableProdMode();
@@ -20,8 +19,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     title: string;
     id: number = -1;
 
-    isTimeMeridian: boolean = false;
-
     startDateTime: any;
     endDateTime: any;
 
@@ -30,15 +27,8 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     pickrOption: any = {
         enableTime: true,
-        time_24hr: true
-    };
-
-    pickrOptionTime: any = {
-        noCalendar: true,
-        dateFormat: 'HH:MM',
-        defaultDate: '2018-01-01 ',
-        enableTime: true,
-        time_24hr: true
+        time_24hr: true,
+        static: true
     };
 
     startTime: any;
@@ -46,8 +36,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     flatPickrStartTime: any;
     flatPickrEndTime: any;
-
-
 
     isEnabled: boolean = false;
     isLock: boolean = false;
@@ -198,7 +186,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     }
 
     initPickrTime() {
-
         let startOp: any = {
             noCalendar: true,
             dateFormat: 'H:i',
@@ -220,8 +207,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         let endEle = document.getElementById('endTimeInput');
         this.flatPickrStartTime = new flatpickr(startEle, startOp);
         this.flatPickrEndTime = new flatpickr(endEle, endOp);
-
-
     }
 
     setMaxAndMinDate(type) {
@@ -402,8 +387,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 dataScheduleTime = '';
             }
 
-            console.log(startPeriodTime,endPeriodTime,dataScheduleTime);
-
             let scheduleInfo: any = {};
             let url_new = '/api_new_data_collection/';
             let url_edit = '/api_data_collection/';
@@ -423,8 +406,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             scheduleInfo['is_processing'] = this.isProcessing;
 
             console.log(scheduleInfo);
-            // alert(flag);
-            // return;
+
             if (this.id == -1){
                 this.httpClient
                     .toJson(this.httpClient.post(url_new, scheduleInfo))
@@ -458,7 +440,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         } else {
             alert(message);
         }
-
     }
 
     doCheck(dataScheduleTime){
