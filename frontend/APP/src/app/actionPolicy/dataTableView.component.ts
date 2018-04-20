@@ -152,7 +152,6 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
      *date:20180413
     */
     let type = btn_id.split('_')[0];
-    // console.log('this.selectedRow', this.selectRowObj);
     if (type === 'show') {
       this.showDataTableDetail();
     } else if (type === 'del') {
