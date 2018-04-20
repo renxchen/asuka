@@ -39,10 +39,10 @@ class CommonConstants(object):
     Define value for common service
     """
     VALUE_TYPE_MAPPING = {
-        0: "Int",
-        1: "Text",
-        2: "Float",
-        3: "Str"
+        0: "int",
+        1: "text",
+        2: "float",
+        3: "str"
     }
     ITEM_TYPE_MAPPING = {
         0: "Cli",
