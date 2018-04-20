@@ -239,13 +239,23 @@ def __merge_cli(item, deviceinfo_dict,rule_dict):
     )
 
 def __split_path(path, rule_id):
+
     rules = []
-    if len(path) == 1:
+    arry = path.split('_')
+    if len(arry)==1:
         rules.append(str(rule_id))
     else:
-        rules = path.split(ParserConstants.TREE_PATH_SPLIT)[1:]
+        rules=arry[1:]
         rules.append(str(rule_id))
     return rules
+
+    # rules = []
+    # if len(path) == 1:
+    #     rules.append(str(rule_id))
+    # else:
+    #     rules = path.split(ParserConstants.TREE_PATH_SPLIT)[1:]
+    #     rules.append(str(rule_id))
+    # return rules
 
 @deco_item
 def __check_item_interval(item, now_time):
