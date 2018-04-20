@@ -500,7 +500,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'true') {
         if (res.data.data) {
           this.getItemList(res.data.items_rule_name);
-          // tableJson['data'] = this.tableDataFormat(res.data.data);
+          tableJson['data'] = this.tableDataFormat(res.data.data);
 
           if (treeType === 'cli') {
             if (res.data.items_rule_name.length > 0) {
@@ -530,9 +530,9 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
 
   protected tableDataFormat(data: any) {
     for (let obj of data) {
-      if (obj['time_stamp']) {
-        obj['time_stamp'] = moment(obj['time_stamp'] * 1000).format('YYYY-MM-DD HH:mm:ss');
-      }
+      // if (obj['time_stamp']) {
+        // obj['time_stamp'] = moment(obj['time_stamp'] * 1000).format('YYYY-MM-DD HH:mm:ss');
+      // }
     }
     return data;
   }
