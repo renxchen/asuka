@@ -4,13 +4,12 @@
 
 @author: necwang
 @contact: necwang@cisco.com
-@file: table_views.py
+@file: data_table_step1_views.py
 @time: 2018/1/3 17:25
 @desc:
 
 """
 import traceback
-import importlib
 from rest_framework import viewsets
 from django.core.paginator import Paginator
 from backend.apolo.tools.exception import exception_handler
@@ -21,18 +20,11 @@ from backend.apolo.models import DataTable, DataTableItems, DataTableHistoryItem
 from django.db import transaction
 from backend.apolo.serializer.action_policy_serializer import ActionPolicyDataTableSerializer, \
     ActionPolicyDataTableItemSerializer
-from backend.apolo.serializer.history_cli_int_serializer import HistoryCliIntSerializer
-from backend.apolo.serializer.history_cli_str_serializer import HistoryCliStrSerializer
-from backend.apolo.serializer.history_cli_float_serializer import HistoryCliFloatSerializer
-from backend.apolo.serializer.history_cli_text_serializer import HistoryCliTextSerializer
-from backend.apolo.serializer.history_snmp_int_serializer import HistorySnmpIntSerializer
-from backend.apolo.serializer.history_snmp_str_serializer import HistorySnmpStrSerializer
-from backend.apolo.serializer.history_snmp_float_serializer import HistorySnmpFloatSerializer
-from backend.apolo.serializer.history_snmp_text_serializer import HistorySnmpTextSerializer
 import time
 from backend.apolo.apolomgr.resource.common import csv_export
 import os
 from django.db.models import Q
+from django.db import connection
 
 
 class TableViewsSet(viewsets.ViewSet):
@@ -205,77 +197,53 @@ class TableViewsSet(viewsets.ViewSet):
             code_meaning = constants.SNMP
         return code_meaning
 
-    @staticmethod
-    def history_table_select(item_type, value_type, data):
-        serializer = HistoryCliIntSerializer(data, many=True)
-        if item_type.upper() == 'SNMP':
-            if value_type.upper() == constants.INTEGER:
-                serializer = HistoryCliIntSerializer(data, many=True)
-            if value_type.upper() == constants.TEXT:
-                serializer = HistoryCliTextSerializer(data, many=True)
-            if value_type.upper() == constants.FLOAT:
-                serializer = HistoryCliFloatSerializer(data, many=True)
-            if value_type.upper() == constants.STRING:
-                serializer = HistoryCliStrSerializer(data, many=True)
-
-        else:
-            if value_type.upper() == constants.INTEGER:
-                serializer = HistorySnmpIntSerializer(data, many=True)
-            if value_type.upper() == constants.TEXT:
-                serializer = HistorySnmpTextSerializer(data, many=True)
-            if value_type.upper() == constants.FLOAT:
-                serializer = HistorySnmpFloatSerializer(data, many=True)
-            if value_type.upper() == constants.STRING:
-                serializer = HistorySnmpStrSerializer(data, many=True)
-        return serializer
-
     def get_history(self, item_id, value_type, policy_type):
         """!@brief
-        Get history data from History%s%s table
+        Get history data from history_%s_%s table
         @param item_id: item id
         @param value_type: value type(str, int, float, text)
         @param policy_type: policy type(cli, snmp)
         @note
-        @return history: history data(type is list)
+        @return history: history data(type is dic)
         """
-        base_db_format = "History%s%s"
-        trigger_db_modules = "backend.apolo.models"
-        trigger_numeric = ["Float", "Int"]
-        table_name = base_db_format % (policy_type.capitalize(), value_type.capitalize())
-        db_module = importlib.import_module(trigger_db_modules)
-        if hasattr(db_module, table_name) is False:
-            raise Exception("%s table isn't exist" % table_name)
-        table = getattr(db_module, table_name)
-        kwargs = {
-            "item_id": item_id,
-        }
-        if self.start_date:
-            start_date_timestamp = time.mktime(time.strptime(self.start_date, "%Y-%m-%d %H:%M:%S"))
-            kwargs = {
-                "item_id": item_id,
-                'clock__gte': start_date_timestamp,
-            }
-        elif self.end_date:
-            end_date_timestamp = time.mktime(time.strptime(self.end_date, "%Y-%m-%d %H:%M:%S"))
-            kwargs = {
-                "item_id": item_id,
-                'clock__lte': end_date_timestamp
-            }
-        elif self.start_date and self.end_date:
-            start_date_timestamp = time.mktime(time.strptime(self.start_date, "%Y-%m-%d %H:%M:%S"))
-            end_date_timestamp = time.mktime(time.strptime(self.end_date, "%Y-%m-%d %H:%M:%S"))
-            kwargs = {
-                "item_id": item_id,
-                'clock__gte': start_date_timestamp,
-                'clock__lte': end_date_timestamp
-            }
+        try:
+            base_db_format = "history_%s_%s"
+            table_name = base_db_format % (policy_type.lower(), value_type.lower())
+            where_condition = 'item_id = ' + str(item_id)
+            if self.start_date and self.end_date:
+                start_date_timestamp = time.mktime(time.strptime(self.start_date, "%Y-%m-%d %H:%M:%S"))
+                end_date_timestamp = time.mktime(time.strptime(self.end_date, "%Y-%m-%d %H:%M:%S"))
+                where_condition = 'item_id = ' + str(item_id) + ' and clock >= ' + str(start_date_timestamp) + \
+                                  ' and clock <= ' + str(end_date_timestamp)
+            elif self.start_date:
+                start_date_timestamp = time.mktime(time.strptime(self.start_date, "%Y-%m-%d %H:%M:%S"))
+                where_condition = 'item_id = ' + str(item_id) + ' and clock >= ' + str(start_date_timestamp)
+            elif self.end_date:
+                end_date_timestamp = time.mktime(time.strptime(self.end_date, "%Y-%m-%d %H:%M:%S"))
+                where_condition = 'item_id = ' + str(item_id) + ' and clock <= ' + str(end_date_timestamp)
+            with connection.cursor() as cursor:
+                sql = "select * from %s where %s order by %s" % (table_name, where_condition, 'clock')
+                cursor.execute(sql)
+                # cursor.execute("SELECT * FROM history_cli_str LIMIT 2")
+                return self.dict_fetchall(cursor)
+                # history = table.objects.filter(**kwargs).order_by("-clock")
+                # if value_type not in trigger_numeric:
+                #     for h in history:
+                #         # h.value = "'" + h.value + "'"
+                #         h.value = str(h.value)
+                # return history
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
 
-        history = table.objects.filter(**kwargs).order_by("-clock")
-        if value_type not in trigger_numeric:
-            for h in history:
-                # h.value = "'" + h.value + "'"
-                h.value = str(h.value)
-        return history
+    @staticmethod
+    def dict_fetchall(_cursor):
+        columns = [col[0] for col in _cursor.description]
+        return [
+            dict(zip(columns, row))
+            for row in _cursor.fetchall()
+            ]
 
     def get_info_by_table_id(self, id, history_need_flag=True):
         """!@brief
@@ -307,12 +275,7 @@ class TableViewsSet(viewsets.ViewSet):
             # key_str in rule table
             key_str = per_data_table_item_info['item__coll_policy_rule_tree_treeid__rule__key_str']
             history_data = self.get_history(per_data_table_item_info['item'], value_type, item_type)
-            # if item_type.upper() == 'SNMP':
-            #     serializer = HistoryCliIntSerializer(history_data, many=True)
-            # else:
-            #     serializer = HistoryCliIntSerializer(history_data, many=True)
-            serializer = self.history_table_select(item_type, value_type, history_data)
-            for per in serializer.data:
+            for per in history_data:
                 per['item_id'] = item_id
                 if item_type.upper() == 'SNMP':
                     items_info = Items.objects.filter(item_id=item_id).values('coll_policy__snmp_oid')
@@ -340,12 +303,7 @@ class TableViewsSet(viewsets.ViewSet):
                 # key_str in rule table
                 key_str = per_data_table_history_item_info['item__coll_policy_rule_tree_treeid__rule__key_str']
                 history_data = self.get_history(per_data_table_history_item_info['item'], value_type, item_type)
-                # if item_type.upper() == 'SNMP':
-                #     serializer = HistoryCliIntSerializer(history_data, many=True)
-                # else:
-                #     serializer = HistoryCliIntSerializer(history_data, many=True)
-                serializer = self.history_table_select(item_type, value_type, history_data)
-                for per in serializer.data:
+                for per in history_data:
                     per['item_id'] = item_id
                     if item_type.upper() == 'SNMP':
                         items_info = Items.objects.filter(item_id=item_id).values('coll_policy__snmp_oid')
