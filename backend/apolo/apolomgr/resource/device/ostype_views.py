@@ -492,19 +492,19 @@ class OsTypeViewSet(viewsets.ViewSet):
                         message = ''
                         devices_queryset = Devices.objects.filter(ostype_id=self.id).filter(status=1)
                         if devices_queryset.exists():
-                            message += constants.OSTYPE_EXIST_IN_DEVICES + " "
+                            message += constants.OSTYPE_EXIST_IN_DEVICES + r"<br/>"
                         queryset_groups = Groups.objects.filter(ostype_id=self.id)
                         if queryset_groups.exists():
-                            message += constants.OSTYPE_EXIST_IN_DEVICEGROUPS + " "
+                            message += constants.OSTYPE_EXIST_IN_DEVICEGROUPS + r"<br/>"
                         schedules_queryset = Schedules.objects.filter(ostype_id=self.id)
                         if schedules_queryset.exists():
-                            message += constants.OSTYPE_EXIST_IN_SCHEDULE2 + " "
+                            message += constants.OSTYPE_EXIST_IN_SCHEDULE2 + r"<br/>"
                         coll_policy_queryset = CollPolicy.objects.filter(ostype_id=self.id)
                         if coll_policy_queryset.exists():
-                            message += constants.OSTYPE_EXISTS_IN_COLL_POLICY + " "
+                            message += constants.OSTYPE_EXISTS_IN_COLL_POLICY + r"<br/>"
                         coll_policy_groups = CollPolicyGroups.objects.filter(ostypeid=self.id)
                         if coll_policy_groups.exists():
-                            message += constants.OSTYPE_EXIST_IN_COLL_POLICY_GROUPS + " "
+                            message += constants.OSTYPE_EXIST_IN_COLL_POLICY_GROUPS
                         if message != '':
                             data = {
                                 'new_token': self.new_token,
