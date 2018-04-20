@@ -89,7 +89,7 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
       gridComplete: function () {
         _t.getSelectedRowData();
       },
-      height: 230,
+      height: 400,
       pager: '#tablePager',
       jsonReader: {
         root: 'data.data',
@@ -188,6 +188,7 @@ export class DataTableViewComponent implements OnInit, AfterViewInit {
     if (res && res.status && res.status.status) {
       if (res.status.status.toLowerCase() === 'true') {
         alert('削除しました！');
+        $('#tableTable').trigger('reloadGrid');
       } else {
         let msg = res.status.message;
         alert(msg);

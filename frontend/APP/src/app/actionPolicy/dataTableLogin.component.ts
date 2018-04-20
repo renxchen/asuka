@@ -446,7 +446,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
         * @date 2018/04/11
     */
 
-    let rule_name = node['node']['text'];
+    let lableName;
     let snmpTableModel: any = [
       { label: 'デバイス名', name: 'device_name', align: 'center', sortable: false },
       { label: 'Time Stamp', name: 'time_stamp', align: 'center', sortable: false, },
@@ -457,7 +457,7 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       { label: 'デバイス名', name: 'device_name', align: 'center', sortable: false },
       { label: 'Time Stamp', name: 'time_stamp', align: 'center', sortable: false, },
       { label: 'Path', name: 'path', align: 'center' },
-      { label: rule_name, name: 'value', align: 'center' }
+      { label: 'Value', name: 'value', align: 'center' }
     ];
     this.tree_id = node['node']['data']['tree_id'];
     let tableData: any;
@@ -469,7 +469,8 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       colModel: '',
       data: '',
       loadComplete: function () { },
-      gridComplete: function () { },
+      gridComplete: function () {
+      },
       autowidth: true,
       beforeSelectRow: function (rowid, e) { return false; },
       height: 'auto',
@@ -484,21 +485,28 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
     if (treeType === 'snmp') {
       url = '/api_data_table_step4_table/?coll_id=' + this.selectedRowObj['policyNo'] +
         '&device_group_id=' + this.selectedRowObj['groupNo'] + '&policy_group_id=' + this.selectedRowObj['cpGroup_id'] +
-        '&rule_name=' + rule_name + '&schedule_id=' + this.selectedRowObj['schedule_id'] + '&oid=' + this.selectedRowObj['oid'];
+        '&rule_name=' + '' + '&schedule_id=' + this.selectedRowObj['schedule_id'] + '&oid=' + this.selectedRowObj['oid'];
       // url = '/api_data_table_step4_table/?coll_id=1&device_group_id=1&policy_group_id=2&rule_name=OID&schedule_id=10&oid=1.1.1.1';
       tableJson['colModel'] = snmpTableModel;
     } else if (treeType === 'cli') {
       url = '/api_data_table_step4_table/?tree_id=' + this.tree_id + '&coll_id=' + this.selectedRowObj['policyNo'] +
         '&device_group_id=' + this.selectedRowObj['groupNo'] + '&policy_group_id=' + this.selectedRowObj['cpGroup_id'] +
-        '&rule_name=' + rule_name + '&schedule_id=' + this.selectedRowObj['schedule_id'];
+        '&rule_name=' + '' + '&schedule_id=' + this.selectedRowObj['schedule_id'];
       // url = '/api_data_table_step4_table/?coll_id=1&device_group_id=1&policy_group_id=2&rule_name=OID&schedule_id=10&oid=1.1.1.1';
       tableJson['colModel'] = cliTableModel;
     }
     this.get(url).subscribe((res: any) => {
       if (res && res.status && res.status.status && res.status.status.toLowerCase() === 'true') {
         if (res.data.data) {
-          this.getItemList(res.data.data);
-          tableJson['data'] = this.tableDataFormat(res.data.data);
+          this.getItemList(res.data.items_rule_name);
+          // tableJson['data'] = this.tableDataFormat(res.data.data);
+
+          if (treeType === 'cli') {
+            if (res.data.items_rule_name.length > 0) {
+              lableName = res.data.items_rule_name[0]['rule_name'];
+              tableJson['colModel'][3]['label'] = lableName;
+            }
+          }
           $('#treeTable').jqGrid(tableJson);
           $('#treeTable').parents('div.ui-jqgrid-bdiv').css('max-height', '190px');
         }
@@ -563,11 +571,12 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
           } else {
             this.bsModalRef.hide();
             alert('保存しました！');
+            $('#tableTable').trigger('reloadGrid');
           }
         }
       });
     } else {
-      alert('リーフを選択してください!');
+      alert('データ取得に異常が発生しました、アドミニストレータに連絡してください！');
     }
 
   }
