@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 import time
 from django.db import models
 
-app_label = "db_units"
+#app_label = "db_units"
 
 
 class User(models.Model):
@@ -267,106 +267,6 @@ class Groups(models.Model):
         db_table = 'groups'
 
 
-class HistoryCliFloat(models.Model):
-    value = models.FloatField(blank=True, null=True)
-    clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, primary_key=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
-    block_path = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'history_cli_float'
-        unique_together = ("ns", "item", "clock")
-
-
-class HistoryCliInt(models.Model):
-    value = models.BigIntegerField(blank=True, null=True)
-    clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, primary_key=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
-    block_path = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        unique_together = ("ns", "item", "clock")
-        db_table = 'history_cli_int'
-
-
-class HistoryCliStr(models.Model):
-    clock = models.IntegerField(blank=True, null=True)
-    value = models.CharField(max_length=1000, blank=True, null=True)
-    ns = models.IntegerField(blank=True, primary_key=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
-    block_path = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'history_cli_str'
-        unique_together = ("ns", "item", "clock")
-
-
-class HistoryCliText(models.Model):
-    clock = models.IntegerField(blank=True, null=True)
-    value = models.TextField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, primary_key=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
-    block_path = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        # managed = False
-        db_table = 'history_cli_text'
-        unique_together = ("ns", "item", "clock")
-
-
-class HistorySnmpFloat(models.Model):
-    value = models.FloatField(blank=True, null=True)
-    clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, primary_key=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
-
-    class Meta:
-        # managed = False
-        db_table = 'history_snmp_float'
-        unique_together = ("ns", "item", "clock")
-
-
-class HistorySnmpInt(models.Model):
-    value = models.BigIntegerField(blank=True, null=True)
-    clock = models.IntegerField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, primary_key=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
-
-    class Meta:
-        # managed = False
-        db_table = 'history_snmp_int'
-        unique_together = ("ns", "item", "clock")
-
-
-class HistorySnmpStr(models.Model):
-    clock = models.IntegerField(blank=True, null=True)
-    value = models.CharField(max_length=1000, blank=True, null=True)
-    ns = models.IntegerField(blank=True, primary_key=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
-
-    class Meta:
-        # managed = False
-        db_table = 'history_snmp_str'
-        unique_together = ("ns", "item", "clock")
-
-
-class HistorySnmpText(models.Model):
-    clock = models.IntegerField(blank=True, null=True)
-    value = models.TextField(blank=True, null=True)
-    ns = models.IntegerField(blank=True, primary_key=True)
-    item = models.ForeignKey('Items', models.DO_NOTHING)
-
-    class Meta:
-        # managed = False
-        db_table = 'history_snmp_text'
-        unique_together = ("ns", "item", "clock")
-
-
 class Items(models.Model):
     item_id = models.AutoField(primary_key=True)
     value_type = models.IntegerField(blank=True, null=True)
@@ -510,10 +410,6 @@ class TriggerDetail(models.Model):
     class Meta:
         # managed = False
         db_table = 'trigger_detail'
-
-
-
-
 
 class Triggers(models.Model):
     trigger_id = models.AutoField(primary_key=True)
