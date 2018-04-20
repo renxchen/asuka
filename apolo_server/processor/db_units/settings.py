@@ -27,5 +27,5 @@ INSTALLED_APPS = [
 ]
 
 from backend.server.settings import DATABASES as db
-
+DEBUG = True
 DATABASES = db
