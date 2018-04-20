@@ -21,8 +21,14 @@ from backend.apolo.models import DataTable, DataTableItems, DataTableHistoryItem
 from django.db import transaction
 from backend.apolo.serializer.action_policy_serializer import ActionPolicyDataTableSerializer, \
     ActionPolicyDataTableItemSerializer
-from backend.apolo.serializer.history_cli_x_serializer import HistoryCliXSerializer
-from backend.apolo.serializer.history_snmp_x_serializer import HistorySnmpXSerializer
+from backend.apolo.serializer.history_cli_int_serializer import HistoryCliIntSerializer
+from backend.apolo.serializer.history_cli_str_serializer import HistoryCliStrSerializer
+from backend.apolo.serializer.history_cli_float_serializer import HistoryCliFloatSerializer
+from backend.apolo.serializer.history_cli_text_serializer import HistoryCliTextSerializer
+from backend.apolo.serializer.history_snmp_int_serializer import HistorySnmpIntSerializer
+from backend.apolo.serializer.history_snmp_str_serializer import HistorySnmpStrSerializer
+from backend.apolo.serializer.history_snmp_float_serializer import HistorySnmpFloatSerializer
+from backend.apolo.serializer.history_snmp_text_serializer import HistorySnmpTextSerializer
 import time
 from backend.apolo.apolomgr.resource.common import csv_export
 import os
@@ -199,6 +205,30 @@ class TableViewsSet(viewsets.ViewSet):
             code_meaning = constants.SNMP
         return code_meaning
 
+    @staticmethod
+    def history_table_select(item_type, value_type, data):
+        serializer = HistoryCliIntSerializer(data, many=True)
+        if item_type.upper() == 'SNMP':
+            if value_type.upper() == constants.INTEGER:
+                serializer = HistoryCliIntSerializer(data, many=True)
+            if value_type.upper() == constants.TEXT:
+                serializer = HistoryCliTextSerializer(data, many=True)
+            if value_type.upper() == constants.FLOAT:
+                serializer = HistoryCliFloatSerializer(data, many=True)
+            if value_type.upper() == constants.STRING:
+                serializer = HistoryCliStrSerializer(data, many=True)
+
+        else:
+            if value_type.upper() == constants.INTEGER:
+                serializer = HistorySnmpIntSerializer(data, many=True)
+            if value_type.upper() == constants.TEXT:
+                serializer = HistorySnmpTextSerializer(data, many=True)
+            if value_type.upper() == constants.FLOAT:
+                serializer = HistorySnmpFloatSerializer(data, many=True)
+            if value_type.upper() == constants.STRING:
+                serializer = HistorySnmpStrSerializer(data, many=True)
+        return serializer
+
     def get_history(self, item_id, value_type, policy_type):
         """!@brief
         Get history data from History%s%s table
@@ -277,10 +307,11 @@ class TableViewsSet(viewsets.ViewSet):
             # key_str in rule table
             key_str = per_data_table_item_info['item__coll_policy_rule_tree_treeid__rule__key_str']
             history_data = self.get_history(per_data_table_item_info['item'], value_type, item_type)
-            if item_type.upper() == 'SNMP':
-                serializer = HistorySnmpXSerializer(history_data, many=True)
-            else:
-                serializer = HistoryCliXSerializer(history_data, many=True)
+            # if item_type.upper() == 'SNMP':
+            #     serializer = HistoryCliIntSerializer(history_data, many=True)
+            # else:
+            #     serializer = HistoryCliIntSerializer(history_data, many=True)
+            serializer = self.history_table_select(item_type, value_type, history_data)
             for per in serializer.data:
                 per['item_id'] = item_id
                 if item_type.upper() == 'SNMP':
@@ -309,10 +340,11 @@ class TableViewsSet(viewsets.ViewSet):
                 # key_str in rule table
                 key_str = per_data_table_history_item_info['item__coll_policy_rule_tree_treeid__rule__key_str']
                 history_data = self.get_history(per_data_table_history_item_info['item'], value_type, item_type)
-                if item_type.upper() == 'SNMP':
-                    serializer = HistorySnmpXSerializer(history_data, many=True)
-                else:
-                    serializer = HistoryCliXSerializer(history_data, many=True)
+                # if item_type.upper() == 'SNMP':
+                #     serializer = HistoryCliIntSerializer(history_data, many=True)
+                # else:
+                #     serializer = HistoryCliIntSerializer(history_data, many=True)
+                serializer = self.history_table_select(item_type, value_type, history_data)
                 for per in serializer.data:
                     per['item_id'] = item_id
                     if item_type.upper() == 'SNMP':

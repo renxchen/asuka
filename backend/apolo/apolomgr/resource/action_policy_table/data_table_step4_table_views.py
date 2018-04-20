@@ -19,9 +19,16 @@ from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import views_helper
 # from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
-from backend.apolo.serializer.history_cli_x_serializer import HistoryCliXSerializer
-from backend.apolo.serializer.history_snmp_x_serializer import HistorySnmpXSerializer
+from backend.apolo.serializer.history_cli_int_serializer import HistoryCliIntSerializer
+from backend.apolo.serializer.history_cli_str_serializer import HistoryCliStrSerializer
+from backend.apolo.serializer.history_cli_float_serializer import HistoryCliFloatSerializer
+from backend.apolo.serializer.history_cli_text_serializer import HistoryCliTextSerializer
+from backend.apolo.serializer.history_snmp_int_serializer import HistorySnmpIntSerializer
+from backend.apolo.serializer.history_snmp_float_serializer import HistorySnmpFloatSerializer
+from backend.apolo.serializer.history_snmp_str_serializer import HistorySnmpStrSerializer
+from backend.apolo.serializer.history_snmp_text_serializer import HistorySnmpTextSerializer
 from backend.apolo.tools import constants
+import time
 
 
 class DataTableTableViewsSet(viewsets.ViewSet):
@@ -42,7 +49,7 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         # device ids
         self.devices = self.get_device_ids(**{'group': int(self.device_group_id)})
         # self.devices = views_helper.get_request_value(self.request, 'devices', 'GET')
-        self.rule_name = views_helper.get_request_value(self.request, 'rule_name', 'GET')
+        # self.rule_name = views_helper.get_request_value(self.request, 'rule_name', 'GET')
         self.oid = views_helper.get_request_value(self.request, 'oid', 'GET')
 
     @staticmethod
@@ -158,6 +165,30 @@ class DataTableTableViewsSet(viewsets.ViewSet):
             code_meaning = constants.SNMP
         return code_meaning
 
+    @staticmethod
+    def history_table_select(item_type, value_type, data):
+        serializer = HistoryCliIntSerializer(data, many=True)
+        if item_type.upper() == 'SNMP':
+            if value_type.upper() == constants.INTEGER:
+                serializer = HistoryCliIntSerializer(data, many=True)
+            if value_type.upper() == constants.TEXT:
+                serializer = HistoryCliTextSerializer(data, many=True)
+            if value_type.upper() == constants.FLOAT:
+                serializer = HistoryCliFloatSerializer(data, many=True)
+            if value_type.upper() == constants.STRING:
+                serializer = HistoryCliStrSerializer(data, many=True)
+
+        else:
+            if value_type.upper() == constants.INTEGER:
+                serializer = HistorySnmpIntSerializer(data, many=True)
+            if value_type.upper() == constants.TEXT:
+                serializer = HistorySnmpTextSerializer(data, many=True)
+            if value_type.upper() == constants.FLOAT:
+                serializer = HistorySnmpFloatSerializer(data, many=True)
+            if value_type.upper() == constants.STRING:
+                serializer = HistorySnmpStrSerializer(data, many=True)
+        return serializer
+
     def get(self):
         """!@brief
         Get data in right for Step 4 when click [新规登陆]
@@ -166,9 +197,11 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         """
         try:
             data = []
+            items_rule_name_list = []
             for device in self.devices:
                 device_id = int(device['device'])
                 result = {}
+                item_rule_name_dic = {}
                 # get policy type, 0:cli, 1:snmp
                 policy_type = self.get_coll_policy(**{'coll_policy_id': self.coll_policy_id})
                 kwargs = {
@@ -187,26 +220,36 @@ class DataTableTableViewsSet(viewsets.ViewSet):
                             'coll_policy': self.coll_policy_id,
                             # 'policys_groups__policy_group': self.policy_group_id
                         }
-                item_infos = Items.objects.filter(**kwargs).values('item_id', 'value_type', 'item_type',
-                                                                   'device__hostname')
+                item_infos = Items.objects.filter(**kwargs).values('item_id',
+                                                                   'value_type',
+                                                                   'item_type',
+                                                                   'device__hostname',
+                                                                   'coll_policy_rule_tree_treeid__rule__key_str')
                 if item_infos:
+                    rule_name = item_infos[0]['coll_policy_rule_tree_treeid__rule__key_str']
                     item_id = item_infos[0]['item_id']
                     value_type = self.get_mapping(item_infos[0]['value_type'])
                     item_type = self.get_mapping_cli_snmp(item_infos[0]['item_type'])
                     queryset = self.get_history(item_id, value_type, item_type)
+                    item_rule_name_dic['item_id'] = item_id
+                    item_rule_name_dic['rule_name'] = rule_name
+                    items_rule_name_list.append(item_rule_name_dic)
                     # serializer = HistoryXSerializer(queryset, many=True)
-                    if item_type.upper() == 'SNMP':
-                        serializer = HistorySnmpXSerializer(queryset, many=True)
-                    else:
-                        serializer = HistoryCliXSerializer(queryset, many=True)
+                    # if item_type.upper() == 'SNMP':
+                    #     serializer = HistorySnmpXSerializer(queryset, many=True)
+                    # else:
+                    #     serializer = HistoryCliXSerializer(queryset, many=True)
+                    serializer = self.history_table_select(item_type, value_type, queryset)
                     if serializer.data:
                         result['device_name'] = item_infos[0]['device__hostname']
-                        result['time_stamp'] = serializer.data[0]['clock']
+                        # result['time_stamp'] = serializer.data[0]['clock']
+                        result['time_stamp'] = time.strftime("%Y-%m-%d %H:%M:%S",
+                                                             time.localtime(int(serializer.data[0]['clock'])))
                         if item_type.upper() == 'CLI':
                             result['path'] = serializer.data[0]['block_path']
                         result['value'] = serializer.data[0]['value']
-                        result['item_id'] = serializer.data[0]['item']
-                        result['rule_name'] = self.rule_name
+                        # result['item_id'] = serializer.data[0]['item']
+                        # result['rule_name'] = rule_name
                         if len(policy_type):
                             if int(policy_type[0]['policy_type']) == 1:
                                 result['oid'] = self.oid
@@ -214,6 +257,7 @@ class DataTableTableViewsSet(viewsets.ViewSet):
             data = {
                 'data': {
                     'data': data,
+                    'items_rule_name': items_rule_name_list
                 },
                 'new_token': self.new_token,
                 constants.STATUS: {
