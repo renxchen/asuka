@@ -13,6 +13,7 @@ from django.db.utils import OperationalError
 from django.forms.models import model_to_dict
 
 
+
 def is_connection_usable(func):
     def wrapper(*args, **kwargs):
         result = None
@@ -152,36 +153,29 @@ class ParserDbHelp(DbHelp):
     def __init__(self):
         pass
     @staticmethod
-    def snmp_save(data,clock,ns):
+    def snmp_save(value_type,data):
         
-        value_type = data['value_type']
-        table_name = "HistorySnmp%s" % CommonConstants.VALUE_TYPE_MAPPING.get(value_type)
-        table = ParserDbHelp.get_history_table(table_name)
-        value = data['value']
-        item_id = data['item_id']
-        
-        table.objects.create(value=value,
-                    ns=ns,
-                    clock=clock,
-                    item_id=item_id)
+        #value_type = data['value_type']
+        table_name = "history_snmp_%s" % CommonConstants.VALUE_TYPE_MAPPING.get(value_type)
+        #table = ParserDbHelp.get_history_table(table_name)
+        sql = "insert into "+table_name+"(`item_id`,`clock` ,   \
+        `ns` ,`value`) values(%s,%s,%s,%s)"
+
+        with connection.cursor() as cursor:
+            cursor.execute(sql, data)
 
 
 
     @staticmethod
-    def cli_save(data,clock,ns):
-        value_type = data['value_type']
-        table_name = "HistoryCli%s" % CommonConstants.VALUE_TYPE_MAPPING.get(value_type)
-        table = ParserDbHelp.get_history_table(table_name)
-        
-        block_path = str(data['block_path'])
-        item_id = data['item_id']
-        table.objects.create(
-                    value=data["value"],
-                    ns=ns,
-                    clock=clock,
-                    item_id=item_id,
-                    block_path=block_path)
-       
+    def cli_save(value_type,data):
+        #value_type = data['value_type']
+        table_name = "history_cli_%s" % CommonConstants.VALUE_TYPE_MAPPING.get(value_type)
+        #table = ParserDbHelp.get_history_table(table_name)
+        sql = "insert into "+table_name+"(`item_id`,`clock` ,   \
+        `ns` ,`seq` ,`value` ,`block_path`) values(%s,%s,%s,%s,%s,%s)"
+
+        with connection.cursor() as cursor:
+            cursor.execute(sql, data)
 
     def bulk_save_result(self, results, clock, item_type):
         data = {}
