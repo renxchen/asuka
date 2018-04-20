@@ -352,7 +352,8 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
           'data': {
             'rule_type': 'value',
             'is_root': true,
-            'rule_id': 0
+            'rule_id': 0,
+            'tree_id': 'snmp_oid'
           }
         };
         if (this.changeFlgs.columeSelectedChangeed) {
@@ -556,28 +557,37 @@ export class DataTableLoginComponent implements OnInit, AfterViewInit {
       'group_id': this.selectedRowObj['groupNo']
     };
     if (this.tree_id) {
-      this.sendData['tree_id'] = this.tree_id;
+      if (this.tree_id !== 'snmp_oid') {
+        this.sendData['tree_id'] = this.tree_id;
+      }
+      return true;
+    } else {
+      alert('リーフを選択してください！');
+      return false;
     }
   }
   public saveTableData() {
-    if (this.item_id_str) {
-      let url = '/api_data_table_step1/';
-      this.collectSaveData();
-      this.post(url, this.sendData).subscribe((res: any) => {
-        if (res && res.status) {
-          if (res.status.status && res.status.status.toLowerCase() === 'false') {
-            let msg = res.status.status;
-            alert(msg);
-          } else {
-            this.bsModalRef.hide();
-            alert('保存しました！');
-            $('#tableTable').trigger('reloadGrid');
+    let isTreeId = this.collectSaveData();
+    if (isTreeId) {
+      if (this.item_id_str) {
+        let url = '/api_data_table_step1/';
+        this.post(url, this.sendData).subscribe((res: any) => {
+          if (res && res.status) {
+            if (res.status.status && res.status.status.toLowerCase() === 'false') {
+              let msg = res.status.message;
+              alert(msg);
+            } else {
+              this.bsModalRef.hide();
+              alert('保存しました！');
+              $('#tableTable').trigger('reloadGrid');
+            }
           }
-        }
-      });
-    } else {
-      alert('データ取得に異常が発生しました、アドミニストレータに連絡してください！');
+        });
+      } else {
+        alert('データ取得に異常が発生しました、アドミニストレータに連絡してください！');
+      }
     }
+
 
   }
 
