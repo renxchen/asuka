@@ -18,10 +18,9 @@ from backend.apolo.models import Items, DevicesGroups, CollPolicy
 from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import views_helper
-# from backend.apolo.serializer.history_x_serializer import HistoryXSerializer
-from backend.apolo.serializer.history_cli_x_serializer import HistoryCliXSerializer
-from backend.apolo.serializer.history_snmp_x_serializer import HistorySnmpXSerializer
 from backend.apolo.tools import constants
+import time
+from django.db import connection
 
 
 class DataTableTableViewsSet(viewsets.ViewSet):
@@ -42,42 +41,46 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         # device ids
         self.devices = self.get_device_ids(**{'group': int(self.device_group_id)})
         # self.devices = views_helper.get_request_value(self.request, 'devices', 'GET')
-        self.rule_name = views_helper.get_request_value(self.request, 'rule_name', 'GET')
+        # self.rule_name = views_helper.get_request_value(self.request, 'rule_name', 'GET')
         self.oid = views_helper.get_request_value(self.request, 'oid', 'GET')
 
-    @staticmethod
-    def get_history(item_id, value_type, policy_type):
+    def get_history(self, item_id, value_type, policy_type):
         """!@brief
-        Get history data from History%s%s table
+        Get history data from history_%s_%s table
         @param item_id: item id
         @param value_type: value type(str, int, float, text)
         @param policy_type: policy type(cli, snmp)
-        @return history: history data(type is list)
+        @note
+        @return history: history data(type is dic)
         """
-        base_db_format = "History%s%s"
-        trigger_db_modules = "backend.apolo.models"
-        trigger_numeric = ["Float", "Int"]
-        table_name = base_db_format % (policy_type.capitalize(), value_type.capitalize())
-        db_module = importlib.import_module(trigger_db_modules)
-        if hasattr(db_module, table_name) is False:
-            raise Exception("%s table isn't exist" % table_name)
-        table = getattr(db_module, table_name)
-        history = table.objects.filter(**{"item_id": item_id}).order_by("-clock")
-        if value_type not in trigger_numeric:
-            for h in history:
-                # h.value = "'" + h.value + "'"
-                h.value = str(h.value)
-        return history
+        try:
+            base_db_format = "history_%s_%s"
+            table_name = base_db_format % (policy_type.lower(), value_type.lower())
+            where_condition = 'item_id = ' + str(item_id)
+            with connection.cursor() as cursor:
+                sql = "select * from %s where %s order by %s" % (table_name, where_condition, '-clock')
+                cursor.execute(sql)
+                # cursor.execute("SELECT * FROM history_cli_str LIMIT 2")
+                return self.dict_fetchall(cursor)
+                # history = table.objects.filter(**kwargs).order_by("-clock")
+                # if value_type not in trigger_numeric:
+                #     for h in history:
+                #         # h.value = "'" + h.value + "'"
+                #         h.value = str(h.value)
+                # return history
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
 
-    # @staticmethod
-    # def get_mapping(code):
-    #     """
-    #     Search mapping relationship from Mapping table by given code
-    #     :param code:
-    #     :return: code meaning
-    #     """
-    #     value = Mapping.objects.filter(**{'code': code}).values('code_meaning')[0]
-    #     return value['code_meaning']
+    @staticmethod
+    def dict_fetchall(_cursor):
+        columns = [col[0] for col in _cursor.description]
+        return [
+            dict(zip(columns, row))
+            for row in _cursor.fetchall()
+            ]
+
     @staticmethod
     def get_device_ids(**kwargs):
         """!@brief
@@ -166,9 +169,11 @@ class DataTableTableViewsSet(viewsets.ViewSet):
         """
         try:
             data = []
+            items_rule_name_list = []
             for device in self.devices:
                 device_id = int(device['device'])
                 result = {}
+                item_rule_name_dic = {}
                 # get policy type, 0:cli, 1:snmp
                 policy_type = self.get_coll_policy(**{'coll_policy_id': self.coll_policy_id})
                 kwargs = {
@@ -187,26 +192,30 @@ class DataTableTableViewsSet(viewsets.ViewSet):
                             'coll_policy': self.coll_policy_id,
                             # 'policys_groups__policy_group': self.policy_group_id
                         }
-                item_infos = Items.objects.filter(**kwargs).values('item_id', 'value_type', 'item_type',
-                                                                   'device__hostname')
+                item_infos = Items.objects.filter(**kwargs).values('item_id',
+                                                                   'value_type',
+                                                                   'item_type',
+                                                                   'device__hostname',
+                                                                   'coll_policy_rule_tree_treeid__rule__key_str')
                 if item_infos:
+                    rule_name = item_infos[0]['coll_policy_rule_tree_treeid__rule__key_str']
                     item_id = item_infos[0]['item_id']
                     value_type = self.get_mapping(item_infos[0]['value_type'])
                     item_type = self.get_mapping_cli_snmp(item_infos[0]['item_type'])
-                    queryset = self.get_history(item_id, value_type, item_type)
-                    # serializer = HistoryXSerializer(queryset, many=True)
-                    if item_type.upper() == 'SNMP':
-                        serializer = HistorySnmpXSerializer(queryset, many=True)
-                    else:
-                        serializer = HistoryCliXSerializer(queryset, many=True)
-                    if serializer.data:
+                    history_data = self.get_history(item_id, value_type, item_type)
+                    item_rule_name_dic['item_id'] = item_id
+                    item_rule_name_dic['rule_name'] = rule_name
+                    items_rule_name_list.append(item_rule_name_dic)
+                    if history_data:
                         result['device_name'] = item_infos[0]['device__hostname']
-                        result['time_stamp'] = serializer.data[0]['clock']
+                        # result['time_stamp'] = serializer.data[0]['clock']
+                        result['time_stamp'] = time.strftime("%Y-%m-%d %H:%M:%S",
+                                                             time.localtime(int(history_data[0]['clock'])))
                         if item_type.upper() == 'CLI':
-                            result['path'] = serializer.data[0]['block_path']
-                        result['value'] = serializer.data[0]['value']
-                        result['item_id'] = serializer.data[0]['item']
-                        result['rule_name'] = self.rule_name
+                            result['path'] = history_data[0]['block_path']
+                        result['value'] = history_data[0]['value']
+                        # result['item_id'] = serializer.data[0]['item']
+                        # result['rule_name'] = rule_name
                         if len(policy_type):
                             if int(policy_type[0]['policy_type']) == 1:
                                 result['oid'] = self.oid
@@ -214,6 +223,7 @@ class DataTableTableViewsSet(viewsets.ViewSet):
             data = {
                 'data': {
                     'data': data,
+                    'items_rule_name': items_rule_name_list
                 },
                 'new_token': self.new_token,
                 constants.STATUS: {

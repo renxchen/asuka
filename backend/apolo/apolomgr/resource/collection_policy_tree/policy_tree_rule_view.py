@@ -406,9 +406,9 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         @date 2017/12/25
         """
         int_reg = ['\d+', '\d', '\d+$', '\d$', '-\d+', '-\d', '-\d+$', '-\d$']
-        float_reg = ['\d\.\d', '\d\.\d+', '\d+\.\d', '\d+\.\d+', '\d\.\d$', '\d\.\d+$', '\d+\.\d$', '\d+\.\d+$',
-                     '-\d\.\d', '-\d\.\d+', '-\d+\.\d', '-\d+\.\d+', '-\d\.\d$', '-\d\.\d+$', '-\d+\.\d$', '-\d+\.\d+$'
-                     ]
+        # float_reg = ['\d\.\d', '\d\.\d+', '\d+\.\d', '\d+\.\d+', '\d\.\d$', '\d\.\d+$', '\d+\.\d$', '\d+\.\d+$',
+        #              '-\d\.\d', '-\d\.\d+', '-\d+\.\d', '-\d+\.\d+', '-\d\.\d$', '-\d\.\d+$', '-\d+\.\d$', '-\d+\.\d+$'
+        #              ]
         if rule_type == '4':
             return constants.VALUE_TYPE_INT
         elif rule_type == '9':
@@ -416,8 +416,8 @@ class PolicyTreeRuleViewSet(viewsets.ViewSet):
         else:
             if extract_data_reg in int_reg:
                 return constants.VALUE_TYPE_INT
-            elif extract_data_reg in float_reg:
-                return constants.VALUE_TYPE_FLOAT
+            # elif extract_data_reg in float_reg:
+            #     return constants.VALUE_TYPE_FLOAT
             else:
                 return constants.VALUE_TYPE_STRING
 
