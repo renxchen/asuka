@@ -1,6 +1,6 @@
 <div class="modal-content">
     <div class="modal-body" style="margin-bottom:10px;max-height:500px;overflow:auto">
-        <p *ngIf="!data" class="text-center">{{modalMsg}}</p>
+        <p *ngIf="!data" class="text-left" [innerHtml]="modalMsg"></p>
         <div *ngIf="data" class="text-left">
             <p class="text-left">{{modalMsg}}</p>
             <div *ngFor="let item of data">
