@@ -5,7 +5,7 @@
 * @time: 2017/01/25
 * @desc: display snmp collection policy in detail
 */
-import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -18,7 +18,7 @@ import * as _ from 'lodash';
     styleUrls: ['.././collectionPolicy.component.less']
 })
 
-export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
+export class SNMPCPDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     cPId: any;
     apiPrefix: any;
     name: any;
@@ -123,5 +123,10 @@ export class SNMPCPDetailComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

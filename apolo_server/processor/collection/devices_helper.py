@@ -4,8 +4,7 @@ import time
 import copy
 import json
 from apolo_server.processor.constants import DevicesConstants, CommonConstants, ParserConstants
-from apolo_server.processor.db_units.memcached_helper import ItemMemCacheDb
-from apolo_server.processor.db_units.db_helper import DeviceDbHelp, ItemsDbHelp
+from apolo_server.processor.db_units.db_helper import DeviceDbHelp
 from backend.apolo.apolomgr.resource.common.tool import Tool
 
 __version__ = '0.1'
@@ -185,7 +184,7 @@ def __merge_cli(item, deviceinfo_dict,rule_dict):
         deviceinfo_dict['ip'] = item['device__ip']
         deviceinfo_dict['hostname'] = item['device__hostname']
         deviceinfo_dict['expect'] = item['device__login_expect']
-        deviceinfo_dict['port'] = item['device__snmp_port']
+        deviceinfo_dict['port'] = item['device__telnet_port']
         
         """
         deviceinfo_dict['ip'] = "10.71.244.135"
@@ -240,13 +239,23 @@ def __merge_cli(item, deviceinfo_dict,rule_dict):
     )
 
 def __split_path(path, rule_id):
+
     rules = []
-    if len(path) == 1:
+    arry = path.split('_')
+    if len(arry)==1:
         rules.append(str(rule_id))
     else:
-        rules = path.split(ParserConstants.TREE_PATH_SPLIT)[1:]
+        rules=arry[1:]
         rules.append(str(rule_id))
     return rules
+
+    # rules = []
+    # if len(path) == 1:
+    #     rules.append(str(rule_id))
+    # else:
+    #     rules = path.split(ParserConstants.TREE_PATH_SPLIT)[1:]
+    #     rules.append(str(rule_id))
+    # return rules
 
 @deco_item
 def __check_item_interval(item, now_time):

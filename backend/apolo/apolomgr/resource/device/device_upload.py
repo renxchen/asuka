@@ -22,6 +22,7 @@ from rest_framework.parsers import FileUploadParser
 import csv, codecs, re
 import string
 import time
+import chardet
 
 
 class DevicePreViewSet(APIView):
@@ -42,43 +43,61 @@ class DevicePreViewSet(APIView):
         try:
             with transaction.atomic():
                 import os
-                headers_expect1 = ["\xef\xbb\xbfHostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
-                                   "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
-                headers_expect2 = ["Hostname", "IP Address", "Telnet Port", "SNMP Port", "SNMP Community",
-                                   "SNMP Version", "Login Expect", "Device Type", "OS Type", "Group"]
+                line1 = "Hostname,IP Address,Telnet Port,SNMP Port,SNMP Community,SNMP Version,Login Expect,Device Type,OS Type,Group\r\n"
+                line2 = "\xef\xbb\xbfHostname,IP Address,Telnet Port,SNMP Port,SNMP Community,SNMP Version,Login Expect,Device Type,OS Type,Group\r\n"
                 filename = self.request.FILES['file']
-                try:
-                    dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8", errors="ignore").read(1024))
-                    filename.open()
-                    reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8", errors="ignore"), delimiter=',',
-                                            dialect=dialect)
-                    headers = reader.fieldnames
-                except Exception, e:
-                    data = {
-                        'data': [],
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.CSV_FORMAT_ERROR
-                        },
-                    }
-                    return api_return(data=data)
-                if headers == headers_expect1:
-                    hostname = "\xef\xbb\xbfHostname"
-                elif headers == headers_expect2:
-                    hostname = "Hostname"
-                else:
-                    data = {
-                        'data': [],
-                        'new_token': self.new_token,
-                        constants.STATUS: {
-                            constants.STATUS: constants.FALSE,
-                            constants.MESSAGE: constants.CSV_TITLE_ERROR
-                        },
-                    }
-                    return api_return(data=data)
+
+                for index, line in enumerate(filename):
+                    if index == 0:
+                        # when the uploaded file title doesn`t contains ',',return the wrong csv format
+                        if ',' not in line:
+                            data = {
+                                'data': [],
+                                'new_token': self.new_token,
+                                constants.STATUS: {
+                                    constants.STATUS: constants.FALSE,
+                                    constants.MESSAGE: constants.CSV_FORMAT_ERROR
+                                },
+                            }
+                            return api_return(data=data)
+                        # if the title is not in line1(utf-8) or line2(utf-8 with bom),the title is wrong
+                        if line == line1:
+                            hostname = "Hostname"
+                        elif line == line2:
+                            hostname = "\xef\xbb\xbfHostname"
+                        else:
+                            data = {
+                                'data': [],
+                                'new_token': self.new_token,
+                                constants.STATUS: {
+                                    constants.STATUS: constants.FALSE,
+                                    constants.MESSAGE: constants.CSV_TITLE_ERROR
+                                },
+                            }
+                            return api_return(data=data)
+                    # if the code is not in follow codes , the code of file is wrong
+                    if chardet.detect(line).get('encoding') not in ['ISO-8859-1', 'ascii', 'UTF-8-SIG', 'utf-8', 'Windows-1252']:
+                        data = {
+                            'data': [],
+                            'new_token': self.new_token,
+                            constants.STATUS: {
+                                constants.STATUS: constants.FALSE,
+                                constants.MESSAGE: constants.CSV_CODE_ERROR
+                            },
+                        }
+                        return api_return(data=data)
+                    if chardet.detect(line).get('encoding') in ['ISO-8859-1', 'ascii', 'UTF-8-SIG', 'utf-8']:
+                        file_encode = 'utf-8'
+                    else:
+                        file_encode = 's_jisx0213'
+                        break
+                filename.open()
+                dialect = csv.Sniffer().sniff(codecs.EncodedFile(filename, "utf-8", file_encode, errors="ignore").read(1024))
+                filename.open()
+                reader = csv.DictReader(codecs.EncodedFile(filename, "utf-8", file_encode, errors="ignore"), delimiter=',',
+                                        dialect=dialect)
+                headers = reader.fieldnames
                 error_list = []
-                hostname_list = []
                 file_x = []
                 operation_id = int(time.time())
                 file_dir = os.path.abspath(os.path.join(os.getcwd(), "upload"))
@@ -87,6 +106,8 @@ class DevicePreViewSet(APIView):
                 else:
                     os.mkdir(file_dir)
                 path_csv = os.path.abspath(os.path.join(file_dir, str(operation_id) + "_" + filename.name))
+                hostname_dict = {}
+                hostname_repetition = []
                 for f in reader:
                     if len(f) != 10:
                         data = {
@@ -101,7 +122,10 @@ class DevicePreViewSet(APIView):
                     file_x.append(f)
                     # hostname check
                     if f.get(hostname).strip() != '':
-                        hostname_list.append(f.get(hostname))
+                        if hostname_dict.get(f.get(hostname)) is None:
+                            hostname_dict[f.get(hostname)] = 0
+                        else:
+                            hostname_repetition.append(f.get(hostname))
                     else:
                         data = {
                             'data': [],
@@ -113,9 +137,9 @@ class DevicePreViewSet(APIView):
                             },
                         }
                         return api_return(data=data)
-                if len(hostname_list) != len(set(hostname_list)):
+                if len(hostname_repetition) != 0:
                     data = {
-                        'data': [],
+                        'data_duplicate': list(set(hostname_repetition)),
                         'error_list': error_list,
                         'new_token': self.new_token,
                         constants.STATUS: {
@@ -145,6 +169,7 @@ class DevicePreViewSet(APIView):
                                                               and str(letter) != r",")):
                                 dict_check['hostname_check'] = False
                                 flag_err += 1
+                                break
                             else:
                                 dict_check['hostname_check'] = True
                     dict_check['hostname'] = hostname_csv
@@ -192,6 +217,7 @@ class DevicePreViewSet(APIView):
                             if not (str(letter).isalnum() or str(letter) in string.punctuation or str(letter) == ' '):
                                 dict_check['snmp_community'] = False
                                 flag_err += 1
+                                break
                             else:
                                 dict_check['snmp_community'] = True
                     # snmp version
@@ -213,12 +239,10 @@ class DevicePreViewSet(APIView):
                         flag_err += 1
                     else:
                         flag_expect = 0
-                        for symbol in login_expect:
-                            for letter in symbol:
-                                if not (str(letter).isalnum() or str(letter) in string.punctuation or str(
-                                        letter) == ' '):
-                                    dict_check['login_expect'] = False
-                                    flag_expect += 1
+                        for letter in login_expect:
+                            if not (str(letter).isalnum() or str(letter) in string.punctuation or str(
+                                    letter) == ' '):
+                                flag_expect += 1
                         if flag_expect > 0:
                             dict_check['login_expect'] = False
                             flag_err += 1
@@ -275,6 +299,7 @@ class DevicePreViewSet(APIView):
                                             flag_group += 1
                             if not flag_group == len(group):
                                 dict_check['group'] = False
+                                dict_check['ostype'] = False
                                 flag_err += 1
                             else:
                                 dict_check['group'] = True
@@ -320,4 +345,3 @@ class DevicePreViewSet(APIView):
         except Exception, e:
             print e
             raise e
-

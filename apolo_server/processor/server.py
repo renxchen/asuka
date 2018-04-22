@@ -3,8 +3,9 @@ __version__ = '0.1'
 __author__ = 'Rubick <haonchen@cisco.com>'
 import sys
 import os
-from constants import SYS_PATH
+from constants import SYS_PATH, CommonConstants
 sys.path.append(SYS_PATH)
+from apolo_server.processor.db_units.db_units import *
 import json
 import time
 import Queue
@@ -18,6 +19,8 @@ from threading import Thread
 from apolo_server.processor.session_mgr import SessionManager
 from apolo_server.processor.configurations import Configurations
 from apolo_server.processor.collection.devices_helper import get_devices
+from helper import get_logger
+import traceback
 
 
 class TaskDispatcher(Thread):
@@ -34,10 +37,10 @@ class TaskDispatcher(Thread):
             task_id = None
             if len(result) == 2:
                 task_id = result[1]
-            
+
             has_response = False
 
-            logging.debug('Receive request from %s worker' % channel)
+            logger.debug('Receive request from %s worker' % channel)
             if channel in "cli snmp":
                 _device_q = device_q[channel]
                 if _device_q.qsize():
@@ -47,40 +50,46 @@ class TaskDispatcher(Thread):
                     device_id = _device_q.get()
                     task_id = device_task_dict[device_id]["task_id"]
                     task = session_mgr.get(task_id)
-                    session_mgr.update(task_id, dict(
-                        status='coll_start', coll_start_timestamp=timestamp))
-                    
-                    has_response = True
-                    zmq_dispatch.send_string(
-                        b'%s %s' % (task_id, json.dumps(task)))
-                    logging.debug('Sent task %s to %s worker' %
-                                  (task_id, channel))
-                
-            elif channel.startswith("parser"):
-                if task_id:
+                    if task:
+                        session_mgr.update(task_id, dict(
+                            status='coll_start', coll_start_timestamp=timestamp))
+
+                        has_response = True
+                        zmq_dispatch.send_string(
+                            b'%s %s' % (task_id, json.dumps(task)))
+                        logger.debug('Sent task %s to %s worker' %
+                                    (task_id, channel))
+
+            elif channel == "parser":
+                q = task_q[channel]
+                if q.qsize():
+                    task_id_data = q.get()
+                    task_id = task_id_data.split("__")[0]
                     task = session_mgr.get(task_id)
-                    has_response = True
-                    zmq_dispatch.send_string(
-                        b'%s %s' % (task_id, json.dumps(task)))
-                    logging.debug('Sent task %s to %s worker' %
-                                  (task_id, channel))
-              
+                    if task:
+                        has_response = True
+                        zmq_dispatch.send_string(
+                            b'%s %s' % (task_id_data, json.dumps(task)))
+                        logger.debug('Sent task %s to %s worker' %
+                                    (task_id, channel))
+
             elif channel in "status_snmp status_cli":
                 q = task_q[channel]
-                logging.debug('Receive request from %s worker' % channel)
+                logger.debug('Receive request from %s worker' % channel)
                 if q.qsize():
                     task_id = q.get()
                     task = session_mgr.get(task_id)
-                    session_mgr.update(task_id, dict(status='status_start'))
-                    has_response = True
-                    zmq_dispatch.send_string(
-                        b'%s %s' % (task_id, json.dumps(task)))
-                    logging.debug('Sent task %s to %s worker' %
-                                  (task_id, channel))
-            
+                    if task:
+                        session_mgr.update(task_id, dict(status='status_start'))
+                        has_response = True
+                        zmq_dispatch.send_string(
+                            b'%s %s' % (task_id, json.dumps(task)))
+                        logger.debug('Sent task %s to %s worker' %
+                                    (task_id, channel))
+
             if not has_response:
                 zmq_dispatch.send_string(b'')
-               
+
 
 class StatusCheckApiHandler(web.RequestHandler):
     @web.asynchronous
@@ -130,7 +139,7 @@ class StatusCheckApiHandler(web.RequestHandler):
 
         # publish the new task to the channel
         zmq_publish.send_string(b'%s task' % channel)
-        logging.info('Publish new task %s to %s' % (task_id, channel))
+        logger.info('Publish new task %s to %s' % (task_id, channel))
 
 
 class CommandApiHandler(web.RequestHandler):
@@ -158,7 +167,7 @@ class CommandApiHandler(web.RequestHandler):
 
         # get pending dict and device_task dict
         device_dict = cli_device_dict if channel == "cli" else snmp_device_dict
-        #device_task_dict = cli_device_task_dict if channel == "cli" else snmp_device_task_dict
+        
 
         for device_id in devices:
             # get device info
@@ -188,33 +197,33 @@ class CommandApiHandler(web.RequestHandler):
                     task = session_mgr.get(task_id)
                     if task["status"] != "coll_queue":
                         device_task_info["pedding_status"] = True
-                        device_task_info["deviceinfo"] = device_info
+                        device_task_info["device_info"] = device_info
 
             else:
                 # create new task
+                timer = time.time()
                 task_id = uuid.uuid4().hex
                 device_dict[device_id] = {
                     "pedding_status": False,
-                    "task_id": task_id
+                    "task_id": task_id,
+                    "timer":timer
                 }
-                timer = time.time()
+                
                 timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
                 session_mgr.put(task_id,
                                 dict(status='coll_queue',
                                      device_info=device_info,
                                      timer=timer,
                                      coll_queue_timestamp=timestamp,
-                                     channel=channel,
-                                     parser_status="queue"
-
+                                     channel=channel
                                      ))
 
-                session_mgr.init_parser_queue(task_id)
+                
                 _device_q.put(device_id)
 
                 # publish the new task to the channel
                 zmq_publish.send_string(b'%s task' % channel)
-                logging.info('Publish new task %s to %s' % (task_id, channel))
+                logger.info('Publish new task %s to %s' % (task_id, channel))
 
             _mutex.release()
 
@@ -228,19 +237,25 @@ class CommandApiHandler(web.RequestHandler):
         self.finish()
 
 
-def collection_task_finish(task_id, device_id, channel,result):
-    timer = time.time()
-    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-    session_mgr.update(task_id, dict(status='coll_finish',
-                                     coll_finish_timestamp=timestamp,
-                                     coll_result=result))
+def check_task_all_finish(task):
+    has_all_finish = False
+    if task["status"] == "coll_finish":
+        has_all_finish = True
+        if "element_result" in task:
+            for _clock_key in task["element_result"]:
+                if "parser_result" not in task or _clock_key not in task["parser_result"]:
+                    has_all_finish = False
+                    break
 
+    return has_all_finish
+
+
+def handle_pedding_task(channel, device_id, timer, timestamp):
     device_dict = cli_device_dict if channel == "cli" else snmp_device_dict
     _mutux = session_mgr.get_threading_lock(device_id)
     _mutux.acquire()
     if device_id in device_dict:
         device_task_info = device_dict[device_id]
-
         if not device_task_info["pedding_status"]:
             del device_dict[device_id]
             session_mgr.set_lock_timer(device_id)
@@ -249,30 +264,29 @@ def collection_task_finish(task_id, device_id, channel,result):
             task_id = uuid.uuid4().hex
             device_dict[device_id] = {
                 "pedding_status": False,
-                "task_id": task_id
+                "task_id": task_id,
+                "timer":timer
             }
 
-            device_info = device_task_info["deviceinfo"]
+            device_info = device_task_info["device_info"]
             session_mgr.put(task_id,
                             dict(status='coll_queue',
                                  device_info=device_info,
                                  timer=timer,
                                  coll_queue_timestamp=timestamp,
-                                 channel=channel,
-                                 parser_status="queue"
+                                 channel=channel
                                  ))
 
-            session_mgr.init_parser_queue(task_id)
+            
             _device_q.put(device_id)
             zmq_publish.send_string(b'%s task' % channel)
-            logging.info('Publish new task %s to %s' % (task_id, channel))
+            logger.info('Publish new task %s to %s' % (task_id, channel))
     _mutux.release()
 
 
 def on_worker_data_in(data):
 
     result = json.loads(data[0])
-
     result_type = result['result_type']
     task_id = result['task_id']
     status = result['status']
@@ -284,14 +298,19 @@ def on_worker_data_in(data):
     if task:
         channel = task["channel"]
         device_id = str(task["device_info"].get("device_id", ""))
+        timer = time.time()
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
-        logging.info("Task:%s, Device:%s received result, result type: %s" % (
+        logger.info("Task:%s, Device:%s received result, result type: %s" % (
             task_id, device_id, result_type))
+
+        need_task_finish_check = False
+        need_send_to_parser = False
 
         if result_type in "status_snmp status_cli":
             if task:
                 timer = time.time()
-                session_mgr.update(task_id, dict(status='all_finish',
+                task.update(dict(status='all_finish',
                                                  result=result,
                                                  finish_timer=timer))
             try:
@@ -301,23 +320,45 @@ def on_worker_data_in(data):
                 pass
 
         if result_type == "element_result":
-
-            session_mgr.update_command_result(task_id, task, result)
-            new_channel = "parser"
-            if channel == "snmp":
-                find_key = result["clock"]
-            else:
-                find_key = result["command"]
-
-            session_mgr.set_parser_queue(
-                task_id, b'%s task %s %s' % (new_channel, task_id, find_key))
-
+            clock = result["clock"]
+            task.setdefault("element_result", {})[clock] = result
+            need_send_to_parser = True
         elif result_type == "task_result":
-            collection_task_finish(task_id, device_id, channel, result)
+            task.update(dict(status='coll_finish',
+                             coll_finish_timestamp=timestamp,
+                             coll_result=result))
+            need_task_finish_check = True
         elif result_type == "parser":
-            session_mgr.update_parser_result(task_id, result)
+            #session_mgr.update_parser_result(task_id, result)
+            clock = result["collection_clock"]
+            task.setdefault("parser_result",{})[clock] = result
 
-        logging.info("Task:%s, Device:%s result handle finished, result type: %s" % (
+            need_task_finish_check = True
+        elif result_type == CommonConstants.ALL_FINISH_CHECK_FLAG:
+            handle_pedding_task(channel, device_id, timer, timestamp)
+            task.update(dict(status='all_finish',
+                             finish_timer=timer,
+                             all_finish_timestamp=timestamp
+                             ))
+
+        all_finish_status = False
+        if need_task_finish_check:
+            all_finish_status = check_task_all_finish(task)
+
+        if need_send_to_parser or all_finish_status:
+            new_channel = "parser"
+            if all_finish_status:
+                data = CommonConstants.ALL_FINISH_CHECK_FLAG
+            else:
+                data = result["clock"]
+
+            if new_channel not in task_q:
+                task_q[new_channel] = Queue.Queue()
+            parser_q = task_q[new_channel]
+            parser_q.put(task_id+"__"+data)
+            zmq_publish.send_string(b'%s task' % new_channel)
+
+        logger.info("Task:%s, Device:%s result handle finished, result type: %s" % (
             task_id, device_id, result_type))
 
 
@@ -329,39 +370,58 @@ class SessionApiHandler(web.RequestHandler):
 
         method = args[0]
         self.set_header("Content-Type", "application/json")
-        if method == 'summary':
+        try:
+            if method == 'summary':
 
-            summary = {}
-            timer = session_mgr.get_timer()
-            now = time.time()
-            session_data = session_mgr.get_all()
+                summary = {}
+                timer = session_mgr.get_timer()
+                now = time.time()
+                session_data = session_mgr.get_all()
 
-            for task_id in session_data:
-                task = session_data[task_id]
-                create = task.get("coll_queue_timestamp", "")
-                if not create:
-                    create = task.get("timestamp", "")
-                s = dict(
-                    channel=task['channel'],
-                    status=task['status'],
-                    create=create,
-                    age=int(now - task['timer']),
-                    device_id=task["device_info"].get("device_id", ""),
-                    device_ip=task["device_info"].get("ip", ""),
-                    device_hostname=task["device_info"].get("hostname", ""),
-                )
-                summary[task_id] = s
+                for task_id in session_data:
+                    task = session_data[task_id]
+                    create = task.get("coll_queue_timestamp", "")
+                    if not create:
+                        create = task.get("timestamp", "")
+                    s = dict(
+                        channel=task['channel'],
+                        status=task['status'],
+                        create=create,
+                        age=int(now - task['timer']),
+                        device_id=task["device_info"].get("device_id", ""),
+                        device_ip=task["device_info"].get("ip", ""),
+                        device_hostname=task["device_info"].get("hostname", ""),
+                    )
+                    summary[task_id] = s
 
-            self.write(json.dumps(summary))
-        elif method == 'debug':
-            data = session_mgr.get_all()
-            if not data:
-                self.set_status(404)
-                data = dict(status='Error', message='No session data')
-            self.write(json.dumps(data))
-        else:
+                self.write(json.dumps(summary))
+            elif method == 'debug':
+                data = session_mgr.get_all()
+                if not data:
+                    self.set_status(404)
+                    data = dict(status='Error', message='No session data')
+                self.write(json.dumps(data))
+            elif method in 'cli_peddings snmp_peddings':
+                _device_dict = cli_device_dict if method == "cli_peddings" else snmp_device_dict
+                now = time.time()
+                if not _device_dict:
+                    self.write(json.dumps(dict(status='Error', message='No Pedding data')))
+                else:
+                    _pedding_dict={}
+                    for k in _device_dict.keys():
+                        if _device_dict[k]["pedding_status"] == True:
+                            _pedding_dict[k]=_device_dict[k]
+                            _pedding_dict[k]["age"] = int(now - _pedding_dict[k]['timer'])
+
+                    self.write(json.dumps(_pedding_dict))
+            else:
+                self.write(json.dumps(dict(status='error',
+                                        message='Not valid request')))
+        except Exception as e:
+            print traceback.format_exc()
             self.write(json.dumps(dict(status='error',
-                                       message='Not valid request')))
+                                        message='Session error,please refresh')))
+
         self.finish()
 
 
@@ -371,15 +431,21 @@ if __name__ == '__main__':
     config = Configurations()
     port = options.options.p
 
+    logger = get_logger("server",logging.DEBUG)
+
+
     loop = ZMQIOLoop()
     loop.install()
     context = zmq.Context()
     zmq_publish = context.socket(zmq.PUB)
-    zmq_publish.bind("tcp://127.0.0.1:%s" % str(config.get_configuration("zmqPublish")))
+    zmq_publish.bind("tcp://127.0.0.1:%s" %
+                     str(config.get_configuration("zmqPublish")))
     zmq_dispatch = context.socket(zmq.REP)
-    zmq_dispatch.bind("tcp://127.0.0.1:%s" % str(config.get_configuration("zmqDispatch")))
+    zmq_dispatch.bind("tcp://127.0.0.1:%s" %
+                      str(config.get_configuration("zmqDispatch")))
     zmq_result = context.socket(zmq.PULL)
-    zmq_result.bind("tcp://127.0.0.1:%s" % str(config.get_configuration("zmqResult")))
+    zmq_result.bind("tcp://127.0.0.1:%s" %
+                    str(config.get_configuration("zmqResult")))
     receiver = ZMQStream(zmq_result)
     receiver.on_recv(on_worker_data_in)
 
@@ -394,7 +460,7 @@ if __name__ == '__main__':
     task_dispatcher.daemon = True
     task_dispatcher.start()
 
-    session_mgr = SessionManager(zmq_publish)
+    session_mgr = SessionManager(handle_pedding_task)
     session_mgr.daemon = True
     session_mgr.start()
 

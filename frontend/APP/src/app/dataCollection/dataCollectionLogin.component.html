@@ -6,10 +6,9 @@
         </button>
     </div>
     <div class="modal-body" style="padding-bottom: 20px">
-        <form class="form-horizontal">
+        <div class="form-horizontal">
             <div class="form-group">
                 <label class="col-sm-3 control-label">
-                    <!--<span style="color:red">※</span>-->
                     OS TYPE:
                 </label>
                 <div class="col-sm-6" >
@@ -23,7 +22,6 @@
             </div>
             <div class="form-group">
                 <label class="col-sm-3 control-label">
-                    <!--<span style="color:red">※</span>-->
                     優先度:
                 </label>
                 <div class="col-sm-6" >
@@ -37,7 +35,6 @@
             </div>
             <div class="form-group">
                 <label class="col-sm-3 control-label">
-                    <!--<span style="color:red">※</span>-->
                     デバイスグループ:
                 </label>
                 <div class="col-sm-6" >
@@ -51,13 +48,11 @@
             </div>
             <div class="form-group">
                 <label class="col-sm-3 control-label">
-                    <!--<span style="color:red">※</span>-->
                     コレクション<br>ポリシーグループ:
                 </label>
                 <div class="col-sm-6" >
                     <select class="form-control" [(ngModel)]="policyGroup" (change)="changeCPG()"
                             id="policyGroup" name="policyGroup">
-                        <!--<option value="-1">全機能OFF</option>-->
                         <option *ngFor="let item of policyGroups" value="{{item.policy_group_id}}">
                             {{item.name}}
                         </option>
@@ -66,7 +61,6 @@
             </div>
             <div class="form-group">
                 <label class="col-sm-3 control-label">
-                    <!--<span style="color:red">※</span>-->
                     有効期間:
                 </label>
                 <div class="col-sm-3" *ngFor="let item of validPeriodTypes">
@@ -76,41 +70,31 @@
                 </div>
                 <div id="validPeriod" class="col-sm-12">
                     <div class="col-sm-3"></div>
-                    <div class="col-sm-9">
-                        <div class="col-sm-3" style="margin-bottom: 5px; margin-top: 30px; padding-right: 0px; padding-left: 0px;">
+                    <div class="col-sm-9 datepickr-group">
+                        <label class=" control-label col-sm-3" >
                             取得開始日時:
+                        </label>
+                        <div class="col-sm-7">
+                            <input id="startDateTimeInput" type="text" class="form-control" name="startDateTime"
+                                   placeholder="YYYY-MM-DD HH:mm" [(ngModel)]="startDateTime"
+                                   (ngModelChange)="setMaxAndMinDate('start')">
                         </div>
-                        <div class="col-sm-5" style="margin-bottom: 25px; margin-top: 23px; padding-right: 0px; padding-left: 0px;">
-                            <input type="text" placeholder="YYYY-MM-DD" name="startDate" class="bsDate"
-                               [(ngModel)]="startDate"
-                               [bsConfig]="{dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue'}"
-                               #dps="bsDatepicker"
-                               bsDatepicker>
-                        </div>
-                        <div class="col-sm-4 down-place" style=" padding-right: 0px; padding-left: 0px;">
-                            <timepicker name="startDateTime" [(ngModel)]="startDateTime" [readonlyInput]="isEnabled"
-                                        [showMeridian]="isTimeMeridian" [minuteStep]="1">
-
-                            </timepicker>
+                        <div class="col-sm-1 clear-div">
+                            <i class="fa fa-trash-o clear-icon" (click)="clearDate('startDate')"></i>
                         </div>
                     </div>
                     <div class="col-sm-3"></div>
-                    <div class="col-sm-9">
-                        <div class="col-sm-3" style="margin-bottom: 5px; margin-top: 30px; padding-right: 0px; padding-left: 0px;">
+                    <div class="col-sm-9 datepickr-group ">
+                        <label class=" control-label col-sm-3 " >
                             取得終了日時:&nbsp;
+                        </label>
+                        <div class="col-sm-7">
+                            <input id="endDateTimeInput" type="text" class="form-control" name="endDateTime"
+                                   placeholder="YYYY-MM-DD HH:mm" [(ngModel)]="endDateTime"
+                                   (ngModelChange)="setMaxAndMinDate('end')">
                         </div>
-                        <div class="col-sm-5" style="margin-bottom: 25px; margin-top: 23px; padding-right: 0px; padding-left: 0px;">
-                            <input type="text" placeholder="YYYY-MM-DD" name="endDate" class="bsDate"
-                               [(ngModel)]="endDate"
-                               [bsConfig]="{dateInputFormat: 'YYYY-MM-DD', containerClass: 'theme-dark-blue'}"
-                               #dpe="bsDatepicker"
-                               bsDatepicker>
-                        </div>
-                        <div class="col-sm-4 down-place" style=" padding-right: 0px; padding-left: 0px;">
-                            <timepicker name="endDateTime" [(ngModel)]="endDateTime" [readonlyInput]="isEnabled"
-                                            [showMeridian]="isTimeMeridian" [minuteStep]="1">
-
-                            </timepicker>
+                        <div class="col-sm-1 clear-div">
+                            <i class="fa fa-trash-o clear-icon" (click)="clearDate('endDate')"></i>
                         </div>
                     </div>
                 </div>
@@ -118,7 +102,6 @@
             </div>
             <div class="form-group">
                 <label class="col-sm-3 control-label">
-                    <!--<span style="color:red">※</span>-->
                     データ取得期間:
                 </label>
                 <div class="col-sm-3" *ngFor="let item of dataScheduleTypes">
@@ -142,24 +125,28 @@
 
                     </div>
                     <div class="col-sm-3"></div>
-                    <div class="col-sm-9">
-                        <div class="col-sm-2" style="margin-bottom: 5px; margin-top: 30px; padding-right: 0px; padding-left: 0px;">
+                    <div class="col-sm-9 datepickr-group">
+                        <label class=" control-label col-sm-3" >
                             開始時間:
+                        </label>
+                        <div class="col-sm-5" >
+                            <input id="startTimeInput" type="text" class="form-control" name="startTime"
+                                   placeholder="HH:mm" [(ngModel)]="startTime"
+                                   (ngModelChange)="setMaxAndMinTime('start')">
                         </div>
-                        <div class="col-sm-10 down-place" >
-                            <timepicker name="startTime" [(ngModel)]="startTime" [readonlyInput]="isEnabled"
-                                        [showMeridian]="isTimeMeridian" [minuteStep]="1">
 
-                            </timepicker>
-                        </div>
-                        <div class="col-sm-2" style="margin-bottom: 5px; margin-top: 30px; padding-right: 0px; padding-left: 0px;">
+                    </div>
+
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-9 datepickr-group">
+
+                        <label class="control-label col-sm-3 " >
                             終了時間:
-                        </div>
-                        <div class="col-sm-10 down-place" >
-                           <timepicker name="endTime" [(ngModel)]="endTime" [readonlyInput]="isEnabled"
-                                        [showMeridian]="isTimeMeridian" [minuteStep]="1">
-
-                            </timepicker>
+                        </label>
+                        <div class="col-sm-5" >
+                            <input id="endTimeInput" type="text" class="form-control" name="endTime"
+                                   placeholder="HH:mm" [(ngModel)]="endTime"
+                                   (ngModelChange)="setMaxAndMinTime('end')">
                         </div>
                     </div>
 
@@ -176,6 +163,6 @@
                     <i class="fa fa-check-square" ></i> 保存
                 </button>
             </div>
-        </form>
+        </div>
     </div>
 </div>

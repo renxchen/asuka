@@ -5,7 +5,7 @@
 * @time: 2018/03/14
 * @desc: display a cli collection policy
 */
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../../components/utils/httpClient';
 import { ModalComponent } from '../../../components/modal/modal.component';
@@ -19,7 +19,7 @@ declare var $: any;
     templateUrl: './cliCPDetail.component.html',
     styleUrls: ['.././collectionPolicy.component.less']
 })
-export class CLICPDetailComponent implements OnInit, AfterViewInit {
+export class CLICPDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     cPId: any;
     apiPrefix: any;
     cpName: any;
@@ -259,5 +259,10 @@ export class CLICPDetailComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

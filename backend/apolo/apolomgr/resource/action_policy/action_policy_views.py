@@ -25,6 +25,7 @@ from django.db.models import *
 import sys
 from backend.apolo.apolomgr.resource.action_policy.mem_cache_trigger_and_trigger_detial import \
     MemCacheTriggerTriggerDetail
+import uuid
 
 # from apolo_server.processor.db_units.memcached_helper import TriggerMemCache
 
@@ -263,7 +264,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
     def map_priority(value):
         """!@brief
         Match the priority， change the integer value into string value,
-        0: critical, 1: major, 2: minor
+        0: minor, 1: major, 2: critical
         @param value: the integer value of priority
         @pre call when need to change priority
         @post return string priority
@@ -271,11 +272,11 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         """
         priority = ''
         if value == constants.NUMBER_ZERO:
-            priority = constants.PRIORITY_CRITICAL
+            priority = constants.PRIORITY_MINOR
         if value == constants.NUMBER_ONE:
             priority = constants.PRIORITY_MAJOR
         if value == constants.NUMBER_TWO:
-            priority = constants.PRIORITY_MINOR
+            priority = constants.PRIORITY_CRITICAL
         return priority
 
     @staticmethod
@@ -368,13 +369,15 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             temp.append(i['action_type'])
         return ','.join(temp)
 
-    def create_expression(self, value, column_a=None, column_b=None):
+    def create_expression(self, value, column_a=None, column_b=None, trigger_detail=False, device_id=None):
         """!@brief
         Generate expression according to the table id
         Change the column1(A) or column2(B) into corresponding table id, and return the 3 priorities of expression
         @param value: trigger type
-        @param column_a: table id1
-        @param column_b: table id2
+        @param column_a: table id a or item id a
+        @param column_b: table id b or item id b
+        @param trigger_detail: the flag if called by trigger detail table
+        @param device_id: device id
         @pre call when need expression
         @post return the 3 priorities of expression
         @return expression: 3 priorities of expression (include of critical expression, major expression, minor expression)
@@ -399,29 +402,41 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             if self.minor_threshold is not '':
                 expression_minor = self.minor_threshold.replace('A(', str(column_a) + '(').replace('A[', str(
                     column_a) + '[').replace('B(', str(column_b) + '(').replace('B[', str(column_b) + '[')
-        # 1:数値比較-->{4} == 'ok', 2:文字列比較-->{4} > 1000
+        # 1:数値比較-->10(0) == 'ok', 2:文字列比較-->10(0) > 'asd&&**^^sd@@!!'
         elif value == constants.NUMBER_ONE or value == constants.NUMBER_TWO:
             if self.critical_threshold is not '':
-                expression_critical = '{' + str(column_a) + '}' + self.map_condition(self.critical_condition) + str(
-                    self.critical_threshold)
+                # expression_critical = '{' + str(column_a) + '}' + self.map_condition(self.critical_condition) + str(
+                #     self.critical_threshold)
+                expression_critical = str(column_a) + '(' + '0' + ')' + self.map_condition(
+                    self.critical_condition) + str(self.critical_threshold)
             if self.major_threshold is not '':
-                expression_major = '{' + str(column_a) + '}' + self.map_condition(self.major_condition) + str(
-                    self.major_threshold)
+                # expression_major = '{' + str(column_a) + '}' + self.map_condition(self.major_condition) + str(
+                #     self.major_threshold)
+                expression_major = str(column_a) + '(' + '0' + ')' + self.map_condition(
+                    self.major_condition) + str(self.major_threshold)
             if self.minor_threshold is not '':
-                expression_minor = '{' + str(column_a) + '}' + self.map_condition(self.minor_condition) + str(
-                    self.minor_threshold)
+                # expression_minor = '{' + str(column_a) + '}' + self.map_condition(self.minor_condition) + str(
+                #     self.minor_threshold)
+                expression_minor = str(column_a) + '(' + '0' + ')' + self.map_condition(
+                    self.minor_condition) + str(self.minor_threshold)
         # 3:取得失敗-->Fail(1)
         elif value == constants.NUMBER_THREE:
             if self.critical_threshold is not '':
-                expression_critical = 'Fail(' + str(column_a) + ')'
+                # expression_critical = 'Fail(' + str(column_a) + ')'
+                expression_critical = ''
             if self.major_threshold is not '':
-                expression_major = 'Fail(' + str(column_a) + ')'
+                # expression_major = 'Fail(' + str(column_a) + ')'
+                expression_major = ''
             if self.minor_threshold is not '':
-                expression_minor = 'Fail(' + str(column_a) + ')'
+                # expression_minor = 'Fail(' + str(column_a) + ')'
+                expression_minor = ''
         expression['expression_critical'] = expression_critical
         expression['expression_major'] = expression_major
         expression['expression_minor'] = expression_minor
-
+        if trigger_detail:
+            expression['item_a_id'] = column_a
+            expression['item_b_id'] = column_b
+            expression['device_id'] = device_id
         return expression
 
     def tableid_change_to_itemid(self, column_a, column_b):
@@ -435,63 +450,71 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         @note the result of the method will save into trigger_detial table for parse
         @return expression: dictionary of expression(include of critical expression, major expression, minor expression)
         """
-        critical_detail_list = []
-        major_detail_list = []
-        minor_detail_list = []
-        expression_detail_result = {
-            'critical': None,
-            'major': None,
-            'minor': None
-        }
-        kwargs_a = {'table_id': column_a, 'item__enable_status': 1}
-        kwargs_b = {'table_id': column_b, 'item__enable_status': 1}
-        column_a_result = self.get_data_table_items(**kwargs_a)
-        column_b_result = self.get_data_table_items(**kwargs_b)
-        if len(column_a_result) > constants.NUMBER_ZERO:
-            if column_a is not None and column_b is not None:
-                for per_column_a in column_a_result:
-                    device_id_a = per_column_a['item__device__device_id']
-                    for per_column_b in column_b_result:
-                        device_id_b = per_column_b['item__device__device_id']
-                        if int(device_id_a) == int(device_id_b):
-                            item_id_a = per_column_a['item_id']
-                            item_id_b = per_column_b['item_id']
-                            # self.column_a = item_id_a
-                            # self.column_b = item_id_b
-                            expression_detail = self.create_expression(self.trigger_type, item_id_a, item_id_b)
-                            critical_detail = expression_detail['expression_critical']
-                            major_detail = expression_detail['expression_major']
-                            minor_detail = expression_detail['expression_minor']
-                            critical_detail_list.append(critical_detail)
-                            major_detail_list.append(major_detail)
-                            minor_detail_list.append(minor_detail)
-                expression_detail_result['critical'] = critical_detail_list
-                expression_detail_result['major'] = major_detail_list
-                expression_detail_result['minor'] = minor_detail_list
-            elif column_a is not None:
-                for per_column_a in column_a_result:
-                    item_id_a = per_column_a['item_id']
-                    device_id_a = per_column_a['item__device__device_id']
-                    # self.column_a = item_id_a
-                    expression_detail = self.create_expression(self.trigger_type, item_id_a)
-                    critical_detail = expression_detail['expression_critical']
-                    major_detail = expression_detail['expression_major']
-                    minor_detail = expression_detail['expression_minor']
-                    # if self.trigger_type == constants.NUMBER_ONE or self.trigger_type == constants.NUMBER_TWO or self.trigger_type == constants.NUMBER_THREE:
-                    #     critical_detail_list.append(critical_detail)
-                    #     major_detail_list.append(major_detail)
-                    #     minor_detail_list.append(minor_detail)
-                    # else:
-                    critical_detail_list.append(critical_detail)
-                    major_detail_list.append(major_detail)
-                    minor_detail_list.append(minor_detail)
+        try:
+            critical_detail_list = []
+            major_detail_list = []
+            minor_detail_list = []
+            expression_detail_result = {
+                'critical': None,
+                'major': None,
+                'minor': None
+            }
+            kwargs_a = {'table_id': column_a, 'item__enable_status': 1}
+            kwargs_b = {'table_id': column_b, 'item__enable_status': 1}
+            column_a_result = self.get_data_table_items(**kwargs_a)
+            column_b_result = self.get_data_table_items(**kwargs_b)
+            if len(column_a_result) > constants.NUMBER_ZERO:
+                if column_a is not None and column_b is not None:
+                    for per_column_a in column_a_result:
+                        device_id_a = per_column_a['item__device__device_id']
+                        for per_column_b in column_b_result:
+                            device_id_b = per_column_b['item__device__device_id']
+                            if int(device_id_a) == int(device_id_b):
+                                item_id_a = per_column_a['item_id']
+                                item_id_b = per_column_b['item_id']
+                                # self.column_a = item_id_a
+                                # self.column_b = item_id_b
+                                expression_detail = self.create_expression(self.trigger_type, item_id_a, item_id_b,
+                                                                           trigger_detail=True, device_id=device_id_a)
+                                item_id_a = expression_detail['item_a_id']
+                                item_id_b = expression_detail['item_b_id']
+                                device_id = expression_detail['device_id']
+                                critical_detail = expression_detail['expression_critical']
+                                major_detail = expression_detail['expression_major']
+                                minor_detail = expression_detail['expression_minor']
+                                critical_detail_list.append([critical_detail, item_id_a, item_id_b, device_id])
+                                major_detail_list.append([major_detail, item_id_a, item_id_b, device_id])
+                                minor_detail_list.append([minor_detail, item_id_a, item_id_b, device_id])
+                    expression_detail_result['critical'] = critical_detail_list
+                    expression_detail_result['major'] = major_detail_list
+                    expression_detail_result['minor'] = minor_detail_list
+                elif column_a is not None:
+                    for per_column_a in column_a_result:
+                        item_id_a = per_column_a['item_id']
+                        device_id_a = per_column_a['item__device__device_id']
+                        # self.column_a = item_id_a
+                        expression_detail = self.create_expression(self.trigger_type, item_id_a, trigger_detail=True,
+                                                                   device_id=device_id_a)
+                        item_id_a = expression_detail['item_a_id']
+                        item_id_b = expression_detail['item_b_id']
+                        device_id = expression_detail['device_id']
+                        critical_detail = expression_detail['expression_critical']
+                        major_detail = expression_detail['expression_major']
+                        minor_detail = expression_detail['expression_minor']
+                        critical_detail_list.append([critical_detail, item_id_a, item_id_b, device_id])
+                        major_detail_list.append([major_detail, item_id_a, item_id_b, device_id])
+                        minor_detail_list.append([minor_detail, item_id_a, item_id_b, device_id])
 
-                expression_detail_result['critical'] = critical_detail_list
-                expression_detail_result['major'] = major_detail_list
-                expression_detail_result['minor'] = minor_detail_list
-        else:
-            return False
-        return expression_detail_result
+                    expression_detail_result['critical'] = critical_detail_list
+                    expression_detail_result['major'] = major_detail_list
+                    expression_detail_result['minor'] = minor_detail_list
+            else:
+                return False
+            return expression_detail_result
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
 
     def regenerate_trigger_detail(self):
         """!@brief
@@ -512,7 +535,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                     self.major_threshold = ''
                     self.minor_threshold = ''
                     self.trigger_type = per.trigger_type
-                    if per.priority == constants.NUMBER_ZERO:
+                    if per.priority == constants.NUMBER_TWO:
                         self.critical_threshold = per.value
                         self.critical_condition = per.condition
                         critical_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)
@@ -520,7 +543,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                             continue
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
-                            'expression': critical_dic['critical'],
+                            'expression_itema_itemb_deviceid': critical_dic['critical'],
                             'priority': per.priority,
                             'status': 1,
                             'expression_view': per.expression,
@@ -534,13 +557,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                             continue
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
-                            'expression': major_dic['major'],
+                            'expression_itema_itemb_deviceid': major_dic['major'],
                             'priority': per.priority,
                             'status': 1,
                             'expression_view': per.expression,
                         }
                         data.append(data_trigger_detail)
-                    if per.priority == constants.NUMBER_TWO:
+                    if per.priority == constants.NUMBER_ZERO:
                         self.minor_threshold = per.value
                         self.minor_condition = per.condition
                         minor_dic = self.tableid_change_to_itemid(per.columnA, per.columnB)
@@ -548,7 +571,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                             continue
                         data_trigger_detail = {
                             'trigger': per.trigger_id,
-                            'expression': minor_dic['minor'],
+                            'expression_itema_itemb_deviceid': minor_dic['minor'],
                             'priority': per.priority,
                             'status': 1,
                             'expression_view': per.expression,
@@ -556,10 +579,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                         data.append(data_trigger_detail)
                 TriggerDetail.objects.all().delete()
                 for per in data:
-                    expression_in_trigger_detail = per['expression']
+                    expression_in_trigger_detail = per['expression_itema_itemb_deviceid']
                     for per_expression in expression_in_trigger_detail:
                         per_trigger_detail_data = {
-                            'expression': per_expression,
+                            'expression': per_expression[0],
+                            'itemA': per_expression[1],
+                            'itemB': per_expression[2],
+                            'device_id': per_expression[3],
                             'status': per['status'],
                             'trigger': per['trigger'],
                             'expression_view': per['expression_view']
@@ -848,7 +874,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         return result
 
-    def data_generate(self):
+    def data_generate(self, identifier=None):
         """!@brief
         Generate all data, include of critical, major, minor
         @pre call when after generating critical data, major data and minor data
@@ -863,19 +889,25 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         insert_trigger_detail = []
         insert_action = []
         data_critical = self.data_generate_critical()
+        # print 'data_generate-data_critical', data_critical
         data_major = self.data_generate_major()
+        # print 'data_generate-data_major', data_major
         data_minor = self.data_generate_minor()
+        # print 'data_generate-data_minor', data_minor
         if data_critical['data_trigger']:
+            data_critical['data_trigger']['identifier'] = identifier
             insert_trigger.append(data_critical['data_trigger'])
             insert_trigger_detail.append(data_critical['trigger_detail_data'])
             # insert_action.append(data_critical['action_data'])
             insert_action.append(data_critical['action_data'])
         if data_major['data_trigger']:
+            data_major['data_trigger']['identifier'] = identifier
             insert_trigger.append(data_major['data_trigger'])
             insert_trigger_detail.append(data_major['trigger_detail_data'])
             # insert_action.append(data_major['action_data'])
             insert_action.append(data_major['action_data'])
         if data_minor['data_trigger']:
+            data_minor['data_trigger']['identifier'] = identifier
             insert_trigger.append(data_minor['data_trigger'])
             insert_trigger_detail.append(data_minor['trigger_detail_data'])
             # insert_action.append(data_minor['action_data'])
@@ -895,20 +927,28 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         @post return trigger detail data(type is list)
         @return trigger_detail_data: list of trigger detail data
         """
-        trigger_detail_data = []
-        for per in data:
-            priority_key = self.map_priority(per['priority'])
-            per['trigger'] = param[priority_key]
-            expression_in_trigger_detail = per['expression']
-            for per_expression in expression_in_trigger_detail:
-                per_trigger_detail_data = {
-                    'expression': per_expression,
-                    'status': per['status'],
-                    'trigger': per['trigger'],
-                    'expression_view': per['expression_view']
-                }
-                trigger_detail_data.append(per_trigger_detail_data)
-        return trigger_detail_data
+        try:
+            trigger_detail_data = []
+            for per in data:
+                priority_key = self.map_priority(per['priority'])
+                per['trigger'] = param[priority_key]
+                expression_in_trigger_detail = per['expression']
+                for per_expression in expression_in_trigger_detail:
+                    per_trigger_detail_data = {
+                        'expression': per_expression[0],
+                        'itemA': per_expression[1],
+                        'itemB': None if per_expression[2] is None else per_expression[2],
+                        'device_id': per_expression[3],
+                        'status': per['status'],
+                        'trigger': per['trigger'],
+                        'expression_view': per['expression_view']
+                    }
+                    trigger_detail_data.append(per_trigger_detail_data)
+            return trigger_detail_data
+        except Exception, e:
+            if constants.DEBUG_FLAG:
+                print traceback.format_exc(e)
+            return exception_handler(e)
 
     def generate_action_data(self, data, param):
         """!@brief
@@ -1097,13 +1137,13 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 data_dic['coll_policy_group'] = str(coll_policy_group_a) + ',' + str(coll_policy_group_b)
             data_dic['coll_policy_group_id'] = str(coll_policy_group_a_id) + ',' + str(coll_policy_group_b_id)
             for per_priority in priority_dic:
-                if per_priority == constants.NUMBER_ZERO:
+                if per_priority == constants.NUMBER_TWO:
                     data_dic['critical_priority'] = self.migrate(
                         queryset_action_all.filter(trigger_id=priority_dic[0]).values('action_type'))
                 if per_priority == constants.NUMBER_ONE:
                     data_dic['major_priority'] = self.migrate(
                         queryset_action_all.filter(trigger_id=priority_dic[1]).values('action_type'))
-                if per_priority == constants.NUMBER_TWO:
+                if per_priority == constants.NUMBER_ZERO:
                     data_dic['minor_priority'] = self.migrate(
                         queryset_action_all.filter(trigger_id=priority_dic[2]).values('action_type'))
             view_list_data.append(data_dic)
@@ -1166,7 +1206,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
             if per['trigger__columnB']:
                 result_common['columnB'] = DataTable.objects.get(table_id=int(per['trigger__columnB'])).name
             priority = per['trigger__priority']
-            if priority == constants.NUMBER_ZERO:
+            if priority == constants.NUMBER_TWO:
                 result_critical['priority'] = self.map_priority(priority)
                 result_critical['value'] = per['trigger__value']
                 result_critical['condition'] = self.map_condition(per['trigger__condition'])
@@ -1206,7 +1246,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                 result_action_major['script_path'] = per['script_path']
                 result_action_major['status'] = per['status']
                 result_action_major_list.append(result_action_major)
-            if priority == constants.NUMBER_TWO:
+            if priority == constants.NUMBER_ZERO:
                 result_minor['priority'] = self.map_priority(priority)
                 result_minor['value'] = per['trigger__value']
                 result_minor['condition'] = self.map_condition(per['trigger__condition'])
@@ -1253,7 +1293,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         }
         return data
 
-    def create_trigger_related(self, method='POST'):
+    def create_trigger_related(self, method='POST', identifier=None):
         """!@brief
         Insert data into triggers table, actions table and trigger_detail table
         @pre call from POST or PUT method
@@ -1262,7 +1302,8 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         """
         try:
             with transaction.atomic():
-                data = self.data_generate()
+                data = self.data_generate(identifier=identifier)
+                # print 'create_trigger_related: ', data
                 trigger_priority_dic = {}
                 if data is False:
                     data = {
@@ -1284,6 +1325,7 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                         data = {
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
+                                constants.MSG_TYPE: 'NAME_DUPLICATE',
                                 constants.MESSAGE: constants.ACTION_POLICY_NAME_DUPLICATE
                             }
                         }
@@ -1296,7 +1338,6 @@ class ActionPolicyViewSet(viewsets.ViewSet):
                         trigger_id = per['trigger_id']
                         priority = self.map_priority(per['priority'])
                         trigger_priority_dic[priority] = trigger_id
-
                     # save into trigger_detail table
                     trigger_detail_data = self.generate_trigger_detail_data(trigger_detail, trigger_priority_dic)
                     serializer_trigger_detail = TriggerDetailSerializer(data=trigger_detail_data, many=True)
@@ -1352,15 +1393,16 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         @return data: the status of whether insert successful, and inserted data
         """
         try:
-            with transaction.atomic():
-                data = self.create_trigger_related(method='POST')
-                if self.action_policy_name is not '':
-                    pass
-                    # mem cache
-                    # data_for_mem_cache = MemCacheTriggerTriggerDetail().get(self.action_policy_name)
-                    # with TriggerMemCache() as trigger:
-                    #     trigger.multi_set(data_for_mem_cache)
-                return api_return(data=data)
+            # base on the timestamp, mac address, random number generate uuid
+            identifier = str(uuid.uuid1())
+            data = self.create_trigger_related(method='POST', identifier=identifier)
+            if self.action_policy_name is not '':
+                pass
+                # mem cache
+                # data_for_mem_cache = MemCacheTriggerTriggerDetail().get(self.action_policy_name)
+                # with TriggerMemCache() as trigger:
+                #     trigger.multi_set(data_for_mem_cache)
+            return api_return(data=data)
         except Exception, e:
             transaction.rollback()
             if constants.DEBUG_FLAG:
@@ -1373,18 +1415,18 @@ class ActionPolicyViewSet(viewsets.ViewSet):
         @return data: the status of whether modify successful, and modified data
         """
         try:
-            with transaction.atomic():
-                print self.action_policy_name_get_put_delete, 222
-                if self.action_policy_name_get_put_delete is not '':
-                    # delete old trigger, trigger_detail, action data
-                    self.delete_trigger_related(self.action_policy_name_get_put_delete)
-                    # create new trigger, trigger_detail, action data
-                    data = self.create_trigger_related(method='PUT')
-                    # mem cache
-                    # data_for_mem_cache = MemCacheTriggerTriggerDetail().get(self.action_policy_name)
-                    # with TriggerMemCache() as trigger:
-                    #     trigger.multi_set(data_for_mem_cache)
-                    return api_return(data=data)
+            if self.action_policy_name_get_put_delete is not '':
+                # delete old trigger, trigger_detail, action data
+                self.delete_trigger_related(self.action_policy_name_get_put_delete)
+                # base on the timestamp, mac address, random number generate uuid
+                identifier = str(uuid.uuid1())
+                # create new trigger, trigger_detail, action data
+                data = self.create_trigger_related(method='PUT', identifier=identifier)
+                # mem cache
+                # data_for_mem_cache = MemCacheTriggerTriggerDetail().get(self.action_policy_name)
+                # with TriggerMemCache() as trigger:
+                #     trigger.multi_set(data_for_mem_cache)
+                return api_return(data=data)
         except Exception, e:
             transaction.rollback()
             if constants.DEBUG_FLAG:

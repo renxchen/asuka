@@ -39,10 +39,10 @@ class CommonConstants(object):
     Define value for common service
     """
     VALUE_TYPE_MAPPING = {
-        0: "Int",
-        1: "Text",
-        2: "Float",
-        3: "Str"
+        0: "int",
+        1: "text",
+        2: "float",
+        3: "str"
     }
     ITEM_TYPE_MAPPING = {
         0: "Cli",
@@ -52,6 +52,7 @@ class CommonConstants(object):
     CLI_TYPE_CODE = 0
     ALL_TYPE_CODE = -1
     MEM_CACHE_HOSTS = [('10.71.244.134:11211', 1), ]
+    ALL_FINISH_CHECK_FLAG="ALL_FINISH"
 
 
 class TriggerConstants(object):
@@ -66,8 +67,20 @@ class TriggerConstants(object):
     TRIGGER_CLOSE = 1
     TRIGGER_VALUE = 1
     NORMAL_VALUE = 0
+    TRIGGERD = 1
+    NOT_TRIGERD=0
     FUNCTION_LIST = ["Hex2Dec", "Ave", "Max", "Min", "A", "B"]
+    PRIORITY_STANDARD_LEVEL_VALUE = 0
+    PRIORITY_HIGH_LEVEL_VALUE = 1
+    PRIORITY_URGENT_LEVEL_VALUE = 2
 
+    TRIGGER_TYPE_EXPRESSION_COMPARE = 0
+    TRIGGER_TYPE_INTEGER_COMPARE = 1
+    TRIGGER_TYPE_STRING__COMPARE = 2
+    TRIGGER_TYPE_FAILED = 3
+
+    TAKE_ACTION=1
+    NO_ACTION=0
 
 class ParserConstants(object):
     """
@@ -85,3 +98,13 @@ class ActionConstants(object):
     BASE_SCRIPT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "script")
     if os.path.exists(BASE_SCRIPT_PATH) is False:
         os.mkdir(BASE_SCRIPT_PATH)
+    ACTION_TYPE_MAPPING = {
+        0: "SnmpTrapAction",
+        1: "ScriptAction",
+        2: "RundeckAction"
+    }
+    ACTION_TYPE_MAPPING2 = {
+        0: "SnmpTrap",
+        1: "Script",
+        2: "Rundeck"
+    }

@@ -580,7 +580,10 @@ export class CLICPEditComponent implements OnInit, AfterViewInit, OnDestroy {
             this.unsubscribe(cpName$);
         });
     }
-    ngOnDestroy(): void {
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
     public unsubscribe(res: any) {
         res.unsubscribe();

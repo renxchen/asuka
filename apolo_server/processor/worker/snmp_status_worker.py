@@ -10,7 +10,7 @@ import traceback
 class SNMPStatusWorker(WorkerBase):
     name = 'SNMP_status_check'
     channels = ('status_snmp',)
-    threads = 5
+    threads = 1
     default_timeout = 5
     default_retries = 2
 

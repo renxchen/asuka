@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import * as _ from 'lodash';
 declare var $: any;
+import * as flatpickr from 'flatpickr';
 
 enableProdMode();
 
@@ -18,23 +19,27 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
     title: string;
     id: number = -1;
 
-    // minDate = new Date(2017, 5, 10);
-    // maxDate = new Date(2018, 10, 15);
-    bsValue: Date = new Date();
-    isTimeMeridian: boolean = false;
-    isValid: boolean;
+    startDateTime: any;
+    endDateTime: any;
 
-    startDateTime: Date = new Date(2018, 0, 1, 0, 0);
-    endDateTime: Date = new Date(2018, 0, 1, 23, 59);
+    flatPickrStartDateTime: any;
+    flatPickrEndDateTime: any;
 
-    startTime: Date = new Date(2018, 1, 1, 0, 0);
-    endTime: Date = new Date(2018, 1, 1, 23, 59);
+    pickrOption: any = {
+        enableTime: true,
+        time_24hr: true,
+        static: true
+    };
+
+    startTime: any;
+    endTime: any;
+
+    flatPickrStartTime: any;
+    flatPickrEndTime: any;
 
     isEnabled: boolean = false;
     isLock: boolean = false;
     isProcessing: boolean = false;
-
-    // bsRangeValue: any = [new Date(2017, 7, 4), new Date(2017, 7, 20)];
 
     selectedOsType: string;
     osType: any = [];
@@ -73,16 +78,20 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         this.httpClient.setUrl(this.apiPrefix);
+        this.startTime = '00:00';
+        this.endTime = '23:59';
 
     }
 
     ngAfterViewInit() {
+        this.initPickr();
         setTimeout(() => {
             $('#validPeriod').hide();
             $('#dataSchedule').hide();
             if(this.id == -1){
                 this.getOsTypes();
                 this.setInitSelect();
+                this.initPickrTime();
                 $('button.btn-danger').hide();
             } else {
                 this.getDetailById(this.id);
@@ -101,7 +110,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                             this.selectedOsType = this.osType[0]['ostypeid'].toString();
                         }
                         this.getGroups();
-
                     }
                 } else {
                     if (res['status'] && res['status']['message']) {
@@ -116,7 +124,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             .toJson(this.httpClient.get('/api_new_data_collection/?ostype_id='+this.selectedOsType))
             .subscribe(res => {
                 if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
-                    // if (res['data']) {
                     this.deviceGroups = res['device_groups'];
                     this.policyGroups = res['cp_groups'];
 
@@ -138,18 +145,12 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                             this.policyGroups.unshift({policy_group_id:-1, name: '全機能OFF'});
                         }
                     }
-
-                    // }
                 } else {
                     if (res['status'] && res['status']['message']) {
                         alert(res['status']['message']);
                     }
                 }
             });
-        // this.deviceGroups = [{id: 0, name: 'device group 1'}, {id:1, name: 'device group 2'}];
-        // this.policyGroups = [{id: 0, name: 'cpg 1'}, {id:1, name: 'cpg 2'}];
-
-
     }
 
     changePriority(){
@@ -164,7 +165,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                 }
             }
         }
-
     }
 
     changeCPG(){
@@ -180,11 +180,72 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         }
     }
 
-    updateTime(hour:number, minute:number){
-        let d = new Date();
-        d.setHours(hour);
-        d.setMinutes(minute);
-        return d;
+    initPickr() {
+        let startDateEle = document.getElementById('startDateTimeInput');
+        let endDateEle = document.getElementById('endDateTimeInput');
+        this.flatPickrStartDateTime = new flatpickr(startDateEle, this.pickrOption);
+        this.flatPickrEndDateTime = new flatpickr(endDateEle, this.pickrOption);
+    }
+
+    initPickrTime() {
+
+        let startOp: any = {
+            noCalendar: true,
+            dateFormat: 'H:i',
+            enableTime: true,
+            time_24hr: true,
+            defaultDate: this.startTime
+        };
+        let endOp: any = {
+            noCalendar: true,
+            dateFormat: 'H:i',
+            enableTime: true,
+            time_24hr: true,
+            defaultDate: this.endTime
+        };
+
+        let startEle = document.getElementById('startTimeInput');
+        let endEle = document.getElementById('endTimeInput');
+        this.flatPickrStartTime = new flatpickr(startEle, startOp);
+        this.flatPickrEndTime = new flatpickr(endEle, endOp);
+    }
+
+    setMaxAndMinDate(type) {
+        /**
+         * Date:20180416
+         * @author necy
+         * @param type : starttime or endtime flg
+         * brief :set the max value or min value of flatpickr plugin
+         */
+        if (this.startDateTime && type === 'start') {
+          this.flatPickrEndDateTime.set('minDate', this.startDateTime, this.endDateTime);
+        }
+        if (this.endDateTime && type === 'end') {
+          this.flatPickrStartDateTime.set('maxDate', this.endDateTime, this.startDateTime);
+        }
+    }
+
+    setMaxAndMinTime(type) {
+        /**
+         * Date:20180416
+         * @author necy
+         * @param type : starttime or endtime flg
+         * brief :set the max value or min value of flatpickr plugin
+         */
+        if (this.startTime && type === 'start') {
+          this.flatPickrEndTime.set('minDate', this.startTime, this.endTime);
+        }
+        if (this.endTime && type === 'end') {
+          this.flatPickrStartTime.set('maxDate', this.endTime, this.startTime);
+        }
+    }
+
+    clearDate(which){
+        if (which == 'startDate'){
+            this.startDateTime = '';
+        } else if (which == 'endDate'){
+            this.endDateTime = '';
+        }
     }
 
     getDetailById(id){
@@ -193,21 +254,12 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             if (res['status'] && res['status']['status'].toLowerCase() === 'true') {
                 if (res['data']) {
                     let data = res['data'];
-
-                    // setTimeout(function () {
-                    //     this.validPeriodType = _.get(data, 'valid_period_type');
-                    //     this.dataScheduleType = _.get(data, 'data_schedule_type');
-                    // },0);
-
-
                     let valid_period_type = _.get(data, 'valid_period_type');
                     $('input[name="validPeriodType"][value="'+valid_period_type+'"]').attr('checked','checked');
                     this.changeValidPeriodType(valid_period_type);
                     let data_schedule_type = _.get(data, 'data_schedule_type');
                     $('input[name="dataScheduleType"][value="'+data_schedule_type+'"]').attr('checked','checked');
                     this.changeDataScheduleType(data_schedule_type);
-
-
 
                     this.id = _.get(data, 'schedule_id');
                     this.selectedOsType = _.get(data, 'ostype_id');
@@ -217,7 +269,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     this.getOsTypes();
 
                     this.isProcessing = _.get(res, 'isProcessing');
-                    // console.log(this.isProcessing);
                     this.setSchedule(this.isProcessing);
                     if (this.isProcessing){
                         this.isLock = true;
@@ -226,28 +277,33 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                     }
                     this.setOsDgPg(this.isLock);
 
-                    let start_period_time = _.get(data, 'start_period_time');
-                    let end_period_time = _.get(data, 'end_period_time');
-                    if(start_period_time != null && end_period_time != null){
-                        $('input[name="startDate"]').val(_.get(data, 'start_period_time').split(' ')[0]);
-                        $('input[name="endDate"]').val(_.get(data, 'end_period_time').split(' ')[0]);
-
-                        let spt = _.get(data, 'start_period_time').split(' ')[1];
-                        let ept = _.get(data, 'end_period_time').split(' ')[1];
-                        this.startDateTime = this.updateTime(parseInt(spt.split(':')[0]),parseInt(spt.split(':')[1]));
-                        this.endDateTime = this.updateTime(parseInt(ept.split(':')[0]),parseInt(ept.split(':')[1]));
+                    if (this.validPeriodType == 1){
+                        let start_period_time = _.get(data, 'start_period_time');
+                        let end_period_time = _.get(data, 'end_period_time');
+                        if(start_period_time != null && end_period_time != null){
+                            this.startDateTime = start_period_time.replace('@', ' ');
+                            this.setMaxAndMinDate('start');
+                            this.endDateTime = end_period_time.replace('@', ' ');
+                            this.setMaxAndMinDate('end');
+                            this.startDateTime = start_period_time.replace('@', ' ');
+                        }
                     }
 
-                    let sst = _.get(data, 'schedule_start_time');
-                    let set = _.get(data, 'schedule_end_time');
-                    this.startTime = this.updateTime(parseInt(sst.split(':')[0]),parseInt(sst.split(':')[1]));
-                    this.endTime = this.updateTime(parseInt(set.split(':')[0]),parseInt(set.split(':')[1]));
-
-                    let weeks: any = _.get(data, 'weeks');
-                    for (let i=0; i< this.weekdays.length; i++){
-                        if (weeks.indexOf(this.weekdays[i]['id'].toString()) != -1){
-                            this.weekdays[i]['ifCheck'] = 'checked';
+                    if (this.dataScheduleType == 2){
+                        this.startTime = _.get(data, 'schedule_start_time');
+                        this.endTime = _.get(data, 'schedule_end_time');
+                        this.initPickrTime();
+                        this.setMaxAndMinTime('start');
+                        this.endTime = _.get(data, 'schedule_end_time');
+                        this.setMaxAndMinTime('end');
+                        this.startTime = _.get(data, 'schedule_start_time');
+                        let weeks: any = _.get(data, 'weeks');
+                        for (let i=0; i< this.weekdays.length; i++){
+                            if (weeks.indexOf(this.weekdays[i]['id'].toString()) != -1){
+                                this.weekdays[i]['ifCheck'] = 'checked';
+                            }
                         }
+
                     }
                 }
             } else {
@@ -264,7 +320,6 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         this.dataScheduleType = 0;
         this.validPeriodType = 0;
         this.priority = 0;
-
     }
 
     setOsDgPg(flag: boolean){
@@ -294,7 +349,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     changeValidPeriodType(id: number){
         this.validPeriodType = id;
-        console.log(this.validPeriodType);
+        // console.log(this.validPeriodType);
         if (id == 1){
             $('#validPeriod').show();
         } else {
@@ -304,7 +359,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
 
     changeDataScheduleType(id: number){
         this.dataScheduleType = id;
-        console.log(this.dataScheduleType);
+        // console.log(this.dataScheduleType);
         if (id == 2){
             $('#dataSchedule').show();
         } else {
@@ -320,64 +375,32 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         }
     }
 
-    filledToTwoNumber(num){
-        if (num < 10){
-            num = "0" + num.toString();
-        }
-        return num
-    }
-
     save() {
-        let f = true;
-        let m = "";
-        if (this.startDateTime == null || this.endDateTime == null) {
-            f = false;
-            m += 'The format of date time is wrong';
-        } else if(this.startTime == null || this.endTime == null){
-            f = false;
-            m += 'The format of period time is wrong';
-        }
-        console.log(this.startDateTime.getHours());
-        if (!f) {
-            // alert(m);
-            return;
-        }
-
-        let startDate = $('input[name="startDate"]').val();
-        let startPeriodTime = '';
-        if (this.validPeriodType == 1 && startDate != ''){
-            startPeriodTime = startDate+'@'
-                +this.filledToTwoNumber(this.startDateTime.getHours())+':'
-                +this.filledToTwoNumber(this.startDateTime.getMinutes());
-        }
-
-        let endDate = $('input[name="endDate"]').val();
-        let endPeriodTime = '';
-        if (this.validPeriodType == 1 && endDate != ''){
-            endPeriodTime = endDate+'@'
-                +this.filledToTwoNumber(this.endDateTime.getHours())+':'
-                +this.filledToTwoNumber(this.endDateTime.getMinutes());
-        }
-
-        let dataScheduleStartTime = this.filledToTwoNumber(this.startTime.getHours())
-            +':'+this.filledToTwoNumber(this.startTime.getMinutes());
-        let dataScheduleEndTime = this.filledToTwoNumber(this.endTime.getHours())
-            +':'+this.filledToTwoNumber(this.endTime.getMinutes());
         let dataScheduleTime = '';
         for (let i=0; i<this.weekdays.length; i++){
             if(this.weekdays[i]['ifCheck'] == 'checked'){
                 dataScheduleTime += this.weekdays[i]['id']+';';
             }
         }
-        if (dataScheduleTime != ''){
-            dataScheduleTime = dataScheduleTime.substring(0,dataScheduleTime.length-1)+'@'+dataScheduleStartTime+'-'+dataScheduleEndTime;
-        }
 
-        let checkResult = this.doCheck(startDate, endDate, dataScheduleTime);
+        let checkResult = this.doCheck(dataScheduleTime);
         let flag = checkResult['flag'];
         let message = checkResult['message'];
 
         if (flag) {
+            let startPeriodTime = '';
+            let endPeriodTime = '';
+            if (this.validPeriodType == 1){
+                startPeriodTime = this.startDateTime.replace(' ', '@');
+                endPeriodTime = this.endDateTime.replace(' ', '@');
+            }
+
+            if (dataScheduleTime != '' && this.dataScheduleType == 2){
+                dataScheduleTime = dataScheduleTime.substring(0,dataScheduleTime.length-1)+'@'+this.startTime+'-'+this.endTime;
+            } else {
+                dataScheduleTime = '';
+            }
+
             let scheduleInfo: any = {};
             let url_new = '/api_new_data_collection/';
             let url_edit = '/api_data_collection/';
@@ -397,8 +420,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
             scheduleInfo['is_processing'] = this.isProcessing;
 
             console.log(scheduleInfo);
-            // alert(flag);
-            // return;
+
             if (this.id == -1){
                 this.httpClient
                     .toJson(this.httpClient.post(url_new, scheduleInfo))
@@ -406,7 +428,7 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         $('#dcTable').trigger("reloadGrid");
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
                             if (res['status']['message'] == "Success") {
-                               alert('データ取得追加しました。');
+                               alert('追加しました。');
                             }
                         } else {
                             alert(res['status']['message']);
@@ -421,11 +443,10 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         $('#dcTable').trigger("reloadGrid");
                         if (res['status']['status'].toString().toLowerCase() === 'true') {
                             if (res['status']['message'] == "Success") {
-                                alert('データ取得更新しました。');
+                                alert('更新しました。');
                             }
                         } else {
                             alert(res['status']['message']);
-
                         }
                 });
                 this.bsModalRef.hide();
@@ -433,61 +454,38 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
         } else {
             alert(message);
         }
-
     }
 
-    doCheck(startDate, endDate, dataScheduleTime){
+    doCheck(dataScheduleTime){
         let result: any = {};
         let flag: boolean = true;
         let message: string = '';
-        console.log(startDate, endDate);
-        console.log(this.startDateTime.getTime(), this.endDateTime.getTime());
-        // check date and time when valid period type is 1 (with period)
+        console.log(this.startDateTime, this.endDateTime);
         if (this.policyGroup == 0 || this.deviceGroup == 0){
             flag = false;
             message += "Please make sure correct group is selected.";
         }
+        // check date and time when valid period type is 1 (with period)
         if (this.validPeriodType == 1) {
-            // let reg = /^\d{4}-\d{2}-\d{2}$/;
-            let reg = /^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$/;
-            if(startDate == "" || endDate == ""){
+            if(!this.startDateTime || !this.endDateTime){
                 flag = false;
                 message += "Please set period date.";
-                console.log(reg.test(startDate));
-                console.log(reg.test(endDate));
-            }else if (!reg.test(startDate) || !reg.test(endDate)){
-                flag = false;
-                message += "The format of date is wrong.";
-            } else if(startDate > endDate) {
-                flag = false;
-                message += "The start date cannot earlier than the end date.";
-            }  else if(startDate == endDate && this.startDateTime > this.endDateTime) {
-                flag = false;
-                message += "The start time cannot earlier than the end time for the same date.";
             }
-            // check date all selected; format right; start<=end
-            // if same date, check start time < end time
         }
-        // check if any days has been select when data schedule type is 3 (periodic collection)
+        // // check if any days has been select when data schedule type is 2 (periodic collection)
         if (this.dataScheduleType == 2) {
             if (dataScheduleTime == ''){
                 flag = false;
                 message += 'Periodic collection with no weekday selected!';
-            } else if(this.startTime > this.endTime) {
-                flag = false;
-                message += "The start time cannot earlier than the end time for period collection.";
             }
         }
-
         result['flag'] = flag;
         result['message'] = message;
-        console.log(result);
         return result;
-
     }
 
     delete() {
-        let isDelete: boolean = confirm('delete?');
+        let isDelete: boolean = confirm('該当データ取得を削除します。よろしいですか？');
         if (isDelete){
             let url = '/api_data_collection/?id=' + this.id;
             this.httpClient
@@ -500,14 +498,10 @@ export class DataCollectionLoginComponent implements OnInit, AfterViewInit {
                         }
                     } else {
                         alert(res['status']['message']);
-
                     }
-
                 });
-
             this.bsModalRef.hide();
         } else {
-
         }
     }
 

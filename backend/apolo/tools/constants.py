@@ -31,6 +31,7 @@ NUMBER_NINE = 9
 MESSAGE = 'message'
 STATUS = 'status'
 CODE = 'code'
+MSG_TYPE = 'type'
 SUCCESS = 'Success'
 FAILED = 'Failed'
 TRUE = 'True'
@@ -39,7 +40,7 @@ VERIFY_WHETHER_EXECUTING_SERVER_URL = "http://%s:%s/api/v1/valid"
 VERIFY_WHETHER_EXECUTING_SERVER_IP = '127.0.0.1'
 VERIFY_WHETHER_EXECUTING_SERVER_PORT = '7777'
 VERIFY_WHETHER_CAN_CONNECT_URL = "http://%s:%s/api/v1/devicestatus"
-SYSTEM_ERROR = gettext('System access failed, please connect the administrator.')
+SYSTEM_ERROR = gettext('システムに異常が発生しました。本メッセージが継続的に発生する場合は管理者に問い合わせ下さい。')
 POST_SUCCESSFUL = gettext('Data create successfully.')
 PUT_SUCCESSFUL = gettext('Data update successfully.')
 DELETE_SUCCESSFUL = gettext('Data delete successfully.')
@@ -60,18 +61,18 @@ ROLE = 'role'
 ORIG_IAT = 'orig_iat'
 USERNAME = 'username'
 PASSWORD = 'password'
-TOKEN_EXPIRED_MSG = gettext('Token has expired.')
-TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = gettext('There was no token found for current user.')
-NO_USERNAME_OR_PASSWORD_FONUD_ERROR = gettext("No access, please login first.")
+TOKEN_EXPIRED_MSG = gettext('ログインがされていません。ログインして下さい。')
+TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG = gettext('ログインがされていません。ログインして下さい。')
+NO_USERNAME_OR_PASSWORD_FONUD_ERROR = gettext("ログインがされていません。ログインして下さい。")
 LOGIN_FAILED_ERROR = gettext("Login failed with incorrect username or password.")
-REFRESH_EXPIRED = gettext("Access is expired, please login again.")
+REFRESH_EXPIRED = gettext("ログインがされていません。ログインして下さい。")
 ORIG_IAT_REQUIRED = gettext("orig_iat field is required.")
 USERNAME_INACTIVE_ERROR = gettext("Username is inactive.")
 LOGIN_SUCCESSFUL = gettext("Login successful.")
 NO_USERNAME_OR_PASSWORD = gettext("No user or password found.")
-USER_AND_PASSWD_INCORRECT = gettext("User or password is incorrect.")
+USER_AND_PASSWD_INCORRECT = gettext("ユーザ名あるいはパスワードが間違っています。")
 USER_DISABLED = gettext("User is inactive.")
-USER_LOGOUT_SUCCESSFUL = gettext("User logout successful.")
+USER_LOGOUT_SUCCESSFUL = gettext("Logout successful.")
 #########################################
 # Action Policy Related define
 #########################################
@@ -87,7 +88,7 @@ PRIORITY_MINOR = 'MINOR'
 SNMP = 'snmp'
 CLI = 'cli'
 FLOAT = 'float'
-STRING = 'string'
+STRING = 'str'
 TEXT = 'text'
 INTEGER = 'int'
 TRIGGER_TYPE_EXPRESSION_COMPARE = '演算比較'
@@ -104,6 +105,7 @@ EXPRESSION_A_B_VALUE_TYPE_NOT_SAME = gettext('A and B maybe do not have the same
 EXPRESSION_A_B_NOT_EXIST = gettext('There is not A or B in expression, should be at least A in expression.')
 EXPRESSION_CONDITION_ILLEGAL = gettext('The expression condition should be in <=, >=, ==, !=, >, <.')
 EXPRESSION_ILLEGAL_IN_LEFT_EXPRESSION = gettext('There is illegal format in current expression.')
+EXPRESSION_HEXADECIMAL_ILLEGAL = gettext('Hexadecimal expression should be placed at the outermost layer.')
 EXPRESSION_EVAL_VERIFY_FAILED = gettext('The expression eval verification failed.')
 EXPRESSION_VERIFY_FAILED = gettext('The expression verify failed')
 ACTION_POLICY_NAME_DUPLICATE = gettext('The action name is exist in current system, please change name.')
@@ -114,8 +116,13 @@ DEVICE_GROUP_NOT_EXIST_IN_SCHEDULE = gettext('Current device group is not exist 
 DATA_TABLE_NOT_EXIST_IN_SYSTEM = gettext('Current data table is not exist in system.')
 DATA_TABLE_EXIST_IN_TRIGGER = gettext('Current data table is running in action policy.')
 CSV_PATH_NOT_EXIST = gettext('CSV path is not exist.')
-DATA_TABLE_PROORITY_0 = '高'
-DATA_TABLE_PROORITY_1 = '标准'
+DATA_TABLE_PROORITY_0 = '标准'
+DATA_TABLE_PROORITY_1 = '高'
+EXPORT_CSV_TITLE_COLUMN_1 = 'デバイス名'
+EXPORT_CSV_TITLE_COLUMN_2 = 'Date'
+EXPORT_CSV_TITLE_COLUMN_3 = 'Path'
+# use default value in column 4, when the csv file is empty
+EXPORT_CSV_TITLE_COLUMN_4 = 'Check Item'
 #########################################
 # Collection Policy Related define
 #########################################
@@ -189,6 +196,8 @@ VALUE_TYPE = {
     'STRING': 2
 }
 LEAF_NODE_MARK = 1
+ALL_FUNCTION_OFF = u'全機能OFF'
+EMERGENCY_STOP = u'緊急停止'
 ########################################
 # Mapping data
 ########################################
@@ -216,6 +225,8 @@ CP_STATUS_OFF_VALUE = 0
 CP_STATUS_ON_KEY = u'取得中'
 CP_STATUS_ON_VAULE = 1
 
+DAY_INTERVAL = u'日おき'
+MINUTE_INTERVAL = u'分おき'
 #########################################
 # data collection Error Message
 #########################################
@@ -226,6 +237,8 @@ CAN_NOT_UPDATE_SCHEDULE_MESSAGE = gettext('Can not update schedule data')
 NO_DEVICE_IN_DEVICE_GROUP = gettext('There is no device in device group,please check the group')
 NO_CP_IN_CP_GROUP = gettext('There is no policy in policy group,please check the group')
 NULL_TREE_IN_CP = gettext('There is a null tree in the collection policy')
+DEVICE_GROUP_NOT_IN_SCHEDULE = gettext('The device group is not exist in schedule')
+DEVICE_GROUP_IS_ALL_FUNCTION_ALL = gettext('The device group has been all function off status')
 #########################################
 # render
 #########################################
@@ -257,14 +270,15 @@ SPAN_END = '</span>'
 #########################################
 # device, group and ostype information define
 #########################################
-CSV_TITLE_ERROR = gettext('The title in csv_flie is wrong, please check')
+CSV_TITLE_ERROR = gettext('想定されないフォーマットのCSVが選択されています。登録できません。')
 CSV_FORMAT_ERROR = gettext('The type of file is wrong, please check')
-CSV_HOSTNAME_EMPTY = gettext('The hostname in csv is empty')
+CSV_HOSTNAME_EMPTY = gettext('hostnameが空欄のものがCSVファイル内に存在します。登録できません')
 CSV_HOSTNAME_DUPLICATE = gettext('The hostname in csv is repeated')
 GROUP_NOT_EXIST = gettext('There is no result for current query.')
 GROUP_NAME_FORMAT_ERROR = gettext('The format of group name is incorrect')
-EXISTS_IN_DEVICESGROUPS = gettext('There are devices under the current group')
+EXISTS_IN_DEVICESGROUPS = gettext('このデバイスグループに属しているデバイスが存在するため削除できません。')
 EXISTS_IN_SCHEDULES = gettext('The group is already in schedules')
+NAME_DUPLICATE = gettext('NAME_DUPLICATE')
 GROUP_ALREADY_EXISTS = gettext('GROUPNAME_ALREADY_EXISTS')
 END_DEFAULT_COMMANDS_ERROR = gettext("END_DEFAULT_COMMANDS_ERROR")
 START_DEFAULT_COMMANDS_ERROR = gettext("START_DEFAULT_COMMANDS_ERROR")
@@ -275,10 +289,10 @@ TELNET_TIMEOUT_FORMAT_ERROR = gettext("TELNET_TIMEOUT_FORMAT_ERROR")
 SNMP_TIMEOUT_FORMAT_ERROR = gettext("SNMP_TIMEOUT_FORMAT_ERROR")
 OSTYPE_NAME_EXISTS = gettext("NAME_IS_EXISTENCE")
 OSTYPE_NAME_EMPTY = gettext("Ostype name can not be empty")
-OSTYPE_EXIST_IN_DEVICES = gettext("There is device(s) in current ostype!")
+OSTYPE_EXIST_IN_DEVICES = gettext("削除するOS Typeに紐付いているデバイスが存在するため、OS Typeを削除できません。")
 OSTYPE_EXIST_IN_SCHEDULE2 = gettext("There is schedule(s) in current ostype!")
 OSTYPE_EXISTS_IN_COLL_POLICY = gettext("There is collection policy in current ostype!")
-OSTYPE_EXIST_IN_DEVICEGROUPS = gettext("There is device group(s) in current ostype!")
+OSTYPE_EXIST_IN_DEVICEGROUPS = gettext("削除するOS Typeに紐付いているデバイスグループが存在するため、OS Typeを削除できません。")
 OSTYPE_EXIST_IN_COLL_POLICY_GROUPS = gettext("There is collection policy group(s) in current ostype!")
 DEVICE_NOT_EXIST = gettext("There is no device(s) to log in")
 #########################################

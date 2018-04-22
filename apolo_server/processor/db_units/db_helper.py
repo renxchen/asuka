@@ -1,13 +1,17 @@
-from db_units import *
+import os
+import sys
 
+#from db_units import *
 from backend.apolo.models import Items, CollPolicyCliRule, TriggerDetail, Event, CollPolicyGroups
-#import models
+# import models
 from apolo_server.processor.constants import CommonConstants, TriggerConstants
 from apolo_server.processor.units import TriggerException
 import importlib
 import time
 from django.db import connection
 from django.db.utils import OperationalError
+from django.forms.models import model_to_dict
+
 
 
 def is_connection_usable(func):
@@ -30,20 +34,6 @@ class DbHelp(object):
         pass
 
 
-class ItemsDbHelp(DbHelp):
-    def __init__(self):
-        pass
-
-    def update_last_exec_time(self, now_time, items):
-        item_ids = []
-        for item in items:
-            item_ids.append(item['item_id'])
-
-        #for item in items:
-        #TODO  may have max in values
-        Items.objects.filter(item_id__in = item_ids).update(last_exec_time=now_time)
-
-
 class DeviceDbHelp(DbHelp):
     def __init__(self):
         pass
@@ -51,8 +41,7 @@ class DeviceDbHelp(DbHelp):
     @staticmethod
     def get_items(item_type):
         param_dict = {"policys_groups__status": 1}
-       
-        
+
         value_items = ["item_id",
                 "schedule__valid_period_type",
                 "schedule__start_period_time",
@@ -72,7 +61,7 @@ class DeviceDbHelp(DbHelp):
                  "schedule__priority"
                 ]
 
-        cli_items=[
+        cli_items = [
                 "device__ostype__start_default_commands",
                 "device__ostype__end_default_commands",
                 "device__ostype__log_fail_judges",
@@ -86,12 +75,12 @@ class DeviceDbHelp(DbHelp):
                 "coll_policy_rule_tree_treeid__rule_id",
                 "coll_policy_rule_tree_treeid__rule__value_type"]
 
-        snmp_items=["device__ostype__snmp_timeout",
+        snmp_items = ["device__ostype__snmp_timeout",
                 "device__snmp_port",
                 "device__snmp_community",
                 "device__snmp_version",
                 "coll_policy__snmp_oid"]
-        
+
         if item_type is not None:
             param_dict["item_type"] = item_type
             if item_type == CommonConstants.CLI_TYPE_CODE:
@@ -102,15 +91,11 @@ class DeviceDbHelp(DbHelp):
 
             value_items.extend(cli_items)
             value_items.extend(snmp_items)
-        
-
 
         items = Items.objects.filter(
             **param_dict).order_by(
-                "-policys_groups__exec_interval","schedule__priority").values(*value_items)
+                "-policys_groups__exec_interval", "schedule__priority").values(*value_items)
         return list(items)
-
-
 
     @staticmethod
     def get_all_items_from_db():
@@ -167,8 +152,32 @@ class DeviceDbHelp(DbHelp):
 class ParserDbHelp(DbHelp):
     def __init__(self):
         pass
+    @staticmethod
+    def snmp_save(value_type,data):
+        
+        #value_type = data['value_type']
+        table_name = "history_snmp_%s" % CommonConstants.VALUE_TYPE_MAPPING.get(value_type)
+        #table = ParserDbHelp.get_history_table(table_name)
+        sql = "insert into "+table_name+"(`item_id`,`clock` ,   \
+        `ns` ,`value`) values(%s,%s,%s,%s)"
 
-    def bulk_save_result(self, results, clock,item_type):
+        with connection.cursor() as cursor:
+            cursor.execute(sql, data)
+
+
+
+    @staticmethod
+    def cli_save(value_type,data):
+        #value_type = data['value_type']
+        table_name = "history_cli_%s" % CommonConstants.VALUE_TYPE_MAPPING.get(value_type)
+        #table = ParserDbHelp.get_history_table(table_name)
+        sql = "insert into "+table_name+"(`item_id`,`clock` ,   \
+        `ns` ,`seq` ,`value` ,`block_path`) values(%s,%s,%s,%s,%s,%s)"
+
+        with connection.cursor() as cursor:
+            cursor.execute(sql, data)
+
+    def bulk_save_result(self, results, clock, item_type):
         data = {}
         for result in results:
             value_type = result['value_type']
@@ -185,22 +194,20 @@ class ParserDbHelp(DbHelp):
         _ns = int(str((int(round(clock * 1000))))[-3:])
 
         if item_type == CommonConstants.CLI_TYPE_CODE:
-            self.__save_cli_bulk(data,_clock,_ns)
+            self.__save_cli_bulk(data, _clock, _ns)
         else:
-            self.__save_snmp_bulk(data,_clock,_ns)
-        
-
+            self.__save_snmp_bulk(data, _clock, _ns)
 
     def __save_cli_bulk(self, result, clock, ns):
-        
+
         for table in result:
             tmp = []
             for data in result[table]:
-         
-                block_path = str(data["data"]['block_path'])
+
+                block_path = str(data['block_path'])
                 item_id = data['item_id']
                 tmp.append(table(
-                    value=data['data']["value"],
+                    value=data["value"],
                     ns=ns,
                     clock=clock,
                     item_id=item_id,
@@ -211,12 +218,11 @@ class ParserDbHelp(DbHelp):
         return True
 
     def __save_snmp_bulk(self, result, clock, ns):
-        
 
         for table in result:
             tmp = []
             for data in result[table]:
-                output = data['value']
+                values = data['value']
                 item_id = data['item_id']
                 mibs = output.keys()[0]
                 value1 = output[mibs][0]
@@ -229,8 +235,8 @@ class ParserDbHelp(DbHelp):
                 ))
             table.objects.bulk_create(tmp)
         return True
-
-    def get_history_table(self, value_type, policy_type):
+    @staticmethod
+    def get_history_table(table_name):
         """
         Search history data from db by given item id and value type
         :param item_id:
@@ -239,11 +245,12 @@ class ParserDbHelp(DbHelp):
         :return: history list
         """
 
-        base_db_format = "History%s%s"
-        table_name = base_db_format % (policy_type, value_type)
-        db_module = importlib.import_module(TriggerConstants.TRIGGER_DB_MODULES)
-        if hasattr(db_module, table_name) is False:
-            raise Exception("%s table isn't exist" % table_name)
+        #base_db_format = "History%s%s"
+        #table_name = base_db_format % (policy_type, value_type)
+        db_module = importlib.import_module(
+            TriggerConstants.TRIGGER_DB_MODULES)
+        #if hasattr(db_module, table_name) is False:
+        #    raise Exception("%s table isn't exist" % table_name)
         table = getattr(db_module, table_name)
         return table
 
@@ -265,11 +272,14 @@ class TriggerDbHelp(DbHelp):
         table = self.__get_table_module(policy_type, value_type)
         last_param = int(param) + 1
         if last_param == 1:
-            obj = table.objects.filter(**{"item_id": item_id}).order_by("-clock", "-ns").first()
+            obj = table.objects.filter(
+                **{"item_id": item_id}).order_by("-clock", "-ns").first()
         else:
-            objs = table.objects.filter(**{"item_id": item_id}).order_by("-clock", "-ns")[:last_param]
+            objs = table.objects.filter(
+                **{"item_id": item_id}).order_by("-clock", "-ns")[:last_param]
             if len(objs) < param:
-                raise TriggerException("History data not exist for last %d" % last_param)
+                raise TriggerException(
+                    "History data not exist for last %d" % last_param)
             else:
                 obj = objs[last_param - 1]
         return obj
@@ -277,17 +287,25 @@ class TriggerDbHelp(DbHelp):
     def get_last_range_value(self, item_id, policy_type, value_type, param):
         table = self.__get_table_module(policy_type, value_type)
         last_param = int(param) + 1
-        objs = table.objects.filter(**{"item_id": item_id}).order_by("-clock", "-ns")[:last_param]
+        objs = table.objects.filter(
+            **{"item_id": item_id}).order_by("-clock", "-ns")[:last_param]
         if len(objs) < param:
-            raise TriggerException("History data not exist for last %d" % last_param)
+            raise TriggerException(
+                "History data not exist for last %d" % last_param)
         return objs
 
     def get_triggers(self, devices_id):
         triggers = []
         for device_id in devices_id:
-            triggers.extend(TriggerDetail.objects.filter(**{"device_id": device_id, "status": 1}))
+            triggers.extend(TriggerDetail.objects.filter(
+                **{"device_id": device_id, "status": 1}))
         return triggers
 
+    @staticmethod
+    def get_triggerDetail_by_deviceid(device_id):
+
+        return list(TriggerDetail.objects.filter(**{"device_id": device_id, "status": 1}).order_by("-trigger__priority"). \
+            values("trigger_id", "expression", "itemA", "itemB","trigger__priority","trigger__trigger_type","trigger__identifier", "trigger__trigger_limit_nums"))
 
     def get_triggers_by_item_id(self, items_id):
         """
@@ -307,31 +325,48 @@ class TriggerDbHelp(DbHelp):
             triggers.extend(tmp)
         return triggers
 
-    def get_latest_event(self, source, object_id):
-        latest_event = Event.objects.filter(**{"source": source, "objectid": object_id}).order_by('-clock').first()
+    @staticmethod
+    def get_latest_event(device_id):
 
-        return latest_event
+        sql = '''SELECT * FROM event
+
+        JOIN (
+            SELECT device_id, trigger_id,max(data_clock) as data_clock
+            FROM event where device_id = %d
+            GROUP BY device_id,trigger_id
+        ) b ON event.device_id = b.device_id and event.trigger_id=b.trigger_id and event.data_clock = b.data_clock and event.device_id = %d
+        '''
+        event_objs = Event.objects.raw(sql % (int(device_id), int(device_id)))
+        return [model_to_dict(_event) for _event in event_objs]
 
 
-    def save_events(self, events):
-        tmp = []
-        for event in events:
-            tmp.append(
-                Event(
-                    source=event[0],
-                    objectid=event[1],
-                    number=event[2],
-                    clock=event[3],
-                    value=event[4]
+    @staticmethod
+    def save_events(events, device_id):
+        if events:
+            tmp=[]
+            for event in events:
+                tmp.append(
+                    Event(
+                        data_clock=event["clock"],
+                        number=event["number"],
+                        trigger_value=event["trigger_value"],
+                        device_id=device_id,
+                        trigger_id=event["trigger_id"],
+                        triggerd=event["triggerd"],
+                        action=event["action"]
+                    )
                 )
-            )
-        Event.objects.bulk_create(tmp)
+            Event.objects.bulk_create(tmp)
 
 if __name__ == "__main__":
-    time.clock()
-    # TriggerDbHelp.get_last_value(4, "Cli", "Str", 1)
-    # print TriggerDbHelp.get_trigger(1)[0].expression
-    # print time.clock()
-    # instance = CollPolicyGroups()
-    for i in TriggerDbHelp().get_triggers_by_item_id(['4', '1']):
-        print i
+
+
+    #event_objs=Event.objects.raw(sql % (1, 1))
+    # event_dict = {}
+    # for _event in event_objs:
+
+    #    event_dict.setdefault(str(_event.device_id),[]).append(model_to_dict(_event))
+
+    #print [model_to_dict(_event) for _event in event_objs]
+    print list(TriggerDetail.objects.filter(**{"device_id": 2042, "status": 1}).order_by("-trigger__priority"). \
+            values("trigger_id", "expression", "itemA", "itemB","trigger__priority","trigger__trigger_type","trigger__identifier", "trigger__trigger_limit_nums"))

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-
 SYS_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 sys.path.append(SYS_PATH)
+from apolo_server.processor.db_units.db_units import *
 import json
 import logging
 import time
@@ -48,34 +48,27 @@ class WorkerBase(Thread):
             try:
                 # waiting for command from server
                 #channel, message
-                result = zmq_subscripe.recv_string().split(" ",3)
+                result = zmq_subscripe.recv_string().split()
                 channel = result[0]
                 message = result[1]
-                task_id = None
-                data = None
-                if len(result) >=3:
-                    task_id = result[2]
-                if len(result) ==4:
-                    data = result[3]
+                data=None
 
                 self.logger.debug('Receive published message: %s', message)
                 if message == 'task':  # has new task
                     self.logger.debug('Request for task')
-                    # request new task
-                    if task_id:
-                        zmq_reqest.send_string(b'%s %s' % (channel,task_id))
-                    else:
-                        zmq_reqest.send_string(b'%s' % channel)
+                    zmq_reqest.send_string(b'%s' % channel)
 
                     task_id, task_str = zmq_reqest.recv().split(' ', 1)
                     self.logger.info('Task started: %s', task_id)
                     # deal with task by handler, and get result
                     task = json.loads(task_str)
                     start_time = time.strftime('%Y-%m-%d %H:%M:%S')
-                    # global counter_loc
-                    # if counter_lock.acquire():
-                    result = self.handler(task_id, task, data,self.logger)
-                        # counter_lock.release()
+                    if task_id.find("__") > -1:
+                        tmp_arr = task_id.split("__")
+                        task_id = tmp_arr[0]
+                        data = tmp_arr[1]
+
+                    result = self.handler(task_id, task, data ,self.logger)
                     end_time = time.strftime('%Y-%m-%d %H:%M:%S')
                     result.update(dict(start_time=start_time, end_time=end_time))
                     # push result to server

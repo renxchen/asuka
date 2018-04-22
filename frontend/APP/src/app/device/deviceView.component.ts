@@ -5,7 +5,7 @@
  * @time: 2018/03/08
  * @desc: devices summary
  */
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClientComponent } from '../../components/utils/httpClient';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
@@ -21,7 +21,7 @@ declare var $: any;
     templateUrl: './deviceView.component.html',
     styleUrls: ['./device.component.less']
 })
-export class DeviceViewComponent implements OnInit, AfterViewInit {
+export class DeviceViewComponent implements OnInit, AfterViewInit, OnDestroy {
     apiPrefix: any;
     devViewTable$: any;
     modalRef: BsModalRef;
@@ -185,7 +185,7 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
                     }
                 });
         } else {
-            this.modalMsg = 'Please choose one device at least.';
+            this.modalMsg = 'ステータスチェックを実行するデバイスを選択して下さい。';
             this.closeMsg = '閉じる';
             this.showAlertModal(this.modalMsg, this.closeMsg);
         }
@@ -202,5 +202,10 @@ export class DeviceViewComponent implements OnInit, AfterViewInit {
         this.modalRef = this.modalService.show(ModalComponent);
         this.modalRef.content.modalMsg = modalMsg;
         this.modalRef.content.closeMsg = closeMsg;
+    }
+    ngOnDestroy() {
+        if (this.modalRef) {
+            this.modalRef.hide();
+        }
     }
 }

@@ -96,24 +96,25 @@ class CiscoCLI(object):
         self.__execute_default_command(self.end_default_command)
 
     def __execute_default_command(self, commands):
-
+       
         if not commands:
             return
         
         expect_list = [self.prompt, pexpect.TIMEOUT, pexpect.EOF]
         for command in re.split(self.SPILT_CHAT, commands):
+            
             res = []
             self.logger.info('%s Execute default command: %s' % (self.device_log_info, command))
             self.child.sendline(command)
             i = self.child.expect(expect_list, timeout=self.timeout)
            
             if i == 1:
-                #self.logger.error('%s Execute default command Timeout: %s' % (self.device_log_info,command))
+                
                 message = '%s Execute default command Timeout: %s' % (self.device_log_info,command)
                 raise Exception(message)
             if i == 2:
                 message = '%s Execute default command Connection_closed: %s' % (self.device_log_info,command)
-                #self.logger.error('%s Execute default command Connection_closed: %s' % (self.device_log_info,command))
+                
                 raise Exception(message)
             
             if i == 0:
@@ -123,15 +124,13 @@ class CiscoCLI(object):
             output = ''.join(res)
             if not self.__is_valid_command(output):
                 message = "%s Execute default command failed: %s output: %s" % (self.device_log_info,command,output)
-                #self.logger.error(message)
+                
                 raise Exception(message)
             
     def __login(self):
 
         port = self.port or 23
         cmd_str = self.TELNET_STR % (self.ip, self.port)
-  
-        #self.logger.info('%s Telnet Started' % self.device_log_info)
         child = pexpect.spawn(cmd_str, maxread=8192, searchwindowsize=4096)
         flag = 1
         for line in re.split(",", self.expect):
@@ -153,8 +152,13 @@ class CiscoCLI(object):
                 flag = 1
         prompt = re.split(",", self.expect)[-1]
         self.hostname = hostname = child.before.splitlines()[-1]
+        
+        get_prompt = hostname + prompt
         if not self.prompt:
-            self.prompt = hostname + prompt
+            self.prompt = get_prompt
+        else:
+            if re.search(self.prompt,get_prompt) is None:
+                raise Exception("Given Prompt Error")
 
         self.child = child
         self.logger.info('%s Login success. Got device hostname: %s' % (self.device_log_info,hostname))
@@ -198,7 +202,7 @@ class CiscoCLI(object):
         if not self.__is_valid_command(output):
             err_message = "%s Execute default command failed: %s output: %s" % (self.device_log_info,command,output)
             self.logger.error(err_message)
-            message = "invalid_command"
+            status = 'coll_fail'
             
         return dict(command=command, status=status, output=output, timestamp=timestamp,clock = "%f" % clock,message=message)
 
@@ -222,16 +226,21 @@ class CiscoCLI(object):
 
 if __name__ == "__main__":
     import traceback
+
+    commands = ["show interface","show version","show clock"]
+    SPILT_CHAT = u"，"
+    start_default_commands = SPILT_CHAT.join(["terminal length 0","terminal width 0"])
+    end_default_commands = SPILT_CHAT.join(["show version","terminal width 0"])
+    fail_judges = SPILT_CHAT.join(["% In*","Error*"])
     device_info = {
         
             #arr
-            "start_default_commands": "terminal len 0，terminal pager 0",
+            "start_default_commands": start_default_commands,
             #arr
-            "end_default_commands": "",
-            "prompt":"#",
+            "end_default_commands": end_default_commands,
+            "prompt":"",
             #arr
-            #"fail_judges":"% In*，Error*",
-            "fail_judges":null,
+            "fail_judges":fail_judges,
             "ip": "10.71.244.135",
             "hostname": "crs1000_1",
             "expect": "ssword:,cisco,>,enable,:,cisco123,#",
@@ -241,6 +250,8 @@ if __name__ == "__main__":
 
     import logging as logger
     worker = CiscoCLI(device_info, logger=logger)
+
+
     output = []
     try:
         worker.login()

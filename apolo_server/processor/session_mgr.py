@@ -13,17 +13,17 @@ import Queue
 
 class SessionManager(threading.Thread):
     data_set = {}
-
-    parser_dict={}
     mutux_dict={}
 
-    polling_interval = 1
-    absolute_timeout = 3600
-    after_read_timeout = 60
-    mutux_after_read_timeout = 60*60
-    def __init__(self,zmq_publish):
+    polling_interval = 60
+    absolute_timeout = 10*60
+    after_finish_timeout = 60
+    mutux_after_finish_timeout = 60*60
+
+    parser_queue = Queue.Queue()
+    def __init__(self,handle_pedding_task_func):
         threading.Thread.__init__(self)
-        self.zmq_publish = zmq_publish
+        self.pedding_fuc = handle_pedding_task_func
 
     def put(self, k, v):
         self.data_set[k] = v
@@ -55,43 +55,15 @@ class SessionManager(threading.Thread):
             self.data_set[k].update(v)
         except KeyError:
             pass
-    def init_parser_queue(self,task_id):
-        self.parser_dict[task_id] = Queue.Queue()
-
-    def set_parser_queue(self,task_id,value):
-
-        queue = self.parser_dict[task_id]
-        queue.put(value)
-
-    def update_command_result(self,task_id,task,result):
-        #data = task
-        channel = task["channel"]
-        if "element_result" not in task:
-                task.update(dict(element_result={}))
-
-        if channel == "cli":
-            command = result["command"]
-            task.get("element_result")[command] = result
-        else:
-            clock = result["clock"]
-            task.get("element_result")[clock] = result
-
 
     def update_parser_result(self,task_id,result):
         data = self.data_set.get(task_id)
-        if "parser_result" not in data:
-            data.update(dict(parser_result=[]))
-
-        data.get("parser_result").append(result)
+        clock = result["collection_clock"]
+        data.setdefault("parser_result",{})[clock] = result
         
-        data["parser_status"] = "queue"
-
 
     def get(self, k):
         data = self.data_set.get(k)
-        #if data:
-        #    data['timer'] = time.time()
-        #    data['read'] = True
         return data
 
     def set_read(self, k):
@@ -129,49 +101,34 @@ class SessionManager(threading.Thread):
         logger = get_logger('SessionMgr')
         threading_lock_interval_counter = 0
         while True:
-
             threading_lock_interval_counter += 1 
             time.sleep(self.polling_interval)
             for k in self.data_set.keys():
                 v = self.data_set[k]
-                status = v["status"] 
-                if k in self.parser_dict:
-                    parser_queue = self.parser_dict[k]
-                    if v["parser_status"] == "queue":
-                        if not parser_queue.empty():
-                            data = parser_queue.get()
-                            v["parser_status"]="running"
-                            self.zmq_publish.send_string(data)
-                        
-                        if status == "coll_finish" and parser_queue.empty() and v["parser_status"] != "running":
-                            v["status"] = "all_finish"
-                            v["finish_timer"] = time.time()
-                
-                if "finish_timer" in v and time.time() - v['finish_timer'] > self.after_read_timeout:
+                status = v["status"]   
+                now = time.time()
+
+                if (now - v['timer']) > self.absolute_timeout:
+                    try:
+                        channel = v["channel"]
+                        if channel in "cli snmp":
+                            timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+                            device_id = v["device_info"]["device_id"]
+                            self.pedding_fuc(channel,device_id,now,timestamp)
+                        del self.data_set[k]
+                        logger.info('Task %s Timeout, cleared' % k)
+                    except Exception,e:
+                        logger.error(str(e))
+
+                elif "finish_timer" in v and (now - v['finish_timer']) > self.after_finish_timeout:
                     del self.data_set[k]
-                    if k in self.parser_dict:
-                        del self.parser_dict[k]
-                    logger.info('Task %s timeout, cleared' % k)
+                    logger.info('Task %s Finished, cleared' % k)
             
-            #check_threading_lock 
-            if threading_lock_interval_counter == 600:
+            if threading_lock_interval_counter == 60:
                 threading_lock_interval_counter = 0
-                for k in self.mutux_dict:
-                    timer = self.mutux_dict[k]["timer"]
-                    if timer and time.time() - v['finish_timer'] > self.mutux_after_read_timeout:
-                        del self.mutux_dict[k]
-                        logger.info('Device:%s Mutex timeout, cleared' % k)
-
-
-
-            
-
-            
-
-            
-
-
-
-
-
-
+                for k in self.mutux_dict.keys():
+                    if k in self.mutux_dict:
+                        timer = self.mutux_dict[k]["timer"]
+                        if timer and (time.time() - timer > self.mutux_after_finish_timeout):
+                            del self.mutux_dict[k]
+                            logger.info('Device:%s Mutex timeout, cleared' % k)

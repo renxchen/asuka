@@ -13,12 +13,11 @@
 import traceback
 
 from rest_framework import viewsets
-from django.utils.translation import gettext
 from backend.apolo.tools.exception import exception_handler
 from backend.apolo.tools.views_helper import api_return
 from backend.apolo.tools import constants
 from backend.apolo.tools import views_helper
-from backend.apolo.models import Schedules, PolicysGroups, CollPolicy
+from backend.apolo.models import Schedules, PolicysGroups
 
 
 class DataTableCoulumnViewsSet(viewsets.ViewSet):

@@ -338,6 +338,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                         data = {
                             constants.STATUS: {
                                 constants.STATUS: constants.FALSE,
+                                constants.MSG_TYPE: 'NAME_DUPLICATE',
                                 constants.MESSAGE: constants.COLLECTION_POLICY_NAME_DUPLICATE
                             }
                         }
@@ -394,6 +395,7 @@ class CollPolicyViewSet(viewsets.ViewSet):
                     data = {
                         constants.STATUS: {
                             constants.STATUS: constants.FALSE,
+                            constants.MSG_TYPE: 'NAME_DUPLICATE',
                             constants.MESSAGE: constants.COLLECTION_POLICY_NAME_DUPLICATE
                         }
                     }

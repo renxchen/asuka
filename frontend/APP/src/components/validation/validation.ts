@@ -5,14 +5,14 @@ export class Validator {
     static halfWithoutSpecialReg: RegExp = /[^\x00-\xff]|[\x22|\x20|\x27\x2c]/;
     // only half-width
     static halfReg: RegExp = /[^\x00-\xff]/;
-    // static oidReg: RegExp = /^[1-9](\.(?!0+)\d+)*$/;
     // static oidReg: RegExp = /^1(\.(?!0)\d+)*$/;
     // static oidReg: RegExp = /^1(\.(?!0+)\d+)*$/;
     static oidReg: RegExp = /^1(\.\d+)*$/;
-    // static numReg: RegExp = /^\+?[1-9]\d*$/;
-    static numReg: RegExp = /^(0|[1-9]+\d*)$/;
+    // static numReg: RegExp = /^(0|[1-9]+\d*)$/;
+    static numReg: RegExp = /^([0-9]+\d*)$/;
     static xOffsetReg: RegExp = /^-?[1-9]\d*$/;
     static offsetReg: RegExp = /^-?[0-9]\d*$/;
+    static portReg: RegExp = /^([0-9]|[1-9]\\d|[1-9]\\d{2}|[1-9]\\d{3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5])$/;
     static regTest(reg: any, value?: any) {
         if (value) {
             let regInstance = new RegExp(reg);
@@ -77,6 +77,13 @@ export class Validator {
     }
     static offsetCheck(param: any) {
         if (Validator.regTest(Validator.offsetReg, param)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    static portCheck(param: any) {
+        if (Validator.regTest(Validator.portReg, param)) {
             return true;
         } else {
             return false;

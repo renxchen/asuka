@@ -5,13 +5,14 @@ __author__ = 'zhutong <zhtong@cisco.com>'
 
 from worker_base import WorkerBase, main
 from cisco_cli_helper import CiscoCLI, LoginException
+import json
 import traceback
 
 
 class CiscoCliWorker(WorkerBase):
     name = 'CiscoCli'
     channels = ('cli',)
-    threads = 15
+    threads = 10
 
     def handler(self, task_id, task, data, logger):
         device_info = task['device_info']

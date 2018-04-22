@@ -105,6 +105,55 @@ class Auth(object):
         self.password = views_helper.get_request_value(self.request, constants.PASSWORD, 'BODY')
         self.logger = logging.getLogger("apolo.log")
 
+    def get(self):
+        username = self.request.session.get('_username')
+        if username is None:
+            data = {
+                constants.STATUS: {
+                    constants.CODE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE,
+                    constants.MESSAGE: constants.NO_USERNAME_OR_PASSWORD_FONUD_ERROR,
+                    constants.STATUS: constants.FALSE
+                }
+            }
+            return HttpResponse(json.dumps(data))
+        # token = request.session[username + '_token']
+        # this token is from header
+        new_token = views_helper.get_request_value(self.request, "HTTP_AUTHORIZATION", 'META')
+        # this token is from session, for jqgrid
+        token = self.request.session.get(username + '_token')
+        if token is None:
+            data = {
+                constants.STATUS: {
+                    constants.CODE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_CODE,
+                    constants.MESSAGE: constants.TOKEN_NOT_EXIST_FOR_CURRENT_USER_MSG
+                }
+            }
+            return HttpResponse(json.dumps(data))
+        if new_token is not '':
+            token = self.request.META.get("HTTP_AUTHORIZATION").split()[1]
+        refresh_token = TokenRefresh(token).refresh_token()
+        if refresh_token is False:
+            data = {
+                constants.STATUS: {
+                    constants.MESSAGE: constants.TOKEN_EXPIRED_MSG,
+                    constants.CODE: constants.TOKEN_ALREADY_EXPIRED_CODE,
+                    constants.STATUS: constants.FALSE
+                }
+            }
+            return HttpResponse(json.dumps(data))
+        else:
+            data = {
+                'data': {
+                    constants.USERNAME: self.username,
+                },
+                'new_token': token,
+                constants.STATUS: {
+                    constants.STATUS: constants.TRUE,
+                    constants.MESSAGE: constants.SUCCESS
+                }
+            }
+            return HttpResponse(json.dumps(data))
+
     def post(self):
         try:
             if not self.username or not self.password:
@@ -185,6 +234,7 @@ class Auth(object):
         #     }
         #     return api_return(data=data)
         try:
+            self.logger.info(constants.USER_LOGOUT_SUCCESSFUL)  ###Logger###
             self.request.session.clear()
             data = {
                 constants.USERNAME: self.username,
